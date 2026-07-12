@@ -1,0 +1,403 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 29: Regresión lineal simple}
+\subtitle{Unidad 8: Modelos lineales}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Motivación: relación entre dos variables}
+
+\begin{frame}{De la correlación a la regresión}
+En unidades anteriores estudiamos cómo describir la relación \emph{conjunta} entre dos variables aleatorias. Ahora nos interesa un problema distinto:
+
+\begin{block}{Pregunta central}
+Dado un valor de una variable \textbf{explicativa} (o regresora) $X$, ¿podemos \textbf{predecir} o \textbf{explicar} el valor de una variable \textbf{respuesta} $Y$?
+\end{block}
+
+\begin{exampleblock}{Ejemplos}
+\begin{itemize}
+\item $X$: horas de estudio; $Y$: nota en un examen.
+\item $X$: temperatura del horno; $Y$: resistencia de una pieza cerámica.
+\item $X$: dosis de un fertilizante; $Y$: rendimiento de un cultivo.
+\item $X$: antigüedad de una máquina; $Y$: costo de mantenimiento anual.
+\end{itemize}
+\end{exampleblock}
+
+La \textbf{teoría de regresión} propone un modelo matemático-estadístico para esta relación, y la \textbf{correlación} mide su intensidad.
+\end{frame}
+
+\begin{frame}{Diagrama de dispersión}
+La primera herramienta exploratoria es el \textbf{diagrama de dispersión}: se grafican los pares $(x_i,y_i)$ observados.
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=8cm,height=5.5cm,xlabel={$X$},ylabel={$Y$},
+  axis lines=middle, xmin=0,xmax=11,ymin=0,ymax=16,
+  tick label style={font=\scriptsize}, label style={font=\small}]
+\addplot[only marks, mark=*, mark size=1.8pt, blue] coordinates {
+(1,2.5)(2,4.1)(3,5.0)(4,6.8)(5,7.5)(6,8.9)(7,10.2)(8,11.0)(9,12.8)(10,13.9)
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+Si los puntos se agrupan alrededor de una tendencia \textbf{lineal}, tiene sentido buscar la ``mejor'' recta que resuma esa tendencia: ese es el objetivo de la \textbf{regresión lineal simple}.
+\end{frame}
+
+\section{El modelo de regresión lineal simple}
+
+\begin{frame}{Planteo del modelo}
+\begin{definition}[Modelo de regresión lineal simple]
+Suponemos que la variable respuesta $Y$ se relaciona con la variable regresora (no aleatoria, controlada o fijada) $X$ mediante
+\[
+Y = \beta_0 + \beta_1 X + \varepsilon,
+\]
+donde:
+\begin{itemize}
+\item $\beta_0$: \textbf{ordenada al origen} (intercepto), parámetro desconocido.
+\item $\beta_1$: \textbf{pendiente}, parámetro desconocido; mide el cambio esperado en $Y$ por unidad de cambio en $X$.
+\item $\varepsilon$: \textbf{error aleatorio}, no observable, que recoge la variabilidad de $Y$ no explicada por $X$.
+\end{itemize}
+\end{definition}
+\end{frame}
+
+\begin{frame}{Supuestos del modelo}
+\begin{block}{Supuestos sobre el error $\varepsilon$}
+\begin{enumerate}
+\item $E(\varepsilon) = 0$ (en promedio, el modelo lineal es correcto).
+\item $V(\varepsilon) = \sigma^2$, constante para todo $X$ (\textbf{homocedasticidad}).
+\item Los errores correspondientes a observaciones distintas son \textbf{independientes} entre sí.
+\item (Para inferencia, Clase 30) $\varepsilon \sim N(0,\sigma^2)$.
+\end{enumerate}
+\end{block}
+
+\begin{alertblock}{Consecuencia}
+Bajo los supuestos 1 y 2, para cada valor fijo $x$ de la regresora:
+\[
+E(Y \mid X=x) = \beta_0 + \beta_1 x, \qquad V(Y \mid X = x) = \sigma^2.
+\]
+La recta $\beta_0+\beta_1 x$ describe cómo cambia la \textbf{media} de $Y$ con $x$; $\sigma^2$ mide la dispersión alrededor de esa media, la misma para todo $x$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Datos y notación}
+Disponemos de una muestra de $n$ pares de observaciones
+\[
+(x_1,y_1), (x_2,y_2), \dots, (x_n,y_n),
+\]
+donde cada $y_i$ se interpreta como una realización de
+\[
+Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \qquad i=1,\dots,n,
+\]
+con $\varepsilon_1,\dots,\varepsilon_n$ independientes, $E(\varepsilon_i)=0$, $V(\varepsilon_i)=\sigma^2$.
+
+\begin{block}{Objetivo}
+Estimar $\beta_0$ y $\beta_1$ a partir de los datos, obteniendo la \textbf{recta ajustada}
+\[
+\hat y = \hat\beta_0 + \hat\beta_1 x,
+\]
+que sea, en algún sentido preciso, la que mejor se ajusta a la nube de puntos.
+\end{block}
+\end{frame}
+
+\section{Estimación por mínimos cuadrados}
+
+\begin{frame}{El criterio de mínimos cuadrados}
+Para cada posible recta $\hat y = b_0 + b_1 x$, el \textbf{residuo} de la observación $i$ es
+\[
+e_i = y_i - (b_0 + b_1 x_i),
+\]
+la distancia vertical entre el punto observado y la recta.
+
+\begin{block}{Método de mínimos cuadrados}
+Elegimos $b_0=\hat\beta_0$, $b_1=\hat\beta_1$ que minimizan la \textbf{suma de cuadrados de los residuos}
+\[
+S(b_0,b_1) = \sum_{i=1}^n e_i^2 = \sum_{i=1}^n \big(y_i - b_0 - b_1 x_i\big)^2.
+\]
+\end{block}
+
+Se penalizan más los residuos grandes (al elevarlos al cuadrado) y el problema tiene solución analítica simple, como veremos a continuación.
+\end{frame}
+
+\begin{frame}{Deducción de las ecuaciones normales}
+Para minimizar $S(b_0,b_1)$ igualamos a cero las derivadas parciales:
+\[
+\frac{\partial S}{\partial b_0} = -2\sum_{i=1}^n (y_i - b_0 - b_1 x_i) = 0,
+\]
+\[
+\frac{\partial S}{\partial b_1} = -2\sum_{i=1}^n x_i(y_i - b_0 - b_1 x_i) = 0.
+\]
+
+Reordenando se obtienen las \textbf{ecuaciones normales}:
+\[
+\begin{cases}
+\displaystyle \sum_{i=1}^n y_i = n\, b_0 + b_1 \sum_{i=1}^n x_i \\[4pt]
+\displaystyle \sum_{i=1}^n x_i y_i = b_0 \sum_{i=1}^n x_i + b_1 \sum_{i=1}^n x_i^2
+\end{cases}
+\]
+un sistema lineal de 2 ecuaciones con 2 incógnitas ($b_0,b_1$).
+\end{frame}
+
+\begin{frame}{Resolución: fórmulas de los estimadores}
+De la primera ecuación normal, dividiendo por $n$:
+\[
+\bar y = b_0 + b_1 \bar x \quad\Longrightarrow\quad \hat\beta_0 = \bar y - \hat\beta_1 \bar x.
+\]
+
+Sustituyendo en la segunda ecuación y despejando $b_1$ se obtiene
+\[
+\hat\beta_1 = \frac{\displaystyle\sum_{i=1}^n (x_i-\bar x)(y_i - \bar y)}{\displaystyle\sum_{i=1}^n (x_i - \bar x)^2} = \frac{S_{xy}}{S_{xx}},
+\]
+donde se define
+\[
+S_{xy} = \sum_{i=1}^n (x_i-\bar x)(y_i-\bar y) = \sum_i x_iy_i - n\bar x\bar y, \qquad
+S_{xx} = \sum_{i=1}^n (x_i-\bar x)^2 = \sum_i x_i^2 - n\bar x^2.
+\]
+
+\begin{alertblock}{Estimadores de mínimos cuadrados}
+\[
+\hat\beta_1 = \frac{S_{xy}}{S_{xx}}, \qquad \hat\beta_0 = \bar y - \hat\beta_1 \bar x.
+\]
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Recta ajustada y residuos}
+\begin{block}{Recta de regresión estimada (recta de mínimos cuadrados)}
+\[
+\hat y_i = \hat\beta_0 + \hat\beta_1 x_i, \qquad i=1,\dots,n.
+\]
+\end{block}
+
+\begin{definition}
+El \textbf{residuo} de la observación $i$ es $e_i = y_i - \hat y_i$, el valor \textbf{observado} menos el \textbf{predicho} por el modelo ajustado.
+\end{definition}
+
+\begin{block}{Propiedades algebraicas inmediatas de la recta de mínimos cuadrados}
+\begin{itemize}
+\item $\displaystyle\sum_{i=1}^n e_i = 0$ (los residuos suman cero).
+\item $\displaystyle\sum_{i=1}^n x_i e_i = 0$ (los residuos son ``no correlacionados'' con $x_i$).
+\item La recta ajustada pasa por el punto $(\bar x,\bar y)$.
+\end{itemize}
+Estas propiedades son consecuencia directa de las ecuaciones normales.
+\end{block}
+\end{frame}
+
+\section{Propiedades de los estimadores}
+
+\begin{frame}{Insesgadez de $\hat\beta_1$}
+Bajo el modelo $Y_i=\beta_0+\beta_1 x_i+\varepsilon_i$ con $E(\varepsilon_i)=0$, veamos que $\hat\beta_1$ es insesgado. Escribiendo $\hat\beta_1 = \sum_i c_i Y_i$ con $c_i = \dfrac{x_i-\bar x}{S_{xx}}$ (nótese $\sum_i c_i = 0$ y $\sum_i c_i x_i = 1$):
+\[
+E(\hat\beta_1) = \sum_{i=1}^n c_i\, E(Y_i) = \sum_{i=1}^n c_i(\beta_0+\beta_1 x_i) = \beta_0\underbrace{\sum_i c_i}_{=0} + \beta_1 \underbrace{\sum_i c_i x_i}_{=1} = \beta_1.
+\]
+
+\begin{block}{Conclusión}
+\[
+E(\hat\beta_1) = \beta_1.
+\]
+$\hat\beta_1$ es un \textbf{estimador insesgado} de la pendiente poblacional $\beta_1$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Insesgadez de $\hat\beta_0$}
+Como $\hat\beta_0 = \bar Y - \hat\beta_1 \bar x$ y $E(\bar Y) = \beta_0+\beta_1\bar x$ (promediando el modelo sobre las $n$ observaciones):
+\[
+E(\hat\beta_0) = E(\bar Y) - \bar x\, E(\hat\beta_1) = (\beta_0+\beta_1\bar x) - \bar x\,\beta_1 = \beta_0.
+\]
+
+\begin{block}{Conclusión}
+\[
+E(\hat\beta_0) = \beta_0.
+\]
+$\hat\beta_0$ también es insesgado. Ambos estimadores son, además, \textbf{lineales} en las $Y_i$ y, bajo los supuestos del modelo, los de \textbf{menor varianza} entre todos los estimadores lineales insesgados (teorema de Gauss--Markov, que se enuncia sin demostración en este curso).
+\end{block}
+\end{frame}
+
+\section{Bondad del ajuste}
+
+\begin{frame}{Descomposición de la variabilidad de $Y$}
+Definimos las siguientes sumas de cuadrados:
+\[
+SCT = \sum_{i=1}^n (y_i-\bar y)^2 \quad \text{(total)}, \qquad
+SCR = \sum_{i=1}^n (\hat y_i-\bar y)^2 \quad \text{(regresión)},
+\]
+\[
+SCE = \sum_{i=1}^n (y_i-\hat y_i)^2 = \sum_i e_i^2 \quad \text{(error o residual)}.
+\]
+
+\begin{block}{Identidad fundamental}
+\[
+SCT = SCR + SCE.
+\]
+\end{block}
+La variabilidad total de $Y$ se descompone en la parte \textbf{explicada} por la recta de regresión ($SCR$) y la parte \textbf{no explicada}, atribuida al error ($SCE$). (Esta misma idea de descomposición reaparecerá, con otro nombre, en el análisis de la varianza de las Clases 31--32.)
+\end{frame}
+
+\begin{frame}{Coeficiente de determinación $R^2$}
+\begin{definition}
+El \textbf{coeficiente de determinación} es
+\[
+R^2 = \frac{SCR}{SCT} = 1 - \frac{SCE}{SCT}, \qquad 0 \le R^2 \le 1.
+\]
+\end{definition}
+
+\begin{block}{Interpretación}
+$R^2$ es la \textbf{proporción de la variabilidad total de $Y$ que es explicada por la relación lineal con $X$}.
+\begin{itemize}
+\item $R^2$ cercano a $1$: el ajuste lineal explica casi toda la variabilidad de $Y$.
+\item $R^2$ cercano a $0$: la recta ajustada explica muy poco; $X$ aporta escasa información lineal sobre $Y$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Coeficiente de correlación muestral}
+\begin{definition}
+El \textbf{coeficiente de correlación muestral (de Pearson)} entre $X$ e $Y$ es
+\[
+r = \frac{S_{xy}}{\sqrt{S_{xx}\,S_{yy}}}, \qquad \text{con } S_{yy}=\sum_{i=1}^n (y_i-\bar y)^2 = SCT.
+\]
+\end{definition}
+
+\begin{block}{Propiedades}
+\begin{itemize}
+\item $-1 \le r \le 1$; mide la fuerza y el sentido de la asociación \textbf{lineal}.
+\item $r>0$: asociación lineal directa; $r<0$: inversa; $r\approx 0$: sin asociación lineal apreciable.
+\item Se relaciona con $R^2$ mediante $R^2 = r^2$ en el modelo de regresión simple.
+\item $\hat\beta_1$ y $r$ tienen siempre el mismo signo, pues ambos dependen de $S_{xy}$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Ejemplo numérico completo}
+
+\begin{frame}{Ejemplo: resistencia de una soldadura}
+Un ingeniero estudia la relación entre el \textbf{tiempo de soldadura} $X$ (segundos) y la \textbf{resistencia a la tracción} $Y$ (kg) de una unión, sobre $n=8$ probetas.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|cccccccc}
+\toprule
+$i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+\midrule
+$x_i$ (seg) & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+$y_i$ (kg) & 32 & 38 & 41 & 45 & 48 & 53 & 55 & 61 \\
+\bottomrule
+\end{tabular}
+\caption{Datos de tiempo de soldadura y resistencia}
+\end{table}
+
+Queremos: (a) la recta de mínimos cuadrados; (b) $R^2$ y $r$; (c) interpretar los resultados.
+\end{frame}
+
+\begin{frame}{Ejemplo: cálculos preliminares}
+\[
+n=8,\quad \sum x_i = 44,\quad \bar x = 5.5, \quad \sum y_i = 373, \quad \bar y = 46.625
+\]
+\[
+\sum x_i^2 = 284, \qquad \sum x_i y_i = 2215
+\]
+
+Entonces:
+\[
+S_{xx} = \sum x_i^2 - n\bar x^2 = 284 - 8(5.5)^2 = 284-242 = 42,
+\]
+\[
+S_{xy} = \sum x_iy_i - n\bar x\bar y = 2215 - 8(5.5)(46.625) = 2215 - 2051.5 = 163.5.
+\]
+\end{frame}
+
+\begin{frame}{Ejemplo: recta ajustada}
+\[
+\hat\beta_1 = \frac{S_{xy}}{S_{xx}} = \frac{163.5}{42} \approx 3.893,
+\]
+\[
+\hat\beta_0 = \bar y - \hat\beta_1 \bar x = 46.625 - 3.893(5.5) \approx 25.214.
+\]
+
+\begin{alertblock}{Recta de mínimos cuadrados}
+\[
+\hat y = 25.214 + 3.893\, x.
+\]
+\end{alertblock}
+
+\textbf{Interpretación}: por cada segundo adicional de soldadura, la resistencia esperada aumenta en aproximadamente $3.89$ kg. Para $x=0$ el modelo predice $\hat y \approx 25.21$ kg, aunque extrapolar fuera del rango observado ($2$ a $9$ seg) debe hacerse con cautela.
+\end{frame}
+
+\begin{frame}{Ejemplo: gráfico de la recta ajustada}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=8.5cm,height=5.5cm,xlabel={$x$ (segundos)},ylabel={$y$ (kg)},
+  xmin=0,xmax=10,ymin=20,ymax=65,
+  tick label style={font=\scriptsize}, label style={font=\small},
+  legend pos=north west, legend style={font=\scriptsize}]
+\addplot[only marks, mark=*, mark size=1.8pt, blue] coordinates {
+(2,32)(3,38)(4,41)(5,45)(6,48)(7,53)(8,55)(9,61)
+};
+\addlegendentry{Datos}
+\addplot[domain=0:10, red, thick] {25.214 + 3.893*x};
+\addlegendentry{$\hat y = 25.214+3.893x$}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Ejemplo: $S_{yy}$, $R^2$ y $r$}
+Con $\sum y_i^2 = 18033$:
+\[
+S_{yy} = \sum y_i^2 - n\bar y^2 = 18033 - 8(46.625)^2 = 18033-17391.125 = 641.875.
+\]
+
+\[
+r = \frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}} = \frac{163.5}{\sqrt{42 \times 641.875}} = \frac{163.5}{\sqrt{26958.75}} \approx \frac{163.5}{164.19} \approx 0.9958.
+\]
+
+\[
+R^2 = r^2 \approx 0.9916.
+\]
+
+\begin{block}{Conclusión}
+La correlación lineal es muy fuerte y positiva ($r\approx 0.996$); el modelo lineal explica aproximadamente el $99.2\%$ de la variabilidad observada en la resistencia. El ajuste lineal es excelente para estos datos.
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item El \textbf{modelo de regresión lineal simple} es $Y=\beta_0+\beta_1 X+\varepsilon$, con $E(\varepsilon)=0$, $V(\varepsilon)=\sigma^2$ constante y errores independientes.
+\item Los estimadores de \textbf{mínimos cuadrados} minimizan $\sum e_i^2$ y se obtienen resolviendo las ecuaciones normales:
+\[
+\hat\beta_1 = \frac{S_{xy}}{S_{xx}}, \qquad \hat\beta_0 = \bar y - \hat\beta_1\bar x.
+\]
+\item $\hat\beta_0$ y $\hat\beta_1$ son estimadores \textbf{insesgados} de $\beta_0$ y $\beta_1$.
+\item La variabilidad total se descompone: $SCT = SCR + SCE$.
+\item El \textbf{coeficiente de determinación} $R^2=SCR/SCT$ mide qué proporción de la variabilidad de $Y$ explica el modelo; el \textbf{coeficiente de correlación} $r$ mide la fuerza de la asociación lineal, con $R^2=r^2$.
+\item Próxima clase: distribución de los estimadores, pruebas de hipótesis e intervalos de confianza para $\beta_0$ y $\beta_1$.
+\end{itemize}
+\end{frame}
+
+\end{document}

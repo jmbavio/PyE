@@ -1,0 +1,252 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 27: Pruebas de hipótesis para dos muestras}
+\subtitle{Unidad 7: Prueba de hipótesis}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Introducción}
+
+\begin{frame}{Comparación de dos poblaciones}
+Es habitual comparar dos poblaciones a través de sus medias o sus varianzas: dos procesos de producción, dos proveedores, un tratamiento vs. un control, mediciones antes y después de una intervención, etc.
+
+\begin{block}{Situaciones a distinguir}
+\begin{itemize}
+\item \textbf{Muestras independientes} con varianzas poblacionales \textbf{conocidas}.
+\item \textbf{Muestras independientes} con varianzas poblacionales \textbf{desconocidas pero iguales} (se estima una varianza combinada, \emph{pooled}).
+\item \textbf{Muestras apareadas} (pareadas o dependientes): cada observación de una muestra está naturalmente asociada a una de la otra (mismo individuo antes/después, mismo lote medido por dos métodos, etc.).
+\item Comparación de \textbf{varianzas} de dos poblaciones (prueba $F$).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Diferencia de medias: varianzas conocidas}
+
+\begin{frame}{Prueba para $\mu_1-\mu_2$, varianzas conocidas}
+Sean $X_1,\dots,X_{n_1}$ muestra de $N(\mu_1,\sigma_1^2)$ y $Y_1,\dots,Y_{n_2}$ muestra de $N(\mu_2,\sigma_2^2)$, \textbf{independientes}, con $\sigma_1^2,\sigma_2^2$ \textbf{conocidas}. Se desea probar
+\[
+H_0:\mu_1-\mu_2=\delta_0 \qquad (\text{usualmente } \delta_0=0).
+\]
+
+\begin{block}{Estadístico de prueba}
+\[
+Z=\frac{(\overline{X}-\overline{Y})-\delta_0}{\sqrt{\dfrac{\sigma_1^2}{n_1}+\dfrac{\sigma_2^2}{n_2}}} \ \overset{H_0}{\sim}\ N(0,1).
+\]
+\end{block}
+
+Las regiones críticas son análogas al caso de una media: $|Z|>z_{\alpha/2}$ (bilateral), $Z>z_\alpha$ o $Z<-z_\alpha$ (unilaterales), según $H_1$.
+\end{frame}
+
+\begin{frame}{Ejemplo: comparación de dos máquinas, varianzas conocidas}
+\begin{example}
+Dos máquinas envasadoras de un mismo producto tienen desviaciones estándar históricas conocidas $\sigma_1=5$ g y $\sigma_2=4$ g. Se toman $n_1=40$ envases de la máquina 1 ($\overline{x}=252$ g) y $n_2=35$ de la máquina 2 ($\overline{y}=249$ g). Con $\alpha=0.05$, ¿difiere el peso medio entregado por ambas máquinas?
+
+\textbf{1. Hipótesis:} $H_0:\mu_1-\mu_2=0$ vs. $H_1:\mu_1-\mu_2\neq0$.
+
+\textbf{2. Estadístico:} $Z=\dfrac{(\overline{X}-\overline{Y})-0}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}}$.
+
+\textbf{3. Región crítica:} $|Z|>z_{0.025}=1.96$.
+
+\textbf{4. Cálculo:}
+\[
+Z=\frac{(252-249)-0}{\sqrt{25/40+16/35}}=\frac{3}{\sqrt{0.625+0.457}}=\frac{3}{\sqrt{1.082}}=\frac{3}{1.040}=2.88.
+\]
+
+\textbf{5. Decisión:} $2.88>1.96 \Rightarrow$ se \textbf{rechaza} $H_0$.
+
+\textbf{6. Conclusión:} hay evidencia significativa de que el peso medio entregado por ambas máquinas difiere.
+\end{example}
+\end{frame}
+
+\section{Diferencia de medias: varianzas desconocidas e iguales}
+
+\begin{frame}{Prueba $t$ agrupada (\emph{pooled})}
+Cuando $\sigma_1^2$ y $\sigma_2^2$ son desconocidas pero puede suponerse $\sigma_1^2=\sigma_2^2=\sigma^2$ (poblaciones normales, muestras independientes), se estima $\sigma^2$ combinando ambas cuasivarianzas muestrales:
+
+\begin{block}{Varianza combinada (\emph{pooled})}
+\[
+S_p^2 = \frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}.
+\]
+\end{block}
+
+\begin{block}{Estadístico de prueba}
+\[
+T=\frac{(\overline{X}-\overline{Y})-\delta_0}{S_p\sqrt{\dfrac{1}{n_1}+\dfrac{1}{n_2}}} \ \overset{H_0}{\sim}\ t_{n_1+n_2-2}.
+\]
+\end{block}
+
+Regiones críticas análogas, usando $t_{n_1+n_2-2,\,\gamma}$ en lugar de $z_\gamma$.
+\end{frame}
+
+\begin{frame}{Ejemplo: comparación de dos proveedores}
+\begin{example}
+Se compara la resistencia a la rotura (en kg) de cables de dos proveedores, suponiendo varianzas poblacionales iguales. Proveedor A: $n_1=12$, $\overline{x}=436$, $s_1^2=98$. Proveedor B: $n_2=10$, $\overline{y}=428$, $s_2^2=110$. Con $\alpha=0.05$, ¿el proveedor A ofrece mayor resistencia media?
+
+\textbf{1. Hipótesis:} $H_0:\mu_1-\mu_2\le0$ vs. $H_1:\mu_1-\mu_2>0$.
+
+\textbf{2. Varianza combinada:}
+\[
+S_p^2=\frac{11(98)+9(110)}{20}=\frac{1078+990}{20}=\frac{2068}{20}=103.4, \quad S_p=10.17.
+\]
+
+\textbf{3. Región crítica} (gl $=20$): $T>t_{20,\,0.05}=1.725$.
+
+\textbf{4. Cálculo:}
+\[
+t=\frac{(436-428)-0}{10.17\sqrt{\tfrac{1}{12}+\tfrac{1}{10}}}=\frac{8}{10.17\times0.4282}=\frac{8}{4.354}=1.84.
+\]
+
+\textbf{5. Decisión:} $1.84>1.725 \Rightarrow$ se \textbf{rechaza} $H_0$.
+
+\textbf{6. Conclusión:} con un $5\%$ de significación, hay evidencia de que el proveedor A entrega cables con mayor resistencia media.
+\end{example}
+\end{frame}
+
+\section{Muestras apareadas}
+
+\begin{frame}{Prueba para datos apareados}
+Cuando las dos muestras \textbf{no son independientes} (mismo sujeto/unidad medido dos veces, o pares naturalmente asociados), se trabaja con las \textbf{diferencias} $D_i=X_i-Y_i$, $i=1,\dots,n$, reduciendo el problema a una prueba de una sola media.
+
+\begin{block}{Estadístico de prueba}
+Si $D_1,\dots,D_n$ son aproximadamente $N(\mu_D,\sigma_D^2)$ con $\sigma_D^2$ desconocida:
+\[
+T=\frac{\overline{D}-\delta_0}{S_D/\sqrt{n}} \ \overset{H_0}{\sim}\ t_{n-1}, \qquad H_0:\mu_D=\delta_0 \ (\text{usualmente } 0).
+\]
+donde $\overline{D}$ y $S_D$ son la media y el desvío muestral de las diferencias.
+\end{block}
+
+\begin{alertblock}{Por qué se usa este enfoque}
+Al trabajar con las diferencias se elimina la variabilidad debida a diferencias entre unidades (cada unidad actúa como su propio control), lo que suele aumentar la potencia de la prueba respecto de tratar las muestras como independientes.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: prueba apareada (antes/después)}
+\begin{example}
+Se evalúa un programa de entrenamiento midiendo el tiempo (en segundos) que tardan $8$ operarios en completar una tarea, antes y después del entrenamiento:
+\begin{center}
+\small
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+Operario & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+\midrule
+Antes & 25 & 28 & 22 & 30 & 27 & 24 & 26 & 29 \\
+Después & 23 & 24 & 22 & 27 & 25 & 24 & 22 & 25 \\
+Diferencia $d_i$ & 2 & 4 & 0 & 3 & 2 & 0 & 4 & 4 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Se obtiene $\overline{d}=2.375$ y $s_D=1.685$. Con $\alpha=0.05$, ¿el entrenamiento reduce el tiempo medio de ejecución?
+
+\textbf{Hipótesis:} $H_0:\mu_D\le0$ vs. $H_1:\mu_D>0$ (con $D=$Antes$-$Después).
+
+\textbf{Región crítica} (gl$=7$): $T>t_{7,\,0.05}=1.895$.
+
+\textbf{Cálculo:} $\displaystyle t=\frac{2.375-0}{1.685/\sqrt{8}}=\frac{2.375}{0.5958}=3.99$.
+
+\textbf{Decisión y conclusión:} $3.99>1.895\Rightarrow$ se rechaza $H_0$: el entrenamiento reduce significativamente el tiempo medio de ejecución.
+\end{example}
+\end{frame}
+
+\section{Igualdad de dos varianzas}
+
+\begin{frame}{Prueba $F$ para igualdad de varianzas}
+Sean $X_1,\dots,X_{n_1}\sim N(\mu_1,\sigma_1^2)$ y $Y_1,\dots,Y_{n_2}\sim N(\mu_2,\sigma_2^2)$ muestras independientes. Se desea probar
+\[
+H_0:\sigma_1^2=\sigma_2^2.
+\]
+
+\begin{block}{Estadístico de prueba}
+\[
+F=\frac{S_1^2}{S_2^2} \ \overset{H_0}{\sim}\ F_{n_1-1,\,n_2-1},
+\]
+la distribución $F$ de Snedecor con $n_1-1$ grados de libertad en el numerador y $n_2-1$ en el denominador.
+\end{block}
+
+\begin{table}[]
+\centering
+\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+$H_1$ & Región crítica \\
+\midrule
+$\sigma_1^2\neq\sigma_2^2$ & $F<F_{n_1-1,n_2-1,\,1-\alpha/2}$ o $F>F_{n_1-1,n_2-1,\,\alpha/2}$ \\
+$\sigma_1^2>\sigma_2^2$ & $F>F_{n_1-1,n_2-1,\,\alpha}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{alertblock}{Convención práctica}
+Para el caso bilateral es usual colocar en el numerador la muestra con mayor $s^2$, de modo que $F\ge1$, y comparar solo con el valor crítico superior $F_{n_1-1,n_2-1,\alpha/2}$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: comparación de variabilidad de dos procesos}
+\begin{example}
+Se comparan dos líneas de producción respecto de la variabilidad en el diámetro (mm) de una pieza. Línea A: $n_1=13$, $s_1^2=0.048$. Línea B: $n_2=10$, $s_2^2=0.019$. Con $\alpha=0.10$, ¿hay evidencia de que las variabilidades difieren?
+
+\textbf{1. Hipótesis:} $H_0:\sigma_1^2=\sigma_2^2$ vs. $H_1:\sigma_1^2\neq\sigma_2^2$.
+
+\textbf{2. Estadístico} (numerador = mayor varianza): $\displaystyle F=\frac{S_1^2}{S_2^2}\sim F_{12,\,9}$ bajo $H_0$.
+
+\textbf{3. Región crítica:} $F>F_{12,\,9,\,0.05}=3.07$.
+
+\textbf{4. Cálculo:}
+\[
+F=\frac{0.048}{0.019}=2.53.
+\]
+
+\textbf{5. Decisión:} $2.53<3.07 \Rightarrow$ \textbf{no se rechaza} $H_0$.
+
+\textbf{6. Conclusión:} al nivel $10\%$, no hay evidencia suficiente de que las variabilidades de ambas líneas difieran.
+\end{example}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen: pruebas para dos poblaciones}
+\begin{table}[]
+\centering
+\scriptsize
+\begin{tabular}{@{}p{3.0cm}p{3.2cm}p{2.9cm}p{2.6cm}@{}}
+\toprule
+Situación & Estadístico & Distribución & Supuestos \\
+\midrule
+Medias, $\sigma_1^2,\sigma_2^2$ conocidas & $Z=\dfrac{(\overline{X}-\overline{Y})-\delta_0}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}}$ & $N(0,1)$ & independencia \\[1.4em]
+Medias, varianzas desc. iguales & $T=\dfrac{(\overline{X}-\overline{Y})-\delta_0}{S_p\sqrt{1/n_1+1/n_2}}$ & $t_{n_1+n_2-2}$ & independencia, $\sigma_1^2=\sigma_2^2$ \\[1.4em]
+Muestras apareadas & $T=\dfrac{\overline{D}-\delta_0}{S_D/\sqrt{n}}$ & $t_{n-1}$ & normalidad de $D_i$ \\[1.2em]
+Igualdad de varianzas & $F=\dfrac{S_1^2}{S_2^2}$ & $F_{n_1-1,n_2-1}$ & independencia, normalidad \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\item La elección entre \emph{pooled t} y datos apareados depende del \textbf{diseño del estudio}, no es opcional.
+\item Próxima clase: pruebas de hipótesis basadas en la distribución $\chi^2$ para bondad de ajuste, independencia y homogeneidad.
+\end{itemize}
+\end{frame}
+
+\end{document}

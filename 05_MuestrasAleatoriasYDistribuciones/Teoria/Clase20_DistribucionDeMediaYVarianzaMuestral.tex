@@ -1,0 +1,307 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 20: Distribución de la media y la varianza muestral}
+\subtitle{Unidad 5: Muestras aleatorias y distribuciones}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Repaso}
+
+\begin{frame}{Repaso de la clase anterior}
+\begin{block}{Lo que ya sabemos}
+Para una muestra aleatoria $X_1,\dots,X_n$ i.i.d. de una población con $E(X_i)=\mu$, $\text{Var}(X_i)=\sigma^2$:
+$$E(\bar X) = \mu, \qquad \text{Var}(\bar X) = \frac{\sigma^2}{n}.$$
+\end{block}
+
+\begin{alertblock}{Lo que falta}
+Esto vale para \textbf{cualquier} población, pero no nos dice la \textbf{forma} de la distribución de $\bar X$. Hoy respondemos:
+\begin{itemize}
+\item ¿Qué distribución tiene $\bar X$ exactamente, si la población es normal?
+\item ¿Qué distribución tiene $\bar X$ aproximadamente, si la población no es normal?
+\item ¿Qué distribución tiene $S^2$?
+\item ¿Cómo se combinan $\bar X$ y $S$ en el estadístico $t$?
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+\section{Distribución exacta de la media muestral (población normal)}
+
+\begin{frame}{Caso población normal}
+\begin{theorem}[Distribución de $\bar X$ bajo normalidad]
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Entonces
+$$\bar X \sim N\left(\mu, \frac{\sigma^2}{n}\right).$$
+\end{theorem}
+
+\begin{proof}
+Cada $X_i \sim N(\mu,\sigma^2)$ tiene función generadora de momentos $M_{X_i}(t) = \exp\left(\mu t + \frac{\sigma^2 t^2}{2}\right)$. Como los $X_i$ son independientes,
+$$M_{\bar X}(t) = M_{\sum X_i/n}(t) = \prod_{i=1}^n M_{X_i}\!\left(\frac{t}{n}\right) = \left[\exp\left(\mu \frac{t}{n} + \frac{\sigma^2}{2}\frac{t^2}{n^2}\right)\right]^n$$
+$$= \exp\left(\mu t + \frac{\sigma^2/n}{2}t^2\right),$$
+que es exactamente la f.g.m. de una $N(\mu,\sigma^2/n)$. Por el teorema de unicidad de la f.g.m. (Unidad 4), $\bar X \sim N(\mu,\sigma^2/n)$. \qedhere
+\end{proof}
+\end{frame}
+
+\begin{frame}{Observaciones sobre el resultado}
+\begin{alertblock}{Es exacto, para cualquier $n$}
+A diferencia de otros resultados que veremos, este vale exactamente para $n=1,2,3,\dots$, no solo asintóticamente. Es consecuencia de que la familia normal es \textbf{cerrada bajo combinaciones lineales} de variables independientes.
+\end{alertblock}
+
+\begin{block}{Tipificación}
+Como siempre con la normal, se puede estandarizar:
+$$Z = \frac{\bar X - \mu}{\sigma/\sqrt n} \sim N(0,1).$$
+Esto permite calcular cualquier probabilidad sobre $\bar X$ usando la tabla de la normal estándar (Unidad 2).
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto}
+\begin{example}
+El contenido de los frascos de una envasadora se distribuye $N(500, 16)$ mL (es decir $\mu=500$, $\sigma^2=16$, $\sigma=4$). Se toma una muestra aleatoria de $n=16$ frascos. Calcular $P(498 < \bar X < 502)$.
+
+\textbf{Resolución.} $\bar X \sim N\left(500, \frac{16}{16}\right) = N(500,1)$, con $\sigma_{\bar X}=1$.
+$$P(498<\bar X<502) = P\left(\frac{498-500}{1} < Z < \frac{502-500}{1}\right) = P(-2<Z<2)$$
+$$= \Phi(2)-\Phi(-2) = 0.9772 - 0.0228 = 0.9544.$$
+\end{example}
+
+\begin{block}{Comparación}
+$P(498<X_1<502)$ para \textbf{una sola} observación sería $P(-0.5<Z<0.5)=0.3829$, mucho menor: promediar reduce la dispersión.
+\end{block}
+\end{frame}
+
+\section{Teorema Central del Límite aplicado a $\bar X$}
+
+\begin{frame}{¿Y si la población no es normal?}
+\begin{alertblock}{El problema}
+En la mayoría de las aplicaciones no sabemos que la población es normal, o sabemos que no lo es (tiempos de vida, ingresos, conteos). ¿Podemos igual decir algo sobre la distribución de $\bar X$?
+\end{alertblock}
+
+\begin{theorem}[Teorema Central del Límite (TCL), para $\bar X$]
+Sea $X_1,\dots,X_n$ una muestra aleatoria de \textbf{cualquier} población con $E(X_i)=\mu$ y $\text{Var}(X_i)=\sigma^2<\infty$ (sin requerir normalidad). Entonces, cuando $n\to\infty$,
+$$Z_n = \frac{\bar X - \mu}{\sigma/\sqrt n} \xrightarrow{d} N(0,1),$$
+es decir, la función de distribución de $Z_n$ converge a la de la normal estándar en todo punto de continuidad.
+\end{theorem}
+
+Este es el mismo TCL de la Unidad 4 (para sumas $\sum X_i$), reescrito para la media $\bar X = \frac{1}{n}\sum X_i$.
+\end{frame}
+
+\begin{frame}{Uso práctico del TCL}
+\begin{block}{Aproximación para $n$ grande}
+En la práctica, para $n$ razonablemente grande (regla práctica usual: $n\geq 30$, aunque depende de cuán asimétrica sea la población), se aproxima
+$$\bar X \ \dot\sim\ N\left(\mu, \frac{\sigma^2}{n}\right)$$
+\textbf{aunque la población no sea normal.} Cuanto más se aleje la población de la normalidad (más asimétrica, colas más pesadas), mayor $n$ se necesita para que la aproximación sea buena.
+\end{block}
+
+\begin{alertblock}{Caso especial}
+Si la población ya es normal, la distribución de $\bar X$ es \textbf{exacta} para todo $n$ (no aproximada): es el caso límite ``perfecto'' del TCL.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: TCL}
+\begin{example}
+El tiempo de atención en una caja de supermercado tiene media $\mu=4$ min y desvío $\sigma=2$ min (distribución desconocida, marcadamente asimétrica). Se observa una muestra de $n=64$ clientes. Calcular aproximadamente $P(\bar X > 4.5)$.
+
+\textbf{Resolución.} Como $n=64$ es grande, por TCL $\bar X \ \dot\sim\ N\left(4, \frac{4}{64}\right) = N(4, 0.0625)$, con $\sigma_{\bar X}=0.25$.
+$$P(\bar X>4.5) \approx P\left(Z > \frac{4.5-4}{0.25}\right) = P(Z>2) = 1-\Phi(2) = 1-0.9772 = 0.0228.$$
+\end{example}
+
+\begin{block}{Nota}
+Sin el TCL, no podríamos calcular esta probabilidad sin conocer la distribución exacta del tiempo de atención.
+\end{block}
+\end{frame}
+
+\section{Distribución de la varianza muestral}
+
+\begin{frame}{Motivación}
+\begin{block}{¿Qué distribución tiene $S^2$?}
+Al igual que con $\bar X$, $S^2 = \frac{1}{n-1}\sum (X_i-\bar X)^2$ es una variable aleatoria: cambia de muestra a muestra. Para hacer inferencia sobre $\sigma^2$ (Unidad 6) necesitamos conocer su distribución, al menos cuando la población es normal.
+\end{block}
+
+\begin{alertblock}{Recordatorio: distribución chi-cuadrado (Unidad 4)}
+Si $Z_1,\dots,Z_k$ son v.a. $N(0,1)$ independientes, entonces $\sum_{i=1}^k Z_i^2 \sim \chi^2_k$ (chi-cuadrado con $k$ grados de libertad), con $E(\chi^2_k)=k$ y $\text{Var}(\chi^2_k)=2k$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Teorema: $(n-1)S^2/\sigma^2 \sim \chi^2_{n-1}$}
+\begin{theorem}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Entonces
+$$\frac{(n-1)S^2}{\sigma^2} = \sum_{i=1}^n \left(\frac{X_i-\bar X}{\sigma}\right)^2 \sim \chi^2_{n-1}.$$
+\end{theorem}
+
+\begin{block}{Idea de la justificación}
+Si conociéramos $\mu$ en lugar de $\bar X$, tendríamos $\sum_{i=1}^n \left(\frac{X_i-\mu}{\sigma}\right)^2 \sim \chi^2_n$ (suma de $n$ cuadrados de $N(0,1)$ independientes). Al reemplazar $\mu$ por su estimador $\bar X$ se ``pierde'' un grado de libertad, porque los residuos $X_i-\bar X$ satisfacen la restricción lineal $\sum_i (X_i-\bar X)=0$: solo $n-1$ de ellos son ``libres''. Formalmente se demuestra (usando una transformación ortogonal) que $\bar X$ y $\sum(X_i-\bar X)^2$ son independientes y que esta suma normalizada resulta $\chi^2_{n-1}$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Justificación para $n=2$ (caso simple, verificable)}
+\begin{example}
+Sean $X_1,X_2$ i.i.d. $N(\mu,\sigma^2)$. Entonces $\bar X = \frac{X_1+X_2}{2}$ y
+$$\sum_{i=1}^2 (X_i-\bar X)^2 = \left(\frac{X_1-X_2}{2}\right)^2 + \left(\frac{X_2-X_1}{2}\right)^2 = \frac{(X_1-X_2)^2}{2}.$$
+
+Como $X_1-X_2 \sim N(0,2\sigma^2)$ (combinación lineal de normales independientes), se tiene
+$$\frac{X_1-X_2}{\sigma\sqrt 2} \sim N(0,1) \ \Rightarrow \ \left(\frac{X_1-X_2}{\sigma\sqrt2}\right)^2 \sim \chi^2_1.$$
+
+Pero $\left(\dfrac{X_1-X_2}{\sigma\sqrt2}\right)^2 = \dfrac{(X_1-X_2)^2}{2\sigma^2} = \dfrac{\sum(X_i-\bar X)^2}{\sigma^2} = \dfrac{(n-1)S^2}{\sigma^2}$ con $n-1=1$.
+
+Esto confirma el teorema para $n=2$: 1 grado de libertad, tal como predice la fórmula general $n-1$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Consecuencia: $E(S^2)=\sigma^2$}
+\begin{block}{Usando $E(\chi^2_{n-1}) = n-1$}
+$$E\left(\frac{(n-1)S^2}{\sigma^2}\right) = n-1 \ \Longrightarrow \ \frac{n-1}{\sigma^2}E(S^2) = n-1 \ \Longrightarrow \ E(S^2)=\sigma^2.$$
+\end{block}
+
+\begin{alertblock}{Esto confirma lo anunciado en la Clase 19}
+$S^2$ (dividiendo por $n-1$) es un estimador \textbf{insesgado} de $\sigma^2$. Si se dividiera por $n$, se obtendría $E\left(\frac{n-1}{n}S^2\right) = \frac{n-1}{n}\sigma^2 \ne \sigma^2$: un estimador sesgado (subestima $\sigma^2$ en promedio).
+\end{alertblock}
+
+\begin{block}{Bonus: varianza de $S^2$}
+Usando $\text{Var}(\chi^2_{n-1})=2(n-1)$ se obtiene $\text{Var}(S^2) = \dfrac{2\sigma^4}{n-1}$ (población normal).
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: chi-cuadrado}
+\begin{example}
+El diámetro de piezas producidas por un torno se distribuye $N(\mu,\sigma^2)$ con $\sigma^2=0.04\ \text{mm}^2$. Se toma una muestra de $n=10$ piezas y se obtiene $s^2=0.07\ \text{mm}^2$. Calcular $P(S^2 \geq 0.07)$.
+
+\textbf{Resolución.} Bajo $H$: $\sigma^2=0.04$,
+$$\frac{(n-1)S^2}{\sigma^2} = \frac{9\cdot S^2}{0.04} \sim \chi^2_9.$$
+El valor observado corresponde a
+$$\frac{9\cdot 0.07}{0.04} = 15.75.$$
+Buscando en tabla de $\chi^2_9$: $P(\chi^2_9 \geq 15.75) \approx 0.073$ (entre los valores tabulados $\chi^2_{9,0.10}=14.68$ y $\chi^2_{9,0.05}=16.92$).
+
+Es decir, obtener una varianza muestral tan grande o mayor no es muy improbable, aunque $\sigma^2$ realmente sea $0.04$.
+\end{example}
+\end{frame}
+
+\section{Independencia de $\bar X$ y $S^2$}
+
+\begin{frame}{Un resultado no trivial (exclusivo de la normal)}
+\begin{theorem}[Independencia, población normal]
+Si $X_1,\dots,X_n$ es una muestra aleatoria de una población $N(\mu,\sigma^2)$, entonces $\bar X$ y $S^2$ son variables aleatorias \textbf{independientes}.
+\end{theorem}
+
+\begin{block}{¿Por qué sorprende?}
+$S^2$ se calcula usando $\bar X$ en su fórmula, así que uno esperaría dependencia. Sin embargo, para la distribución normal (y \textbf{solo} para ella, en general) resulta que ``dónde está centrada'' la muestra ($\bar X$) es independiente de ``cuánto se dispersa alrededor de su centro'' ($S^2$).
+\end{block}
+
+\begin{alertblock}{Idea geométrica (sin demostración formal aquí)}
+$\bar X$ depende solo de la componente de $(X_1,\dots,X_n)$ en la dirección del vector $(1,1,\dots,1)$; $S^2$ depende solo de las componentes ortogonales a esa dirección. Para vectores normales, componentes ortogonales no correlacionadas son independientes.
+\end{alertblock}
+
+Esta independencia es esencial para el resultado que sigue.
+\end{frame}
+
+\section{El estadístico t de Student}
+
+\begin{frame}{El problema: $\sigma$ desconocido}
+\begin{block}{Repaso}
+Si $\sigma^2$ es \textbf{conocido}, sabemos que para población normal
+$$Z = \frac{\bar X-\mu}{\sigma/\sqrt n} \sim N(0,1).$$
+\end{block}
+
+\begin{alertblock}{El problema real}
+En la práctica $\sigma$ casi nunca se conoce. Lo natural es \textbf{reemplazarlo} por su estimador $S$:
+$$T = \frac{\bar X - \mu}{S/\sqrt n}.$$
+¿Qué distribución tiene $T$? Ya no es exactamente $N(0,1)$, porque ahora el denominador también es aleatorio (varía de muestra a muestra).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Definición y distribución t de Student}
+\begin{block}{Recordatorio (Unidad 3): definición de la distribución t}
+Si $Z\sim N(0,1)$ y $W\sim \chi^2_k$ son \textbf{independientes}, entonces
+$$T = \frac{Z}{\sqrt{W/k}} \sim t_k \quad \text{(t de Student con $k$ grados de libertad)}.$$
+\end{block}
+
+\begin{theorem}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Entonces
+$$T = \frac{\bar X-\mu}{S/\sqrt n} \sim t_{n-1}.$$
+\end{theorem}
+
+\begin{proof}
+Escribimos $T$ como cociente de $Z=\dfrac{\bar X-\mu}{\sigma/\sqrt n}\sim N(0,1)$ y $\sqrt{W/(n-1)}$, con $W=\dfrac{(n-1)S^2}{\sigma^2}\sim \chi^2_{n-1}$:
+$$T = \frac{(\bar X-\mu)/(\sigma/\sqrt n)}{S/\sigma} = \frac{Z}{\sqrt{W/(n-1)}}.$$
+Por el teorema de independencia de $\bar X$ y $S^2$, $Z$ y $W$ son independientes. Por definición, $T\sim t_{n-1}$. \qedhere
+\end{proof}
+\end{frame}
+
+\begin{frame}{Propiedades de la t de Student}
+\begin{itemize}
+\item Simétrica alrededor de $0$, forma de campana, similar a la normal estándar pero con \textbf{colas más pesadas} (más dispersión: refleja la incertidumbre extra de estimar $\sigma$ con $S$).
+\item Tiene un parámetro: los \textbf{grados de libertad} $k=n-1$.
+\item A medida que $n\to\infty$ (y por tanto $k\to\infty$), $t_k \to N(0,1)$: la incertidumbre de estimar $\sigma$ se vuelve despreciable.
+\item Se tabula igual que la normal, pero la tabla depende de $k$.
+\end{itemize}
+
+\begin{alertblock}{Por qué importa}
+El estadístico $T=\dfrac{\bar X-\mu}{S/\sqrt n}$ es la base de la inferencia sobre $\mu$ cuando $\sigma$ es desconocido: intervalos de confianza y pruebas de hipótesis para la media (Unidades 6 y 7).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: t de Student}
+\begin{example}
+El tiempo de secado de una pintura se supone $N(\mu,\sigma^2)$. En una muestra de $n=15$ probetas se midió $\bar x = 20.4$ h y $s=1.8$ h. Si realmente $\mu=20$ h, calcular $P(\bar X \geq 20.4)$ usando la distribución adecuada.
+
+\textbf{Resolución.} Como $\sigma$ es desconocido y se estimó con $s$, usamos $t_{n-1}=t_{14}$:
+$$t_{obs} = \frac{\bar x-\mu}{s/\sqrt n} = \frac{20.4-20}{1.8/\sqrt{15}} = \frac{0.4}{0.4648} \approx 0.861.$$
+Buscando en tabla $t_{14}$: $P(T_{14}\geq 0.861)$ está entre $0.20$ y $0.25$ (valores tabulados: $t_{14,0.20}=0.868$).
+
+Es decir, $P(\bar X\geq 20.4) \approx 0.20$: un resultado bastante plausible si $\mu=20$ h.
+\end{example}
+\end{frame}
+
+\begin{frame}{Síntesis: los tres resultados de hoy, en un cuadro}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Cantidad} & \textbf{Distribución} & \textbf{Condición} \\
+\midrule
+$\dfrac{\bar X-\mu}{\sigma/\sqrt n}$ & $N(0,1)$ exacta & Población normal \\[1.2em]
+$\dfrac{\bar X-\mu}{\sigma/\sqrt n}$ & $N(0,1)$ aproximada & $n$ grande (TCL), cualquier población \\[1.2em]
+$\dfrac{(n-1)S^2}{\sigma^2}$ & $\chi^2_{n-1}$ exacta & Población normal \\[1.2em]
+$\dfrac{\bar X-\mu}{S/\sqrt n}$ & $t_{n-1}$ exacta & Población normal, $\sigma$ desconocido \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Estas cuatro distribuciones muestrales son las herramientas centrales de la estimación y las pruebas de hipótesis que siguen en las Unidades 6 y 7.
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{itemize}
+\item Población normal: $\bar X \sim N(\mu,\sigma^2/n)$, \textbf{exacto} para todo $n$ (consecuencia de la f.g.m. normal).
+\item Población cualquiera (con $\sigma^2<\infty$): TCL da $\bar X \ \dot\sim\ N(\mu,\sigma^2/n)$ para $n$ grande.
+\item Población normal: $\dfrac{(n-1)S^2}{\sigma^2}\sim \chi^2_{n-1}$; de aquí $E(S^2)=\sigma^2$ ($S^2$ insesgado).
+\item Población normal: $\bar X$ y $S^2$ son \textbf{independientes} (propiedad especial de la normal).
+\item Cuando $\sigma$ es desconocido y se estima con $S$: $\dfrac{\bar X-\mu}{S/\sqrt n}\sim t_{n-1}$, con colas más pesadas que $N(0,1)$ y que converge a $N(0,1)$ cuando $n\to\infty$.
+\item Estos cuatro resultados son la base técnica de la estimación de parámetros (Unidad 6) y las pruebas de hipótesis (Unidad 7).
+\end{itemize}
+\end{frame}
+
+\end{document}

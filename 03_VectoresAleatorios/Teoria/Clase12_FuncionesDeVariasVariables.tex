@@ -1,0 +1,283 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 12: Funciones de varias variables aleatorias}
+\subtitle{Unidad 3: Vectores aleatorios}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Planteo general}
+
+\begin{frame}{El problema}
+\begin{block}{Situación}
+Dado un vector aleatorio $(X,Y)$ con distribución conjunta conocida, y una función $g:\mathbb{R}^2\to\mathbb{R}$, definimos la nueva variable aleatoria
+\[
+Z = g(X,Y).
+\]
+¿Cuál es la distribución de $Z$?
+\end{block}
+\pause
+\begin{block}{Casos que veremos hoy}
+\begin{itemize}
+\item $Z = X+Y$ (suma): método de \textbf{convolución}.
+\item $Z=\max(X,Y)$, $Z=\min(X,Y)$: estadísticos de orden.
+\item Sistemas de funciones $(Z,W) = (g_1(X,Y), g_2(X,Y))$: método del \textbf{jacobiano}.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Método general de la función de distribución}
+\begin{block}{Estrategia base}
+Para hallar la distribución de $Z=g(X,Y)$, se puede calcular directamente
+\[
+F_Z(z) = P(g(X,Y) \le z) = \iint_{\{(x,y):\, g(x,y)\le z\}} f_{X,Y}(x,y)\, dx\, dy,
+\]
+y luego derivar respecto de $z$ para obtener $f_Z(z) = F_Z'(z)$ donde sea derivable.
+\end{block}
+Este método funciona siempre, aunque a veces conviene un atajo (convolución, jacobiano) según la forma de $g$.
+\end{frame}
+
+\section{Suma de variables independientes: convolución}
+
+\begin{frame}{Suma de dos variables discretas independientes}
+\begin{theorem}[Convolución discreta]
+Si $X$ e $Y$ son independientes, discretas, con valores enteros, y $Z=X+Y$, entonces
+\[
+p_Z(z) = P(X+Y=z) = \sum_{k} p_X(k)\, p_Y(z-k).
+\]
+\end{theorem}
+\begin{proof}
+$\{X+Y=z\} = \bigcup_k \{X=k, Y=z-k\}$, unión disjunta sobre $k$. Por aditividad y luego independencia:
+\[
+P(X+Y=z) = \sum_k P(X=k,Y=z-k) = \sum_k p_X(k)\,p_Y(z-k). \qedhere
+\]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo 1: suma de binomiales}
+\begin{example}
+Sean $X\sim\text{Bin}(2,p)$ e $Y\sim\text{Bin}(3,p)$ independientes. Mostrar que $Z=X+Y\sim\text{Bin}(5,p)$, calculando en particular $p_Z(2)$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+Con $q=1-p$, $p_X(k)=\binom{2}{k}p^k q^{2-k}$ y $p_Y(k)=\binom{3}{k}p^k q^{3-k}$:
+\[
+p_Z(2) = \sum_{k=0}^{2} p_X(k)\,p_Y(2-k) = q^2\cdot 3pq^2 + 2pq\cdot 3p^2q + p^2\cdot q^3 = (3+6+1)\,p^2q^3 = 10\,p^2q^3,
+\]
+que coincide con $\binom{5}{2}p^2q^3=10p^2q^3$, el valor que da directamente $\text{Bin}(5,p)$.
+\end{block}
+\pause
+\begin{block}{Justificación general (identidad de Vandermonde)}
+\[
+p_Z(z) = \sum_{k=0}^{z}\binom{2}{k}p^kq^{2-k}\binom{3}{z-k}p^{z-k}q^{3-z+k} = p^zq^{5-z}\sum_{k=0}^{z}\binom{2}{k}\binom{3}{z-k} = \binom{5}{z}p^zq^{5-z},
+\]
+usando la identidad $\sum_k \binom{2}{k}\binom{3}{z-k}=\binom{5}{z}$. Así $Z\sim\text{Bin}(5,p)$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Suma de dos variables continuas independientes}
+\begin{theorem}[Convolución continua]
+Si $X$ e $Y$ son independientes y conjuntamente continuas, y $Z=X+Y$, entonces
+\[
+f_Z(z) = \int_{-\infty}^{\infty} f_X(x)\, f_Y(z-x)\, dx.
+\]
+\end{theorem}
+\begin{proof}
+\[
+F_Z(z) = P(X+Y\le z) = \iint_{x+y\le z} f_X(x)f_Y(y)\,dx\,dy = \int_{-\infty}^{\infty} f_X(x) \left(\int_{-\infty}^{z-x} f_Y(y)\,dy\right) dx.
+\]
+Derivando bajo el signo integral respecto de $z$ (regla de Leibniz):
+\[
+f_Z(z) = \frac{d}{dz}F_Z(z) = \int_{-\infty}^{\infty} f_X(x)\, f_Y(z-x)\, dx. \qedhere
+\]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo 2: suma de uniformes}
+\begin{example}
+Sean $X,Y \sim U(0,1)$ independientes. Hallar la densidad de $Z=X+Y$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+$f_X(x)=1$ en $(0,1)$, $f_Y(y)=1$ en $(0,1)$. La convolución exige $0<x<1$ y $0<z-x<1$, es decir $\max(0,z-1) < x < \min(1,z)$.
+\begin{itemize}
+\item Si $0\le z \le 1$: $x\in(0,z)$, longitud $z$, entonces $f_Z(z)=z$.
+\item Si $1< z\le 2$: $x\in(z-1,1)$, longitud $2-z$, entonces $f_Z(z)=2-z$.
+\item Fuera de $[0,2]$: $f_Z(z)=0$.
+\end{itemize}
+Resulta la conocida \textbf{distribución triangular} en $[0,2]$, con pico en $z=1$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 3: suma de exponenciales (mismo parámetro)}
+\begin{example}
+Sean $X,Y\sim\text{Exp}(\lambda)$ independientes, $f_X(x)=\lambda e^{-\lambda x}$, $x>0$. Hallar $f_Z$ con $Z=X+Y$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+Para $z>0$, la convolución requiere $0<x<z$ (para que $z-x>0$ también):
+\[
+f_Z(z) = \int_0^{z} \lambda e^{-\lambda x} \cdot \lambda e^{-\lambda(z-x)}\, dx = \lambda^2 e^{-\lambda z} \int_0^z dx = \lambda^2 z\, e^{-\lambda z}, \quad z>0.
+\]
+Esta es la densidad \textbf{Gamma$(2,\lambda)$}: la suma de $n$ exponenciales$(\lambda)$ independientes da una Gamma$(n,\lambda)$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 4: suma de normales}
+\begin{block}{Resultado importante (sin demostración detallada aquí)}
+Si $X\sim N(\mu_1,\sigma_1^2)$ e $Y\sim N(\mu_2,\sigma_2^2)$ son independientes, entonces
+\[
+Z = X+Y \sim N(\mu_1+\mu_2, \, \sigma_1^2+\sigma_2^2).
+\]
+\end{block}
+\begin{alertblock}{Consecuencia clave para la Clase 13}
+La suma de normales independientes vuelve a ser normal (\emph{propiedad reproductiva}). Esta propiedad es la base para construir la distribución chi-cuadrado y, más adelante, para el Teorema Central del Límite.
+\end{alertblock}
+\end{frame}
+
+\section{Máximo y mínimo de variables independientes}
+
+\begin{frame}{Distribución del máximo}
+\begin{theorem}[Máximo de independientes]
+Si $X_1,\ldots,X_n$ son independientes con funciones de distribución $F_1,\ldots,F_n$, y $M=\max(X_1,\ldots,X_n)$, entonces
+\[
+F_M(m) = P(M\le m) = \prod_{i=1}^n F_i(m).
+\]
+\end{theorem}
+\begin{proof}
+$\{M\le m\} = \{X_1\le m, \ldots, X_n\le m\}$ (el máximo es $\le m$ si y solo si \textbf{todas} las variables lo son). Por independencia, la probabilidad de la intersección es el producto de las probabilidades. \qedhere
+\end{proof}
+\end{frame}
+
+\begin{frame}{Distribución del mínimo}
+\begin{theorem}[Mínimo de independientes]
+En las mismas condiciones, con $m^* = \min(X_1,\ldots,X_n)$:
+\[
+F_{m^*}(t) = 1 - \prod_{i=1}^n \big(1-F_i(t)\big).
+\]
+\end{theorem}
+\begin{proof}
+$\{m^* > t\} = \{X_1>t,\ldots,X_n>t\}$ (el mínimo supera a $t$ si y solo si todas lo superan). Entonces
+\[
+1-F_{m^*}(t) = P(m^*>t) = \prod_i P(X_i>t) = \prod_i (1-F_i(t)). \qedhere
+\]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo 5: máximo de exponenciales i.i.d.}
+\begin{example}
+Sean $X_1,X_2,X_3$ i.i.d. $\text{Exp}(\lambda)$, con $F_i(t) = 1-e^{-\lambda t}$, $t>0$. Hallar la densidad del mínimo $m^*=\min(X_1,X_2,X_3)$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+\[
+F_{m^*}(t) = 1-\big(1-(1-e^{-\lambda t})\big)^3 = 1-\big(e^{-\lambda t}\big)^3 = 1-e^{-3\lambda t}, \quad t>0.
+\]
+Derivando: $f_{m^*}(t) = 3\lambda e^{-3\lambda t}$, es decir, $m^* \sim \text{Exp}(3\lambda)$.
+\end{block}
+\begin{alertblock}{Propiedad notable}
+El mínimo de $n$ exponenciales independientes $\text{Exp}(\lambda_i)$ es exponencial con parámetro $\sum_i \lambda_i$. Esta propiedad es muy usada en confiabilidad (sistemas en serie: el sistema falla cuando falla el primer componente).
+\end{alertblock}
+\end{frame}
+
+\section{Sistemas de funciones aleatorias: método del jacobiano}
+
+\begin{frame}{Cambio de variable en dos dimensiones}
+\begin{block}{Planteo}
+Sea $(X,Y)$ con densidad conjunta $f_{X,Y}$, y sea la transformación
+\[
+(Z,W) = \big(g_1(X,Y),\, g_2(X,Y)\big)
+\]
+biyectiva (con inversa $x=h_1(z,w)$, $y=h_2(z,w)$) y con derivadas parciales continuas.
+\end{block}
+\begin{definition}[Jacobiano]
+\[
+J(z,w) = \det \begin{pmatrix} \dfrac{\partial h_1}{\partial z} & \dfrac{\partial h_1}{\partial w} \\[2mm] \dfrac{\partial h_2}{\partial z} & \dfrac{\partial h_2}{\partial w} \end{pmatrix}
+\]
+\end{definition}
+\end{frame}
+
+\begin{frame}{Fórmula del cambio de variable}
+\begin{theorem}[Densidad conjunta transformada]
+Bajo las hipótesis anteriores,
+\[
+f_{Z,W}(z,w) = f_{X,Y}\big(h_1(z,w), h_2(z,w)\big) \cdot |J(z,w)|,
+\]
+para $(z,w)$ en la imagen de la transformación, y $0$ en otro caso.
+\end{theorem}
+\begin{block}{Uso típico}
+Se elige $g_2$ de manera auxiliar (por ejemplo $W=X$) para poder invertir el sistema, se calcula $f_{Z,W}$, y luego se integra respecto de $w$ para obtener la marginal $f_Z(z)$ — esto da una vía alternativa (y a veces más cómoda) a la convolución.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 6: cociente de variables}
+\begin{example}
+Sean $X,Y\sim\text{Exp}(1)$ independientes. Hallar la densidad de $Z = X/Y$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+Sea $W=Y$ (variable auxiliar). El sistema $z=x/y,\, w=y$ tiene inversa $x=zw,\, y=w$, con jacobiano
+\[
+J = \det\begin{pmatrix} w & z \\ 0 & 1\end{pmatrix} = w.
+\]
+Como $f_{X,Y}(x,y) = e^{-x}e^{-y}$ para $x,y>0$:
+\[
+f_{Z,W}(z,w) = e^{-zw}e^{-w}\, |w| = w\, e^{-w(z+1)}, \quad z>0,\, w>0.
+\]
+Integrando respecto de $w$ (reconociendo una Gamma$(2,z+1)$):
+\[
+f_Z(z) = \int_0^\infty w\, e^{-w(z+1)}\, dw = \frac{1}{(z+1)^2}, \quad z>0.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 6: verificación}
+\begin{block}{Chequeo de que $f_Z$ es una densidad válida}
+\[
+\int_0^\infty \frac{1}{(z+1)^2}\, dz = \left[-\frac{1}{z+1}\right]_0^\infty = 0-(-1) = 1. \quad \checkmark
+\]
+\end{block}
+\begin{alertblock}{Comentario}
+El método del jacobiano con variable auxiliar es especialmente útil para cocientes, productos y otras combinaciones no lineales, donde la convolución directa (pensada para sumas) no se aplica de forma inmediata.
+\end{alertblock}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Ideas clave de hoy}
+\begin{itemize}
+\item Para hallar la distribución de $Z=g(X,Y)$, el método general consiste en calcular $F_Z(z)$ integrando $f_{X,Y}$ sobre $\{g\le z\}$ y derivar.
+\item Para \textbf{sumas} de independientes, la \textbf{convolución} da $f_Z(z) = \int f_X(x) f_Y(z-x)\,dx$ (o su análogo discreto).
+\item El \textbf{máximo} y \textbf{mínimo} de independientes se obtienen mediante productos de $F_i$ y de $(1-F_i)$, respectivamente.
+\item El método del \textbf{jacobiano} generaliza el cambio de variable a sistemas de funciones, útil para cocientes, productos, y transformaciones lineales o no lineales.
+\item Próxima clase: distribuciones derivadas de la normal (chi-cuadrado, $t$ de Student, $F$ de Snedecor) y las distribuciones multinomial y multinormal, clave para la inferencia estadística.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{document}

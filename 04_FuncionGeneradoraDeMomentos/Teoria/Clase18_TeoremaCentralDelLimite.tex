@@ -1,0 +1,237 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 18: Teorema central del límite}
+\subtitle{Unidad 4: Función generadora de momentos}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Motivación}
+
+\begin{frame}{De la ley de los grandes números al TCL}
+\begin{block}{Lo que ya sabemos (Clase 17)}
+Si $X_1,\dots,X_n$ son i.i.d.\ con $E(X_i)=\mu$, $\text{Var}(X_i)=\sigma^2$, entonces $\overline{X}_n \xrightarrow{P} \mu$: el promedio muestral se acerca a $\mu$, y su varianza $\sigma^2/n \to 0$.
+\end{block}
+
+\begin{alertblock}{Pregunta natural}
+Sabemos que $\overline{X}_n - \mu$ tiende a $0$. Pero, ¿con qué \textbf{forma} (distribución) se acerca a $0$? Si ``agrandamos la lupa'' apropiadamente (reescalando por $\sqrt n$), ¿qué distribución límite aparece?
+\end{alertblock}
+
+Este es el contenido del \textbf{teorema central del límite} (TCL), posiblemente el resultado más importante de toda la teoría de probabilidad clásica, por su enorme generalidad y sus aplicaciones prácticas.
+\end{frame}
+
+\section{Enunciado del TCL}
+
+\begin{frame}{Estandarización}
+\begin{block}{La variable estandarizada}
+Sean $X_1,\dots,X_n$ i.i.d.\ con $E(X_i)=\mu$, $\text{Var}(X_i)=\sigma^2 < \infty$, y sea $S_n = X_1+\cdots+X_n$. Sabemos:
+\[
+E(S_n) = n\mu, \qquad \text{Var}(S_n) = n\sigma^2.
+\]
+Definimos la versión estandarizada de $S_n$ (o, equivalentemente, de $\overline{X}_n$):
+\[
+Z_n = \frac{S_n - n\mu}{\sigma\sqrt{n}} = \frac{\overline{X}_n - \mu}{\sigma/\sqrt{n}}.
+\]
+Por construcción (Clase 15), $E(Z_n) = 0$ y $\text{Var}(Z_n) = 1$ para todo $n$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Enunciado}
+\begin{theorem}[Teorema central del límite]
+Sean $X_1,\dots,X_n$ variables aleatorias i.i.d.\ con $E(X_i)=\mu$ y $\text{Var}(X_i)=\sigma^2 \in (0,\infty)$. Entonces, cuando $n\to\infty$, la distribución de
+\[
+Z_n = \frac{\overline{X}_n - \mu}{\sigma/\sqrt{n}} = \frac{S_n - n\mu}{\sqrt{n}\,\sigma}
+\]
+converge a la distribución normal estándar $N(0,1)$. Es decir, para todo $z \in \mathbb{R}$:
+\[
+\lim_{n\to\infty} P(Z_n \leq z) = \Phi(z) = P(Z\leq z), \quad Z\sim N(0,1).
+\]
+\end{theorem}
+
+\begin{alertblock}{Lo notable}
+El resultado vale sin importar cuál sea la distribución \textbf{original} de los $X_i$ (discreta, continua, simétrica, asimétrica...), siempre que tenga media y varianza finitas. Por eso se llama ``central'': es un resultado unificador.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Idea de la demostración usando la FGM}
+\begin{block}{Estrategia}
+Usamos la unicidad de la función generatriz de momentos (Clase 16): si mostramos que $M_{Z_n}(t) \to M_Z(t) = e^{t^2/2}$ (la FGM de $N(0,1)$) para todo $t$, entonces $Z_n$ converge en distribución a $N(0,1)$.
+\end{block}
+
+Sea $Y_i = \dfrac{X_i-\mu}{\sigma}$ (estandarización de cada $X_i$ individual), con $E(Y_i)=0$, $\text{Var}(Y_i)=E(Y_i^2)=1$. Entonces
+\[
+Z_n = \frac{1}{\sqrt n}\sum_{i=1}^n Y_i.
+\]
+Por independencia y la propiedad de la FGM de una suma (Clase 16, $M_{aX}(t) = M_X(at)$):
+\[
+M_{Z_n}(t) = \left[M_Y\!\left(\frac{t}{\sqrt n}\right)\right]^n.
+\]
+\end{frame}
+
+\begin{frame}{Idea de la demostración (continuación)}
+\begin{block}{Desarrollo de Taylor de $M_Y$ cerca de $0$}
+Como $M_Y(0)=1$, $M_Y'(0)=E(Y)=0$, $M_Y''(0)=E(Y^2)=1$, el desarrollo de Taylor de segundo orden alrededor de $0$ da
+\[
+M_Y(s) \approx 1 + 0\cdot s + \frac{1}{2}s^2 + o(s^2), \quad \text{cuando } s\to 0.
+\]
+Sustituyendo $s = t/\sqrt n$ (que $\to 0$ cuando $n\to\infty$, para $t$ fijo):
+\[
+M_Y\!\left(\frac{t}{\sqrt n}\right) \approx 1 + \frac{t^2}{2n} + o\!\left(\frac1n\right).
+\]
+\end{block}
+
+Elevando a la $n$ y usando el límite notable $\left(1+\dfrac{a}{n}+o(1/n)\right)^n \to e^{a}$:
+\[
+M_{Z_n}(t) = \left[1 + \frac{t^2}{2n} + o\!\left(\frac1n\right)\right]^n \xrightarrow[n\to\infty]{} e^{t^2/2} = M_Z(t).
+\]
+Por la unicidad de la FGM, $Z_n$ converge en distribución a $Z\sim N(0,1)$. (Una demostración completamente rigurosa requiere justificar el paso al límite con más cuidado —usando funciones características en vez de FGM, para garantizar existencia—, pero la idea central es exactamente esta.) $\blacksquare$
+\end{frame}
+
+\begin{frame}{Forma práctica del TCL}
+\begin{alertblock}{Aproximación para $n$ grande}
+Para $n$ suficientemente grande (en la práctica, suele usarse $n\geq 30$ como regla general, aunque depende de cuán ``lejos de la normal'' sea la distribución original):
+\[
+\overline{X}_n \ \dot\sim\ N\left(\mu, \frac{\sigma^2}{n}\right), \qquad S_n = \sum_{i=1}^n X_i \ \dot\sim\ N(n\mu, n\sigma^2),
+\]
+donde $\dot\sim$ significa ``se distribuye aproximadamente como''. Equivalentemente,
+\[
+P(\overline X_n \leq a) \approx \Phi\left(\frac{a-\mu}{\sigma/\sqrt n}\right).
+\]
+\end{alertblock}
+\end{frame}
+
+\section{Aplicaciones: sumas}
+
+\begin{frame}{Ejemplo: suma de tiempos de servicio}
+\begin{example}
+El tiempo de atención en una caja tiene media $\mu=4$ minutos y desviación estándar $\sigma=2$ minutos (distribución no especificada). Se atienden $n=64$ clientes independientes. Aproximar la probabilidad de que el tiempo total de atención supere las $4.5$ horas ($270$ minutos).
+\end{example}
+
+\medskip
+$S_{64} \dot\sim N(64\cdot 4,\ 64\cdot 4) = N(256, 256)$, con $\sqrt{256}=16$.
+\[
+P(S_{64} > 270) \approx P\left(Z > \frac{270-256}{16}\right) = P(Z > 0.875) \approx 1-\Phi(0.875) \approx 1-0.8092 = 0.1908.
+\]
+\textbf{Hay aproximadamente $19\%$ de probabilidad} de superar las $4.5$ horas.
+\end{frame}
+
+\section{Aproximación normal a la binomial}
+
+\begin{frame}{Motivación y enunciado}
+\begin{block}{Idea}
+$X \sim \text{Bin}(n,p)$ puede escribirse como $X = \sum_{i=1}^n X_i$ con $X_i \sim \text{Bernoulli}(p)$ i.i.d. Por el TCL, para $n$ grande,
+\[
+X \ \dot\sim\ N\big(np,\; np(1-p)\big).
+\]
+\end{block}
+
+\begin{alertblock}{Regla práctica de aplicabilidad}
+La aproximación es razonable cuando $np \geq 5$ y $n(1-p)\geq 5$ (algunos textos piden $\geq 10$): la distribución binomial debe ser suficientemente simétrica.
+\end{alertblock}
+
+\begin{block}{Corrección por continuidad}
+Como la binomial es discreta y la normal es continua, se mejora la aproximación con la \textbf{corrección por continuidad}: para $k$ entero,
+\[
+P(X = k) \approx P(k-0.5 < Y < k+0.5), \quad P(X\leq k)\approx P(Y \leq k+0.5), \quad Y\sim N(np,np(1-p)).
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: aproximación normal a la binomial}
+\begin{example}
+Una empresa afirma que el $30\%$ de sus clientes usa la app móvil. Se encuesta a $n=200$ clientes independientes. Sea $X$ = número de clientes que usan la app. Aproximar $P(50 \leq X \leq 70)$.
+\end{example}
+
+\medskip
+$X\sim\text{Bin}(200, 0.3)$: $np=60\geq 5$, $n(1-p)=140\geq 5$. $\mu = 60$, $\sigma^2 = 200(0.3)(0.7)=42$, $\sigma=\sqrt{42}\approx 6.481$.
+
+Con corrección por continuidad:
+\[
+P(50\leq X\leq 70) \approx P(49.5 \leq Y \leq 70.5), \quad Y\sim N(60,42).
+\]
+\[
+= \Phi\!\left(\frac{70.5-60}{6.481}\right) - \Phi\!\left(\frac{49.5-60}{6.481}\right) = \Phi(1.620) - \Phi(-1.620)
+\]
+\[
+\approx 0.9474 - 0.0526 = 0.8948.
+\]
+\textbf{La probabilidad aproximada es $89.5\%$.}
+\end{frame}
+
+\section{Aproximación normal a la Poisson}
+
+\begin{frame}{Motivación y enunciado}
+\begin{block}{Idea}
+Si $X\sim\text{Poisson}(\lambda)$ con $\lambda$ grande, $X$ puede pensarse (informalmente) como una suma de muchas variables Poisson pequeñas independientes (la Poisson es ``cerrada bajo sumas'': si $X_1\sim\text{Poisson}(\lambda_1)$, $X_2\sim\text{Poisson}(\lambda_2)$ independientes, $X_1+X_2\sim\text{Poisson}(\lambda_1+\lambda_2)$). Como $E(X)=\text{Var}(X)=\lambda$, el TCL sugiere
+\[
+X \ \dot\sim\ N(\lambda, \lambda), \qquad \text{razonable para } \lambda \gtrsim 10.
+\]
+\end{block}
+
+\begin{alertblock}{Corrección por continuidad}
+Igual que en la binomial: $P(X\leq k) \approx \Phi\!\left(\dfrac{k+0.5-\lambda}{\sqrt\lambda}\right)$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: aproximación normal a la Poisson}
+\begin{example}
+El número de llamadas que recibe un call center en una hora sigue una distribución Poisson con $\lambda = 50$. Aproximar $P(X > 60)$.
+\end{example}
+
+\medskip
+$\mu=\lambda=50$, $\sigma=\sqrt{50}\approx 7.071$. Con corrección por continuidad, $P(X>60) = P(X\geq 61) \approx P(Y > 60.5)$:
+\[
+P(X>60) \approx 1-\Phi\!\left(\frac{60.5-50}{7.071}\right) = 1-\Phi(1.485) \approx 1-0.9312 = 0.0688.
+\]
+\textbf{Hay aproximadamente $6.9\%$ de probabilidad} de recibir más de $60$ llamadas en una hora.
+
+\medskip
+\begin{block}{Comparación (referencia)}
+El valor exacto (calculado con la fórmula de Poisson, sumando $P(X=61)+P(X=62)+\cdots$) es aproximadamente $0.0655$: la aproximación normal con corrección por continuidad es bastante precisa incluso con $\lambda$ moderado.
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Conceptos clave}
+\begin{itemize}
+\item El \textbf{TCL} afirma que $Z_n = \dfrac{\overline X_n - \mu}{\sigma/\sqrt n}$ converge en distribución a $N(0,1)$, sin importar la distribución original de los $X_i$ (con media y varianza finitas).
+\item Se demuestra (idea) usando que $M_{Z_n}(t) \to e^{t^2/2}$, la FGM de la normal estándar, y la propiedad de unicidad de la FGM.
+\item Forma práctica: $\overline X_n \dot\sim N(\mu,\sigma^2/n)$, $S_n \dot\sim N(n\mu, n\sigma^2)$, para $n$ moderadamente grande.
+\item \textbf{Aproximación normal a la binomial}: $\text{Bin}(n,p) \dot\sim N(np, np(1-p))$ si $np\geq5$ y $n(1-p)\geq5$.
+\item \textbf{Aproximación normal a la Poisson}: $\text{Poisson}(\lambda)\dot\sim N(\lambda,\lambda)$ para $\lambda$ grande.
+\item En ambos casos, usar \textbf{corrección por continuidad} al aproximar variables discretas con la normal continua.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Cierre de la Unidad 4}
+Con esperanza, varianza, covarianza, FGM, ley de los grandes números y TCL completamos las herramientas fundamentales para el análisis probabilístico y la posterior inferencia estadística.
+\end{alertblock}
+\end{frame}
+
+\end{document}

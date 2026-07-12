@@ -1,0 +1,241 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 26: Pruebas de hipótesis para media y varianza de una población}
+\subtitle{Unidad 7: Prueba de hipótesis}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Prueba para la media (varianza conocida)}
+
+\begin{frame}{Prueba para $\mu$ con $\sigma^2$ conocida}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$ (o $n$ grande, por TCL) con $\sigma^2$ \textbf{conocida}. Se desea probar
+\[
+H_0: \mu=\mu_0.
+\]
+
+\begin{block}{Estadístico de prueba}
+\[
+Z = \frac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} \ \overset{H_0}{\sim}\ N(0,1).
+\]
+\end{block}
+
+\begin{table}[]
+\centering
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+$H_1$ & Región crítica & \\
+\midrule
+$\mu\neq\mu_0$ & $|Z|>z_{\alpha/2}$ & bilateral \\
+$\mu>\mu_0$ & $Z>z_{\alpha}$ & cola derecha \\
+$\mu<\mu_0$ & $Z<-z_{\alpha}$ & cola izquierda \\
+\bottomrule
+\end{tabular}
+\end{table}
+donde $z_\gamma$ es tal que $P(Z>z_\gamma)=\gamma$ para $Z\sim N(0,1)$.
+\end{frame}
+
+\begin{frame}{Ejemplo: prueba bilateral para $\mu$, $\sigma$ conocida}
+\begin{example}
+Una máquina envasa paquetes de café cuyo peso se distribuye $N(\mu,\sigma^2)$ con $\sigma=10$ g. El rótulo indica $\mu_0=500$ g. Se toma una muestra de $n=36$ paquetes y se obtiene $\overline{x}=496$ g. Con $\alpha=0.05$, ¿hay evidencia de que el peso medio difiere de $500$ g?
+
+\textbf{1. Hipótesis:} $H_0:\mu=500$ vs. $H_1:\mu\neq500$.
+
+\textbf{2. Estadístico:} $\displaystyle Z=\frac{\overline{X}-500}{10/\sqrt{36}}\sim N(0,1)$ bajo $H_0$.
+
+\textbf{3. Región crítica} ($\alpha=0.05$, bilateral): $|Z|>z_{0.025}=1.96$.
+
+\textbf{4. Cálculo:}
+\[
+z=\frac{496-500}{10/\sqrt{36}}=\frac{-4}{1.6667}=-2.40.
+\]
+
+\textbf{5. Decisión:} como $|-2.40|=2.40>1.96$, se \textbf{rechaza} $H_0$.
+
+\textbf{6. Conclusión:} hay evidencia estadísticamente significativa (al $5\%$) de que el peso medio de los paquetes difiere de $500$ g.
+\end{example}
+\end{frame}
+
+\begin{frame}{El mismo ejemplo con valor p}
+\begin{example}
+Con $z=-2.40$, el valor p de la prueba bilateral es
+\[
+p = 2\cdot P(Z<-2.40) = 2\cdot(0.0082) = 0.0164.
+\]
+Como $p=0.0164 < \alpha=0.05$, se rechaza $H_0$: misma conclusión que con la región crítica.
+
+Si la hipótesis alternativa hubiese sido $H_1:\mu<500$ (unilateral izquierda), la región crítica sería $Z<-z_{0.05}=-1.645$; como $-2.40<-1.645$, también se rechazaría $H_0$, y el valor p sería $P(Z<-2.40)=0.0082$.
+\end{example}
+\end{frame}
+
+\section{Prueba para la media (varianza desconocida)}
+
+\begin{frame}{Prueba para $\mu$ con $\sigma^2$ desconocida}
+En la práctica, $\sigma^2$ rara vez se conoce. Si la población es $N(\mu,\sigma^2)$ (o $n$ moderado/grande), se estima $\sigma^2$ con la cuasivarianza muestral $S^2$ y se usa:
+
+\begin{block}{Estadístico de prueba}
+\[
+T = \frac{\overline{X}-\mu_0}{S/\sqrt{n}} \ \overset{H_0}{\sim}\ t_{n-1},
+\]
+donde $S^2=\dfrac{1}{n-1}\sum_{i=1}^n (X_i-\overline{X})^2$ y $t_{n-1}$ es la distribución $t$ de Student con $n-1$ grados de libertad.
+\end{block}
+
+\begin{table}[]
+\centering
+\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+$H_1$ & Región crítica \\
+\midrule
+$\mu\neq\mu_0$ & $|T|>t_{n-1,\,\alpha/2}$ \\
+$\mu>\mu_0$ & $T>t_{n-1,\,\alpha}$ \\
+$\mu<\mu_0$ & $T<-t_{n-1,\,\alpha}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{alertblock}{Nota}
+Cuando $n$ es grande ($n\ge30$), $t_{n-1,\gamma}\approx z_\gamma$ y ambos procedimientos son prácticamente equivalentes.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: prueba unilateral para $\mu$, $\sigma$ desconocida}
+\begin{example}
+Un fabricante de neumáticos afirma que la duración media de un nuevo modelo supera las $40\,000$ km. En una muestra de $n=16$ neumáticos se obtuvo $\overline{x}=41\,200$ km y $s=1500$ km. Con $\alpha=0.05$, ¿respaldan los datos la afirmación del fabricante? (Se supone duración $\sim N(\mu,\sigma^2)$.)
+
+\textbf{1. Hipótesis:} $H_0:\mu\le 40\,000$ vs. $H_1:\mu>40\,000$ (se trabaja con $H_0:\mu=40\,000$).
+
+\textbf{2. Estadístico:} $\displaystyle T=\frac{\overline{X}-40\,000}{S/\sqrt{16}}\sim t_{15}$ bajo $H_0$.
+
+\textbf{3. Región crítica:} $T>t_{15,\,0.05}=1.753$.
+
+\textbf{4. Cálculo:}
+\[
+t=\frac{41\,200-40\,000}{1500/\sqrt{16}}=\frac{1200}{375}=3.20.
+\]
+
+\textbf{5. Decisión:} $3.20>1.753 \Rightarrow$ se \textbf{rechaza} $H_0$.
+
+\textbf{6. Conclusión:} con un $5\%$ de significación, la evidencia muestral respalda que la duración media supera los $40\,000$ km.
+\end{example}
+\end{frame}
+
+\section{Prueba para la varianza poblacional}
+
+\begin{frame}{Prueba de hipótesis para $\sigma^2$}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Se desea probar
+\[
+H_0: \sigma^2=\sigma_0^2.
+\]
+
+\begin{block}{Estadístico de prueba}
+\[
+\chi^2 = \frac{(n-1)S^2}{\sigma_0^2} \ \overset{H_0}{\sim}\ \chi^2_{n-1}.
+\]
+\end{block}
+
+\begin{table}[]
+\centering
+\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+$H_1$ & Región crítica \\
+\midrule
+$\sigma^2\neq\sigma_0^2$ & $\chi^2<\chi^2_{n-1,\,1-\alpha/2}$ \ o \ $\chi^2>\chi^2_{n-1,\,\alpha/2}$ \\
+$\sigma^2>\sigma_0^2$ & $\chi^2>\chi^2_{n-1,\,\alpha}$ \\
+$\sigma^2<\sigma_0^2$ & $\chi^2<\chi^2_{n-1,\,1-\alpha}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+donde $\chi^2_{n-1,\,\gamma}$ es el valor tal que $P(\chi^2_{n-1}>\chi^2_{n-1,\,\gamma})=\gamma$. Notar que $\chi^2_{n-1}$ \textbf{no es simétrica}, por lo que en el caso bilateral los dos valores críticos no son opuestos.
+\end{frame}
+
+\begin{frame}{Ejemplo: prueba para $\sigma^2$}
+\begin{example}
+Un proceso de llenado de botellas debe tener una desviación estándar no mayor a $\sigma_0=2$ mL para cumplir con el control de calidad (varianza $\sigma_0^2=4$). En una muestra de $n=20$ botellas se midió $s^2=6.1$ mL$^2$. Con $\alpha=0.05$, ¿hay evidencia de que la variabilidad del proceso excede la tolerancia?
+
+\textbf{1. Hipótesis:} $H_0:\sigma^2\le4$ vs. $H_1:\sigma^2>4$ (se usa $H_0:\sigma^2=4$).
+
+\textbf{2. Estadístico:} $\displaystyle \chi^2=\frac{(n-1)S^2}{4}\sim\chi^2_{19}$ bajo $H_0$.
+
+\textbf{3. Región crítica:} $\chi^2>\chi^2_{19,\,0.05}=30.14$.
+
+\textbf{4. Cálculo:}
+\[
+\chi^2=\frac{19\times6.1}{4}=\frac{115.9}{4}=28.98.
+\]
+
+\textbf{5. Decisión:} $28.98<30.14 \Rightarrow$ \textbf{no se rechaza} $H_0$.
+
+\textbf{6. Conclusión:} con un $5\%$ de significación, no hay evidencia suficiente de que la variabilidad del proceso supere la tolerancia especificada.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: prueba bilateral para $\sigma^2$}
+\begin{example}
+Un laboratorio requiere que la varianza de las mediciones de un instrumento sea exactamente $\sigma_0^2=0.25$. Una muestra de $n=15$ mediciones da $s^2=0.42$. Con $\alpha=0.10$, ¿hay evidencia de que la varianza real difiere de $0.25$?
+
+\textbf{Hipótesis:} $H_0:\sigma^2=0.25$ vs. $H_1:\sigma^2\neq0.25$.
+
+\textbf{Región crítica} ($\alpha=0.10$, $n-1=14$ gl): se rechaza si $\chi^2<\chi^2_{14,\,0.95}=6.571$ o $\chi^2>\chi^2_{14,\,0.05}=23.68$.
+
+\textbf{Cálculo:}
+\[
+\chi^2=\frac{14\times0.42}{0.25}=\frac{5.88}{0.25}=23.52.
+\]
+
+\textbf{Decisión:} como $23.52<23.68$, \textbf{no se rechaza} $H_0$ (aunque el valor está muy cerca del límite crítico).
+
+\textbf{Conclusión:} al nivel $10\%$, no hay evidencia suficiente para afirmar que la varianza difiere de $0.25$; el resultado sugiere revisar el proceso con una muestra mayor.
+\end{example}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen: pruebas para una población}
+\begin{table}[]
+\centering
+\small
+\begin{tabular}{@{}p{2.6cm}p{3.3cm}p{2.6cm}p{3.3cm}@{}}
+\toprule
+Parámetro & Condición & Estadístico & Distribución bajo $H_0$ \\
+\midrule
+Media $\mu$ & $\sigma^2$ conocida & $Z=\dfrac{\overline{X}-\mu_0}{\sigma/\sqrt{n}}$ & $N(0,1)$ \\[1.2em]
+Media $\mu$ & $\sigma^2$ desconocida & $T=\dfrac{\overline{X}-\mu_0}{S/\sqrt{n}}$ & $t_{n-1}$ \\[1.2em]
+Varianza $\sigma^2$ & población normal & $\chi^2=\dfrac{(n-1)S^2}{\sigma_0^2}$ & $\chi^2_{n-1}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\item Para $H_1$ bilateral, la región crítica tiene dos colas; para $H_1$ unilateral, una sola cola (izquierda o derecha según el sentido de la desigualdad).
+\item La distribución $\chi^2$ no es simétrica: los valores críticos bilaterales no son opuestos entre sí.
+\item Próxima clase: extensión de estas pruebas a la \textbf{comparación de dos poblaciones} (medias y varianzas).
+\end{itemize}
+\end{frame}
+
+\end{document}

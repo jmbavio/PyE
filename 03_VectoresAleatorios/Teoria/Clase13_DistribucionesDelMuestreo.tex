@@ -1,0 +1,309 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 13: Distribuciones asociadas al muestreo normal}
+\subtitle{Unidad 3: Vectores aleatorios}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Introducción}
+
+\begin{frame}{¿Por qué estas distribuciones?}
+\begin{block}{Contexto}
+En las próximas unidades trabajaremos con \textbf{muestras aleatorias} $X_1,\ldots,X_n$ y con estadísticos calculados a partir de ellas (medias, varianzas muestrales, etc.). Cuando la población de origen es normal, estos estadísticos tienen distribuciones que \textbf{no} son normales, pero que se derivan de ella de forma exacta.
+\end{block}
+\pause
+\begin{block}{Las protagonistas de hoy}
+\begin{itemize}
+\item Distribución \textbf{chi-cuadrado} ($\chi^2$): base de la varianza muestral y de las pruebas de bondad de ajuste.
+\item Distribución \textbf{$t$ de Student}: inferencia sobre la media con varianza desconocida.
+\item Distribución \textbf{$F$ de Snedecor}: comparación de varianzas, análisis de varianza.
+\item Distribuciones \textbf{multinomial} y \textbf{multinormal}: generalizaciones multivariadas.
+\end{itemize}
+Todas son funciones de variables aleatorias normales independientes: por eso pertenecen naturalmente a esta unidad.
+\end{block}
+\end{frame}
+
+\section{Distribución chi-cuadrado}
+
+\begin{frame}{Definición}
+\begin{definition}[Chi-cuadrado con $n$ grados de libertad]
+Si $Z_1,\ldots,Z_n$ son variables aleatorias independientes con distribución $N(0,1)$, la variable
+\[
+\chi^2 = Z_1^2+Z_2^2+\cdots+Z_n^2
+\]
+se dice que tiene distribución \textbf{chi-cuadrado con $n$ grados de libertad}, y se denota $\chi^2 \sim \chi^2_n$.
+\end{definition}
+\pause
+\begin{block}{Caso $n=1$}
+Si $Z\sim N(0,1)$, entonces $Z^2 \sim \chi_1^2$. Se puede mostrar (por cambio de variable) que su densidad es
+\[
+f(x) = \frac{1}{\sqrt{2\pi x}}\, e^{-x/2}, \qquad x>0.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Densidad general y propiedades}
+\begin{block}{Densidad de $\chi^2_n$}
+\[
+f(x) = \frac{1}{2^{n/2}\Gamma(n/2)}\, x^{n/2-1} e^{-x/2}, \qquad x>0,
+\]
+es decir, $\chi^2_n$ coincide con la distribución \textbf{Gamma}$\left(\tfrac{n}{2}, \tfrac12\right)$.
+\end{block}
+\begin{block}{Propiedades}
+\begin{itemize}
+\item $E[\chi^2_n] = n$, \quad $\text{Var}(\chi^2_n) = 2n$.
+\item \textbf{Propiedad reproductiva:} si $U\sim\chi^2_m$ y $V\sim\chi^2_n$ son independientes, entonces $U+V\sim\chi^2_{m+n}$ (consecuencia inmediata de la definición como suma de normales estándar al cuadrado).
+\item La densidad es asimétrica a derecha; a medida que $n$ crece, se aproxima a una normal (por el Teorema Central del Límite).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Justificación de la propiedad reproductiva}
+\begin{proof}
+Si $U = Z_1^2+\cdots+Z_m^2$ con los $Z_i\sim N(0,1)$ i.i.d., y $V=W_1^2+\cdots+W_n^2$ con los $W_j\sim N(0,1)$ i.i.d., y $U,V$ independientes (es decir, los $Z_i$ y $W_j$ son en total $m+n$ variables $N(0,1)$ independientes), entonces
+\[
+U+V = Z_1^2+\cdots+Z_m^2+W_1^2+\cdots+W_n^2
+\]
+es, por definición, una suma de $m+n$ cuadrados de normales estándar independientes, luego $U+V\sim\chi^2_{m+n}$. \qedhere
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo 1}
+\begin{example}
+Sean $Z_1,Z_2,Z_3\sim N(0,1)$ independientes. Sea $U=Z_1^2+Z_2^2 \sim \chi_2^2$ y $V = Z_3^2 \sim \chi_1^2$. ¿Cuál es la distribución de $U+V$? Calcular $E[U+V]$ y $\text{Var}(U+V)$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+Como $U$ y $V$ son funciones de conjuntos disjuntos de variables independientes, $U$ y $V$ son independientes, y por la propiedad reproductiva $U+V = Z_1^2+Z_2^2+Z_3^2 \sim \chi_3^2$.
+\[
+E[U+V] = 3, \qquad \text{Var}(U+V) = 2\cdot 3 = 6.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Relevancia para la varianza muestral}
+\begin{block}{Resultado central (se demostrará formalmente más adelante)}
+Si $X_1,\ldots,X_n$ es una muestra aleatoria de una población $N(\mu,\sigma^2)$, y
+\[
+S^2 = \frac{1}{n-1}\sum_{i=1}^n (X_i-\bar X)^2
+\]
+es la varianza muestral, entonces
+\[
+\frac{(n-1)S^2}{\sigma^2} \sim \chi^2_{n-1}.
+\]
+\end{block}
+\begin{alertblock}{Por qué importa}
+Este resultado es la puerta de entrada a los intervalos de confianza y pruebas de hipótesis sobre $\sigma^2$, y aparecerá constantemente en las unidades de \textbf{Inferencia Estadística}.
+\end{alertblock}
+\end{frame}
+
+\section{Distribución \emph{t} de Student}
+
+\begin{frame}{Definición}
+\begin{definition}[$t$ de Student con $n$ grados de libertad]
+Si $Z\sim N(0,1)$ y $U\sim \chi^2_n$ son \textbf{independientes}, la variable
+\[
+T = \frac{Z}{\sqrt{U/n}}
+\]
+tiene distribución \textbf{$t$ de Student con $n$ grados de libertad}, denotada $T\sim t_n$.
+\end{definition}
+\begin{block}{Densidad (sin demostración)}
+\[
+f(t) = \frac{\Gamma\left(\frac{n+1}{2}\right)}{\sqrt{n\pi}\,\Gamma\left(\frac{n}{2}\right)} \left(1+\frac{t^2}{n}\right)^{-\frac{n+1}{2}}, \qquad t\in\mathbb{R}.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Propiedades de la $t$ de Student}
+\begin{block}{Propiedades}
+\begin{itemize}
+\item Simétrica respecto de $0$, con forma de campana similar a la normal estándar pero con \textbf{colas más pesadas}.
+\item $E[T] = 0$ para $n>1$ (no existe para $n=1$).
+\item $\text{Var}(T) = \dfrac{n}{n-2}$ para $n>2$ (siempre mayor que 1, la varianza de $N(0,1)$).
+\item Cuando $n\to\infty$, la distribución $t_n$ converge a la $N(0,1)$: para muestras grandes, ambas son prácticamente indistinguibles.
+\end{itemize}
+\end{block}
+\pause
+\begin{alertblock}{Uso típico}
+Si $X_1,\ldots,X_n$ es una muestra $N(\mu,\sigma^2)$ con $\sigma^2$ \textbf{desconocida}, se puede probar que
+\[
+T = \frac{\bar X - \mu}{S/\sqrt{n}} \sim t_{n-1},
+\]
+lo que permite hacer inferencia sobre $\mu$ sin conocer $\sigma^2$ (base de los tests $t$ y los intervalos de confianza clásicos).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo 2}
+\begin{example}
+Sean $Z\sim N(0,1)$ y $U\sim\chi_9^2$ independientes. Se define $T=Z/\sqrt{U/9}$. Indicar la distribución de $T$, su varianza, y comparar su dispersión con la de $Z$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+Por definición, $T\sim t_9$. Su varianza es
+\[
+\text{Var}(T) = \frac{9}{9-2} = \frac{9}{7} \approx 1.286,
+\]
+mayor que $\text{Var}(Z)=1$. Esto refleja la incertidumbre adicional que introduce estimar la escala a partir de $U$ (en la práctica, a partir de $S^2$) en lugar de conocerla exactamente.
+\end{block}
+\end{frame}
+
+\section{Distribución \emph{F} de Snedecor}
+
+\begin{frame}{Definición}
+\begin{definition}[$F$ de Snedecor]
+Si $U\sim\chi^2_m$ y $V\sim\chi^2_n$ son \textbf{independientes}, la variable
+\[
+F = \frac{U/m}{V/n}
+\]
+tiene distribución \textbf{$F$ de Snedecor con $m$ y $n$ grados de libertad}, denotada $F\sim F_{m,n}$.
+\end{definition}
+\begin{block}{Propiedades}
+\begin{itemize}
+\item $F$ toma valores positivos; su densidad es asimétrica a derecha.
+\item Si $F\sim F_{m,n}$, entonces $1/F \sim F_{n,m}$ (se invierten los grados de libertad).
+\item Relación con $t$: si $T\sim t_n$, entonces $T^2 \sim F_{1,n}$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Justificación de $T^2\sim F_{1,n}$}
+\begin{proof}
+Si $T = Z/\sqrt{U/n}$ con $Z\sim N(0,1)$, $U\sim\chi_n^2$ independientes, entonces
+\[
+T^2 = \frac{Z^2}{U/n} = \frac{Z^2/1}{U/n}.
+\]
+Pero $Z^2 \sim \chi_1^2$ (visto al principio de la clase), y $Z^2$ es independiente de $U$ (pues $Z$ lo es). Por definición de la $F$ de Snedecor con $m=1$, $n=n$, se concluye $T^2\sim F_{1,n}$. \qedhere
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo 3}
+\begin{example}
+Dos muestras independientes de tamaños $n_1=10$ y $n_2=15$ provienen de poblaciones normales con igual varianza $\sigma^2$. Sean $S_1^2$ y $S_2^2$ las varianzas muestrales respectivas. ¿Qué distribución tiene $S_1^2/S_2^2$?
+\end{example}
+\pause
+\begin{block}{Resolución}
+Sabemos que $\dfrac{(n_1-1)S_1^2}{\sigma^2}\sim\chi^2_{9}$ y $\dfrac{(n_2-1)S_2^2}{\sigma^2}\sim\chi^2_{14}$, independientes. Entonces
+\[
+F = \frac{\dfrac{(n_1-1)S_1^2}{\sigma^2}\Big/9}{\dfrac{(n_2-1)S_2^2}{\sigma^2}\Big/14} = \frac{S_1^2}{S_2^2} \sim F_{9,14}.
+\]
+Este resultado es la base de las pruebas de igualdad de varianzas, y del análisis de varianza (ANOVA).
+\end{block}
+\end{frame}
+
+\section{Distribución multinomial}
+
+\begin{frame}{Distribución multinomial}
+\begin{definition}[Multinomial]
+Se repite $n$ veces, de forma independiente, un experimento con $k$ resultados posibles $A_1,\ldots,A_k$, con probabilidades $p_1,\ldots,p_k$ ($\sum_j p_j=1$). Sea $X_j$ el número de veces que ocurre $A_j$. El vector $(X_1,\ldots,X_k)$ tiene distribución \textbf{multinomial}, con función de probabilidad conjunta
+\[
+P(X_1=x_1,\ldots,X_k=x_k) = \frac{n!}{x_1!\, x_2!\cdots x_k!}\, p_1^{x_1} p_2^{x_2}\cdots p_k^{x_k},
+\]
+para $x_1+\cdots+x_k=n$, $x_j\ge 0$ enteros.
+\end{definition}
+\begin{block}{Observación}
+Es la generalización natural de la binomial ($k=2$) a más de dos categorías. Cada $X_j$ marginalmente es $\text{Bin}(n,p_j)$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 4}
+\begin{example}
+Una urna contiene bolillas rojas (40\%), verdes (35\%) y azules (25\%). Se extraen 5 bolillas con reposición. ¿Cuál es la probabilidad de obtener exactamente 2 rojas, 2 verdes y 1 azul?
+\end{example}
+\pause
+\begin{block}{Resolución}
+Con $n=5$, $p_1=0.40$, $p_2=0.35$, $p_3=0.25$, $x_1=2,x_2=2,x_3=1$:
+\[
+P(2,2,1) = \frac{5!}{2!\,2!\,1!}\,(0.40)^2(0.35)^2(0.25)^1 = 30\times 0.16\times 0.1225\times 0.25 \approx 0.147.
+\]
+\end{block}
+\end{frame}
+
+\section{Distribución normal multivariada}
+
+\begin{frame}{Distribución normal multivariada (multinormal)}
+\begin{definition}[Vector normal multivariado, caso bidimensional]
+$(X,Y)$ tiene distribución \textbf{normal bivariada} con parámetros $\mu_X,\mu_Y,\sigma_X^2,\sigma_Y^2$ y coeficiente de correlación $\rho\in(-1,1)$ si su densidad conjunta es
+\[
+f(x,y) = \frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho^2}} \exp\left\{-\frac{1}{2(1-\rho^2)}\left[\frac{(x-\mu_X)^2}{\sigma_X^2} - \frac{2\rho(x-\mu_X)(y-\mu_Y)}{\sigma_X\sigma_Y} + \frac{(y-\mu_Y)^2}{\sigma_Y^2}\right]\right\}.
+\]
+\end{definition}
+\end{frame}
+
+\begin{frame}{Propiedades de la normal bivariada}
+\begin{block}{Propiedades clave}
+\begin{itemize}
+\item Las marginales son normales: $X\sim N(\mu_X,\sigma_X^2)$, $Y\sim N(\mu_Y,\sigma_Y^2)$.
+\item $\rho$ es exactamente el coeficiente de correlación entre $X$ e $Y$.
+\item \textbf{Caso especial importante:} si $\rho=0$, la densidad conjunta factoriza como producto de las marginales, por lo que $X$ e $Y$ resultan \textbf{independientes}. (En general, no correlación $\ne$ independencia, ¡pero para el caso normal bivariado sí equivalen!)
+\item Toda combinación lineal $aX+bY$ es normal.
+\item Las distribuciones condicionales $f_{X\mid Y}(x\mid y)$ también son normales.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Generalización a $n$ dimensiones}
+\begin{block}{Vector normal multivariado $N_n(\boldsymbol\mu,\Sigma)$}
+En notación matricial, un vector $\mathbf{X}=(X_1,\ldots,X_n)$ tiene distribución normal multivariada con vector de medias $\boldsymbol\mu$ y matriz de covarianzas $\Sigma$ (simétrica definida positiva) si su densidad es
+\[
+f(\mathbf{x}) = \frac{1}{(2\pi)^{n/2}\,|\Sigma|^{1/2}} \exp\left\{-\tfrac12 (\mathbf{x}-\boldsymbol\mu)^{\mathsf T}\Sigma^{-1}(\mathbf{x}-\boldsymbol\mu)\right\}.
+\]
+\end{block}
+\begin{alertblock}{Por qué es tan importante}
+La familia multinormal es central en \textbf{Regresión y correlación} y en el \textbf{Análisis Multivariado}: aparece al modelar $k$ mediciones correlacionadas (por ejemplo, distintas variables económicas o biométricas) y sustenta buena parte de la inferencia estadística clásica.
+\end{alertblock}
+\end{frame}
+
+\section{Síntesis: el rol de estas distribuciones}
+
+\begin{frame}{Conexión con la inferencia estadística}
+\begin{block}{Mirando hacia adelante}
+Estas cuatro familias de distribuciones —$\chi^2$, $t$, $F$ y multinomial/multinormal— son la maquinaria detrás de casi todos los métodos que se estudiarán en las unidades de \textbf{Estimación} y \textbf{Pruebas de Hipótesis}:
+\begin{itemize}
+\item $\chi^2$: intervalos y pruebas para $\sigma^2$; pruebas de bondad de ajuste y de independencia (con la multinomial).
+\item $t$ de Student: intervalos y pruebas para $\mu$ con $\sigma^2$ desconocida.
+\item $F$ de Snedecor: comparación de dos varianzas; ANOVA.
+\item Multinormal: base de la regresión múltiple y de la inferencia con varias variables simultáneas.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Ideas clave de hoy}
+\begin{itemize}
+\item $\chi^2_n$ = suma de $n$ cuadrados de $N(0,1)$ independientes; $E=n$, $\text{Var}=2n$; propiedad reproductiva.
+\item $t_n = Z/\sqrt{U/n}$ con $Z\sim N(0,1)$, $U\sim\chi_n^2$ independientes: colas más pesadas que la normal, converge a $N(0,1)$ cuando $n\to\infty$.
+\item $F_{m,n} = (U/m)/(V/n)$ con $U\sim\chi_m^2$, $V\sim\chi_n^2$ independientes: compara varianzas.
+\item La \textbf{multinomial} generaliza la binomial a $k$ categorías; la \textbf{multinormal} generaliza la normal a varias dimensiones correlacionadas.
+\item Estas distribuciones son la base técnica de la inferencia estadística que se desarrollará en las próximas unidades.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{document}

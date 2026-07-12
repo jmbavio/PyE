@@ -1,0 +1,214 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 17: Ley de los grandes números}
+\subtitle{Unidad 4: Función generadora de momentos}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Motivación}
+
+\begin{frame}{La intuición frecuencial de la probabilidad}
+\begin{block}{Pregunta fundamental}
+Cuando decimos que ``la probabilidad de cara al tirar una moneda equilibrada es $0.5$'', ¿qué queremos decir exactamente? Intuitivamente: si tiramos la moneda muchas veces, la \textbf{proporción} de caras se acerca a $0.5$.
+\end{block}
+
+\begin{alertblock}{Objetivo de esta clase}
+Formalizar y demostrar rigurosamente esta intuición: la \textbf{ley de los grandes números}, que justifica matemáticamente la interpretación frecuencial de la probabilidad, y es la base teórica de la simulación y la inferencia estadística.
+\end{alertblock}
+\end{frame}
+
+\section{Convergencia en probabilidad}
+
+\begin{frame}{Sucesiones de variables aleatorias}
+\begin{block}{Contexto}
+Consideramos una sucesión de variables aleatorias $X_1, X_2, X_3, \dots$ y queremos dar sentido a la afirmación ``$X_n$ se acerca a un valor (o variable) $X$ cuando $n\to\infty$''. A diferencia de sucesiones numéricas, esto requiere una definición probabilística, porque cada $X_n$ es aleatoria.
+\end{block}
+
+\begin{definition}[Convergencia en probabilidad]
+Decimos que la sucesión $\{X_n\}$ \textbf{converge en probabilidad} a una constante (o variable aleatoria) $X$, y escribimos $X_n \xrightarrow{P} X$, si para todo $\varepsilon > 0$:
+\[
+\lim_{n\to\infty} P\big(|X_n - X| \geq \varepsilon\big) = 0.
+\]
+\end{definition}
+\end{frame}
+
+\begin{frame}{Interpretación}
+\begin{block}{Lectura}
+Para cualquier margen de error $\varepsilon$ que fijemos (por pequeño que sea), la probabilidad de que $X_n$ se aparte de $X$ más de $\varepsilon$ se vuelve arbitrariamente chica a medida que $n$ crece.
+\end{block}
+
+\begin{alertblock}{Distinción importante}
+La convergencia en probabilidad \textbf{no} dice que $X_n(\omega) \to X(\omega)$ para cada resultado particular $\omega$ del espacio muestral (eso sería convergencia ``casi segura'', un concepto más fuerte que no se estudia en este curso). Es una afirmación sobre cómo se comporta la \textbf{distribución} de la probabilidad de discrepancia a medida que $n$ crece.
+\end{alertblock}
+\end{frame}
+
+\section{Ley débil de los grandes números}
+
+\begin{frame}{Planteo del problema}
+\begin{block}{Escenario}
+Sean $X_1, X_2, \dots, X_n$ variables aleatorias \textbf{independientes e idénticamente distribuidas} (i.i.d.), con $E(X_i) = \mu$ y $\text{Var}(X_i) = \sigma^2 < \infty$ para todo $i$ (por ejemplo: resultados de tiradas repetidas de un dado, o mediciones repetidas de un instrumento).
+\end{block}
+
+Definimos el \textbf{promedio muestral}:
+\[
+\overline{X}_n = \frac{X_1 + X_2 + \cdots + X_n}{n} = \frac{1}{n}\sum_{i=1}^n X_i.
+\]
+
+\begin{alertblock}{Pregunta}
+¿Qué le pasa a $\overline{X}_n$ a medida que $n \to \infty$?
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Esperanza y varianza del promedio muestral}
+\begin{block}{Cálculo previo}
+Usando linealidad de la esperanza (Clase 14):
+\[
+E(\overline{X}_n) = E\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n}\sum_{i=1}^n E(X_i) = \frac{1}{n}(n\mu) = \mu.
+\]
+Usando que los $X_i$ son independientes (Clase 15, propiedad de varianza de suma de independientes):
+\[
+\text{Var}(\overline{X}_n) = \text{Var}\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\sum_{i=1}^n \text{Var}(X_i) = \frac{1}{n^2}(n\sigma^2) = \frac{\sigma^2}{n}.
+\]
+\end{block}
+
+\begin{alertblock}{Observación crucial}
+$E(\overline{X}_n) = \mu$ para todo $n$ (el promedio muestral es siempre ``centrado'' en $\mu$), pero $\text{Var}(\overline{X}_n) = \sigma^2/n \to 0$ cuando $n\to\infty$: la dispersión del promedio se reduce a medida que promediamos más datos.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Enunciado de la ley débil}
+\begin{theorem}[Ley débil de los grandes números]
+Sean $X_1,\dots,X_n$ i.i.d.\ con $E(X_i)=\mu$ y $\text{Var}(X_i)=\sigma^2<\infty$. Entonces el promedio muestral converge en probabilidad a $\mu$:
+\[
+\overline{X}_n \xrightarrow{P} \mu, \qquad \text{es decir,} \qquad \lim_{n\to\infty} P\big(|\overline{X}_n - \mu| \geq \varepsilon\big) = 0 \quad \forall \varepsilon>0.
+\]
+\end{theorem}
+
+\begin{block}{Nombre}
+Se llama ``débil'' porque solo garantiza convergencia en probabilidad; existe una versión ``fuerte'' (con convergencia casi segura) que requiere herramientas más avanzadas y queda fuera del alcance de este curso.
+\end{block}
+\end{frame}
+
+\begin{frame}{Demostración usando la desigualdad de Chebyshev}
+\begin{proof}
+Aplicamos la desigualdad de Chebyshev (Clase 15) a la variable $\overline{X}_n$, que tiene esperanza $\mu$ y varianza $\sigma^2/n$. Para cualquier $\varepsilon>0$:
+\[
+P\big(|\overline{X}_n - \mu| \geq \varepsilon\big) \leq \frac{\text{Var}(\overline{X}_n)}{\varepsilon^2} = \frac{\sigma^2/n}{\varepsilon^2} = \frac{\sigma^2}{n\,\varepsilon^2}.
+\]
+Como $\sigma^2$ y $\varepsilon$ están fijos, al tomar $n\to\infty$ el lado derecho tiende a $0$:
+\[
+\lim_{n\to\infty} P\big(|\overline{X}_n-\mu|\geq\varepsilon\big) \leq \lim_{n\to\infty} \frac{\sigma^2}{n\varepsilon^2} = 0.
+\]
+Como una probabilidad no puede ser negativa, concluimos $\lim_{n\to\infty}P(|\overline{X}_n-\mu|\geq\varepsilon)=0$, es decir, $\overline{X}_n \xrightarrow{P} \mu$. $\blacksquare$
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo numérico: acotando con Chebyshev}
+\begin{example}
+Se mide el tiempo de reacción de personas a un estímulo. Se sabe que cada medición tiene $\sigma = 0.5$ segundos de desviación estándar (distribución desconocida). ¿Cuántas mediciones independientes $n$ se necesitan para garantizar, usando Chebyshev, que
+\[
+P\big(|\overline{X}_n - \mu| \geq 0.1\big) \leq 0.05\, ?
+\]
+\end{example}
+
+\medskip
+Por Chebyshev, $P(|\overline{X}_n-\mu|\geq 0.1) \leq \dfrac{\sigma^2}{n(0.1)^2} = \dfrac{0.25}{0.01\, n} = \dfrac{25}{n}$.
+
+Queremos $\dfrac{25}{n} \leq 0.05 \iff n \geq \dfrac{25}{0.05} = 500$.
+
+\textbf{Se necesitan al menos $500$ mediciones} para esa garantía (cota conservadora; en la práctica, con el TCL de la Clase 18 se obtienen cotas más ajustadas).
+\end{frame}
+
+\section{Interpretación frecuencial de la probabilidad}
+
+\begin{frame}{Caso particular: frecuencia relativa}
+\begin{block}{Aplicación clave}
+Sea $A$ un evento con $P(A) = p$, y repitamos el experimento $n$ veces de forma independiente. Definimos $X_i = 1$ si $A$ ocurre en el ensayo $i$, y $X_i=0$ en caso contrario, es decir $X_i \sim \text{Bernoulli}(p)$ i.i.d.
+\end{block}
+
+Entonces $\overline{X}_n = \dfrac{1}{n}\sum_{i=1}^n X_i$ es exactamente la \textbf{frecuencia relativa} de ocurrencia de $A$ en las $n$ repeticiones (proporción de éxitos).
+
+\begin{alertblock}{Consecuencia}
+Como $E(X_i)=p$ y $\text{Var}(X_i)=p(1-p)$, la ley débil da
+\[
+\overline{X}_n \xrightarrow{P} p,
+\]
+es decir: \textbf{la frecuencia relativa de un evento converge en probabilidad a su probabilidad teórica}. Esto justifica formalmente la interpretación frecuencial (empírica) de la probabilidad usada informalmente desde el comienzo del curso.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: simulación conceptual de una moneda}
+\begin{example}
+Se tira una moneda equilibrada ($p=0.5$) $n$ veces. Sea $\hat{p}_n$ la frecuencia relativa de caras. Por la ley débil, $\hat p_n \xrightarrow{P} 0.5$.
+
+\medskip
+Usando Chebyshev con $\sigma^2 = p(1-p) = 0.25$: para $\varepsilon = 0.05$,
+\[
+P(|\hat p_n - 0.5| \geq 0.05) \leq \frac{0.25}{n(0.05)^2} = \frac{0.25}{0.0025\, n} = \frac{100}{n}.
+\]
+\begin{itemize}
+\item Con $n=1000$: la cota es $100/1000 = 0.10$.
+\item Con $n=10000$: la cota es $100/10000 = 0.01$.
+\end{itemize}
+Se observa cómo, al aumentar el número de tiradas, la probabilidad de que la frecuencia relativa se aleje de $0.5$ más de $5$ puntos porcentuales se hace cada vez más chica —consistente con lo que uno observaría si efectivamente simulara estas tiradas.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: control de calidad}
+\begin{example}
+Una fábrica produce artículos con una proporción $p=0.02$ de defectuosos (desconocida en la práctica, pero supongamos que es el valor real). Se inspecciona una muestra de $n=2000$ artículos independientes. Sea $\hat p$ la proporción muestral de defectuosos.
+
+\medskip
+$E(\hat p) = 0.02$, $\text{Var}(\hat p) = \dfrac{p(1-p)}{n} = \dfrac{0.02(0.98)}{2000} = 0.0000098$.
+
+Por Chebyshev, con $\varepsilon = 0.01$:
+\[
+P(|\hat p - 0.02| \geq 0.01) \leq \frac{0.0000098}{(0.01)^2} = \frac{0.0000098}{0.0001} = 0.098.
+\]
+Es decir, hay a lo sumo un $9.8\%$ de probabilidad de que la proporción muestral se aparte más de un punto porcentual de la proporción real de defectuosos. (En la Clase 18 refinaremos esta estimación usando el TCL.)
+\end{example}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Conceptos clave}
+\begin{itemize}
+\item \textbf{Convergencia en probabilidad}: $X_n \xrightarrow{P} X$ si $P(|X_n-X|\geq\varepsilon)\to 0$ para todo $\varepsilon>0$.
+\item \textbf{Ley débil de los grandes números}: si $X_1,\dots,X_n$ son i.i.d.\ con media $\mu$ y varianza finita $\sigma^2$, entonces $\overline{X}_n \xrightarrow{P} \mu$.
+\item \textbf{Demostración}: se obtiene directamente de la desigualdad de Chebyshev aplicada a $\overline{X}_n$, usando que $E(\overline{X}_n)=\mu$ y $\text{Var}(\overline{X}_n)=\sigma^2/n \to 0$.
+\item \textbf{Caso particular}: la frecuencia relativa de un evento converge en probabilidad a su probabilidad teórica —justificación formal de la interpretación frecuencial.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Próxima clase}
+El \textbf{teorema central del límite} refina este resultado: no solo dice que $\overline{X}_n$ se acerca a $\mu$, sino que describe \emph{cómo} se distribuyen las fluctuaciones alrededor de $\mu$ (aproximadamente normales), lo que permite calcular probabilidades aproximadas de manera mucho más precisa que con Chebyshev.
+\end{alertblock}
+\end{frame}
+
+\end{document}

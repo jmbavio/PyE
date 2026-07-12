@@ -1,0 +1,302 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 24: Intervalos para la Varianza y para Dos Poblaciones}
+\subtitle{Unidad 6: Estimación de parámetros}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{IC para la varianza poblacional}
+
+\begin{frame}{Cantidad pivotal para $\sigma^2$}
+\begin{block}{Contexto}
+Sea $X_1,\dots,X_n$ m.a.\ de una población $N(\mu,\sigma^2)$, con $\mu$ y $\sigma^2$ desconocidas. Queremos un IC para $\sigma^2$.
+\end{block}
+
+\begin{theorem}[Resultado de la Unidad 5]
+\[
+W = \frac{(n-1)S^2}{\sigma^2} \sim \chi^2_{n-1}.
+\]
+\end{theorem}
+
+\begin{block}{A diferencia de $Z$ y $T$, la $\chi^2$ no es simétrica}
+Por eso se usan \textbf{dos} valores críticos distintos: $\chi^2_{n-1,\,1-\alpha/2}$ (cola izquierda) y $\chi^2_{n-1,\,\alpha/2}$ (cola derecha), definidos por
+\[
+P(W < \chi^2_{n-1,1-\alpha/2}) = \alpha/2, \qquad P(W > \chi^2_{n-1,\alpha/2}) = \alpha/2.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Deducción del IC para $\sigma^2$}
+\begin{proof}[Deducción]
+Partimos de
+\[
+P\left(\chi^2_{n-1,1-\alpha/2} < \frac{(n-1)S^2}{\sigma^2} < \chi^2_{n-1,\alpha/2}\right) = 1-\alpha.
+\]
+Invertimos las desigualdades (al invertir fracciones positivas, se invierte el sentido):
+\[
+\frac{1}{\chi^2_{n-1,\alpha/2}} < \frac{\sigma^2}{(n-1)S^2} < \frac{1}{\chi^2_{n-1,1-\alpha/2}}
+\]
+\[
+\Longrightarrow P\left(\frac{(n-1)S^2}{\chi^2_{n-1,\alpha/2}} < \sigma^2 < \frac{(n-1)S^2}{\chi^2_{n-1,1-\alpha/2}}\right) = 1-\alpha. \qedhere
+\]
+\end{proof}
+
+\begin{alertblock}{Intervalo de confianza de nivel $1-\alpha$ para $\sigma^2$}
+\[
+IC(\sigma^2;1-\alpha) = \left(\frac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}},\ \ \frac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}\right)
+\]
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{IC para el desvío estándar $\sigma$}
+\begin{block}{IC para $\sigma$}
+Tomando raíz cuadrada a los extremos del intervalo para $\sigma^2$ (función monótona creciente en valores positivos):
+\[
+IC(\sigma;1-\alpha) = \left(\sqrt{\frac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}}},\ \ \sqrt{\frac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}}\right)
+\]
+\end{block}
+
+\begin{example}
+Un fabricante controla la variabilidad del contenido de botellas de gaseosa (en ml). En una muestra de $n=15$ botellas se obtuvo $s^2 = 4.2$ ml$^2$. Construir un IC del $95\%$ para $\sigma^2$.
+
+\textbf{Solución.} $n-1=14$. De tabla $\chi^2$: $\chi^2_{14,0.025}=26.119$, $\chi^2_{14,0.975}=5.629$.
+\[
+IC(\sigma^2;0.95) = \left(\frac{14\cdot 4.2}{26.119},\ \frac{14\cdot 4.2}{5.629}\right) = \left(\frac{58.8}{26.119},\ \frac{58.8}{5.629}\right) = (2.251,\ 10.447)\ \text{ml}^2.
+\]
+\end{example}
+\end{frame}
+
+\section{IC para diferencia de medias: varianzas conocidas}
+
+\begin{frame}{Comparación de dos poblaciones}
+\begin{block}{Contexto general}
+Muchas veces interesa comparar dos poblaciones, por ejemplo $\mu_1$ vs.\ $\mu_2$ (dos proveedores, dos métodos, antes/después). Se toman dos muestras \textbf{independientes}:
+\[
+X_1,\dots,X_{n_1} \text{ m.a. de } N(\mu_1,\sigma_1^2), \qquad Y_1,\dots,Y_{n_2} \text{ m.a. de } N(\mu_2,\sigma_2^2),
+\]
+independientes entre sí. El parámetro de interés es $\mu_1-\mu_2$, estimado puntualmente por $\overline X - \overline Y$.
+\end{block}
+
+\begin{block}{Caso 1: $\sigma_1^2$ y $\sigma_2^2$ conocidas}
+Como $\overline X$ y $\overline Y$ son independientes,
+\[
+\overline X - \overline Y \sim N\left(\mu_1-\mu_2,\ \frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}\right)
+\;\Longrightarrow\;
+Z=\frac{(\overline X-\overline Y)-(\mu_1-\mu_2)}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}} \sim N(0,1).
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Fórmula: diferencia de medias, varianzas conocidas}
+\begin{alertblock}{IC de nivel $1-\alpha$ para $\mu_1-\mu_2$ ($\sigma_1^2,\sigma_2^2$ conocidas)}
+\[
+IC(\mu_1-\mu_2;1-\alpha) = (\overline x-\overline y) \pm z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}
+\]
+\end{alertblock}
+
+\begin{example}
+Dos máquinas llenan bolsas de cemento. Se sabe por control histórico que $\sigma_1=1.2$ kg y $\sigma_2=1.5$ kg. Muestras: $n_1=40$, $\overline x=50.4$ kg; $n_2=35$, $\overline y=49.8$ kg. IC del $95\%$ para $\mu_1-\mu_2$.
+
+\textbf{Solución.} $z_{0.025}=1.96$.
+\[
+\sqrt{\frac{1.2^2}{40}+\frac{1.5^2}{35}} = \sqrt{0.036 + 0.0643} = \sqrt{0.1003}\approx 0.3167.
+\]
+\[
+IC = (50.4-49.8)\pm 1.96(0.3167) = 0.6 \pm 0.6207 = (-0.021,\ 1.221)\ \text{kg}.
+\]
+Como el intervalo incluye al $0$, no hay evidencia suficiente (al $95\%$) de diferencia entre las medias de llenado.
+\end{example}
+\end{frame}
+
+\section{IC para diferencia de medias: varianzas desconocidas}
+
+\begin{frame}{Caso varianzas desconocidas pero iguales: estimador combinado (pooled)}
+\begin{block}{Supuesto: $\sigma_1^2=\sigma_2^2=\sigma^2$ (desconocida)}
+Se combina la información de ambas muestras en un único estimador de la varianza común, la \textbf{varianza combinada (pooled)}:
+\[
+S_p^2 = \frac{(n_1-1)S_1^2 + (n_2-1)S_2^2}{n_1+n_2-2}.
+\]
+\end{block}
+
+\begin{theorem}
+\[
+T = \frac{(\overline X-\overline Y)-(\mu_1-\mu_2)}{S_p\sqrt{\dfrac{1}{n_1}+\dfrac{1}{n_2}}} \sim t_{n_1+n_2-2}.
+\]
+\end{theorem}
+
+\begin{alertblock}{IC de nivel $1-\alpha$ para $\mu_1-\mu_2$ (varianzas desconocidas e iguales)}
+\[
+IC(\mu_1-\mu_2;1-\alpha) = (\overline x-\overline y) \pm t_{n_1+n_2-2,\,\alpha/2}\; S_p\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}
+\]
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo numérico: pooled}
+\begin{example}
+Se comparan los rendimientos (km/l) de dos modelos de auto. Modelo A: $n_1=12$, $\overline x=15.4$, $s_1=1.1$. Modelo B: $n_2=10$, $\overline y=14.6$, $s_2=1.3$. Suponiendo varianzas iguales, IC del $90\%$ para $\mu_1-\mu_2$.
+
+\textbf{Solución.}
+\[
+s_p^2 = \frac{(11)(1.1)^2+(9)(1.3)^2}{12+10-2} = \frac{11(1.21)+9(1.69)}{20} = \frac{13.31+15.21}{20} = \frac{28.52}{20}=1.426.
+\]
+\[
+s_p = \sqrt{1.426}\approx 1.194.
+\]
+$g.l.=20$, de tabla $t$: $t_{20,0.05}=1.725$.
+\[
+s_p\sqrt{\frac1{12}+\frac1{10}} = 1.194\sqrt{0.0833+0.1}=1.194\sqrt{0.1833}=1.194(0.4281)\approx 0.5112.
+\]
+\[
+IC=(15.4-14.6)\pm 1.725(0.5112) = 0.8\pm 0.882 = (-0.082,\ 1.682)\ \text{km/l}.
+\]
+\end{example}
+\end{frame}
+
+\section{Muestras apareadas}
+
+\begin{frame}{Muestras apareadas (datos pareados)}
+\begin{block}{Situación distinta: mismos individuos medidos dos veces}
+Cuando las observaciones \textbf{no son independientes} —por ejemplo, antes/después de un tratamiento en los mismos sujetos, o mediciones con dos instrumentos sobre las mismas piezas— se trabaja con las \textbf{diferencias}
+\[
+D_i = X_i - Y_i, \qquad i=1,\dots,n,
+\]
+que se tratan como una única muestra de una población con media $\mu_D=\mu_1-\mu_2$.
+\end{block}
+
+\begin{alertblock}{IC de nivel $1-\alpha$ para $\mu_D$ (muestras apareadas)}
+\[
+IC(\mu_D;1-\alpha) = \overline d \pm t_{n-1,\,\alpha/2}\,\frac{s_D}{\sqrt n}
+\]
+donde $\overline d$ y $s_D$ son la media y el desvío muestral de las diferencias $d_i=x_i-y_i$.
+\end{alertblock}
+
+\begin{block}{Ventaja}
+Al restar, se elimina la variabilidad propia de cada individuo, lo que suele dar intervalos más precisos que tratar las muestras como independientes.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo numérico: apareadas}
+\begin{example}
+Se mide la presión arterial sistólica de $6$ pacientes antes y después de un tratamiento:
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+Paciente & 1 & 2 & 3 & 4 & 5 & 6 \\
+\midrule
+Antes & 150 & 142 & 160 & 155 & 148 & 152 \\
+Después & 138 & 136 & 150 & 148 & 140 & 147 \\
+\midrule
+$d_i$ (antes$-$después) & 12 & 6 & 10 & 7 & 8 & 5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\[
+\overline d = \frac{12+6+10+7+8+5}{6} = \frac{48}{6}=8, \quad
+s_D^2 = \frac{1}{5}\sum (d_i-8)^2 = \frac{16+4+4+1+0+9}{5}=\frac{34}{5}=6.8,\ s_D\approx 2.608.
+\]
+$g.l.=5$: $t_{5,0.025}=2.571$ (IC del $95\%$).
+\[
+IC(\mu_D;0.95) = 8 \pm 2.571\cdot\frac{2.608}{\sqrt 6} = 8\pm 2.571(1.0648) = 8\pm 2.738 = (5.262,\ 10.738).
+\]
+Como el intervalo no incluye al $0$, hay evidencia de que el tratamiento reduce la presión.
+\end{example}
+\end{frame}
+
+\section{IC para el cociente de varianzas}
+
+\begin{frame}{Cantidad pivotal: distribución $F$ de Snedecor}
+\begin{block}{Contexto}
+Sean $X_1,\dots,X_{n_1}$ m.a.\ de $N(\mu_1,\sigma_1^2)$ y $Y_1,\dots,Y_{n_2}$ m.a.\ de $N(\mu_2,\sigma_2^2)$, independientes. Queremos un IC para $\dfrac{\sigma_1^2}{\sigma_2^2}$.
+\end{block}
+
+\begin{theorem}[Recordatorio, Unidad 5]
+\[
+F = \frac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2} \sim F_{n_1-1,\,n_2-1}.
+\]
+\end{theorem}
+
+\begin{block}{Deducción}
+De $P(F_{n_1-1,n_2-1,\,1-\alpha/2} < F < F_{n_1-1,n_2-1,\,\alpha/2}) = 1-\alpha$, despejando $\sigma_1^2/\sigma_2^2$:
+\[
+P\left(\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{n_1-1,n_2-1,\alpha/2}} < \frac{\sigma_1^2}{\sigma_2^2} < \frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{n_1-1,n_2-1,1-\alpha/2}}\right)=1-\alpha.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Fórmula del IC para el cociente de varianzas}
+\begin{alertblock}{IC de nivel $1-\alpha$ para $\sigma_1^2/\sigma_2^2$}
+\[
+IC\left(\frac{\sigma_1^2}{\sigma_2^2};1-\alpha\right) = \left(\frac{s_1^2}{s_2^2}\cdot\frac{1}{F_{n_1-1,n_2-1,\alpha/2}},\ \ \frac{s_1^2}{s_2^2}\cdot\frac{1}{F_{n_1-1,n_2-1,1-\alpha/2}}\right)
+\]
+\end{alertblock}
+
+\begin{block}{Simplificación práctica con tablas de una sola cola}
+Las tablas $F$ suelen dar solo colas superiores. Se usa la identidad
+\[
+F_{n_1-1,n_2-1,\,1-\alpha/2} = \frac{1}{F_{n_2-1,n_1-1,\,\alpha/2}}.
+\]
+\end{block}
+
+\begin{example}
+Dos líneas de producción: $n_1=10$, $s_1^2=6.4$; $n_2=8$, $s_2^2=3.2$. IC del $90\%$ para $\sigma_1^2/\sigma_2^2$.
+
+\textbf{Solución.} $g.l.=(9,7)$. De tabla $F$: $F_{9,7,0.05}=3.68$, y $F_{9,7,0.95}=1/F_{7,9,0.05}=1/3.29=0.304$.
+\[
+IC = \left(\frac{6.4}{3.2}\cdot\frac{1}{3.68},\ \frac{6.4}{3.2}\cdot\frac{1}{0.304}\right) = \left(\frac{2}{3.68},\ \frac{2}{0.304}\right) = (0.543,\ 6.579).
+\]
+Como el intervalo incluye a $1$, no hay evidencia de que las varianzas sean distintas.
+\end{example}
+\end{frame}
+
+\section{Resumen general de la unidad}
+
+\begin{frame}{Resumen general: intervalos de confianza (Unidad 6)}
+\begin{center}
+\tiny
+\begin{tabular}{lll}
+\toprule
+\textbf{Parámetro} & \textbf{Condición} & \textbf{Intervalo} \\
+\midrule
+$\mu$ & $\sigma^2$ conocida & $\overline x \pm z_{\alpha/2}\dfrac{\sigma}{\sqrt n}$ \\[1ex]
+$\mu$ & $\sigma^2$ desconocida & $\overline x \pm t_{n-1,\alpha/2}\dfrac{s}{\sqrt n}$ \\[1ex]
+$p$ & $n$ grande & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\widehat p)}{n}}$ \\[1ex]
+$\sigma^2$ & población normal & $\left(\dfrac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}},\ \dfrac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}\right)$ \\[1.5ex]
+$\mu_1-\mu_2$ & $\sigma_1^2,\sigma_2^2$ conocidas & $(\overline x-\overline y)\pm z_{\alpha/2}\sqrt{\dfrac{\sigma_1^2}{n_1}+\dfrac{\sigma_2^2}{n_2}}$ \\[1.5ex]
+$\mu_1-\mu_2$ & varianzas desc.\ iguales (pooled) & $(\overline x-\overline y)\pm t_{n_1+n_2-2,\alpha/2}\,s_p\sqrt{\dfrac1{n_1}+\dfrac1{n_2}}$ \\[1ex]
+$\mu_D$ & muestras apareadas & $\overline d \pm t_{n-1,\alpha/2}\dfrac{s_D}{\sqrt n}$ \\[1ex]
+$\sigma_1^2/\sigma_2^2$ & dos poblaciones normales & $\left(\dfrac{s_1^2}{s_2^2 F_{n_1-1,n_2-1,\alpha/2}},\ \dfrac{s_1^2}{s_2^2 F_{n_1-1,n_2-1,1-\alpha/2}}\right)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{alertblock}{Cierre de la unidad}
+Con estimación puntual (Clase 21), métodos de construcción de estimadores (Clase 22) e intervalos de confianza (Clases 23-24), tenemos las herramientas centrales de la inferencia estadística. En la Unidad 7 usaremos estas ideas para \textbf{contrastar hipótesis} sobre los parámetros poblacionales.
+\end{alertblock}
+\end{frame}
+
+\end{document}

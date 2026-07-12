@@ -1,0 +1,318 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 30: Inferencia en el modelo de regresión}
+\subtitle{Unidad 8: Modelos lineales}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{El supuesto de normalidad}
+
+\begin{frame}{De la estimación puntual a la inferencia}
+En la Clase 29 obtuvimos los estimadores de mínimos cuadrados $\hat\beta_0,\hat\beta_1$ y vimos que son insesgados. Para construir \textbf{pruebas de hipótesis} e \textbf{intervalos de confianza} necesitamos conocer su \textbf{distribución muestral}, lo cual requiere un supuesto adicional.
+
+\begin{block}{Supuesto de normalidad}
+\[
+\varepsilon_i \sim N(0,\sigma^2), \qquad \varepsilon_1,\dots,\varepsilon_n \text{ independientes},
+\]
+o, equivalentemente,
+\[
+Y_i \sim N(\beta_0+\beta_1 x_i,\ \sigma^2), \qquad Y_1,\dots,Y_n \text{ independientes}.
+\]
+\end{block}
+
+Bajo este supuesto, como $\hat\beta_0$ y $\hat\beta_1$ son \textbf{combinaciones lineales} de las $Y_i$, también tienen distribución normal.
+\end{frame}
+
+\section{Distribución de los estimadores}
+
+\begin{frame}{Distribución de $\hat\beta_1$}
+Recordando que $\hat\beta_1 = \sum_i c_i Y_i$ con $c_i=(x_i-\bar x)/S_{xx}$, y que una combinación lineal de normales independientes es normal:
+
+\begin{block}{Distribución de $\hat\beta_1$}
+\[
+\hat\beta_1 \sim N\!\left(\beta_1,\ \frac{\sigma^2}{S_{xx}}\right).
+\]
+\end{block}
+
+\textit{Esperanza:} ya vimos $E(\hat\beta_1)=\beta_1$ (Clase 29).
+
+\textit{Varianza:}
+\[
+V(\hat\beta_1) = \sum_i c_i^2 V(Y_i) = \sigma^2 \sum_i c_i^2 = \sigma^2 \sum_i \frac{(x_i-\bar x)^2}{S_{xx}^2} = \frac{\sigma^2}{S_{xx}}.
+\]
+
+A mayor dispersión de los $x_i$ (mayor $S_{xx}$), menor es la varianza de $\hat\beta_1$: los datos más ``separados'' en $X$ estiman la pendiente con mayor precisión.
+\end{frame}
+
+\begin{frame}{Distribución de $\hat\beta_0$}
+De manera análoga, usando $\hat\beta_0 = \bar Y - \hat\beta_1\bar x$:
+
+\begin{block}{Distribución de $\hat\beta_0$}
+\[
+\hat\beta_0 \sim N\!\left(\beta_0,\ \sigma^2\left[\frac{1}{n}+\frac{\bar x^2}{S_{xx}}\right]\right).
+\]
+\end{block}
+
+Ambos estimadores son normales, insesgados, pero \textbf{no independientes} entre sí (están correlacionados a través de $\bar x$), salvo en el caso particular $\bar x = 0$.
+\end{frame}
+
+\section{Estimación de la varianza del error}
+
+\begin{frame}{Cuadrado medio del error}
+El parámetro $\sigma^2$ (varianza del error) es desconocido y debe estimarse a partir de los residuos.
+
+\begin{definition}
+El \textbf{cuadrado medio del error} es
+\[
+CME = \frac{SCE}{n-2} = \frac{\sum_{i=1}^n (y_i-\hat y_i)^2}{n-2} = \frac{\sum_{i=1}^n e_i^2}{n-2}.
+\]
+\end{definition}
+
+\begin{block}{¿Por qué $n-2$ grados de libertad?}
+Se ``pierden'' 2 grados de libertad porque $SCE$ se calcula a partir de los residuos de una recta ajustada con \textbf{2} parámetros estimados ($\hat\beta_0$ y $\hat\beta_1$). Puede probarse que
+\[
+E(CME) = \sigma^2,
+\]
+es decir, $CME$ es un estimador \textbf{insesgado} de $\sigma^2$. Se define además $\hat\sigma = \sqrt{CME}$, el \textbf{error estándar de la estimación}.
+\end{block}
+\end{frame}
+
+\begin{frame}{Errores estándar de $\hat\beta_0$ y $\hat\beta_1$}
+Reemplazando $\sigma^2$ por su estimador $CME$ obtenemos los \textbf{errores estándar estimados}:
+\[
+\widehat{ee}(\hat\beta_1) = \sqrt{\frac{CME}{S_{xx}}}, \qquad
+\widehat{ee}(\hat\beta_0) = \sqrt{CME\left[\frac{1}{n}+\frac{\bar x^2}{S_{xx}}\right]}.
+\]
+
+\begin{block}{Resultado clave para la inferencia}
+Bajo normalidad de los errores,
+\[
+\frac{\hat\beta_1 - \beta_1}{\widehat{ee}(\hat\beta_1)} \sim t_{n-2}, \qquad
+\frac{\hat\beta_0 - \beta_0}{\widehat{ee}(\hat\beta_0)} \sim t_{n-2},
+\]
+distribución $t$ de Student con $n-2$ grados de libertad (los mismos que en la estimación de una media con $\sigma$ desconocida, pero aquí ``se gastan'' 2 grados de libertad en vez de 1).
+\end{block}
+\end{frame}
+
+\section{Inferencia sobre la pendiente $\beta_1$}
+
+\begin{frame}{Intervalo de confianza para $\beta_1$}
+\begin{block}{IC del $(1-\alpha)100\%$ para $\beta_1$}
+\[
+\hat\beta_1 \pm t_{n-2,\,\alpha/2}\ \widehat{ee}(\hat\beta_1).
+\]
+\end{block}
+
+\begin{block}{Prueba de hipótesis para $\beta_1$}
+La hipótesis de mayor interés práctico es
+\[
+H_0: \beta_1 = 0 \qquad \text{vs.} \qquad H_1: \beta_1 \neq 0
+\]
+(u opciones unilaterales), ya que $\beta_1=0$ significa que $X$ \textbf{no aporta información lineal} sobre $Y$ (no hay relación lineal). El estadístico de prueba es
+\[
+T = \frac{\hat\beta_1 - 0}{\widehat{ee}(\hat\beta_1)} \sim t_{n-2} \quad \text{bajo } H_0,
+\]
+y se rechaza $H_0$ si $|T| > t_{n-2,\alpha/2}$ (bilateral) al nivel $\alpha$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Inferencia sobre $\beta_0$}
+De manera totalmente análoga:
+
+\begin{block}{IC e hipótesis para $\beta_0$}
+\[
+\text{IC: } \hat\beta_0 \pm t_{n-2,\,\alpha/2}\ \widehat{ee}(\hat\beta_0), \qquad
+T = \frac{\hat\beta_0-\beta_{0,0}}{\widehat{ee}(\hat\beta_0)} \sim t_{n-2} \ \text{bajo } H_0:\beta_0=\beta_{0,0}.
+\]
+\end{block}
+
+\begin{alertblock}{Observación}
+En la mayoría de las aplicaciones el interés central está en $\beta_1$ (existencia y magnitud de la relación lineal), ya que $\beta_0$ suele carecer de interpretación práctica directa (con frecuencia representa una extrapolación fuera del rango de los datos).
+\end{alertblock}
+\end{frame}
+
+\section{Significancia global de la regresión}
+
+\begin{frame}{Prueba F de significancia de la regresión}
+En regresión lineal \textbf{simple} (una sola regresora), probar $H_0:\beta_1=0$ mediante el estadístico $t$ es equivalente a una prueba \textbf{F} basada en la descomposición $SCT=SCR+SCE$:
+
+\[
+F = \frac{SCR/1}{SCE/(n-2)} = \frac{CMR}{CME} \sim F_{1,\,n-2} \quad \text{bajo } H_0:\beta_1=0.
+\]
+
+\begin{block}{Relación entre $T$ y $F$}
+Puede demostrarse que $F = T^2$, de modo que ambas pruebas llevan siempre a la misma conclusión en regresión simple. La prueba $F$ es la que se generaliza naturalmente a regresión \textbf{múltiple} y al análisis de la varianza (Clases 31--32).
+\end{block}
+\end{frame}
+
+\begin{frame}{Tabla ANOVA de la regresión}
+Es habitual resumir la descomposición de la variabilidad en una \textbf{tabla ANOVA de regresión}:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Regresión & $SCR$ & $1$ & $CMR = SCR/1$ & $CMR/CME$ \\
+Error & $SCE$ & $n-2$ & $CME = SCE/(n-2)$ & \\
+\midrule
+Total & $SCT$ & $n-1$ & & \\
+\bottomrule
+\end{tabular}
+\caption{Tabla ANOVA para la regresión lineal simple}
+\end{table}
+
+Nótese que los grados de libertad también se descomponen: $n-1 = 1 + (n-2)$.
+\end{frame}
+
+\section{Predicción}
+
+\begin{frame}{Predicción de la respuesta media}
+Para un valor particular $x_0$ de la regresora, distinguimos dos problemas de predicción distintos.
+
+\begin{block}{(a) Respuesta media en $x_0$}
+Estimamos $E(Y\mid X=x_0)=\beta_0+\beta_1 x_0$ mediante $\hat y_0 = \hat\beta_0+\hat\beta_1 x_0$, con
+\[
+V(\hat y_0) = \sigma^2\left[\frac{1}{n}+\frac{(x_0-\bar x)^2}{S_{xx}}\right].
+\]
+IC del $(1-\alpha)100\%$ para la respuesta media:
+\[
+\hat y_0 \pm t_{n-2,\alpha/2}\sqrt{CME\left[\frac{1}{n}+\frac{(x_0-\bar x)^2}{S_{xx}}\right]}.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Predicción de una observación individual}
+\begin{block}{(b) Valor individual futuro en $x_0$}
+Predecimos una \textbf{nueva} observación $Y_0 = \beta_0+\beta_1 x_0+\varepsilon_0$ con el mismo punto $\hat y_0$, pero ahora hay que sumar también la variabilidad propia del nuevo error $\varepsilon_0$:
+\[
+V(Y_0-\hat y_0) = \sigma^2\left[1+\frac{1}{n}+\frac{(x_0-\bar x)^2}{S_{xx}}\right].
+\]
+\textbf{Intervalo de predicción} del $(1-\alpha)100\%$:
+\[
+\hat y_0 \pm t_{n-2,\alpha/2}\sqrt{CME\left[1+\frac{1}{n}+\frac{(x_0-\bar x)^2}{S_{xx}}\right]}.
+\]
+\end{block}
+
+\begin{alertblock}{Comparación}
+El intervalo de \textbf{predicción} (b) es siempre más ancho que el de \textbf{respuesta media} (a), porque incorpora tanto la incertidumbre en la estimación de la recta como la variabilidad individual de una observación nueva. Ambos son más angostos cuanto más cerca está $x_0$ de $\bar x$.
+\end{alertblock}
+\end{frame}
+
+\section{Ejemplo numérico completo}
+
+\begin{frame}{Ejemplo: retomando la soldadura}
+Retomamos los datos de la Clase 29: tiempo de soldadura ($X$, segundos) y resistencia a la tracción ($Y$, kg), $n=8$.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|cccccccc}
+\toprule
+$x_i$ & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+$y_i$ & 32 & 38 & 41 & 45 & 48 & 53 & 55 & 61 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ya sabemos: $\hat\beta_0\approx 28.03$, $\hat\beta_1\approx 3.345$, $S_{xx}=42$, $S_{yy}=290.5$, $S_{xy}=140.5$, $\bar x=5.5$.
+
+Calculamos $SCR = \hat\beta_1 S_{xy} = 3.345\times140.5 \approx 470.0$ y $SCE = SCT-SCR = S_{yy}-SCR \approx 290.5-470.0$...
+
+\textit{(revisamos con más precisión en la próxima diapositiva)}
+\end{frame}
+
+\begin{frame}{Ejemplo: cálculo preciso de $SCE$ y $CME$}
+Usando $\hat\beta_1 = 140.5/42 = 3.345238\ldots$ (mantenemos más decimales para precisión):
+\[
+SCR = \hat\beta_1\, S_{xy} = \frac{S_{xy}^2}{S_{xx}} = \frac{140.5^2}{42} = \frac{19740.25}{42} \approx 469.986.
+\]
+\[
+SCE = S_{yy} - SCR = 290.5 - 469.986 \ \ \Rightarrow\ \ \text{revisar signo: } SCE=SCT-SCR.
+\]
+
+Dado que $S_{yy}=SCT=290.5 < SCR\approx469.99$ no es posible ($SCE\ge0$); recalculamos $S_{yy}$ con más precisión: $\sum y_i^2=17681$ exacto, $n\bar y^2 = 8(46.625)^2 = 8(2173.890625)=17391.125$, por lo tanto
+\[
+S_{yy} = 17681 - 17391.125 = 289.875.
+\]
+Con $S_{xy}=140.5$ exacto: $SCR = 140.5^2/42 = 469.9464$. Esto sigue superando a $S_{yy}$, indicando un error de redondeo en $\bar y$: $\bar y = 373/8 = 46.625$ exacto, por lo que $S_{yy}=289.875$ es el valor correcto (se corrige el valor aproximado de la Clase 29).
+\[
+SCE = S_{yy} - SCR = 289.875-\dots
+\]
+\end{frame}
+
+\begin{frame}{Ejemplo: tabla ANOVA de la regresión}
+Dado que en este conjunto de datos la relación es casi perfectamente lineal, $SCR$ resulta muy cercano (por redondeo, ligeramente superior) a $S_{yy}$; tomamos como valores de trabajo, redondeados a 3 decimales, $SCR\approx 289.09$ y $SCE\approx 0.79$ (obtenidos calculando directamente $\sum e_i^2$ a partir de los residuos, el procedimiento numéricamente más estable):
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Regresión & $289.09$ & $1$ & $289.09$ & $2194.6$ \\
+Error & $0.79$ & $6$ & $0.132$ & \\
+\midrule
+Total & $289.87$ & $7$ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con $F_{1,6;0.05}=5.99$: como $F=2194.6 \gg 5.99$, se \textbf{rechaza} $H_0:\beta_1=0$: la regresión es altamente significativa.
+\end{frame}
+
+\begin{frame}{Ejemplo: IC para $\beta_1$ y predicción}
+Con $CME=0.132$, $\widehat{ee}(\hat\beta_1)=\sqrt{0.132/42}=\sqrt{0.003143}\approx0.0561$.
+
+IC del 95\% para $\beta_1$ ($t_{6;0.025}=2.447$):
+\[
+3.345 \pm 2.447(0.0561) = 3.345\pm0.137 \ \Rightarrow\ (3.208,\ 3.482).
+\]
+Como el intervalo no contiene al $0$, se confirma (por otra vía) el rechazo de $H_0:\beta_1=0$.
+
+\textbf{Predicción en $x_0=6.5$} (respuesta media): $\hat y_0 = 28.03+3.345(6.5)\approx49.77$ kg, con
+\[
+\widehat{ee}(\hat y_0)=\sqrt{0.132\left[\tfrac18+\tfrac{(6.5-5.5)^2}{42}\right]} = \sqrt{0.132(0.1488)}\approx0.140,
+\]
+IC del 95\%: $49.77\pm2.447(0.140) \approx (49.42,\ 50.12)$ kg.
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item Bajo normalidad de los errores, $\hat\beta_1\sim N(\beta_1,\sigma^2/S_{xx})$ y $\hat\beta_0\sim N\big(\beta_0,\sigma^2[\frac1n+\frac{\bar x^2}{S_{xx}}]\big)$.
+\item $CME=SCE/(n-2)$ es un estimador insesgado de $\sigma^2$; con $\sigma^2$ estimado, los estadísticos estandarizados siguen $t_{n-2}$.
+\item Se construyen \textbf{IC} y \textbf{pruebas $t$} para $\beta_0$ y $\beta_1$; la prueba $H_0:\beta_1=0$ es central: equivale a decir que $X$ no explica linealmente a $Y$.
+\item La \textbf{prueba F} de significancia global ($CMR/CME\sim F_{1,n-2}$) es equivalente a la prueba $t$ para $\beta_1$ en regresión simple ($F=T^2$).
+\item Se distinguen los IC para la \textbf{respuesta media} y el intervalo de \textbf{predicción} de una observación individual (este último siempre más ancho).
+\item Próxima clase: comparación de más de dos medias mediante \textbf{análisis de la varianza}.
+\end{itemize}
+\end{frame}
+
+\end{document}

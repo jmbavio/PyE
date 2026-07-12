@@ -1,0 +1,314 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 16: Covarianza, correlación y función generatriz de momentos}
+\subtitle{Unidad 4: Función generadora de momentos}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Covarianza}
+
+\begin{frame}{Motivación}
+\begin{block}{Pregunta}
+Cuando tenemos dos variables aleatorias $X, Y$ definidas en el mismo espacio muestral, ¿cómo medimos si tienden a moverse juntas (cuando una es grande, la otra también) o en sentido opuesto?
+\end{block}
+
+Ya vimos en la Clase 15 que, en general,
+\[
+\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y),
+\]
+lo que motiva definir formalmente la covarianza.
+\end{frame}
+
+\begin{frame}{Definición}
+\begin{definition}[Covarianza]
+Sean $X,Y$ variables aleatorias con $E(X)=\mu_X$, $E(Y)=\mu_Y$ finitas. La \textbf{covarianza} entre $X$ e $Y$ es
+\[
+\text{Cov}(X,Y) = E\big[(X-\mu_X)(Y-\mu_Y)\big].
+\]
+\end{definition}
+
+\begin{theorem}[Fórmula de cálculo]
+\[
+\text{Cov}(X,Y) = E(XY) - E(X)\,E(Y).
+\]
+\end{theorem}
+
+\begin{proof}
+Desarrollando el producto y usando linealidad de la esperanza:
+\begin{align*}
+\text{Cov}(X,Y) &= E[XY - \mu_X Y - \mu_Y X + \mu_X\mu_Y] \\
+&= E(XY) - \mu_X E(Y) - \mu_Y E(X) + \mu_X \mu_Y \\
+&= E(XY) - \mu_X\mu_Y - \mu_Y\mu_X + \mu_X\mu_Y = E(XY) - \mu_X\mu_Y. \qedhere
+\end{align*}
+\end{proof}
+\end{frame}
+
+\begin{frame}{Propiedades de la covarianza}
+\begin{theorem}[Propiedades]
+Sean $X,Y,Z$ variables aleatorias y $a,b,c,d \in \mathbb{R}$:
+\begin{enumerate}
+\item $\text{Cov}(X,X) = \text{Var}(X)$.
+\item $\text{Cov}(X,Y) = \text{Cov}(Y,X)$ (simetría).
+\item $\text{Cov}(aX+b, cY+d) = ac\,\text{Cov}(X,Y)$.
+\item $\text{Cov}(X+Z, Y) = \text{Cov}(X,Y) + \text{Cov}(Z,Y)$ (bilinealidad).
+\item Si $X, Y$ son independientes, $\text{Cov}(X,Y) = 0$ (la recíproca \textbf{no} vale en general).
+\item $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y)$.
+\item Más generalmente: $\text{Var}\left(\sum_i a_i X_i\right) = \sum_i a_i^2 \text{Var}(X_i) + 2\sum_{i<j} a_i a_j \text{Cov}(X_i,X_j)$.
+\end{enumerate}
+\end{theorem}
+\end{frame}
+
+\begin{frame}{Independencia no implica covarianza cero... ¡al revés!}
+\begin{alertblock}{Cuidado con la recíproca}
+Independencia $\Rightarrow$ $\text{Cov}(X,Y)=0$, pero $\text{Cov}(X,Y)=0$ \textbf{no implica} independencia.
+\end{alertblock}
+
+\begin{example}
+Sea $X \sim U(-1,1)$ y $Y = X^2$. Claramente $Y$ depende \emph{fuertemente} de $X$ (no son independientes). Sin embargo:
+\[
+E(XY) = E(X^3) = \int_{-1}^1 x^3 \cdot \frac12\, dx = 0 \quad \text{(integrando impar en intervalo simétrico)},
+\]
+y $E(X) = 0$, por lo tanto $\text{Cov}(X,Y) = E(XY) - E(X)E(Y) = 0 - 0 = 0$. La covarianza mide solo dependencia \textbf{lineal}, no dependencia en general.
+\end{example}
+\end{frame}
+
+\section{Coeficiente de correlación}
+
+\begin{frame}{Definición}
+\begin{block}{Problema de la covarianza}
+$\text{Cov}(X,Y)$ depende de las unidades de $X$ e $Y$ (si medimos $X$ en metros o en centímetros, la covarianza cambia). Necesitamos una versión ``adimensional''.
+\end{block}
+
+\begin{definition}[Coeficiente de correlación de Pearson]
+Sean $X,Y$ con $\sigma_X, \sigma_Y > 0$ finitas. El coeficiente de correlación es
+\[
+\rho_{X,Y} = \frac{\text{Cov}(X,Y)}{\sigma_X\, \sigma_Y}.
+\]
+\end{definition}
+
+\begin{theorem}[Rango]
+$-1 \leq \rho_{X,Y} \leq 1$.
+\end{theorem}
+\end{frame}
+
+\begin{frame}{Demostración del rango de $\rho$}
+\begin{proof}
+Se usa la desigualdad de Cauchy--Schwarz para esperanzas: $[E(UV)]^2 \leq E(U^2)\,E(V^2)$, aplicada a $U = X-\mu_X$, $V=Y-\mu_Y$:
+\[
+\big[\text{Cov}(X,Y)\big]^2 = \big[E(UV)\big]^2 \leq E(U^2)\,E(V^2) = \text{Var}(X)\,\text{Var}(Y) = \sigma_X^2 \sigma_Y^2.
+\]
+Por lo tanto $\text{Cov}(X,Y)^2 \leq \sigma_X^2 \sigma_Y^2$, y dividiendo,
+\[
+\rho_{X,Y}^2 = \frac{\text{Cov}(X,Y)^2}{\sigma_X^2\sigma_Y^2} \leq 1 \quad \Longrightarrow \quad -1 \leq \rho_{X,Y} \leq 1. \qedhere
+\]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Interpretación de $\rho$}
+\begin{block}{Casos extremos}
+\begin{itemize}
+\item $\rho_{X,Y} = 1$: $X$ e $Y$ están relacionadas \textbf{linealmente en forma creciente} de manera exacta: $Y = aX+b$ con $a>0$ (con probabilidad 1).
+\item $\rho_{X,Y} = -1$: relación lineal exacta decreciente, $Y=aX+b$ con $a<0$.
+\item $\rho_{X,Y} = 0$: no hay relación lineal (variables ``incorreladas''); puede haber relación no lineal, como vimos en el ejemplo anterior.
+\item Valores intermedios: cuanto más cerca de $\pm 1$, más fuerte la asociación lineal; cuanto más cerca de $0$, más débil.
+\end{itemize}
+\end{block}
+
+\begin{example}
+Si $Y = 3X - 5$ (relación lineal exacta), entonces $\text{Cov}(X,Y) = \text{Cov}(X,3X-5) = 3\,\text{Var}(X)$, y $\sigma_Y = |3|\sigma_X = 3\sigma_X$. Luego $\rho_{X,Y} = \dfrac{3\sigma_X^2}{\sigma_X \cdot 3\sigma_X} = 1$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo numérico}
+\begin{example}
+Sean $X, Y$ con función de probabilidad conjunta dada por la tabla:
+\begin{center}
+\begin{tabular}{c|ccc}
+ & $Y=0$ & $Y=1$ & $Y=2$ \\ \hline
+$X=0$ & $0.2$ & $0.1$ & $0.0$ \\
+$X=1$ & $0.1$ & $0.3$ & $0.3$
+\end{tabular}
+\end{center}
+Marginales: $P(X=0)=0.3$, $P(X=1)=0.7$; $P(Y=0)=0.3$, $P(Y=1)=0.4$, $P(Y=2)=0.3$.
+\[
+E(X) = 0.7, \quad E(Y) = 0(0.3)+1(0.4)+2(0.3) = 1.0
+\]
+\[
+E(XY) = \sum xy\, p(x,y) = 0 + 0 + 0 + 0 + 1(0.3) + 2(0.3) = 0.9
+\]
+\[
+\text{Cov}(X,Y) = 0.9 - (0.7)(1.0) = 0.2.
+\]
+Con más cálculo se obtienen $\sigma_X, \sigma_Y$ y de ahí $\rho_{X,Y}$ (ejercicio resuelto completo en la Práctica 2).
+\end{example}
+\end{frame}
+
+\section{Función generatriz de momentos}
+
+\begin{frame}{Motivación}
+\begin{block}{Idea}
+Vimos que calcular $E(X), E(X^2), E(X^3), \dots$ (los \textbf{momentos} de $X$) requiere resolver una suma o integral distinta para cada orden. La \textbf{función generatriz de momentos} (FGM) es una función que ``codifica'' todos los momentos de una vez, y además caracteriza unívocamente la distribución.
+\end{block}
+\end{frame}
+
+\begin{frame}{Definición}
+\begin{definition}[Función generatriz de momentos]
+Sea $X$ una variable aleatoria. La función generatriz de momentos de $X$ es
+\[
+M_X(t) = E\left(e^{tX}\right),
+\]
+definida para todo $t$ en un entorno de $0$ tal que la esperanza sea finita (si no existe tal entorno, se dice que la FGM no existe).
+\end{definition}
+
+Caso discreto: $M_X(t) = \sum_i e^{t x_i}\, p(x_i)$. Caso continuo: $M_X(t) = \int_{-\infty}^\infty e^{tx} f(x)\, dx$.
+
+\begin{block}{¿Por qué ``generatriz de momentos''?}
+Como veremos, derivando $M_X(t)$ respecto de $t$ y evaluando en $t=0$ se obtienen los momentos $E(X^k)$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Propiedad 1: generación de momentos}
+\begin{theorem}
+Si $M_X(t)$ existe en un entorno de $0$, entonces es infinitamente derivable allí y
+\[
+M_X^{(k)}(0) = E(X^k), \qquad k=1,2,3,\dots
+\]
+\end{theorem}
+
+\begin{proof}[Idea de la demostración]
+Suponiendo que se puede derivar bajo el signo de esperanza (integral o suma),
+\[
+M_X'(t) = \frac{d}{dt} E(e^{tX}) = E\left(\frac{d}{dt}e^{tX}\right) = E(X e^{tX}).
+\]
+Evaluando en $t=0$: $M_X'(0) = E(X e^{0}) = E(X)$. Derivando nuevamente,
+\[
+M_X''(t) = E(X^2 e^{tX}) \quad \Rightarrow \quad M_X''(0) = E(X^2),
+\]
+y en general $M_X^{(k)}(t) = E(X^k e^{tX})$, de donde $M_X^{(k)}(0) = E(X^k)$. $\blacksquare$
+\end{proof}
+\end{frame}
+
+\begin{frame}{Propiedad 2: unicidad}
+\begin{theorem}[Unicidad]
+Si $M_X(t)$ y $M_Y(t)$ existen y coinciden en un entorno de $0$, entonces $X$ e $Y$ tienen la \textbf{misma} distribución.
+\end{theorem}
+
+\begin{alertblock}{Utilidad práctica}
+Esta propiedad es muy poderosa: para identificar la distribución de una variable aleatoria (por ejemplo, una suma de variables), basta calcular su FGM y reconocerla como la de una distribución conocida. No hace falta calcular la densidad o función de probabilidad puntual directamente.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Propiedad 3: FGM de una suma de independientes}
+\begin{theorem}
+Si $X$ e $Y$ son independientes, entonces
+\[
+M_{X+Y}(t) = M_X(t)\cdot M_Y(t).
+\]
+\end{theorem}
+
+\begin{proof}
+\[
+M_{X+Y}(t) = E\left(e^{t(X+Y)}\right) = E\left(e^{tX}e^{tY}\right) = E(e^{tX})\,E(e^{tY}) = M_X(t)\,M_Y(t),
+\]
+donde el penúltimo paso usa que $X$ e $Y$ independientes implica que $e^{tX}$ y $e^{tY}$ también lo son, y por lo tanto $E(e^{tX}e^{tY}) = E(e^{tX})E(e^{tY})$. $\blacksquare$
+\end{proof}
+
+\begin{block}{Otras propiedades útiles}
+\begin{itemize}
+\item $M_{aX+b}(t) = e^{bt}\, M_X(at)$.
+\item $M_X(0) = 1$ siempre (pues $e^{0}=1$).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Cálculo de FGM de distribuciones conocidas}
+
+\begin{frame}{FGM de la distribución binomial}
+\begin{example}
+Sea $X \sim \text{Bin}(n,p)$.
+\[
+M_X(t) = \sum_{k=0}^n e^{tk} \binom{n}{k} p^k (1-p)^{n-k} = \sum_{k=0}^n \binom{n}{k} (pe^t)^k (1-p)^{n-k} = (1-p+pe^t)^n,
+\]
+usando el teorema del binomio de Newton. Se puede verificar: $M_X'(t) = n(1-p+pe^t)^{n-1}pe^t$, y $M_X'(0) = n(1)^{n-1}p = np = E(X)$. Consistente con lo visto en la Clase 14.
+\end{example}
+\end{frame}
+
+\begin{frame}{FGM de Poisson y exponencial}
+\begin{example}[Poisson]
+Sea $X \sim \text{Poisson}(\lambda)$.
+\[
+M_X(t) = \sum_{k=0}^\infty e^{tk}\frac{e^{-\lambda}\lambda^k}{k!} = e^{-\lambda}\sum_{k=0}^\infty \frac{(\lambda e^t)^k}{k!} = e^{-\lambda}\, e^{\lambda e^t} = e^{\lambda(e^t-1)}.
+\]
+\end{example}
+
+\begin{example}[Exponencial]
+Sea $X \sim \text{Exp}(\lambda)$, para $t < \lambda$:
+\[
+M_X(t) = \int_0^\infty e^{tx}\lambda e^{-\lambda x}\, dx = \lambda \int_0^\infty e^{-(\lambda-t)x}\, dx = \frac{\lambda}{\lambda - t}.
+\]
+(La integral converge solo si $t<\lambda$; para $t\geq \lambda$, la FGM no existe.)
+\end{example}
+\end{frame}
+
+\begin{frame}{FGM de la distribución normal}
+\begin{example}[Normal estándar y general]
+Sea $Z \sim N(0,1)$. Completando cuadrados en el exponente:
+\[
+M_Z(t) = \int_{-\infty}^{\infty} e^{tz}\frac{1}{\sqrt{2\pi}}e^{-z^2/2}\, dz = e^{t^2/2}\int_{-\infty}^\infty \frac{1}{\sqrt{2\pi}} e^{-(z-t)^2/2}\, dz = e^{t^2/2},
+\]
+pues la última integral es el área total bajo una densidad $N(t,1)$, que vale $1$.
+
+\medskip
+Si $X = \mu + \sigma Z \sim N(\mu,\sigma^2)$, usando $M_{aX+b}(t)=e^{bt}M_X(at)$:
+\[
+M_X(t) = e^{\mu t}\, M_Z(\sigma t) = e^{\mu t}\, e^{\sigma^2 t^2/2} = e^{\mu t + \sigma^2 t^2/2}.
+\]
+\end{example}
+
+\begin{alertblock}{Aplicación clave (Unidad futura y Clase 18)}
+Como consecuencia de la Propiedad 3, si $X_1 \sim N(\mu_1,\sigma_1^2)$ y $X_2\sim N(\mu_2,\sigma_2^2)$ son independientes, $M_{X_1+X_2}(t) = e^{(\mu_1+\mu_2)t + (\sigma_1^2+\sigma_2^2)t^2/2}$, que es la FGM de una $N(\mu_1+\mu_2,\sigma_1^2+\sigma_2^2)$. Por unicidad, ¡la suma de normales independientes es normal!
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Resumen}
+\begin{block}{Conceptos clave}
+\begin{itemize}
+\item $\text{Cov}(X,Y) = E(XY)-E(X)E(Y)$; mide asociación \emph{lineal}. Independencia $\Rightarrow$ covarianza cero (no vale la recíproca).
+\item $\rho_{X,Y} = \text{Cov}(X,Y)/(\sigma_X\sigma_Y) \in [-1,1]$: versión adimensional de la covarianza.
+\item $\text{Var}(X+Y) = \text{Var}(X)+\text{Var}(Y)+2\text{Cov}(X,Y)$.
+\item FGM: $M_X(t) = E(e^{tX})$. Genera momentos ($M_X^{(k)}(0) = E(X^k)$), caracteriza la distribución (unicidad), y $M_{X+Y}(t)=M_X(t)M_Y(t)$ si $X\perp Y$.
+\item FGM conocidas: Binomial $(1-p+pe^t)^n$; Poisson $e^{\lambda(e^t-1)}$; Exponencial $\lambda/(\lambda-t)$; Normal $e^{\mu t+\sigma^2t^2/2}$.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Próximas clases}
+Usaremos estas herramientas para demostrar la ley de los grandes números (Clase 17) y el teorema central del límite (Clase 18).
+\end{alertblock}
+\end{frame}
+
+\end{document}

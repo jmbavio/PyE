@@ -1,0 +1,310 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 28: Bondad de ajuste, independencia y homogeneidad}
+\subtitle{Unidad 7: Prueba de hipótesis}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Introducción}
+
+\begin{frame}{Pruebas chi-cuadrado}
+Las pruebas vistas hasta ahora se aplican a parámetros de variables cuantitativas (medias, varianzas). Ahora estudiamos una familia de pruebas basadas en la comparación de \textbf{frecuencias observadas} contra \textbf{frecuencias esperadas}, aplicables a datos categóricos (de conteo).
+
+\begin{block}{Estadístico general de Pearson}
+En las tres pruebas de esta clase se utiliza el mismo tipo de estadístico:
+\[
+\chi^2 = \sum_{i} \frac{(O_i-E_i)^2}{E_i},
+\]
+donde $O_i$ son las frecuencias \textbf{observadas} y $E_i$ las frecuencias \textbf{esperadas} bajo $H_0$, en cada una de las categorías o celdas consideradas.
+\end{block}
+
+\begin{itemize}
+\item \textbf{Bondad de ajuste}: ¿los datos provienen de una distribución teórica dada?
+\item \textbf{Independencia}: ¿dos variables categóricas, medidas sobre la misma población, están relacionadas?
+\item \textbf{Homogeneidad}: ¿varias poblaciones tienen la misma distribución para una variable categórica?
+\end{itemize}
+\end{frame}
+
+\section{Bondad de ajuste}
+
+\begin{frame}{Prueba de bondad de ajuste}
+Se dispone de $n$ observaciones clasificadas en $k$ categorías mutuamente excluyentes, con frecuencias observadas $O_1,\dots,O_k$ ($\sum O_i=n$). Se desea probar si los datos son compatibles con una distribución teórica que asigna probabilidades $p_1,\dots,p_k$ a cada categoría:
+\[
+H_0: P(\text{categoría } i) = p_i, \ i=1,\dots,k \qquad \text{vs.} \qquad H_1: \text{para algún } i,\ P(\text{categoría } i)\neq p_i.
+\]
+
+\begin{block}{Frecuencias esperadas y estadístico}
+\[
+E_i = n\,p_i, \qquad \chi^2 = \sum_{i=1}^{k}\frac{(O_i-E_i)^2}{E_i} \ \overset{H_0}{\approx}\ \chi^2_{k-1-m},
+\]
+donde $m$ es la cantidad de parámetros de la distribución teórica que debieron \textbf{estimarse} a partir de los datos (si la distribución está completamente especificada, $m=0$).
+\end{block}
+
+\textbf{Región crítica:} $\chi^2 > \chi^2_{k-1-m,\,\alpha}$ (siempre cola derecha: valores grandes de $\chi^2$ indican mal ajuste).
+\end{frame}
+
+\begin{frame}{Condiciones de aplicación}
+\begin{alertblock}{Requisito sobre las frecuencias esperadas}
+La aproximación de la distribución de $\chi^2$ es adecuada cuando las frecuencias esperadas no son demasiado pequeñas. Criterio usual:
+\[
+E_i \ge 5 \quad \text{para todas las categorías (o al menos el $80\%$ de ellas).}
+\]
+Si alguna $E_i<5$, se recomienda \textbf{agrupar categorías} contiguas hasta cumplir la condición.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: ajuste a una distribución uniforme}
+\begin{example}
+Se lanza un dado $120$ veces para verificar si está equilibrado. Frecuencias observadas:
+\begin{center}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Cara & 1 & 2 & 3 & 4 & 5 & 6 \\
+\midrule
+$O_i$ & 25 & 17 & 15 & 23 & 24 & 16 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Con $\alpha=0.05$, pruebe si el dado es equilibrado.
+
+\textbf{1. Hipótesis:} $H_0: p_i=1/6\ \forall i$ vs. $H_1:$ algún $p_i\neq1/6$.
+
+\textbf{2. Frecuencias esperadas:} $E_i=120\times\tfrac{1}{6}=20$ para todo $i$ (todas $\ge5$, se cumple la condición).
+
+\textbf{3. Estadístico y gl:} $k=6$, $m=0 \Rightarrow$ gl$=5$.
+
+\textbf{4. Región crítica:} $\chi^2>\chi^2_{5,\,0.05}=11.07$.
+
+\textbf{5. Cálculo:}
+\[
+\chi^2=\frac{5^2}{20}+\frac{3^2}{20}+\frac{5^2}{20}+\frac{3^2}{20}+\frac{4^2}{20}+\frac{4^2}{20}=\frac{25+9+25+9+16+16}{20}=\frac{100}{20}=5.0.
+\]
+
+\textbf{6. Decisión y conclusión:} $5.0<11.07\Rightarrow$ no se rechaza $H_0$; no hay evidencia de que el dado esté desequilibrado.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: ajuste a una distribución con parámetro estimado}
+\begin{example}
+Se registra el número de defectos por unidad en $200$ piezas, y se desea comprobar si sigue una distribución de Poisson (la media $\lambda$ debe estimarse de los datos: $\hat\lambda=1.5$).
+\begin{center}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+N° defectos & 0 & 1 & 2 & 3 & $\ge4$ \\
+\midrule
+$O_i$ & 48 & 65 & 48 & 26 & 13 \\
+$p_i$ (Poisson, $\hat\lambda=1.5$) & 0.223 & 0.335 & 0.251 & 0.126 & 0.065 \\
+$E_i=200\,p_i$ & 44.6 & 67.0 & 50.2 & 25.2 & 13.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Con $\alpha=0.05$: gl $=k-1-m=5-1-1=3$ (se estimó $\lambda$, $m=1$).
+
+\textbf{Región crítica:} $\chi^2>\chi^2_{3,\,0.05}=7.815$.
+
+\textbf{Cálculo:}
+\[
+\chi^2=\frac{(48-44.6)^2}{44.6}+\frac{(65-67.0)^2}{67.0}+\frac{(48-50.2)^2}{50.2}+\frac{(26-25.2)^2}{25.2}+\frac{(13-13.0)^2}{13.0}\approx0.259+0.060+0.096+0.025+0.000=0.44.
+\]
+
+\textbf{Decisión:} $0.44<7.815\Rightarrow$ no se rechaza $H_0$: el ajuste a la Poisson es adecuado.
+\end{example}
+\end{frame}
+
+\section{Prueba de independencia}
+
+\begin{frame}{Prueba de independencia (tablas de contingencia)}
+Se clasifica una muestra de $n$ individuos simultáneamente según \textbf{dos variables categóricas}, $A$ (con $r$ categorías) y $B$ (con $c$ categorías), formando una tabla de contingencia $r\times c$ de frecuencias observadas $O_{ij}$.
+
+\begin{block}{Hipótesis}
+\[
+H_0: \text{las variables } A \text{ y } B \text{ son independientes} \qquad \text{vs.} \qquad H_1: \text{no son independientes}.
+\]
+\end{block}
+
+\begin{block}{Frecuencias esperadas bajo $H_0$}
+Si $O_{i\bullet}$ es el total de la fila $i$, $O_{\bullet j}$ el total de la columna $j$, y $n$ el total general:
+\[
+E_{ij} = \frac{O_{i\bullet}\cdot O_{\bullet j}}{n}.
+\]
+\end{block}
+
+\begin{block}{Estadístico}
+\[
+\chi^2=\sum_{i=1}^{r}\sum_{j=1}^{c}\frac{(O_{ij}-E_{ij})^2}{E_{ij}} \ \overset{H_0}{\approx}\ \chi^2_{(r-1)(c-1)}.
+\]
+\end{block}
+\textbf{Región crítica:} $\chi^2>\chi^2_{(r-1)(c-1),\,\alpha}$.
+\end{frame}
+
+\begin{frame}{Ejemplo: independencia entre turno y ausentismo}
+\begin{example}
+Se estudia si el ausentismo laboral es independiente del turno de trabajo, sobre $300$ empleados:
+\begin{center}
+\begin{tabular}{@{}lccc|c@{}}
+\toprule
+ & Mañana & Tarde & Noche & Total \\
+\midrule
+Con ausentismo & 18 & 22 & 35 & 75 \\
+Sin ausentismo & 82 & 78 & 65 & 225 \\
+\midrule
+Total & 100 & 100 & 100 & 300 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Con $\alpha=0.05$, ¿el ausentismo depende del turno?
+
+\textbf{1. Hipótesis:} $H_0:$ ausentismo y turno son independientes vs. $H_1:$ no lo son.
+
+\textbf{2. Frecuencias esperadas} ($E_{ij}=O_{i\bullet}O_{\bullet j}/300$):
+\[
+E_{11}=\frac{75\times100}{300}=25, \quad E_{12}=25, \quad E_{13}=25, \quad E_{21}=75, \quad E_{22}=75, \quad E_{23}=75.
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: independencia (continuación)}
+\begin{example}
+\textbf{3. Grados de libertad:} $(r-1)(c-1)=(2-1)(3-1)=2$.
+
+\textbf{4. Región crítica:} $\chi^2>\chi^2_{2,\,0.05}=5.991$.
+
+\textbf{5. Cálculo:}
+\[
+\chi^2=\frac{(18-25)^2}{25}+\frac{(22-25)^2}{25}+\frac{(35-25)^2}{25}+\frac{(82-75)^2}{75}+\frac{(78-75)^2}{75}+\frac{(65-75)^2}{75}
+\]
+\[
+=\frac{49}{25}+\frac{9}{25}+\frac{100}{25}+\frac{49}{75}+\frac{9}{75}+\frac{100}{75} = 1.96+0.36+4.00+0.653+0.12+1.333 = 8.43.
+\]
+
+\textbf{6. Decisión:} $8.43>5.991\Rightarrow$ se \textbf{rechaza} $H_0$.
+
+\textbf{7. Conclusión:} al $5\%$ de significación, hay evidencia de que el ausentismo \textbf{no} es independiente del turno de trabajo (el turno noche muestra mayor ausentismo que el esperado bajo independencia).
+\end{example}
+\end{frame}
+
+\section{Prueba de homogeneidad}
+
+\begin{frame}{Prueba de homogeneidad}
+Se toman muestras \textbf{independientes} de tamaño fijo de $r$ poblaciones distintas, y se clasifica cada observación según una variable categórica con $c$ categorías. Se desea probar si las $r$ poblaciones tienen la \textbf{misma distribución} para dicha variable.
+
+\begin{block}{Hipótesis}
+\[
+H_0: \text{las } r \text{ poblaciones tienen la misma distribución en la variable categórica.}
+\]
+\[
+H_1: \text{al menos una población difiere de las demás.}
+\]
+\end{block}
+
+\begin{alertblock}{Diferencia clave con la prueba de independencia}
+En \textbf{independencia}, se toma \textbf{una única muestra} de $n$ individuos y se los clasifica según dos variables (los totales marginales de fila y columna son ambos aleatorios). En \textbf{homogeneidad}, los tamaños de cada muestra (una por población, es decir, los totales de fila o columna) están \textbf{fijados de antemano} por el diseño. Sin embargo, el cálculo —frecuencias esperadas, estadístico $\chi^2$ y grados de libertad $(r-1)(c-1)$— es \textbf{formalmente idéntico}.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: homogeneidad entre proveedores}
+\begin{example}
+Se extraen muestras de $150$ piezas de cada uno de tres proveedores y se clasifican según su calidad:
+\begin{center}
+\begin{tabular}{@{}lccc|c@{}}
+\toprule
+ & Proveedor A & Proveedor B & Proveedor C & Total \\
+\midrule
+Primera calidad & 120 & 108 & 96 & 324 \\
+Segunda calidad & 30 & 42 & 54 & 126 \\
+\midrule
+Total & 150 & 150 & 150 & 450 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Con $\alpha=0.01$, ¿los tres proveedores son homogéneos respecto de la calidad entregada?
+
+\textbf{1. Hipótesis:} $H_0:$ los tres proveedores tienen igual distribución de calidad vs. $H_1:$ al menos uno difiere.
+
+\textbf{2. Frecuencias esperadas:} $E_{1j}=\dfrac{324\times150}{450}=108$ para cada proveedor (primera calidad); $E_{2j}=\dfrac{126\times150}{450}=42$ (segunda calidad).
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: homogeneidad (continuación)}
+\begin{example}
+\textbf{3. Grados de libertad:} $(r-1)(c-1)=(2-1)(3-1)=2$.
+
+\textbf{4. Región crítica:} $\chi^2>\chi^2_{2,\,0.01}=9.210$.
+
+\textbf{5. Cálculo:}
+\[
+\chi^2=\frac{(120-108)^2}{108}+\frac{(108-108)^2}{108}+\frac{(96-108)^2}{108}+\frac{(30-42)^2}{42}+\frac{(42-42)^2}{42}+\frac{(54-42)^2}{42}
+\]
+\[
+=\frac{144}{108}+0+\frac{144}{108}+\frac{144}{42}+0+\frac{144}{42}=1.333+1.333+3.429+3.429=9.52.
+\]
+
+\textbf{6. Decisión:} $9.52>9.210\Rightarrow$ se \textbf{rechaza} $H_0$.
+
+\textbf{7. Conclusión:} al $1\%$ de significación, hay evidencia de que los tres proveedores no son homogéneos en la calidad de las piezas entregadas (el proveedor C presenta peor calidad relativa).
+\end{example}
+\end{frame}
+
+\section{Condiciones de aplicación generales}
+
+\begin{frame}{Condiciones de aplicación de las pruebas $\chi^2$}
+\begin{itemize}
+\item Las observaciones deben ser \textbf{independientes} entre sí.
+\item Cada individuo debe clasificarse en \textbf{una y solo una} categoría o celda.
+\item Las frecuencias esperadas deben ser suficientemente grandes: criterio habitual $E_i\ge5$ (o $E_{ij}\ge5$) en todas las celdas, o al menos en el $80\%$ de ellas, sin celdas con $E_i<1$.
+\item Si no se cumple, se deben \textbf{agrupar} categorías o filas/columnas adyacentes hasta satisfacer la condición, a costa de perder grados de libertad.
+\item El estadístico $\chi^2$ de Pearson es siempre una prueba de \textbf{cola derecha}: valores grandes indican discrepancia entre lo observado y lo esperado bajo $H_0$.
+\end{itemize}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{table}[]
+\centering
+\scriptsize
+\begin{tabular}{@{}p{2.6cm}p{4.6cm}p{2.3cm}@{}}
+\toprule
+Prueba & Hipótesis nula & Grados de libertad \\
+\midrule
+Bondad de ajuste & los datos siguen la distribución especificada & $k-1-m$ \\
+Independencia & dos variables categóricas son independientes & $(r-1)(c-1)$ \\
+Homogeneidad & varias poblaciones tienen igual distribución & $(r-1)(c-1)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\item Las tres pruebas comparten el estadístico $\displaystyle\chi^2=\sum\frac{(O-E)^2}{E}$ y la misma lógica de decisión: rechazar $H_0$ si $\chi^2$ es grande.
+\item Se requieren frecuencias esperadas $E_i\ge5$ para que la aproximación $\chi^2$ sea válida; de lo contrario, agrupar categorías.
+\item Con esta clase se completa la Unidad 7: quedan cubiertas las pruebas de hipótesis para parámetros de una y dos poblaciones, y las pruebas de ajuste, independencia y homogeneidad basadas en $\chi^2$.
+\end{itemize}
+\end{frame}
+
+\end{document}
