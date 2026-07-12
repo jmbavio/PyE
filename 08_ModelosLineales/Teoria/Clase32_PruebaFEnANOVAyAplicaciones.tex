@@ -200,24 +200,32 @@ Existe evidencia estadísticamente significativa (al 5\%) de que el diámetro me
 \begin{axis}[width=9cm,height=5.5cm,
   xlabel={Máquina}, ylabel={diámetro},
   xtick={1,2,3,4}, xticklabels={A,B,C,D},
-  ymin=17,ymax=32, tick label style={font=\scriptsize}, label style={font=\small},
-  boxplot/draw direction=y]
-\addplot+[boxplot, fill=blue!25] table[row sep=\\,y index=0]{
-data\\ 23\\ 25\\ 21\\ 24\\ 22\\
-};
-\addplot+[boxplot, fill=blue!25] table[row sep=\\,y index=0]{
-data\\ 27\\ 29\\ 26\\ 28\\ 30\\
-};
-\addplot+[boxplot, fill=blue!25] table[row sep=\\,y index=0]{
-data\\ 22\\ 20\\ 23\\ 21\\ 19\\
-};
-\addplot+[boxplot, fill=blue!25] table[row sep=\\,y index=0]{
-data\\ 25\\ 24\\ 27\\ 26\\ 23\\
-};
+  xmin=0.5,xmax=4.5, ymin=17,ymax=32,
+  tick label style={font=\scriptsize}, label style={font=\small}]
+% Maquina A: min 21, Q1 21.5, med 23, Q3 24.5, max 25
+\draw[thick] (axis cs:1,21) -- (axis cs:1,21.5);
+\draw[thick,fill=blue!25] (axis cs:0.75,21.5) rectangle (axis cs:1.25,24.5);
+\draw[thick,red] (axis cs:0.75,23) -- (axis cs:1.25,23);
+\draw[thick] (axis cs:1,24.5) -- (axis cs:1,25);
+% Maquina B: min 26, Q1 26.5, med 28, Q3 29.5, max 30
+\draw[thick] (axis cs:2,26) -- (axis cs:2,26.5);
+\draw[thick,fill=blue!25] (axis cs:1.75,26.5) rectangle (axis cs:2.25,29.5);
+\draw[thick,red] (axis cs:1.75,28) -- (axis cs:2.25,28);
+\draw[thick] (axis cs:2,29.5) -- (axis cs:2,30);
+% Maquina C: min 19, Q1 19.5, med 21, Q3 22.5, max 23
+\draw[thick] (axis cs:3,19) -- (axis cs:3,19.5);
+\draw[thick,fill=blue!25] (axis cs:2.75,19.5) rectangle (axis cs:3.25,22.5);
+\draw[thick,red] (axis cs:2.75,21) -- (axis cs:3.25,21);
+\draw[thick] (axis cs:3,22.5) -- (axis cs:3,23);
+% Maquina D: min 23, Q1 23.5, med 25, Q3 26.5, max 27
+\draw[thick] (axis cs:4,23) -- (axis cs:4,23.5);
+\draw[thick,fill=blue!25] (axis cs:3.75,23.5) rectangle (axis cs:4.25,26.5);
+\draw[thick,red] (axis cs:3.75,25) -- (axis cs:4.25,25);
+\draw[thick] (axis cs:4,26.5) -- (axis cs:4,27);
 \end{axis}
 \end{tikzpicture}
 \end{center}
-El gráfico de cajas confirma lo que sugiere la tabla ANOVA: las dispersiones dentro de cada máquina son comparables (homocedasticidad razonable), mientras que las posiciones (medianas) difieren notoriamente entre máquinas, en particular B se separa claramente del resto.
+El gráfico de cajas confirma lo que sugiere la tabla ANOVA: las dispersiones dentro de cada máquina son comparables (homocedasticidad razonable), mientras que las posiciones (medianas, en rojo) difieren notoriamente entre máquinas; en particular B se separa claramente del resto.
 \end{frame}
 
 \section{Comparaciones múltiples}
