@@ -1,0 +1,269 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 2: Axiomática de la probabilidad}
+\subtitle{Unidad 1: Espacios de probabilidad}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Nociones intuitivas de probabilidad}
+
+\begin{frame}{Tres maneras de pensar la probabilidad}
+Antes de axiomatizar, repasemos las ideas intuitivas que históricamente dieron origen al concepto.
+
+\begin{block}{1. Probabilidad clásica (Laplace)}
+Si un experimento tiene $N$ resultados posibles, todos igualmente verosímiles (equiprobables), y $n_A$ de ellos son favorables al suceso $A$, entonces
+\[
+P(A) = \frac{n_A}{N} = \frac{\text{casos favorables}}{\text{casos posibles}}.
+\]
+Se aplica \emph{antes} de realizar el experimento (a priori). Requiere simetría (dado equilibrado, moneda honesta, urna bien mezclada, etc.).
+\end{block}
+\end{frame}
+
+\begin{frame}{Probabilidad frecuencial y subjetiva}
+\begin{block}{2. Probabilidad frecuencial (a posteriori)}
+Se repite el experimento $n$ veces en las mismas condiciones y se observa la frecuencia relativa del suceso $A$:
+\[
+f_r(A) = \frac{n_A}{n},
+\]
+donde $n_A$ es el número de veces que ocurrió $A$. La \textbf{ley empírica del azar} (o ley de los grandes números, de manera informal) establece que $f_r(A)$ tiende a estabilizarse en torno a un valor $P(A)$ cuando $n$ crece indefinidamente. Se retoma en la Clase 3.
+\end{block}
+\begin{block}{3. Probabilidad subjetiva}
+Es el grado de creencia personal de un individuo respecto de la ocurrencia de un suceso, basado en su información y experiencia (usada por ejemplo en el otorgamiento de créditos, apuestas, diagnóstico). No requiere repeticiones del experimento.
+\end{block}
+\begin{alertblock}{El problema}
+Ninguna de las tres es una definición matemática rigurosa y única. Necesitamos una \textbf{axiomática} que las englobe a todas como casos particulares de un mismo modelo formal.
+\end{alertblock}
+\end{frame}
+
+\section{Axiomas de Kolmogorov}
+
+\begin{frame}{Espacio de probabilidad}
+\begin{definition}[Espacio de probabilidad]
+Un \textbf{espacio de probabilidad} es una terna $(\Omega, \mathcal{A}, P)$ donde:
+\begin{itemize}
+\item $\Omega$ es el espacio muestral (conjunto fundamental),
+\item $\mathcal{A}$ es una $\sigma$-álgebra de subconjuntos de $\Omega$ (los sucesos),
+\item $P: \mathcal{A} \to \mathbb{R}$ es una función, llamada \textbf{probabilidad}, que satisface los axiomas de Kolmogorov (1933).
+\end{itemize}
+\end{definition}
+\end{frame}
+
+\begin{frame}{Los axiomas}
+\begin{block}{Axioma 1 (No negatividad)}
+\[
+P(A) \geq 0 \qquad \text{para todo } A \in \mathcal{A}.
+\]
+\end{block}
+\begin{block}{Axioma 2 (Normalización)}
+\[
+P(\Omega) = 1.
+\]
+\end{block}
+\begin{block}{Axioma 3 ($\sigma$-aditividad)}
+Si $A_1, A_2, A_3, \dots \in \mathcal{A}$ son sucesos mutuamente excluyentes dos a dos ($A_i \cap A_j = \varnothing$ para $i \neq j$), entonces
+\[
+P\left(\bigcup_{i=1}^{\infty} A_i\right) = \sum_{i=1}^{\infty} P(A_i).
+\]
+\end{block}
+\begin{alertblock}{Observación}
+Para $\Omega$ finito basta pedir \textbf{aditividad finita}: si $A\cap B=\varnothing$ entonces $P(A\cup B)=P(A)+P(B)$. La versión numerable es necesaria para tratar espacios infinitos con rigor.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Los axiomas capturan las nociones intuitivas}
+\begin{itemize}
+\item La probabilidad clásica de Laplace satisface los tres axiomas trivialmente (es un caso particular con $\Omega$ finito y equiprobabilidad).
+\item La frecuencia relativa $f_r(A)=n_A/n$ también los satisface para cada $n$ fijo: es $\geq 0$, $f_r(\Omega)=1$ y es aditiva sobre sucesos disjuntos. Los axiomas de Kolmogorov son, en cierto sentido, la formalización de las propiedades que \emph{cualquier} noción razonable de probabilidad debería tener.
+\item La axiomática no dice \emph{cómo} calcular $P(A)$ en cada situación concreta —eso depende del modelo (clásico, frecuencial, subjetivo)— sino qué \textbf{propiedades matemáticas} debe cumplir siempre.
+\end{itemize}
+\end{frame}
+
+\section{Propiedades derivadas}
+
+\begin{frame}{Propiedad 1: probabilidad del suceso imposible}
+\begin{theorem}
+$P(\varnothing) = 0$.
+\end{theorem}
+\begin{proof}
+Consideremos la sucesión $A_1=\Omega,\ A_2=\varnothing,\ A_3=\varnothing,\dots$ Estos sucesos son mutuamente excluyentes dos a dos (pues $\Omega \cap \varnothing = \varnothing$ y $\varnothing\cap\varnothing=\varnothing$) y su unión es $\Omega$. Por el Axioma 3,
+\[
+P(\Omega) = P(\Omega) + \sum_{i=2}^{\infty} P(\varnothing).
+\]
+Como $P(\Omega)=1$ es finito, debe ser $\sum_{i=2}^\infty P(\varnothing) = 0$, y como cada término es $\geq 0$ (Axioma 1), se concluye $P(\varnothing)=0$. \qedhere
+\end{proof}
+\end{frame}
+
+\begin{frame}{Propiedad 2: aditividad finita y complemento}
+\begin{theorem}[Aditividad finita]
+Si $A \cap B = \varnothing$, entonces $P(A\cup B) = P(A)+P(B)$.
+\end{theorem}
+\begin{proof}
+Tomar $A_1=A,\ A_2=B,\ A_3=A_4=\dots=\varnothing$ en el Axioma 3 y usar $P(\varnothing)=0$.
+\end{proof}
+
+\begin{theorem}[Probabilidad del complemento]
+Para todo $A \in \mathcal{A}$, $\; P(A^c) = 1 - P(A)$.
+\end{theorem}
+\begin{proof}
+$A$ y $A^c$ son mutuamente excluyentes y $A \cup A^c = \Omega$. Por aditividad finita,
+\[
+P(A) + P(A^c) = P(\Omega) = 1 \;\Longrightarrow\; P(A^c) = 1-P(A). \qedhere
+\]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Propiedad 3: monotonía}
+\begin{theorem}[Monotonía]
+Si $A \subseteq B$, entonces $P(A) \leq P(B)$. Además, $P(B\setminus A) = P(B)-P(A)$.
+\end{theorem}
+\begin{proof}
+Como $A \subseteq B$, podemos escribir $B$ como unión disjunta:
+\[
+B = A \cup (B\setminus A), \qquad A \cap (B\setminus A) = \varnothing.
+\]
+Por aditividad finita, $P(B) = P(A) + P(B\setminus A)$. Como $P(B\setminus A)\geq 0$ (Axioma 1), se sigue $P(B) \geq P(A)$, y despejando, $P(B\setminus A)=P(B)-P(A)$.
+\end{proof}
+
+\begin{alertblock}{Corolario}
+Para todo $A \in \mathcal{A}$: $\; 0 \leq P(A) \leq 1$, ya que $\varnothing \subseteq A \subseteq \Omega$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Propiedad 4: probabilidad de la unión (caso general)}
+\begin{theorem}[Regla de la suma]
+Para $A, B \in \mathcal{A}$ cualesquiera (no necesariamente disjuntos):
+\[
+P(A \cup B) = P(A) + P(B) - P(A \cap B).
+\]
+\end{theorem}
+\begin{proof}
+Descomponemos $A\cup B$ en tres piezas disjuntas:
+\[
+A\cup B = (A\setminus B) \cup (A\cap B) \cup (B\setminus A).
+\]
+Por aditividad finita (extendida a tres sucesos disjuntos):
+\[
+P(A\cup B) = P(A\setminus B) + P(A\cap B) + P(B\setminus A).
+\]
+Por monotonía, $P(A\setminus B) = P(A) - P(A\cap B)$ y $P(B\setminus A)=P(B)-P(A\cap B)$. Sustituyendo:
+\[
+P(A\cup B) = \big[P(A)-P(A\cap B)\big] + P(A\cap B) + \big[P(B)-P(A\cap B)\big] = P(A)+P(B)-P(A\cap B). \qedhere
+\]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Propiedad 5: subaditividad y continuidad}
+\begin{theorem}[Subaditividad finita]
+Para $A,B \in \mathcal{A}$: $\; P(A\cup B) \leq P(A) + P(B)$.
+\end{theorem}
+\begin{proof}
+Se sigue inmediatamente de la regla de la suma, ya que $P(A\cap B) \geq 0$:
+\[
+P(A\cup B) = P(A)+P(B)-P(A\cap B) \leq P(A)+P(B). \qedhere
+\]
+\end{proof}
+Más en general, para $A_1,\dots,A_n \in \mathcal{A}$ (no necesariamente disjuntos):
+\[
+P\left(\bigcup_{i=1}^n A_i\right) \leq \sum_{i=1}^n P(A_i).
+\]
+
+\begin{block}{Continuidad de la probabilidad}
+Si $A_1 \subseteq A_2 \subseteq A_3 \subseteq \cdots$ es una sucesión creciente de sucesos, entonces
+\[
+P\left(\bigcup_{i=1}^{\infty} A_i\right) = \lim_{n\to\infty} P(A_n).
+\]
+Esta propiedad es consecuencia del Axioma 3 y se usa en la teoría avanzada de probabilidad.
+\end{block}
+\end{frame}
+
+\section{Ejemplos numéricos}
+
+\begin{frame}{Ejemplo 1}
+\begin{example}
+En un club deportivo, el $60\%$ de los socios practica natación ($A$), el $50\%$ practica tenis ($B$) y el $30\%$ practica ambos deportes. Un socio se elige al azar. Calcular la probabilidad de que:
+\begin{enumerate}
+\item practique al menos uno de los dos deportes;
+\item no practique ninguno de los dos;
+\item practique natación pero no tenis.
+\end{enumerate}
+\end{example}
+\begin{block}{Resolución}
+Datos: $P(A)=0{,}6$, $P(B)=0{,}5$, $P(A\cap B)=0{,}3$.
+\begin{enumerate}
+\item $P(A\cup B) = 0{,}6+0{,}5-0{,}3 = 0{,}8$.
+\item $P((A\cup B)^c) = 1-P(A\cup B) = 1-0{,}8 = 0{,}2$.
+\item $P(A\setminus B) = P(A)-P(A\cap B) = 0{,}6-0{,}3 = 0{,}3$.
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 2}
+\begin{example}
+Sean $A,B,C\in\mathcal{A}$ con $P(A)=0{,}3$, $P(B)=0{,}4$, $P(C)=0{,}2$, y supongamos que son mutuamente excluyentes dos a dos. Calcular $P(A\cup B\cup C)$ y $P\big((A\cup B\cup C)^c\big)$.
+\end{example}
+\begin{block}{Resolución}
+Al ser mutuamente excluyentes, se aplica aditividad finita (extendida a tres sucesos):
+\[
+P(A\cup B\cup C) = P(A)+P(B)+P(C) = 0{,}3+0{,}4+0{,}2 = 0{,}9.
+\]
+Por complemento:
+\[
+P\big((A\cup B\cup C)^c\big) = 1 - 0{,}9 = 0{,}1.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 3}
+\begin{example}
+Se sabe que $P(A)=0{,}45$ y $P(A\cup B) = 0{,}70$, con $A\subseteq B^c$ imposible en general; supongamos en cambio que $A$ y $B$ son mutuamente excluyentes. Hallar $P(B)$ y $P(A^c \cap B^c)$.
+\end{example}
+\begin{block}{Resolución}
+Como $A\cap B=\varnothing$: $\; P(A\cup B) = P(A)+P(B)$, luego
+\[
+P(B) = P(A\cup B)-P(A) = 0{,}70-0{,}45 = 0{,}25.
+\]
+Por De Morgan, $A^c\cap B^c = (A\cup B)^c$, entonces
+\[
+P(A^c\cap B^c) = 1-P(A\cup B) = 1-0{,}70=0{,}30.
+\]
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item La probabilidad puede pensarse de manera \textbf{clásica}, \textbf{frecuencial} o \textbf{subjetiva}, pero todas satisfacen una misma axiomática.
+\item Un \textbf{espacio de probabilidad} es la terna $(\Omega,\mathcal{A},P)$ con $P$ cumpliendo los \textbf{axiomas de Kolmogorov}: no negatividad, $P(\Omega)=1$ y $\sigma$-aditividad.
+\item De los axiomas se deducen: $P(\varnothing)=0$, aditividad finita, $P(A^c)=1-P(A)$, monotonía, $P(A\cup B)=P(A)+P(B)-P(A\cap B)$, subaditividad y continuidad.
+\item Todas las propiedades se demuestran \textbf{a partir de los tres axiomas}, sin apelar a interpretaciones intuitivas.
+\item Próxima clase: cálculo de probabilidades en espacios equiprobables mediante \textbf{análisis combinatorio} (regla de Laplace).
+\end{itemize}
+\end{frame}
+
+\end{document}

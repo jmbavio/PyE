@@ -1,0 +1,254 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 7: Distribuciones discretas II (Poisson y Geométrica)}
+\subtitle{Unidad 2: Variables aleatorias}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Distribución de Poisson}
+
+\begin{frame}{Motivación: eventos raros en el tiempo o el espacio}
+\begin{block}{Contexto}
+Muchos fenómenos consisten en \textbf{contar el número de ocurrencias} de un evento en un intervalo continuo (de tiempo, área, volumen, longitud):
+\end{block}
+\begin{example}
+\begin{itemize}
+\item Número de llamadas a una central telefónica en una hora.
+\item Número de defectos en un metro de tela.
+\item Número de autos que llegan a un peaje en 5 minutos.
+\item Número de partículas emitidas por una fuente radiactiva en un segundo.
+\end{itemize}
+\end{example}
+\begin{alertblock}{Idea}
+En estos casos no hay un "número de ensayos" $n$ natural como en la Binomial. En cambio, hay una \textbf{tasa promedio de ocurrencia} $\lambda$ por unidad de tiempo/espacio.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{La Poisson como límite de la Binomial}
+\begin{block}{Idea de la deducción}
+Dividimos el intervalo en $n$ subintervalos muy pequeños, cada uno con probabilidad $p=\lambda/n$ de contener un evento (y a lo sumo uno). El número total de eventos es aproximadamente $\text{Bi}(n, \lambda/n)$. Tomamos $n\to\infty$:
+\end{block}
+$$P(X=x) = \binom{n}{x}\left(\frac{\lambda}{n}\right)^x\left(1-\frac{\lambda}{n}\right)^{n-x} \xrightarrow[n\to\infty]{} \frac{\lambda^x e^{-\lambda}}{x!}.$$
+
+\begin{definition}[Distribución de Poisson]
+$X\sim\text{Po}(\lambda)$ si
+$$p(x) = P(X=x) = \frac{e^{-\lambda}\lambda^x}{x!}, \qquad x=0,1,2,\dots \qquad (\lambda>0).$$
+\end{definition}
+\end{frame}
+
+\begin{frame}{Verificación, esperanza y varianza}
+\begin{block}{La suma da 1}
+Usando el desarrollo en serie de Taylor $e^\lambda=\sum_{x=0}^\infty \lambda^x/x!$:
+$$\sum_{x=0}^\infty \frac{e^{-\lambda}\lambda^x}{x!} = e^{-\lambda}\sum_{x=0}^\infty\frac{\lambda^x}{x!} = e^{-\lambda}e^{\lambda}=1.$$
+\end{block}
+
+\begin{theorem}
+Si $X\sim\text{Po}(\lambda)$, entonces
+$$E(X) = \lambda, \qquad V(X) = \lambda.$$
+\end{theorem}
+
+\begin{alertblock}{Propiedad notable}
+En la Poisson, la media y la varianza \textbf{coinciden}: $E(X)=V(X)=\lambda$. Esto es útil para verificar si un conjunto de datos se ajusta razonablemente a este modelo.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{El proceso de Poisson}
+\begin{definition}[Proceso de Poisson]
+Un \textbf{proceso de Poisson} de tasa $\lambda$ (eventos por unidad de tiempo) es un modelo para ocurrencias aleatorias que cumple:
+\begin{enumerate}
+\item El número de eventos en intervalos disjuntos es \textbf{independiente}.
+\item La probabilidad de un evento en un intervalo corto $[t,t+h]$ es aproximadamente $\lambda h$.
+\item La probabilidad de dos o más eventos en $[t,t+h]$ es despreciable (de orden $o(h)$).
+\end{enumerate}
+\end{definition}
+
+\begin{block}{Consecuencia}
+Bajo estas hipótesis, el número de eventos $X$ en un intervalo de longitud $t$ sigue
+$$X \sim \text{Po}(\lambda t).$$
+\end{block}
+\end{frame}
+
+\begin{frame}{Gráfico: Poisson}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, bar width=10pt,
+  xlabel={$x$}, ylabel={$p(x)$},
+  width=10cm, height=5.5cm,
+  xtick={0,...,10},
+  title={Po(3)},
+]
+\addplot coordinates {
+(0,0.0498)(1,0.1494)(2,0.2240)(3,0.2240)(4,0.1680)
+(5,0.1008)(6,0.0504)(7,0.0216)(8,0.0081)(9,0.0027)(10,0.0008)
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Poisson}
+\begin{example}
+A una central telefónica llegan en promedio 4 llamadas por minuto, según un proceso de Poisson. Calcular la probabilidad de que en un minuto dado lleguen exactamente 6 llamadas, y la probabilidad de que no llegue ninguna en 30 segundos.
+\end{example}
+
+\begin{block}{Resolución}
+\textbf{Parte 1:} $\lambda=4$ (por minuto), $X\sim\text{Po}(4)$.
+$$P(X=6) = \frac{e^{-4}4^6}{6!} = \frac{0.0183\times 4096}{720} \approx 0.1042.$$
+
+\textbf{Parte 2:} en 30 seg. la tasa es $\lambda t = 4\times 0.5 = 2$. Sea $Y\sim\text{Po}(2)$:
+$$P(Y=0) = \frac{e^{-2}2^0}{0!} = e^{-2} \approx 0.1353.$$
+\end{block}
+\end{frame}
+
+\begin{frame}{Poisson como aproximación de la Binomial}
+\begin{block}{Regla práctica}
+Cuando $n$ es grande y $p$ es pequeño (evento raro), de modo que $np=\lambda$ se mantiene moderado (usualmente $n\ge 30$, $p\le 0.1$, $np\le 10$):
+$$\text{Bi}(n,p) \approx \text{Po}(\lambda=np).$$
+\end{block}
+
+\begin{example}
+En una fábrica, el 0.5\% de los tornillos producidos son defectuosos. En una caja de 400 tornillos, ¿cuál es la probabilidad de encontrar exactamente 3 defectuosos?
+
+Exacto: $X\sim\text{Bi}(400,0.005)$. Aproximado: $\lambda=np=2$, $Y\sim\text{Po}(2)$:
+$$P(Y=3) = \frac{e^{-2}2^3}{3!} = \frac{0.1353\times 8}{6} \approx 0.1804,$$
+muy cercano al valor exacto binomial ($\approx 0.1789$).
+\end{example}
+\end{frame}
+
+\section{Distribución Geométrica}
+
+\begin{frame}{Planteo del modelo geométrico}
+\begin{block}{Pregunta que responde}
+En una sucesión de ensayos de Bernoulli independientes con probabilidad de éxito $p$: ¿cuántos ensayos $X$ se necesitan hasta obtener el \textbf{primer} éxito?
+\end{block}
+
+\begin{definition}[Distribución Geométrica]
+$X\sim\text{Ge}(p)$ si
+$$p(x) = P(X=x) = q^{x-1}p, \qquad x=1,2,3,\dots \qquad (q=1-p).$$
+\end{definition}
+
+\begin{alertblock}{Idea de la deducción}
+Para que el primer éxito ocurra en el ensayo $x$, los primeros $x-1$ ensayos deben ser fracasos (probabilidad $q^{x-1}$ por independencia) y el ensayo $x$ debe ser éxito (probabilidad $p$).
+\end{alertblock}
+Nota: coincide con $\text{BN}(k=1,p)$, el caso particular de Pascal visto en la clase anterior.
+\end{frame}
+
+\begin{frame}{Esperanza, varianza y verificación}
+\begin{block}{La suma da 1 (serie geométrica)}
+$$\sum_{x=1}^\infty q^{x-1}p = p\sum_{j=0}^\infty q^j = p\cdot\frac{1}{1-q} = \frac{p}{p}=1.$$
+\end{block}
+
+\begin{theorem}
+Si $X\sim\text{Ge}(p)$, entonces
+$$E(X) = \frac{1}{p}, \qquad V(X) = \frac{q}{p^2} = \frac{1-p}{p^2}.$$
+\end{theorem}
+
+\begin{block}{Interpretación de $E(X)=1/p$}
+Si la probabilidad de éxito es baja, se necesitan en promedio muchos ensayos. Por ejemplo, si $p=0.1$, se esperan 10 ensayos hasta el primer éxito.
+\end{block}
+\end{frame}
+
+\begin{frame}{Propiedad de falta de memoria}
+\begin{theorem}[Falta de memoria]
+Si $X\sim\text{Ge}(p)$, para todo $m,n\ge 0$:
+$$P(X>m+n \mid X>m) = P(X>n).$$
+\end{theorem}
+
+\begin{proof}
+Primero, $P(X>n) = \sum_{x=n+1}^\infty q^{x-1}p = q^n$ (cola de serie geométrica). Entonces
+$$P(X>m+n\mid X>m) = \frac{P(X>m+n)}{P(X>m)} = \frac{q^{m+n}}{q^m} = q^n = P(X>n). \qedhere$$
+\end{proof}
+
+\begin{alertblock}{Interpretación}
+Si ya hubo $m$ fracasos consecutivos, la probabilidad de necesitar $n$ ensayos adicionales es la misma que al empezar de cero: el proceso "no recuerda" los fracasos pasados. Es la \textbf{única} distribución discreta con esta propiedad.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Geométrica}
+\begin{example}
+La probabilidad de que una perforación petrolera tenga éxito es $p=0.2$, independientemente entre perforaciones. (a) ¿Cuál es la probabilidad de que la primera perforación exitosa sea la cuarta? (b) Si ya se hicieron 3 perforaciones sin éxito, ¿cuál es la probabilidad de necesitar al menos 2 perforaciones más?
+\end{example}
+
+\begin{block}{Resolución}
+(a) $X\sim\text{Ge}(0.2)$: $P(X=4) = (0.8)^3(0.2) = 0.512\times 0.2 = 0.1024$.
+
+(b) Por falta de memoria: $P(X>3+2 \mid X>3) = P(X>2) = (0.8)^2 = 0.64$.
+
+Sin usar la propiedad: $P(X>5\mid X>3) = q^5/q^3 = q^2 = 0.64$ (mismo resultado, verificación directa).
+\end{block}
+\end{frame}
+
+\section{Comparación y elección del modelo}
+
+\begin{frame}{¿Qué modelo discreto usar?}
+\begin{center}
+\small
+\begin{tabular}{p{4.3cm}p{6.5cm}}
+\toprule
+\textbf{Pregunta} & \textbf{Modelo} \\
+\midrule
+Número de éxitos en $n$ ensayos independientes con $p$ fijo & Binomial \\
+Número de éxitos en muestra sin reposición de población finita & Hipergeométrica \\
+Número de ensayos hasta el $k$-ésimo éxito & Pascal (binomial negativa) \\
+Número de ensayos hasta el primer éxito & Geométrica \\
+Número de ocurrencias de un evento raro en tiempo/espacio continuo & Poisson \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{alertblock}{Aproximaciones útiles}
+$\text{H}(N,K,n)\approx\text{Bi}(n,p)$ si $n/N$ pequeño; \quad $\text{Bi}(n,p)\approx\text{Po}(np)$ si $n$ grande y $p$ pequeño.
+\end{alertblock}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Distribución} & \textbf{$p(x)$} & \textbf{$E(X)$} & \textbf{$V(X)$} \\
+\midrule
+Poisson$(\lambda)$ & $e^{-\lambda}\lambda^x/x!$, $x\ge0$ & $\lambda$ & $\lambda$ \\
+Geométrica$(p)$ & $q^{x-1}p$, $x\ge1$ & $1/p$ & $q/p^2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{block}{Ideas clave}
+\begin{itemize}
+\item La Poisson surge como límite de la Binomial cuando $n\to\infty$, $p\to0$, $np=\lambda$ fijo; modela conteos en procesos de Poisson.
+\item La Geométrica es el caso $k=1$ de Pascal; es la única distribución discreta con falta de memoria.
+\item La elección del modelo depende de \emph{qué se cuenta}: éxitos en ensayos fijos, ensayos hasta $k$ éxitos, o eventos en un continuo.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{document}

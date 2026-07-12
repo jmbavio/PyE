@@ -1,0 +1,262 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 11: Distribuciones condicionales e independencia}
+\subtitle{Unidad 3: Vectores aleatorios}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Distribuciones condicionales: caso discreto}
+
+\begin{frame}{Motivación}
+\begin{block}{Pregunta}
+Si sabemos que $Y=y_j$, ¿cómo cambia la distribución de probabilidad de $X$?
+\end{block}
+\pause
+Recordemos la definición de probabilidad condicional de eventos:
+\[
+P(A\mid B) = \frac{P(A\cap B)}{P(B)}, \qquad \text{si } P(B) > 0.
+\]
+Aplicando esto a los eventos $\{X=x_i\}$ y $\{Y=y_j\}$ obtenemos la función de probabilidad condicional.
+\end{frame}
+
+\begin{frame}{Función de probabilidad condicional}
+\begin{definition}[Caso discreto]
+Si $(X,Y)$ es un vector aleatorio discreto con función de probabilidad conjunta $p_{X,Y}$ y marginal $p_Y(y_j) > 0$, la \textbf{función de probabilidad condicional} de $X$ dado $Y=y_j$ es
+\[
+p_{X\mid Y}(x_i \mid y_j) = P(X=x_i \mid Y=y_j) = \frac{p_{X,Y}(x_i,y_j)}{p_Y(y_j)}.
+\]
+\end{definition}
+\begin{block}{Propiedades}
+Para $y_j$ fijo con $p_Y(y_j)>0$, la función $x_i \mapsto p_{X\mid Y}(x_i\mid y_j)$ es una función de probabilidad legítima:
+\[
+p_{X\mid Y}(x_i\mid y_j) \ge 0, \qquad \sum_i p_{X\mid Y}(x_i \mid y_j) = 1.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 1}
+\begin{example}
+Se lanza una moneda equilibrada 3 veces. Sea $X$ el número de caras en los primeros 2 lanzamientos e $Y$ el número total de caras en los 3 lanzamientos. La tabla conjunta (probabilidades $\times 8$) es:
+
+\begin{table}[]
+\centering
+\begin{tabular}{c|cccc}
+\toprule
+$X\backslash Y$ & 0 & 1 & 2 & 3 \\
+\midrule
+0 & 1 & 1 & 0 & 0 \\
+1 & 0 & 2 & 2 & 0 \\
+2 & 0 & 0 & 1 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+Hallar la distribución condicional de $X$ dado $Y=2$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo 1: resolución}
+\begin{block}{Resolución}
+Primero, $p_Y(2) = (0+2+1)/8 = 3/8$. Luego:
+\[
+p_{X\mid Y}(0\mid 2) = \frac{0/8}{3/8} = 0, \quad
+p_{X\mid Y}(1\mid 2) = \frac{2/8}{3/8} = \frac23, \quad
+p_{X\mid Y}(2\mid 2) = \frac{1/8}{3/8} = \frac13.
+\]
+Verificación: $0 + \tfrac23 + \tfrac13 = 1$. \checkmark
+\end{block}
+\pause
+\begin{alertblock}{Interpretación}
+Si ya sabemos que en total salieron 2 caras en los 3 lanzamientos, es más probable ($2/3$) que exactamente 1 de esas caras haya ocurrido en los dos primeros lanzamientos, que las 2 ($1/3$).
+\end{alertblock}
+\end{frame}
+
+\section{Distribuciones condicionales: caso continuo}
+
+\begin{frame}{Densidad condicional}
+\begin{definition}[Caso continuo]
+Si $(X,Y)$ es conjuntamente continuo con densidad $f_{X,Y}$ y $f_Y(y) > 0$, la \textbf{densidad condicional} de $X$ dado $Y=y$ es
+\[
+f_{X\mid Y}(x\mid y) = \frac{f_{X,Y}(x,y)}{f_Y(y)}.
+\]
+\end{definition}
+\begin{block}{Justificación heurística}
+No podemos condicionar al evento $\{Y=y\}$ directamente (tiene probabilidad 0), pero definimos $f_{X\mid Y}(x\mid y)$ como límite de $f_{X\mid Y \in (y,y+h]}$ cuando $h\to 0$, lo cual conduce exactamente al cociente de arriba.
+\end{block}
+\begin{block}{Propiedades}
+$f_{X\mid Y}(x\mid y)\ge 0$ y $\displaystyle\int_{-\infty}^{\infty} f_{X\mid Y}(x\mid y)\,dx = 1$, para cada $y$ fijo con $f_Y(y)>0$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Cálculo de probabilidades condicionales}
+\begin{block}{Uso práctico}
+Una vez obtenida $f_{X\mid Y}(\cdot \mid y)$, se calculan probabilidades condicionales como con cualquier densidad univariada:
+\[
+P(a < X < b \mid Y=y) = \int_a^b f_{X\mid Y}(x\mid y)\, dx.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 2}
+\begin{example}
+Sea $f_{X,Y}(x,y) = x+y$ para $0\le x,y\le 1$ (visto en la Clase 10). Hallar $f_{X\mid Y}(x\mid y)$ y calcular $P(X < 1/2 \mid Y = 1/2)$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+Ya vimos que $f_Y(y) = y + \tfrac12$ para $0\le y\le 1$. Entonces, para $0\le x\le 1$:
+\[
+f_{X\mid Y}(x\mid y) = \frac{x+y}{y+\tfrac12}.
+\]
+Con $y=\tfrac12$: $f_{X\mid Y}(x\mid \tfrac12) = \dfrac{x+\tfrac12}{1} = x+\tfrac12$.
+\[
+P\left(X<\tfrac12 \,\middle|\, Y=\tfrac12\right) = \int_0^{1/2} \left(x+\tfrac12\right) dx = \left[\tfrac{x^2}{2}+\tfrac{x}{2}\right]_0^{1/2} = \tfrac18+\tfrac14 = \tfrac38.
+\]
+\end{block}
+\end{frame}
+
+\section{Esperanza condicional}
+
+\begin{frame}{Esperanza condicional}
+\begin{definition}[Esperanza condicional]
+\begin{align*}
+\text{(discreto)} \quad & E[X\mid Y=y_j] = \sum_i x_i \, p_{X\mid Y}(x_i \mid y_j), \\
+\text{(continuo)} \quad & E[X\mid Y=y] = \int_{-\infty}^{\infty} x \, f_{X\mid Y}(x\mid y)\, dx.
+\end{align*}
+\end{definition}
+\pause
+\begin{block}{Interpretación}
+$E[X\mid Y=y]$ es el valor esperado de $X$ una vez que se conoce el valor exacto de $Y$. Como función de $y$, $g(y) = E[X\mid Y=y]$ permite predecir $X$ a partir de $Y$: es la base de la regresión, que se retomará en unidades posteriores.
+\end{block}
+\begin{example}
+En el Ejemplo 2, $E[X\mid Y=\tfrac12] = \int_0^1 x\left(x+\tfrac12\right) dx = \tfrac13+\tfrac14 = \tfrac{7}{12}$.
+\end{example}
+\end{frame}
+
+\section{Independencia de variables aleatorias}
+
+\begin{frame}{Definición de independencia}
+\begin{definition}[Independencia]
+$X$ e $Y$ son \textbf{independientes} si para todo $x,y \in \mathbb{R}$,
+\[
+F_{X,Y}(x,y) = F_X(x)\cdot F_Y(y).
+\]
+\end{definition}
+\pause
+\begin{block}{Caracterizaciones equivalentes}
+\begin{itemize}
+\item \textbf{Caso discreto:} $X$ e $Y$ son independientes $\iff$ $p_{X,Y}(x_i,y_j) = p_X(x_i)\, p_Y(y_j)$ para todo $i,j$.
+\item \textbf{Caso continuo:} $X$ e $Y$ son independientes $\iff$ $f_{X,Y}(x,y) = f_X(x)\, f_Y(y)$ para todo $(x,y)$ (salvo, eventualmente, un conjunto de medida nula).
+\end{itemize}
+\end{block}
+\begin{alertblock}{Consecuencia}
+Si $X$ e $Y$ son independientes, la distribución condicional de $X$ dado $Y=y$ \textbf{no depende de $y$}: $f_{X\mid Y}(x\mid y) = f_X(x)$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Criterio práctico de factorización}
+\begin{block}{Criterio útil}
+En el caso continuo, $X$ e $Y$ son independientes si y solo si $f_{X,Y}(x,y)$ se puede escribir como
+\[
+f_{X,Y}(x,y) = g(x)\, h(y)
+\]
+para ciertas funciones $g,h \ge 0$, \textbf{y además el soporte es un rectángulo} (posiblemente infinito) $\{(x,y): a<x<b, \, c<y<d\}$ que no depende de la otra variable.
+\end{block}
+\begin{alertblock}{Error común}
+Si el soporte de $f_{X,Y}$ \textbf{no} es un producto cartesiano (por ejemplo, un triángulo $0<x<y<1$), entonces $X$ e $Y$ \textbf{no} son independientes, aunque la fórmula ``se vea factorizada''.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo 3: verificación de independencia}
+\begin{example}
+Retomando $f_{X,Y}(x,y)=x+y$ en $[0,1]^2$: ¿son $X$ e $Y$ independientes?
+\end{example}
+\pause
+\begin{block}{Resolución}
+Ya calculamos $f_X(x) = x+\tfrac12$ y $f_Y(y)=y+\tfrac12$ en $[0,1]$. El producto es
+\[
+f_X(x)\, f_Y(y) = \left(x+\tfrac12\right)\left(y+\tfrac12\right) = xy + \tfrac{x}{2}+\tfrac{y}{2}+\tfrac14,
+\]
+que \textbf{no} coincide con $f_{X,Y}(x,y) = x+y$. Por lo tanto, $X$ e $Y$ \textbf{no son independientes}, a pesar de que el soporte es el cuadrado $[0,1]^2$ (un rectángulo).
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 4: caso independiente}
+\begin{example}
+Sea $f_{X,Y}(x,y) = 6e^{-2x}e^{-3y}$ para $x>0, y>0$ (y $0$ en otro caso). ¿Son $X$ e $Y$ independientes? En tal caso, identificar sus distribuciones marginales.
+\end{example}
+\pause
+\begin{block}{Resolución}
+El soporte $\{x>0\}\times\{y>0\}$ es un producto cartesiano, y
+\[
+f_{X,Y}(x,y) = \underbrace{2e^{-2x}}_{g(x)} \cdot \underbrace{3e^{-3y}}_{h(y)}.
+\]
+Como $g$ y $h$ son densidades exponenciales (integran 1 cada una), concluimos $f_X(x)=2e^{-2x}$ ($X\sim \text{Exp}(2)$), $f_Y(y)=3e^{-3y}$ ($Y\sim\text{Exp}(3)$), y $X,Y$ \textbf{son independientes}.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 5: independencia en caso discreto}
+\begin{example}
+Se lanzan dos dados equilibrados \textbf{independientemente}. Sea $X$ el resultado del primero e $Y$ el del segundo. Verificar que $X$ e $Y$ son independientes y calcular $P(X=3,Y=5)$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+Por construcción del experimento (dados físicamente independientes), $p_{X,Y}(i,j) = \tfrac{1}{36}$ para todo $i,j\in\{1,\ldots,6\}$, mientras que $p_X(i)=p_Y(j)=\tfrac16$. Como
+\[
+p_{X,Y}(i,j) = \frac{1}{36} = \frac16\cdot\frac16 = p_X(i)\,p_Y(j) \quad \forall i,j,
+\]
+se confirma la independencia. En particular, $P(X=3,Y=5) = \tfrac16\cdot\tfrac16 = \tfrac{1}{36}$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Independencia de $n$ variables}
+\begin{definition}[Independencia mutua]
+Las variables $X_1,\ldots,X_n$ son \textbf{mutuamente independientes} si
+\[
+F(x_1,\ldots,x_n) = F_{X_1}(x_1)\cdots F_{X_n}(x_n) \quad \forall (x_1,\ldots,x_n)\in\mathbb{R}^n,
+\]
+o, equivalentemente, si la función de probabilidad (densidad) conjunta factoriza como producto de las $n$ marginales.
+\end{definition}
+\begin{alertblock}{Cuidado}
+La independencia \textbf{de a pares} (cada par $X_i,X_j$ independiente) \textbf{no implica} la independencia mutua de las $n$ variables en conjunto.
+\end{alertblock}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Ideas clave de hoy}
+\begin{itemize}
+\item La \textbf{distribución condicional} de $X$ dado $Y=y$ se obtiene dividiendo la conjunta por la marginal de $Y$: $p_{X\mid Y}$ o $f_{X\mid Y}$.
+\item La \textbf{esperanza condicional} $E[X\mid Y=y]$ resume el valor esperado de $X$ conociendo $Y$.
+\item $X$ e $Y$ son \textbf{independientes} si y solo si la conjunta factoriza como producto de las marginales, \textbf{y} el soporte es un producto cartesiano.
+\item Verificar independencia requiere chequear \textbf{tanto} la factorización \textbf{como} la forma del soporte.
+\item Próxima clase: funciones de varias variables aleatorias (sumas, máximos, mínimos, cambio de variable).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{document}

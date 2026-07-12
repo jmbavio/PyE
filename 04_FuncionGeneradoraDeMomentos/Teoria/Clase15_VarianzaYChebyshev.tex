@@ -1,0 +1,291 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 15: Varianza, desigualdad de Chebyshev y esperanza condicional}
+\subtitle{Unidad 4: Función generadora de momentos}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Varianza y desviación estándar}
+
+\begin{frame}{Motivación}
+\begin{block}{¿Por qué no alcanza con la esperanza?}
+Dos variables aleatorias pueden tener la misma esperanza y comportarse de manera muy distinta. Por ejemplo:
+\begin{itemize}
+\item $X$: siempre vale $0$. $E(X) = 0$.
+\item $Y$: vale $-100$ con probabilidad $0.5$ y $100$ con probabilidad $0.5$. $E(Y) = 0$.
+\end{itemize}
+Ambas tienen esperanza $0$, pero $Y$ es mucho más ``dispersa''. Necesitamos una medida de \textbf{dispersión} alrededor de la media.
+\end{block}
+\end{frame}
+
+\begin{frame}{Definición de varianza}
+\begin{definition}[Varianza]
+Sea $X$ una variable aleatoria con $E(X) = \mu$ finita. La \textbf{varianza} de $X$ es
+\[
+\text{Var}(X) = E\left[(X-\mu)^2\right].
+\]
+La \textbf{desviación estándar} (o típica) es $\sigma_X = \sqrt{\text{Var}(X)}$.
+\end{definition}
+
+\begin{block}{Interpretación}
+$\text{Var}(X)$ mide el promedio del cuadrado de la distancia de $X$ a su media. Se eleva al cuadrado para evitar que las desviaciones positivas y negativas se cancelen. La desviación estándar tiene las mismas unidades que $X$, lo cual facilita su interpretación.
+\end{block}
+
+Aplicando la ley del estadístico inconsciente (Clase 14) con $g(x) = (x-\mu)^2$:
+\[
+\text{Var}(X) = \sum_i (x_i - \mu)^2 p(x_i) \quad \text{(discreta)}, \qquad \text{Var}(X) = \int_{-\infty}^\infty (x-\mu)^2 f(x)\, dx \quad \text{(continua)}.
+\]
+\end{frame}
+
+\begin{frame}{Fórmula alternativa (más práctica para calcular)}
+\begin{theorem}[Fórmula de cálculo]
+\[
+\text{Var}(X) = E(X^2) - [E(X)]^2.
+\]
+\end{theorem}
+
+\begin{proof}
+Sea $\mu = E(X)$. Desarrollando el cuadrado,
+\begin{align*}
+\text{Var}(X) &= E\left[(X-\mu)^2\right] = E\left[X^2 - 2\mu X + \mu^2\right] \\
+&= E(X^2) - 2\mu\, E(X) + \mu^2 \qquad \text{(linealidad, Clase 14)}\\
+&= E(X^2) - 2\mu \cdot \mu + \mu^2 = E(X^2) - \mu^2. \qedhere
+\end{align*}
+\end{proof}
+
+\begin{alertblock}{En la práctica}
+Casi siempre conviene calcular $\text{Var}(X)$ mediante $E(X^2) - [E(X)]^2$ en vez de $E[(X-\mu)^2]$ directamente.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: dado equilibrado}
+\begin{example}
+Sea $X$ el resultado de tirar un dado. Ya vimos $E(X) = 3.5$. Calculemos $E(X^2)$:
+\[
+E(X^2) = \frac{1}{6}(1^2+2^2+3^2+4^2+5^2+6^2) = \frac{1}{6}(91) = \frac{91}{6} \approx 15.1\overline{6}.
+\]
+Luego,
+\[
+\text{Var}(X) = \frac{91}{6} - (3.5)^2 = 15.1\overline{6} - 12.25 = 2.91\overline{6} = \frac{35}{12}.
+\]
+Y $\sigma_X = \sqrt{35/12} \approx 1.708$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Varianzas de distribuciones conocidas}
+\begin{block}{Resultados (algunos se piden demostrar en la Práctica)}
+\begin{itemize}
+\item $X \sim \text{Bernoulli}(p)$: $\text{Var}(X) = p(1-p)$.
+\item $X \sim \text{Bin}(n,p)$: $\text{Var}(X) = np(1-p)$.
+\item $X \sim \text{Poisson}(\lambda)$: $\text{Var}(X) = \lambda$.
+\item $X \sim U(a,b)$: $\text{Var}(X) = \dfrac{(b-a)^2}{12}$.
+\item $X \sim \text{Exp}(\lambda)$: $\text{Var}(X) = \dfrac{1}{\lambda^2}$.
+\item $X \sim N(\mu,\sigma^2)$: $\text{Var}(X) = \sigma^2$ (por construcción del modelo).
+\end{itemize}
+\end{block}
+
+\begin{example}[Verificación para exponencial]
+Vimos $E(X)=1/\lambda$ y $E(X^2) = 2/\lambda^2$. Luego $\text{Var}(X) = 2/\lambda^2 - 1/\lambda^2 = 1/\lambda^2$.
+\end{example}
+\end{frame}
+
+\section{Propiedades de la varianza}
+
+\begin{frame}{Propiedades}
+\begin{theorem}[Propiedades de la varianza]
+Sean $X,Y$ variables aleatorias con varianza finita y $a,b \in \mathbb{R}$:
+\begin{enumerate}
+\item $\text{Var}(X) \geq 0$, y $\text{Var}(X) = 0$ si y solo si $X$ es constante c.s.
+\item $\text{Var}(c) = 0$ para cualquier constante $c$.
+\item $\text{Var}(aX+b) = a^2\, \text{Var}(X)$ (la traslación $b$ no afecta la dispersión).
+\item Si $X, Y$ son \textbf{independientes}: $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y)$.
+\item En general (sin independencia): $\text{Var}(X+Y) = \text{Var}(X)+\text{Var}(Y) + 2\,\text{Cov}(X,Y)$ (Clase 16).
+\end{enumerate}
+\end{theorem}
+\end{frame}
+
+\begin{frame}{Demostración de $\text{Var}(aX+b) = a^2 \text{Var}(X)$}
+\begin{proof}
+Sea $\mu = E(X)$. Por linealidad, $E(aX+b) = a\mu + b$. Entonces:
+\begin{align*}
+\text{Var}(aX+b) &= E\left[\big((aX+b) - (a\mu+b)\big)^2\right] = E\left[(aX - a\mu)^2\right] \\
+&= E\left[a^2(X-\mu)^2\right] = a^2\, E\left[(X-\mu)^2\right] = a^2\,\text{Var}(X). \qedhere
+\end{align*}
+\end{proof}
+
+\begin{alertblock}{Caso particular útil: estandarización}
+Si $Z = \dfrac{X-\mu}{\sigma}$ (con $\sigma = \sigma_X > 0$), entonces $E(Z) = 0$ y $\text{Var}(Z) = \dfrac{1}{\sigma^2}\text{Var}(X) = 1$. Esta variable $Z$ se llama variable \textbf{estandarizada} y será clave en el Teorema Central del Límite (Clase 18).
+\end{alertblock}
+\end{frame}
+
+\section{Desigualdad de Chebyshev}
+
+\begin{frame}{Motivación}
+\begin{block}{Pregunta}
+¿Podemos acotar la probabilidad de que $X$ se aleje mucho de su media, \textbf{sin conocer} la distribución exacta de $X$, usando solamente $\mu$ y $\sigma^2$?
+\end{block}
+
+La respuesta es sí, y la herramienta es la \textbf{desigualdad de Chebyshev}, válida para \textbf{cualquier} distribución con varianza finita.
+\end{frame}
+
+\begin{frame}{Enunciado}
+\begin{theorem}[Desigualdad de Chebyshev]
+Sea $X$ una variable aleatoria con $E(X) = \mu$ y $\text{Var}(X) = \sigma^2 < \infty$. Entonces, para todo $k > 0$:
+\[
+P\big(|X - \mu| \geq k\big) \leq \frac{\sigma^2}{k^2}.
+\]
+Equivalentemente, tomando $k = c\sigma$ con $c>0$:
+\[
+P\big(|X-\mu| \geq c\sigma\big) \leq \frac{1}{c^2}.
+\]
+\end{theorem}
+
+\begin{block}{Lectura}
+La probabilidad de alejarse de la media más de $c$ desviaciones estándar es a lo sumo $1/c^2$, sin importar la forma de la distribución.
+\end{block}
+\end{frame}
+
+\begin{frame}{Demostración (caso continuo)}
+\begin{proof}
+Sea $f$ la densidad de $X$. Por definición,
+\[
+\sigma^2 = \int_{-\infty}^{\infty} (x-\mu)^2 f(x)\, dx \geq \int_{\{x:\, |x-\mu|\geq k\}} (x-\mu)^2 f(x)\, dx,
+\]
+ya que el integrando es no negativo y estamos integrando sobre un subconjunto del dominio. Ahora, en la región $|x-\mu|\geq k$ se cumple $(x-\mu)^2 \geq k^2$, por lo tanto
+\[
+\int_{\{|x-\mu|\geq k\}} (x-\mu)^2 f(x)\, dx \geq k^2 \int_{\{|x-\mu|\geq k\}} f(x)\, dx = k^2\, P(|X-\mu|\geq k).
+\]
+Combinando ambas desigualdades: $\sigma^2 \geq k^2 P(|X-\mu|\geq k)$, de donde
+\[
+P(|X-\mu| \geq k) \leq \frac{\sigma^2}{k^2}. \qedhere
+\]
+\end{proof}
+(El caso discreto es idéntico, reemplazando la integral por una suma.)
+\end{frame}
+
+\begin{frame}{Ejemplo numérico}
+\begin{example}
+El tiempo de espera $X$ (en minutos) en una fila tiene $E(X) = 10$ y $\text{Var}(X) = 4$ (no se conoce la distribución exacta). Acotemos $P(|X-10|\geq 6)$.
+
+\medskip
+Por Chebyshev con $k=6$:
+\[
+P(|X-10|\geq 6) \leq \frac{4}{6^2} = \frac{4}{36} = \frac{1}{9} \approx 0.111.
+\]
+Es decir, la probabilidad de esperar menos de 4 minutos o más de 16 minutos es a lo sumo $11.1\%$.
+\end{example}
+
+\begin{block}{Otra forma de la desigualdad}
+Tomando complemento: $P(|X-\mu| < k) \geq 1 - \dfrac{\sigma^2}{k^2}$. En el ejemplo, $P(4 < X < 16) \geq 1 - 1/9 = 8/9 \approx 0.889$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Comentarios sobre Chebyshev}
+\begin{alertblock}{Ventajas y limitaciones}
+\begin{itemize}
+\item \textbf{Ventaja}: es universal, no requiere conocer la distribución de $X$, solo $\mu$ y $\sigma^2$.
+\item \textbf{Limitación}: la cota suele ser muy conservadora (poco ajustada) comparada con la probabilidad real, cuando sí conocemos la distribución.
+\end{itemize}
+\end{alertblock}
+
+\begin{example}[Comparación con la normal]
+Si $X \sim N(\mu,\sigma^2)$, sabemos (de la Unidad 3) que $P(|X-\mu|\geq 2\sigma) \approx 0.0455$. Chebyshev solo garantiza $P(|X-\mu|\geq 2\sigma) \leq 1/4 = 0.25$: una cota mucho más floja que el valor exacto, pero válida para \textbf{cualquier} distribución.
+\end{example}
+
+\begin{block}{Uso principal en el curso}
+Chebyshev es la herramienta clave para demostrar la \textbf{ley débil de los grandes números} (Clase 17).
+\end{block}
+\end{frame}
+
+\section{Esperanza condicional}
+
+\begin{frame}{Definición}
+\begin{block}{Idea}
+La esperanza condicional $E(Y\mid X=x)$ es el valor esperado de $Y$ una vez que sabemos que $X$ tomó el valor $x$. Se calcula igual que una esperanza ordinaria, pero usando la distribución \textbf{condicional} de $Y$ dado $X=x$.
+\end{block}
+
+\begin{definition}[Esperanza condicional]
+Caso discreto:
+\[
+E(Y \mid X=x) = \sum_{y_j} y_j\, P(Y=y_j \mid X=x) = \sum_{y_j} y_j\, \frac{p_{X,Y}(x,y_j)}{p_X(x)}.
+\]
+Caso continuo:
+\[
+E(Y \mid X=x) = \int_{-\infty}^{\infty} y\, f_{Y\mid X}(y\mid x)\, dy, \qquad f_{Y\mid X}(y\mid x) = \frac{f_{X,Y}(x,y)}{f_X(x)}.
+\]
+\end{definition}
+\end{frame}
+
+\begin{frame}{Ejemplo}
+\begin{example}
+Se lanza un dado. Si sale $x$, se lanza una moneda $x$ veces y $Y$ cuenta el número de caras. Dado $X=x$, $Y \mid X=x \sim \text{Bin}(x, 0.5)$, por lo tanto
+\[
+E(Y \mid X=x) = x \cdot 0.5 = 0.5x.
+\]
+Por ejemplo, $E(Y\mid X=4) = 2$: si el dado dio $4$, esperamos en promedio $2$ caras.
+\end{example}
+
+\begin{block}{$E(Y\mid X)$ como variable aleatoria}
+Si en vez de fijar $x$ dejamos que $X$ varíe, $g(X) := E(Y\mid X)$ es en sí misma una variable aleatoria (función de $X$). En el ejemplo, $E(Y\mid X) = 0.5X$, que toma el valor $0.5x$ con la misma probabilidad que $X=x$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ley de la esperanza total}
+\begin{theorem}[Esperanza total]
+\[
+E(Y) = E\big[E(Y\mid X)\big] = \sum_x E(Y\mid X=x)\, P(X=x) \quad \text{(discreta)}
+\]
+o, en el caso continuo, $\displaystyle E(Y) = \int_{-\infty}^\infty E(Y\mid X=x)\, f_X(x)\, dx$.
+\end{theorem}
+
+\begin{example}
+Continuando el ejemplo anterior, $E(Y) = \sum_{x=1}^{6} (0.5x)\cdot\frac16 = 0.5 \cdot E(X) = 0.5 \cdot 3.5 = 1.75$.
+\end{example}
+
+\begin{alertblock}{Utilidad}
+La ley de la esperanza total permite calcular $E(Y)$ ``condicionando'' sobre otra variable $X$, lo cual simplifica muchísimo los cálculos cuando la distribución condicional es más simple que la marginal de $Y$. Es una técnica de uso frecuente en modelos jerárquicos (por ejemplo, número aleatorio de ensayos).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Resumen}
+\begin{block}{Conceptos clave}
+\begin{itemize}
+\item $\text{Var}(X) = E[(X-\mu)^2] = E(X^2) - [E(X)]^2$; mide la dispersión de $X$ respecto de su media.
+\item $\text{Var}(aX+b) = a^2\text{Var}(X)$; si $X,Y$ independientes, $\text{Var}(X+Y)=\text{Var}(X)+\text{Var}(Y)$.
+\item \textbf{Desigualdad de Chebyshev}: $P(|X-\mu|\geq k) \leq \sigma^2/k^2$, válida para cualquier distribución con varianza finita. Base de la ley de los grandes números.
+\item \textbf{Esperanza condicional} $E(Y\mid X=x)$: promedio de $Y$ sabiendo que $X=x$.
+\item \textbf{Ley de la esperanza total}: $E(Y) = E[E(Y\mid X)]$.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Próxima clase}
+Covarianza, coeficiente de correlación y función generatriz de momentos.
+\end{alertblock}
+\end{frame}
+
+\end{document}

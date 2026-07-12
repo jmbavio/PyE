@@ -1,0 +1,288 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 3: Análisis combinatorio y frecuencias relativas}
+\subtitle{Unidad 1: Espacios de probabilidad}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Espacios equiprobables y regla de Laplace}
+
+\begin{frame}{Regla de Laplace}
+\begin{definition}[Espacio equiprobable]
+Un espacio muestral finito $\Omega=\{\omega_1,\dots,\omega_N\}$ es \textbf{equiprobable} si todos sus sucesos elementales tienen la misma probabilidad:
+\[
+P(\{\omega_1\}) = P(\{\omega_2\}) = \cdots = P(\{\omega_N\}) = \frac{1}{N}.
+\]
+\end{definition}
+\begin{theorem}[Regla de Laplace]
+En un espacio equiprobable, para cualquier suceso $A\subseteq\Omega$ con $|A|=n_A$ elementos,
+\[
+P(A) = \frac{n_A}{N} = \frac{\text{número de casos favorables a } A}{\text{número de casos posibles}}.
+\]
+\end{theorem}
+\begin{proof}
+$A$ es unión disjunta de sus $n_A$ sucesos elementales. Por aditividad finita, $P(A)=\sum P(\{\omega_i\}) = n_A \cdot \frac{1}{N}$.
+\end{proof}
+\begin{alertblock}{El problema práctico}
+Aplicar la regla de Laplace exige \textbf{contar} $n_A$ y $N$. Cuando $\Omega$ es grande, se necesitan técnicas de conteo: el \textbf{análisis combinatorio}.
+\end{alertblock}
+\end{frame}
+
+\section{Principio multiplicativo}
+
+\begin{frame}{Principio fundamental del conteo}
+\begin{block}{Principio multiplicativo}
+Si una operación (o elección) $1$ puede realizarse de $n_1$ formas distintas, y para cada una de ellas una operación $2$ puede realizarse de $n_2$ formas, y así sucesivamente hasta una operación $k$ con $n_k$ formas, entonces el número total de formas de realizar la secuencia completa de $k$ operaciones es
+\[
+n_1 \cdot n_2 \cdots n_k.
+\]
+\end{block}
+\begin{example}
+Un menú de restaurante ofrece 4 entradas, 3 platos principales y 2 postres. El número de menús completos distintos (una opción de cada categoría) es
+\[
+4 \times 3 \times 2 = 24.
+\]
+\end{example}
+\begin{example}
+Las patentes de auto en cierto formato usan 3 letras (de un alfabeto de 26) seguidas de 3 dígitos (0 a 9), sin restricciones. Hay
+\[
+26^3 \times 10^3 = 17\,576\,000
+\]
+patentes posibles.
+\end{example}
+\end{frame}
+
+\section{Permutaciones}
+
+\begin{frame}{Permutaciones simples}
+\begin{definition}
+Una \textbf{permutación} de $n$ objetos distintos es un ordenamiento (secuencia) de todos ellos. El número de permutaciones posibles es
+\[
+P_n = n! = n\cdot(n-1)\cdots 2\cdot 1, \qquad 0!:=1.
+\]
+\end{definition}
+\begin{block}{Justificación}
+Elegir el objeto en el 1\textsuperscript{er} lugar: $n$ formas. El 2\textsuperscript{do} lugar: $n-1$ formas (ya se usó uno). $\dots$ El último lugar: $1$ forma. Por el principio multiplicativo: $n\cdot(n-1)\cdots 1 = n!$.
+\end{block}
+\begin{example}
+¿De cuántas maneras se pueden ordenar 5 libros distintos en un estante?
+\[
+5! = 120.
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{Permutaciones con repetición}
+\begin{definition}
+Si se tienen $n$ objetos, de los cuales $n_1$ son de un tipo, $n_2$ de otro tipo, \dots, $n_k$ de un $k$-ésimo tipo (indistinguibles entre sí dentro de cada tipo, con $n_1+n_2+\cdots+n_k=n$), el número de ordenamientos distinguibles es
+\[
+\frac{n!}{n_1!\,n_2! \cdots n_k!}.
+\]
+\end{definition}
+\begin{example}
+¿Cuántas ``palabras'' distintas (con o sin sentido) se pueden formar reordenando las letras de \textsc{ESTADISTICA}?
+\end{example}
+\begin{block}{Resolución}
+La palabra tiene 11 letras: E(1), S(2), T(2), A(2), D(1), I(2), C(1). Total:
+\[
+\frac{11!}{1!\,2!\,2!\,2!\,1!\,2!\,1!} = \frac{39\,916\,800}{16} = 2\,494\,800.
+\]
+\end{block}
+\end{frame}
+
+\section{Variaciones}
+
+\begin{frame}{Variaciones (arreglos)}
+\begin{definition}[Variaciones sin repetición]
+Una \textbf{variación} de $n$ objetos distintos tomados de a $r$ (con $r\leq n$) es una selección \textbf{ordenada} de $r$ de esos objetos, sin repetirlos. Su número es
+\[
+V_{n,r} = \frac{n!}{(n-r)!} = n(n-1)\cdots(n-r+1).
+\]
+\end{definition}
+\begin{example}
+En una carrera de 8 caballos, ¿de cuántas formas distintas se pueden ocupar los 3 primeros puestos (oro, plata, bronce)?
+\[
+V_{8,3} = \frac{8!}{5!} = 8\times7\times6 = 336.
+\]
+\end{example}
+\begin{definition}[Variaciones con repetición]
+Si los objetos pueden repetirse, el número de secuencias ordenadas de longitud $r$ tomadas de un conjunto de $n$ objetos es $n^r$.
+\end{definition}
+\begin{example}
+Claves numéricas de 4 dígitos (0 a 9), con repetición permitida: $10^4 = 10\,000$.
+\end{example}
+\end{frame}
+
+\section{Combinaciones}
+
+\begin{frame}{Combinaciones y coeficiente binomial}
+\begin{definition}
+Una \textbf{combinación} de $n$ objetos distintos tomados de a $r$ es una selección \textbf{no ordenada} (un subconjunto) de $r$ de esos objetos. Su número es
+\[
+C_{n,r} = \binom{n}{r} = \frac{n!}{r!\,(n-r)!}.
+\]
+\end{definition}
+\begin{block}{Relación entre variaciones y combinaciones}
+Cada combinación de $r$ objetos da lugar a $r!$ variaciones distintas (todos sus reordenamientos), luego
+\[
+V_{n,r} = \binom{n}{r} \cdot r! \quad\Longrightarrow\quad \binom{n}{r} = \frac{V_{n,r}}{r!} = \frac{n!}{r!(n-r)!}.
+\]
+\end{block}
+\begin{example}
+¿Cuántos comités de 3 personas se pueden formar a partir de un grupo de 10? (el orden dentro del comité no importa)
+\[
+\binom{10}{3} = \frac{10!}{3!\,7!} = \frac{10\cdot 9\cdot 8}{3\cdot 2\cdot 1} = 120.
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{Propiedades del coeficiente binomial}
+\[
+\binom{n}{0}=\binom{n}{n}=1, \qquad \binom{n}{r}=\binom{n}{n-r}, \qquad \binom{n}{r}=\binom{n-1}{r-1}+\binom{n-1}{r}.
+\]
+\begin{block}{Cuándo usar variaciones y cuándo combinaciones}
+\begin{itemize}
+\item ¿Importa el \textbf{orden} de la selección? $\Rightarrow$ variación (o permutación).
+\item ¿No importa el orden, solo \textbf{quiénes} quedan seleccionados? $\Rightarrow$ combinación.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Ejemplos aplicados}
+
+\begin{frame}{Ejemplo: cartas}
+\begin{example}
+De un mazo de 40 cartas españolas (4 palos de 10 cartas cada uno), se extraen 5 cartas al azar sin reposición. Calcular la probabilidad de que las 5 cartas sean del mismo palo.
+\end{example}
+\begin{block}{Resolución}
+Casos posibles: $N = \binom{40}{5} = 658\,008$.
+
+Casos favorables: elegir un palo (4 formas) y luego 5 cartas de ese palo (10 disponibles):
+\[
+n_A = \binom{4}{1}\binom{10}{5} = 4 \times 252 = 1008.
+\]
+\[
+P(A) = \frac{1008}{658\,008} \approx 0{,}00153.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: dados}
+\begin{example}
+Se lanzan 3 dados equilibrados. Calcular la probabilidad de que la suma de los puntos sea igual a 10.
+\end{example}
+\begin{block}{Resolución}
+Casos posibles (ordenados, con repetición): $N = 6^3 = 216$.
+
+Ternas $(a,b,c)$ con $a,b,c\in\{1,\dots,6\}$ y $a+b+c=10$. Contando por enumeración de multiconjuntos:
+\begin{center}
+\{1,3,6\}, \{1,4,5\}, \{2,2,6\}, \{2,3,5\}, \{2,4,4\}, \{3,3,4\}
+\end{center}
+Permutaciones de cada uno: los tres primeros con elementos todos distintos aportan $3!=6$ cada uno (3 casos $\times 6 = 18$); \{2,2,6\},\{2,4,4\},\{3,3,4\} tienen un valor repetido y aportan $3$ cada uno ($3\times 3=9$). Total:
+\[
+n_A = 18+9 = 27, \qquad P(A) = \frac{27}{216} = \frac{1}{8} = 0{,}125.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: control de calidad}
+\begin{example}
+Un lote contiene 50 artículos, de los cuales 5 son defectuosos. Se seleccionan al azar 4 artículos sin reposición para inspección. Calcular la probabilidad de que exactamente 1 sea defectuoso.
+\end{example}
+\begin{block}{Resolución (distribución hipergeométrica)}
+Casos posibles: $N=\binom{50}{4} = 230\,300$.
+
+Casos favorables: elegir 1 defectuoso de los 5, y 3 buenos de los 45 restantes:
+\[
+n_A = \binom{5}{1}\binom{45}{3} = 5 \times 14\,190 = 70\,950.
+\]
+\[
+P(A) = \frac{70\,950}{230\,300} \approx 0{,}3081.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: extracciones con y sin reposición}
+\begin{example}
+Una urna contiene 4 bolillas rojas y 6 blancas. Se extraen 2 bolillas al azar. Comparar $P(\text{ambas rojas})$ (a) sin reposición y (b) con reposición.
+\end{example}
+\begin{block}{(a) Sin reposición}
+\[
+P(\text{ambas rojas}) = \frac{\binom{4}{2}}{\binom{10}{2}} = \frac{6}{45} = \frac{2}{15}\approx 0{,}1333.
+\]
+Equivalentemente, con el principio multiplicativo:
+$\dfrac{4}{10}\cdot\dfrac{3}{9} = \dfrac{12}{90}=\dfrac{2}{15}$.
+\end{block}
+\begin{block}{(b) Con reposición}
+Cada extracción es independiente de la anterior (se repone la bolilla):
+\[
+P(\text{ambas rojas}) = \frac{4}{10}\cdot\frac{4}{10} = \frac{16}{100} = 0{,}16.
+\]
+\end{block}
+\begin{alertblock}{Observación}
+Con reposición, la probabilidad de repetir el color favorable es mayor: no se ``agota'' la composición favorable de la urna.
+\end{alertblock}
+\end{frame}
+
+\section{Frecuencias relativas y ley empírica del azar}
+
+\begin{frame}{Frecuencia relativa}
+\begin{definition}
+Si un experimento se repite $n$ veces en condiciones idénticas e independientes, y el suceso $A$ ocurre $n_A$ veces, la \textbf{frecuencia relativa} de $A$ es
+\[
+f_r(A) = \frac{n_A}{n}.
+\]
+\end{definition}
+\begin{block}{Propiedades de $f_r$ (para $n$ fijo)}
+\begin{itemize}
+\item $0 \leq f_r(A) \leq 1$.
+\item $f_r(\Omega) = 1$.
+\item Si $A\cap B=\varnothing$, entonces $f_r(A\cup B) = f_r(A)+f_r(B)$.
+\end{itemize}
+Es decir, $f_r$ satisface los mismos axiomas que una probabilidad para cada $n$ fijo.
+\end{block}
+\begin{block}{Ley empírica del azar (regularidad estadística)}
+A medida que $n\to\infty$, la frecuencia relativa $f_r(A)$ tiende a estabilizarse en torno a un valor constante, que interpretamos como $P(A)$. Esta observación empírica —constatada experimentalmente desde los estudios de Bernoulli y Pearson (lanzamientos de moneda)— motiva históricamente la interpretación frecuencial de la probabilidad y se formaliza más adelante en el curso mediante la Ley de los Grandes Números.
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item En espacios \textbf{equiprobables}, $P(A) = n_A/N$ (regla de Laplace); el desafío es contar $n_A$ y $N$.
+\item \textbf{Principio multiplicativo}: $n_1\cdot n_2 \cdots n_k$ para elecciones sucesivas independientes.
+\item \textbf{Permutaciones}: $n!$ ordenamientos de $n$ objetos distintos; con repetición: $\dfrac{n!}{n_1!\cdots n_k!}$.
+\item \textbf{Variaciones} (orden importa, sin repetición): $V_{n,r}=\dfrac{n!}{(n-r)!}$; con repetición: $n^r$.
+\item \textbf{Combinaciones} (orden no importa): $\displaystyle\binom{n}{r}=\frac{n!}{r!(n-r)!}$.
+\item La \textbf{frecuencia relativa} $f_r(A)=n_A/n$ satisface los axiomas de probabilidad para cada $n$, y se estabiliza en torno a $P(A)$ cuando $n\to\infty$ (ley empírica del azar).
+\item Próxima clase: \textbf{probabilidad condicional}, independencia, probabilidad total y teorema de Bayes.
+\end{itemize}
+\end{frame}
+
+\end{document}

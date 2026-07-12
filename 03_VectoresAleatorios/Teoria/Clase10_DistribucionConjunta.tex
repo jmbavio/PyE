@@ -1,0 +1,292 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 10: Distribución conjunta de vectores aleatorios}
+\subtitle{Unidad 3: Vectores aleatorios}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Variables aleatorias multidimensionales}
+
+\begin{frame}{Motivación}
+\begin{block}{¿Por qué estudiar varias variables a la vez?}
+Muchos experimentos aleatorios producen simultáneamente más de un valor numérico de interés. Por ejemplo:
+\begin{itemize}
+\item Peso $X$ y altura $Y$ de una persona elegida al azar.
+\item Tiempo de vida $X$ de un componente y temperatura $Y$ de operación.
+\item Número de clientes $X$ que llegan a una caja y número de clientes $Y$ que llegan a otra, en el mismo lapso.
+\end{itemize}
+\end{block}
+\pause
+En estos casos no alcanza con estudiar $X$ e $Y$ por separado: necesitamos describir su comportamiento \textbf{conjunto}, incluyendo cómo se relacionan entre sí.
+\end{frame}
+
+\begin{frame}{Vector aleatorio}
+\begin{definition}[Vector aleatorio]
+Dado un espacio de probabilidad $(\Omega, \mathcal{A}, P)$, un \textbf{vector aleatorio} bidimensional es una función
+\[
+(X,Y): \Omega \longrightarrow \mathbb{R}^2
+\]
+tal que para todo $(x,y) \in \mathbb{R}^2$, el conjunto $\{\omega \in \Omega : X(\omega) \le x, \, Y(\omega) \le y\}$ es un evento (pertenece a $\mathcal{A}$).
+\end{definition}
+\pause
+De manera análoga se define un vector aleatorio $n$-dimensional $(X_1, X_2, \ldots, X_n)$. En esta clase trabajaremos principalmente con $n=2$; todos los conceptos se extienden de forma natural a $n$ variables.
+\end{frame}
+
+\section{Función de distribución conjunta}
+
+\begin{frame}{Función de distribución conjunta}
+\begin{definition}[Función de distribución conjunta]
+La \textbf{función de distribución conjunta} (o acumulada) del vector aleatorio $(X,Y)$ es
+\[
+F_{X,Y}(x,y) = P(X \le x, \, Y \le y), \qquad (x,y) \in \mathbb{R}^2.
+\]
+\end{definition}
+\pause
+\begin{block}{Propiedades}
+\begin{enumerate}
+\item $0 \le F_{X,Y}(x,y) \le 1$ para todo $(x,y)$.
+\item $F_{X,Y}$ es no decreciente en cada variable (monotonía).
+\item $\displaystyle\lim_{x,y \to +\infty} F_{X,Y}(x,y) = 1$, \quad $\displaystyle\lim_{x \to -\infty} F_{X,Y}(x,y) = 0 = \lim_{y \to -\infty} F_{X,Y}(x,y)$.
+\item $F_{X,Y}$ es continua a derecha en cada variable.
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}{Probabilidad de un rectángulo}
+Para $a < b$ y $c < d$, la probabilidad de que $(X,Y)$ caiga en el rectángulo $(a,b] \times (c,d]$ se calcula como:
+\[
+P(a < X \le b, \, c < Y \le d) = F_{X,Y}(b,d) - F_{X,Y}(a,d) - F_{X,Y}(b,c) + F_{X,Y}(a,c).
+\]
+\begin{alertblock}{Atención}
+Esta cantidad debe ser \textbf{siempre no negativa}. Es la condición que distingue a una función de distribución conjunta válida de una función cualquiera que solo cumpla las cuatro propiedades anteriores.
+\end{alertblock}
+\pause
+\begin{block}{Idea geométrica}
+Se obtiene por inclusión-exclusión: al conjunto $\{X\le b, Y\le d\}$ le restamos las dos ``bandas'' que sobran y le sumamos de nuevo la esquina restada dos veces.
+\end{block}
+\end{frame}
+
+\section{Caso discreto: función de probabilidad conjunta}
+
+\begin{frame}{Vectores aleatorios discretos}
+\begin{definition}[Función de probabilidad conjunta]
+Si $X$ e $Y$ toman valores en conjuntos numerables $\{x_1, x_2, \ldots\}$ e $\{y_1, y_2, \ldots\}$, la \textbf{función de probabilidad conjunta} es
+\[
+p_{X,Y}(x_i, y_j) = P(X = x_i, \, Y = y_j).
+\]
+\end{definition}
+\begin{block}{Propiedades}
+\begin{enumerate}
+\item $p_{X,Y}(x_i,y_j) \ge 0$ para todo $i,j$.
+\item $\displaystyle\sum_i \sum_j p_{X,Y}(x_i,y_j) = 1$.
+\end{enumerate}
+\end{block}
+\begin{block}{Probabilidad de un evento $A \subset \mathbb{R}^2$}
+\[
+P\big((X,Y) \in A\big) = \sum_{(x_i,y_j) \in A} p_{X,Y}(x_i,y_j).
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 1: tabla conjunta}
+\begin{example}
+Se lanzan dos dados equilibrados. Sea $X$ el máximo de los dos valores obtenidos e $Y$ la suma de ambos. Consideremos solo los casos $X \in \{1,2,3\}$ para simplificar la tabla parcial:
+
+\begin{table}[]
+\centering
+\begin{tabular}{c|ccccc}
+\toprule
+$Y \backslash X$ & 1 & 2 & 3 \\
+\midrule
+2 & $1/36$ & 0 & 0 \\
+3 & 0 & $2/36$ & 0 \\
+4 & 0 & $1/36$ & $2/36$ \\
+5 & 0 & 0 & $2/36$ \\
+6 & 0 & 0 & $1/36$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+Por ejemplo, $p_{X,Y}(2,3) = P(X=2, Y=3) = P(\{(1,2),(2,1)\})/36 = 2/36$, ya que esos son los únicos pares ordenados de dados con máximo 2 y suma 3.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo 1: cálculo de una probabilidad}
+\begin{example}
+Usando la tabla anterior, calculemos $P(X \le 2, Y \le 4)$:
+\[
+P(X\le 2, Y\le 4) = p(1,2) + p(2,3) + p(2,4) = \frac{1}{36} + \frac{2}{36} + \frac{1}{36} = \frac{4}{36} = \frac{1}{9}.
+\]
+\end{example}
+\pause
+\begin{block}{Observación}
+Este cálculo es exactamente $P\big((X,Y) \in A\big)$ con $A = \{(x,y) : x\le 2, y \le 4\}$, sumando la función de probabilidad conjunta sobre todos los puntos de soporte que caen en $A$.
+\end{block}
+\end{frame}
+
+\section{Caso continuo: función de densidad conjunta}
+
+\begin{frame}{Función de densidad conjunta}
+\begin{definition}[Densidad conjunta]
+El vector $(X,Y)$ es \textbf{conjuntamente continuo} si existe una función $f_{X,Y}: \mathbb{R}^2 \to \mathbb{R}$, llamada \textbf{función de densidad conjunta}, tal que
+\[
+F_{X,Y}(x,y) = \int_{-\infty}^{x} \int_{-\infty}^{y} f_{X,Y}(u,v) \, dv \, du, \qquad \forall (x,y) \in \mathbb{R}^2.
+\]
+\end{definition}
+\begin{block}{Propiedades}
+\begin{enumerate}
+\item $f_{X,Y}(x,y) \ge 0$ para todo $(x,y)$.
+\item $\displaystyle\int_{-\infty}^{\infty}\int_{-\infty}^{\infty} f_{X,Y}(x,y)\, dx\, dy = 1$.
+\item Donde $F_{X,Y}$ sea derivable: $\displaystyle f_{X,Y}(x,y) = \frac{\partial^2 F_{X,Y}}{\partial x \, \partial y}(x,y)$.
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}{Probabilidad de una región}
+\begin{block}{Cálculo de probabilidades}
+Para cualquier región (razonable) $A \subset \mathbb{R}^2$,
+\[
+P\big((X,Y) \in A\big) = \iint_{A} f_{X,Y}(x,y)\, dx\, dy.
+\]
+\end{block}
+\pause
+\begin{alertblock}{Interpretación geométrica}
+$f_{X,Y}(x,y)$ es una \textbf{superficie} sobre el plano $xy$; la probabilidad de que $(X,Y)$ caiga en $A$ es el \textbf{volumen} bajo esa superficie, restringido a la región $A$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo 2: densidad conjunta uniforme}
+\begin{example}
+Sea
+\[
+f_{X,Y}(x,y) = \begin{cases} c & 0 < x < 2, \; 0 < y < 1 \\ 0 & \text{en otro caso} \end{cases}
+\]
+\textbf{a)} Hallar $c$. \quad \textbf{b)} Calcular $P(X < 1, Y < 1/2)$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+\textbf{a)} Como debe integrar 1 sobre el rectángulo de área $2\times 1 = 2$:
+\[
+\int_0^2 \int_0^1 c \, dy\, dx = 2c = 1 \implies c = \tfrac{1}{2}.
+\]
+\textbf{b)}
+\[
+P(X<1, Y<\tfrac12) = \int_0^1 \int_0^{1/2} \tfrac12 \, dy \, dx = \int_0^1 \tfrac14\, dx = \tfrac14.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo 3: densidad conjunta no uniforme}
+\begin{example}
+Sea $f_{X,Y}(x,y) = k(x+y)$ para $0 \le x \le 1$, $0 \le y \le 1$, y $0$ en otro caso.
+\textbf{a)} Hallar $k$. \quad \textbf{b)} Calcular $P(X > Y)$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+\textbf{a)}
+\[
+\int_0^1\int_0^1 k(x+y)\,dy\,dx = k\int_0^1 \left(x + \tfrac12\right) dx = k\left(\tfrac12 + \tfrac12\right) = k = 1 \implies k=1.
+\]
+\textbf{b)} La región $\{x>y\}$ dentro del cuadrado es el triángulo inferior:
+\[
+P(X>Y) = \int_0^1 \int_0^x (x+y)\, dy\, dx = \int_0^1 \left(x^2 + \tfrac{x^2}{2}\right) dx = \int_0^1 \tfrac{3x^2}{2}\,dx = \tfrac12.
+\]
+\end{block}
+\end{frame}
+
+\section{Distribuciones marginales}
+
+\begin{frame}{Distribuciones marginales}
+\begin{block}{Idea}
+A partir de la distribución conjunta siempre podemos recuperar la distribución de cada variable por separado, llamada \textbf{distribución marginal}.
+\end{block}
+\begin{definition}[Marginales — caso discreto]
+\[
+p_X(x_i) = P(X=x_i) = \sum_j p_{X,Y}(x_i,y_j), \qquad p_Y(y_j) = \sum_i p_{X,Y}(x_i,y_j).
+\]
+\end{definition}
+\begin{definition}[Marginales — caso continuo]
+\[
+f_X(x) = \int_{-\infty}^{\infty} f_{X,Y}(x,y)\, dy, \qquad f_Y(y) = \int_{-\infty}^{\infty} f_{X,Y}(x,y)\, dx.
+\]
+\end{definition}
+\end{frame}
+
+\begin{frame}{Ejemplo 1 (continuación): marginales discretas}
+\begin{example}
+Retomando la tabla del Ejemplo 1 (restringida a $X\in\{1,2,3\}$), la marginal de $X$ se obtiene sumando cada columna:
+\[
+p_X(1) = \tfrac{1}{36}, \quad p_X(2) = 0+\tfrac{2}{36}+\tfrac{1}{36}+0+0 = \tfrac{3}{36}, \quad p_X(3) = \tfrac{2}{36}+\tfrac{2}{36}+\tfrac{1}{36}=\tfrac{5}{36}.
+\]
+\end{example}
+\begin{alertblock}{Importante}
+La distribución conjunta \textbf{determina} a las marginales, pero \textbf{no} al revés: dos vectores distintos pueden tener las mismas marginales y distinta estructura de dependencia (ver Clase 11).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo 3 (continuación): marginal continua}
+\begin{example}
+Para $f_{X,Y}(x,y) = x+y$, $0\le x,y\le 1$, hallar $f_X(x)$.
+\end{example}
+\pause
+\begin{block}{Resolución}
+\[
+f_X(x) = \int_0^1 (x+y)\, dy = x + \tfrac12, \qquad 0 \le x \le 1,
+\]
+y $f_X(x)=0$ fuera de $[0,1]$. Se verifica que $\int_0^1 (x+\tfrac12)\,dx = \tfrac12+\tfrac12=1$, como debe ser. Por simetría, $f_Y(y) = y+\tfrac12$ en $[0,1]$.
+\end{block}
+\end{frame}
+
+\section{Extensión a $n$ variables}
+
+\begin{frame}{Vectores aleatorios $n$-dimensionales}
+\begin{block}{Generalización}
+Todo lo anterior se extiende de forma natural a un vector $(X_1,\ldots,X_n)$:
+\begin{itemize}
+\item Función de distribución conjunta: $F(x_1,\ldots,x_n) = P(X_1\le x_1,\ldots,X_n\le x_n)$.
+\item Caso discreto: $p(x_1,\ldots,x_n) = P(X_1=x_1,\ldots,X_n=x_n)$.
+\item Caso continuo: $f(x_1,\ldots,x_n) \ge 0$ con $\displaystyle\int\cdots\int f = 1$.
+\item Marginales: se obtienen sumando o integrando respecto de las variables que se quieren ``eliminar''. Por ejemplo, la marginal de $(X_1,X_2)$ a partir de $f(x_1,x_2,x_3)$ es $\int_{-\infty}^{\infty} f(x_1,x_2,x_3)\,dx_3$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Ideas clave de hoy}
+\begin{itemize}
+\item Un \textbf{vector aleatorio} describe simultáneamente varias características numéricas de un experimento.
+\item La \textbf{función de distribución conjunta} $F_{X,Y}(x,y)=P(X\le x, Y\le y)$ generaliza a dos (o más) variables la función de distribución univariada.
+\item En el caso \textbf{discreto} se trabaja con la función de probabilidad conjunta $p_{X,Y}$; en el caso \textbf{continuo}, con la densidad conjunta $f_{X,Y}$, y las probabilidades son volúmenes bajo la superficie de densidad.
+\item Las \textbf{distribuciones marginales} se obtienen sumando o integrando la conjunta sobre la otra variable.
+\item En la próxima clase estudiaremos las \textbf{distribuciones condicionales} y el concepto de \textbf{independencia} entre variables aleatorias.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,322 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 19: Muestras aleatorias y estadísticos muestrales}
+\subtitle{Unidad 5: Muestras aleatorias y distribuciones}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{De la probabilidad a la inferencia}
+
+\begin{frame}{Un cambio de perspectiva}
+\begin{block}{Lo que hicimos hasta ahora}
+En las Unidades 1 a 4 supusimos \textbf{conocido} el modelo probabilístico (distribución, parámetros) y calculamos probabilidades, esperanzas, varianzas, etc. a partir de él.
+\end{block}
+
+\begin{alertblock}{El problema real}
+En la práctica casi nunca conocemos los parámetros poblacionales (una media $\mu$, una proporción $p$, una varianza $\sigma^2$). Lo que tenemos son \textbf{datos}: mediciones, observaciones, un conjunto finito de valores obtenidos experimentalmente.
+\end{alertblock}
+
+\begin{example}
+\begin{itemize}
+\item ¿Cuál es el peso medio $\mu$ de los paquetes que produce una máquina envasadora?
+\item ¿Cuál es la proporción $p$ de piezas defectuosas en un lote de producción?
+\item ¿Cuál es la varianza $\sigma^2$ del tiempo de reacción de un fármaco?
+\end{itemize}
+No conocemos estos valores: los queremos \textbf{estimar} a partir de una muestra.
+\end{example}
+
+Esta unidad es el puente entre la \textbf{probabilidad} (Unidades 1-4) y la \textbf{inferencia estadística} (Unidades 6-8).
+\end{frame}
+
+\begin{frame}{Estadística descriptiva vs. estadística inferencial}
+\begin{block}{Estadística descriptiva}
+Organiza, resume y presenta datos: tablas de frecuencias, histogramas, medias y varianzas \emph{muestrales} calculadas directamente sobre los datos disponibles, sin hacer supuestos probabilísticos sobre cómo se generaron.
+\end{block}
+
+\begin{block}{Estadística inferencial}
+Usa los datos de una muestra para sacar \textbf{conclusiones sobre la población} de la cual provienen, cuantificando la incertidumbre mediante modelos probabilísticos. Incluye estimación de parámetros (Unidad 6), pruebas de hipótesis (Unidad 7) y modelos de regresión (Unidad 8).
+\end{block}
+
+\begin{alertblock}{La clave}
+La estadística inferencial necesita entender el \textbf{comportamiento aleatorio} de las cantidades calculadas a partir de la muestra. Eso es precisamente lo que estudiamos en esta unidad.
+\end{alertblock}
+\end{frame}
+
+\section{Población y muestra}
+
+\begin{frame}{Población}
+\begin{definition}[Población]
+La \textbf{población} es el conjunto de todos los individuos, objetos o mediciones de interés para un estudio. Puede ser finita (los 5000 artículos producidos hoy) o conceptualmente infinita (todos los artículos que la máquina \emph{podría} producir bajo las mismas condiciones).
+\end{definition}
+
+\begin{block}{Modelo probabilístico de la población}
+Asociamos a la población una variable aleatoria $X$ cuya distribución (función de probabilidad, densidad, media $\mu$, varianza $\sigma^2$, etc.) describe la característica de interés. Los \textbf{parámetros} de esa distribución ($\mu$, $\sigma^2$, $p$, $\lambda$, \ldots) son números fijos pero \textbf{desconocidos} que queremos estudiar.
+\end{block}
+
+\begin{example}
+\begin{itemize}
+\item $X = $ peso de un paquete producido por la envasadora. Población: distribución de $X$, con $\mu, \sigma^2$ desconocidos.
+\item $X = 1$ si una pieza es defectuosa, $0$ si no. Población: Bernoulli$(p)$, con $p$ desconocido.
+\end{itemize}
+\end{example}
+\end{frame}
+
+\begin{frame}{Muestra aleatoria: idea intuitiva}
+\begin{block}{¿Cómo estudiamos la población?}
+No podemos (ni conviene) medir a \emph{toda} la población. En cambio, seleccionamos un subconjunto de $n$ individuos: la \textbf{muestra}, y usamos la información que aporta para inferir sobre la población.
+\end{block}
+
+\begin{alertblock}{Requisito fundamental}
+Para que las conclusiones sean válidas, la muestra debe seleccionarse de manera que cada observación:
+\begin{enumerate}
+\item tenga la \textbf{misma distribución} que la población (represente fielmente a $X$), y
+\item sea \textbf{independiente} de las demás observaciones.
+\end{enumerate}
+Esto se garantiza, típicamente, con muestreo aleatorio (con reposición, o sin reposición de una población muy grande frente a $n$).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Muestra aleatoria: definición formal}
+\begin{definition}[Muestra aleatoria]
+Sea $X$ una variable aleatoria que representa la característica de interés de una población, con función de distribución $F_X$. Una \textbf{muestra aleatoria} de tamaño $n$ es una colección de variables aleatorias
+$$X_1, X_2, \dots, X_n$$
+\textbf{independientes e idénticamente distribuidas} (i.i.d.), cada una con la misma distribución $F_X$ que la población.
+\end{definition}
+
+\begin{block}{Notación}
+Antes de observar los datos, $X_1,\dots,X_n$ son variables aleatorias (mayúsculas). Una vez realizado el experimento, obtenemos valores concretos $x_1,\dots,x_n$ (minúsculas): la \textbf{realización} de la muestra, es decir, los datos.
+\end{block}
+
+\begin{example}
+Se seleccionan al azar y con reposición 10 paquetes de una línea de producción y se pesa cada uno. Antes de pesar: $X_1,\dots,X_{10}$ i.i.d. Después de pesar: $x_1=249.8, x_2=251.3,\dots$ (los datos observados).
+\end{example}
+\end{frame}
+
+\begin{frame}{¿Por qué i.i.d.?}
+\begin{block}{Idénticamente distribuidas}
+Cada $X_i$ debe representar a la misma población, con la misma $F_X$, la misma media $\mu$ y la misma varianza $\sigma^2$. Si mezclamos poblaciones distintas (por ejemplo, piezas de dos máquinas diferentes) esto falla.
+\end{block}
+
+\begin{block}{Independientes}
+El resultado de una observación no debe influir en las demás. En un muestreo \emph{sin} reposición de una población finita de tamaño $N$, las observaciones no son estrictamente independientes; pero si $N \gg n$ (por ejemplo $n/N < 0.05$), la dependencia es despreciable y se aproxima como muestreo aleatorio simple.
+\end{block}
+
+\begin{alertblock}{Consecuencia técnica}
+Como los $X_i$ son i.i.d., toda la teoría de suma de variables independientes (funciones generadoras de momentos, Unidad 4) se aplica directamente a estadísticos que son funciones de $X_1,\dots,X_n$.
+\end{alertblock}
+\end{frame}
+
+\section{Estadísticos muestrales}
+
+\begin{frame}{Parámetro vs. estadístico}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+ & \textbf{Parámetro} & \textbf{Estadístico} \\
+\midrule
+¿Qué es? & Número fijo de la población & Función de la muestra \\
+¿Se conoce? & Generalmente no & Se calcula de los datos \\
+¿Es aleatorio? & No, es constante & Sí, es una variable aleatoria \\
+Ejemplo & $\mu, \sigma^2, p$ & $\bar X, S^2, \hat p$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{definition}[Estadístico]
+Un \textbf{estadístico} es cualquier función $T = h(X_1,\dots,X_n)$ de una muestra aleatoria que no depende de parámetros desconocidos. Al ser función de variables aleatorias, $T$ es en sí misma una variable aleatoria, con su propia distribución.
+\end{definition}
+\end{frame}
+
+\begin{frame}{Media muestral}
+\begin{definition}[Media muestral]
+Dada una muestra aleatoria $X_1,\dots,X_n$, se define la \textbf{media muestral} como
+$$\bar X = \frac{1}{n}\sum_{i=1}^{n} X_i.$$
+\end{definition}
+
+\begin{alertblock}{Es una variable aleatoria}
+$\bar X$ depende de qué muestra concreta se obtuvo: si repetimos el muestreo, obtenemos otro valor de $\bar X$. Por eso tiene sentido preguntarse cuál es \textbf{su} distribución, \textbf{su} esperanza y \textbf{su} varianza. Esto es distinto de la media aritmética de un conjunto fijo de números (estadística descriptiva), aunque se calculen con la misma fórmula.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Varianza muestral}
+\begin{definition}[Varianza muestral]
+Dada una muestra aleatoria $X_1,\dots,X_n$, se define la \textbf{varianza muestral} como
+$$S^2 = \frac{1}{n-1}\sum_{i=1}^{n} (X_i - \bar X)^2.$$
+\end{definition}
+
+\begin{alertblock}{¿Por qué dividir por $n-1$ y no por $n$?}
+Se pierde ``un grado de libertad'' porque los $n$ términos $(X_i-\bar X)$ no son libres: siempre satisfacen $\sum_{i=1}^n (X_i - \bar X) = 0$. Dividir por $n-1$ hace que $S^2$ sea un estimador \textbf{insesgado} de $\sigma^2$, es decir $E(S^2)=\sigma^2$ (lo demostraremos en la Clase 20 y se retomará en la Unidad 6).
+\end{alertblock}
+
+Otros estadísticos usuales: desvío estándar muestral $S = \sqrt{S^2}$, mínimo, máximo, mediana muestral, proporción muestral $\hat p = \frac{1}{n}\sum X_i$ (cuando $X_i \in \{0,1\}$).
+\end{frame}
+
+\begin{frame}{Ejemplo: cálculo de estadísticos}
+\begin{example}
+Se pesan (en gramos) 6 paquetes: $248, 251, 253, 247, 250, 252$.
+
+Calculamos $\bar x$ y $s^2$ (realizaciones, es decir, valores numéricos concretos):
+$$\bar x = \frac{248+251+253+247+250+252}{6} = \frac{1501}{6} = 250.1\overline{6}$$
+
+$$\sum (x_i-\bar x)^2 = (2.17)^2+(0.83)^2+(2.83)^2+(3.17)^2+(0.17)^2+(1.83)^2 \approx 24.83$$
+
+$$s^2 = \frac{24.83}{5} \approx 4.97 \quad \Rightarrow \quad s \approx 2.23 \text{ g}$$
+\end{example}
+
+\begin{block}{Distinción clave}
+$\bar x = 250.1\overline{6}$ es \textbf{un} número: una realización de la variable aleatoria $\bar X$. Si otro operario pesara otros 6 paquetes, obtendría otro valor de $\bar x$.
+\end{block}
+\end{frame}
+
+\section{Distribución muestral de un estadístico}
+
+\begin{frame}{El concepto central de la unidad}
+\begin{alertblock}{Distribución muestral}
+La \textbf{distribución muestral} de un estadístico $T=h(X_1,\dots,X_n)$ es la distribución de probabilidad de $T$, considerada como variable aleatoria sobre todas las posibles muestras de tamaño $n$ que se podrían extraer de la población.
+\end{alertblock}
+
+\begin{block}{¿Por qué importa?}
+Para hacer inferencia necesitamos saber, por ejemplo: si $\mu$ fuera realmente igual a cierto valor, ¿qué tan probable es observar un $\bar x$ tan alejado de $\mu$ como el que obtuvimos? Responder esto exige conocer la distribución de $\bar X$, no solo su valor puntual.
+\end{block}
+
+\begin{example}[Ilustración con una población pequeña]
+Población: $\{2,4,6\}$ equiprobable ($\mu=4$). Muestras de tamaño $n=2$ \emph{con reposición}: hay $3^2=9$ muestras igualmente probables. Los valores de $\bar X$ posibles son $2,3,4,5,6$, cada uno con cierta probabilidad (no todos igualmente probables): esto ya define una distribución muestral de $\bar X$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: distribución muestral exacta}
+\begin{example}
+Continuando: población $\{2,4,6\}$, $n=2$ con reposición. Las 9 muestras equiprobables (prob. $1/9$ c/u) y su media:
+\begin{center}
+\begin{tabular}{ccccccccc}
+\toprule
+(2,2)&(2,4)&(2,6)&(4,2)&(4,4)&(4,6)&(6,2)&(6,4)&(6,6)\\
+\midrule
+2&3&4&3&4&5&4&5&6\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Distribución muestral de $\bar X$:
+$$P(\bar X=2)=\tfrac19,\ P(\bar X=3)=\tfrac29,\ P(\bar X=4)=\tfrac39,\ P(\bar X=5)=\tfrac29,\ P(\bar X=6)=\tfrac19$$
+
+Se verifica $E(\bar X) = 2\cdot\tfrac19+3\cdot\tfrac29+4\cdot\tfrac39+5\cdot\tfrac29+6\cdot\tfrac19 = 4 = \mu$.
+\end{example}
+\end{frame}
+
+\section{Esperanza y varianza de la media muestral}
+
+\begin{frame}{Deducción de $E(\bar X)$}
+\begin{theorem}[Esperanza de la media muestral]
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población con $E(X_i)=\mu$ (finita). Entonces
+$$E(\bar X) = \mu.$$
+\end{theorem}
+
+\begin{proof}
+Por linealidad de la esperanza (no requiere independencia):
+$$E(\bar X) = E\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n}\sum_{i=1}^n E(X_i) = \frac{1}{n}\cdot n\mu = \mu. \qedhere$$
+\end{proof}
+
+\begin{alertblock}{Interpretación}
+En promedio (sobre todas las posibles muestras), la media muestral ``acierta'': ni sobreestima ni subestima sistemáticamente a $\mu$. Se dice que $\bar X$ es un estimador \textbf{insesgado} de $\mu$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Deducción de $\text{Var}(\bar X)$}
+\begin{theorem}[Varianza de la media muestral]
+Sea $X_1,\dots,X_n$ una muestra aleatoria (i.i.d.) de una población con $\text{Var}(X_i)=\sigma^2$ (finita). Entonces
+$$\text{Var}(\bar X) = \frac{\sigma^2}{n}.$$
+\end{theorem}
+
+\begin{proof}
+Como los $X_i$ son \textbf{independientes}, la varianza de la suma es la suma de varianzas:
+$$\text{Var}(\bar X) = \text{Var}\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\sum_{i=1}^n \text{Var}(X_i) = \frac{1}{n^2}\cdot n\sigma^2 = \frac{\sigma^2}{n}. \qedhere$$
+\end{proof}
+
+\begin{alertblock}{¿Dónde se usó la independencia?}
+En $\text{Var}(X_i+X_j) = \text{Var}(X_i)+\text{Var}(X_j)+2\,\text{Cov}(X_i,X_j)$: al ser independientes, $\text{Cov}(X_i,X_j)=0$ para $i\ne j$, y los términos cruzados desaparecen. Sin independencia, esta fórmula tan simple no valdría.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Consecuencias de $\text{Var}(\bar X)=\sigma^2/n$}
+\begin{block}{Desvío estándar de $\bar X$ (error estándar)}
+$$\sigma_{\bar X} = \frac{\sigma}{\sqrt n}$$
+se llama \textbf{error estándar} de la media. A diferencia de $\sigma$ (fijo, de la población), $\sigma_{\bar X}$ \textbf{disminuye} a medida que crece $n$.
+\end{block}
+
+\begin{alertblock}{Interpretación central}
+Cuantas más observaciones promediamos, menos varía $\bar X$ de muestra a muestra: se \textbf{concentra} en torno a $\mu$. Esto es la base intuitiva de la Ley de los Grandes Números y de por qué muestras más grandes dan estimaciones más precisas.
+\end{alertblock}
+
+\begin{example}
+Si $\sigma = 4$ g (desvío del peso poblacional) y $n=25$, entonces $\sigma_{\bar X} = 4/\sqrt{25} = 0.8$ g: mucho más preciso que una sola medición individual.
+\end{example}
+\end{frame}
+
+\begin{frame}{Esperanza y varianza de la proporción muestral}
+\begin{block}{Caso particular importante}
+Si $X_i \sim \text{Bernoulli}(p)$ (indica éxito/fracaso), entonces $\hat p = \bar X = \frac{1}{n}\sum X_i$ es la \textbf{proporción muestral} de éxitos. Como $E(X_i)=p$ y $\text{Var}(X_i)=p(1-p)$, los resultados anteriores dan directamente:
+$$E(\hat p) = p, \qquad \text{Var}(\hat p) = \frac{p(1-p)}{n}.$$
+\end{block}
+
+\begin{example}
+En un lote grande, la proporción real de piezas defectuosas es $p=0.05$. Para $n=200$:
+$$E(\hat p) = 0.05, \qquad \text{Var}(\hat p) = \frac{0.05\cdot 0.95}{200} = 0.0002375, \qquad \sigma_{\hat p}\approx 0.0154.$$
+\end{example}
+\end{frame}
+
+\begin{frame}{Lo que todavía no sabemos}
+\begin{alertblock}{Pregunta pendiente}
+Ya sabemos que $E(\bar X)=\mu$ y $\text{Var}(\bar X)=\sigma^2/n$, \textbf{para cualquier} población con media y varianza finitas. Pero esto no nos dice \textbf{la forma} de la distribución de $\bar X$ (¿es normal?, ¿es simétrica?, ¿qué probabilidad tiene $\bar X$ de superar cierto valor?).
+\end{alertblock}
+
+\begin{block}{Próxima clase}
+En la Clase 20 estudiaremos:
+\begin{itemize}
+\item la distribución \textbf{exacta} de $\bar X$ cuando la población es normal;
+\item la distribución \textbf{aproximada} de $\bar X$ para poblaciones no normales (Teorema Central del Límite);
+\item la distribución de $S^2$ y su relación con la distribución $\chi^2$;
+\item el estadístico $t$ de Student, que combina $\bar X$ y $S$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{itemize}
+\item Una \textbf{muestra aleatoria} $X_1,\dots,X_n$ es una colección de v.a. \textbf{i.i.d.}, cada una con la distribución de la población.
+\item Un \textbf{parámetro} (ej. $\mu,\sigma^2,p$) es un número fijo y desconocido de la población; un \textbf{estadístico} (ej. $\bar X, S^2,\hat p$) es una función de la muestra, y por lo tanto una \textbf{variable aleatoria}.
+\item La \textbf{distribución muestral} de un estadístico es su distribución de probabilidad, clave para toda la inferencia posterior.
+\item $\displaystyle \bar X = \frac{1}{n}\sum_{i=1}^n X_i$, con $\displaystyle E(\bar X)=\mu$ y $\displaystyle \text{Var}(\bar X)=\frac{\sigma^2}{n}$ (esta última usa independencia).
+\item $\displaystyle S^2 = \frac{1}{n-1}\sum_{i=1}^n (X_i-\bar X)^2$ estima $\sigma^2$; se divide por $n-1$ por la restricción $\sum (X_i-\bar X)=0$.
+\item A mayor $n$, menor error estándar $\sigma_{\bar X}=\sigma/\sqrt n$: la media muestral se concentra en torno a $\mu$.
+\end{itemize}
+\end{frame}
+
+\end{document}

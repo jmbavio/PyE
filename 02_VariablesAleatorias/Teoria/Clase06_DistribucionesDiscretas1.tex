@@ -1,0 +1,254 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 6: Distribuciones discretas I (Bernoulli, Binomial, Pascal, Hipergeométrica)}
+\subtitle{Unidad 2: Variables aleatorias}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Función de probabilidad puntual}
+
+\begin{frame}{Función de probabilidad puntual}
+\begin{definition}[Función de probabilidad puntual]
+Si $X$ es una v.a. discreta que toma valores $x_1,x_2,\dots$, la \textbf{función de probabilidad puntual} (f.p.p.) es
+$$p(x) = P(X=x).$$
+\end{definition}
+
+\begin{block}{Propiedades}
+\begin{enumerate}
+\item $p(x_i) \ge 0$ para todo $i$.
+\item $\displaystyle\sum_i p(x_i) = 1$.
+\item $F(x) = \displaystyle\sum_{x_i \le x} p(x_i)$.
+\end{enumerate}
+\end{block}
+
+\begin{block}{Esperanza y varianza}
+$$E(X) = \sum_i x_i\, p(x_i), \qquad V(X) = \sum_i (x_i-E(X))^2\, p(x_i) = E(X^2)-[E(X)]^2.$$
+\end{block}
+\end{frame}
+
+\section{Distribución de Bernoulli}
+
+\begin{frame}{Ensayo de Bernoulli}
+\begin{definition}[Variable de Bernoulli]
+Un \textbf{ensayo de Bernoulli} es un experimento con exactamente dos resultados posibles: \emph{éxito} ($X=1$) con probabilidad $p$, y \emph{fracaso} ($X=0$) con probabilidad $q=1-p$.
+
+$$p(x) = p^x q^{1-x}, \qquad x=0,1.$$
+Notación: $X \sim \text{Be}(p)$.
+\end{definition}
+
+\begin{block}{Esperanza y varianza}
+\begin{align*}
+E(X) &= 0\cdot q + 1 \cdot p = p \\
+E(X^2) &= 0^2\cdot q + 1^2\cdot p = p \\
+V(X) &= E(X^2)-[E(X)]^2 = p - p^2 = p(1-p) = pq.
+\end{align*}
+\end{block}
+
+\begin{example}
+Inspeccionar un artículo y clasificarlo como defectuoso ($X=1$) o no ($X=0$).
+\end{example}
+\end{frame}
+
+\section{Distribución Binomial}
+
+\begin{frame}{Planteo del modelo binomial}
+\begin{block}{Hipótesis del modelo binomial}
+Se realizan $n$ ensayos de Bernoulli \textbf{independientes}, cada uno con la misma probabilidad de éxito $p$. Sea
+$$X = \text{número total de éxitos en los $n$ ensayos}.$$
+\end{block}
+
+\begin{definition}[Distribución Binomial]
+$X \sim \text{Bi}(n,p)$ si
+$$p(x) = P(X=x) = \binom{n}{x} p^x q^{n-x}, \qquad x=0,1,\dots,n,$$
+donde $q=1-p$.
+\end{definition}
+
+\begin{alertblock}{Idea de la deducción}
+$\binom{n}{x}$ cuenta las formas de elegir \emph{cuáles} $x$ ensayos son éxitos; $p^x q^{n-x}$ es la probabilidad de una secuencia particular con $x$ éxitos y $n-x$ fracasos (por independencia).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Verificación y esperanza de la Binomial}
+\begin{block}{Suma de probabilidades $=1$}
+Por el teorema del binomio de Newton:
+$$\sum_{x=0}^n \binom{n}{x}p^x q^{n-x} = (p+q)^n = 1^n = 1.$$
+\end{block}
+
+\begin{theorem}[Esperanza y varianza]
+Si $X\sim \text{Bi}(n,p)$, escribiendo $X = X_1+X_2+\cdots+X_n$ con $X_i\sim \text{Be}(p)$ independientes:
+$$E(X) = \sum_{i=1}^n E(X_i) = np, \qquad V(X) = \sum_{i=1}^n V(X_i) = npq.$$
+\end{theorem}
+
+\begin{alertblock}{Forma de la distribución}
+Es simétrica si $p=0.5$; sesgada a la derecha si $p<0.5$ y a la izquierda si $p>0.5$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Gráfico: Binomial}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, bar width=10pt,
+  xlabel={$x$}, ylabel={$p(x)$},
+  width=10cm, height=5.5cm,
+  xtick={0,...,10},
+  title={Bi(10,\,0.3)},
+]
+\addplot coordinates {
+(0,0.0282) (1,0.1211) (2,0.2335) (3,0.2668) (4,0.2001)
+(5,0.1029) (6,0.0368) (7,0.0090) (8,0.0014) (9,0.0001) (10,0.0000)
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Binomial}
+\begin{example}
+Un examen de opción múltiple tiene 8 preguntas, cada una con 4 opciones y solo una correcta. Un alumno responde al azar. ¿Cuál es la probabilidad de acertar exactamente 3?
+\end{example}
+
+\begin{block}{Resolución}
+Sea $X=$ número de aciertos. $X\sim\text{Bi}(n=8, p=0.25)$.
+$$P(X=3) = \binom{8}{3}(0.25)^3(0.75)^5 = 56 \times 0.015625 \times 0.2373 \approx 0.2076.$$
+
+Además $E(X) = np = 8(0.25) = 2$ aciertos esperados, con $V(X)=npq=8(0.25)(0.75)=1.5$.
+\end{block}
+\end{frame}
+
+\section{Distribución de Pascal (binomial negativa)}
+
+\begin{frame}{Planteo del modelo de Pascal}
+\begin{block}{Pregunta que responde}
+En una sucesión de ensayos de Bernoulli independientes con probabilidad de éxito $p$: ¿cuántos ensayos $X$ se necesitan para lograr el \textbf{$k$-ésimo} éxito?
+\end{block}
+
+\begin{definition}[Distribución de Pascal / Binomial negativa]
+$X\sim\text{BN}(k,p)$ (o Pascal) si
+$$p(x) = P(X=x) = \binom{x-1}{k-1} p^k q^{x-k}, \qquad x=k,k+1,k+2,\dots$$
+\end{definition}
+
+\begin{alertblock}{Idea de la deducción}
+Para que el ensayo $x$ sea el $k$-ésimo éxito: en los primeros $x-1$ ensayos hay exactamente $k-1$ éxitos (hay $\binom{x-1}{k-1}$ formas de ubicarlos), y el ensayo $x$-ésimo es éxito. Por independencia, se multiplican las probabilidades.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Esperanza de la distribución de Pascal}
+\begin{theorem}
+Si $X\sim\text{BN}(k,p)$, escribiendo $X = T_1+T_2+\cdots+T_k$ donde $T_i$ es el número de ensayos \emph{entre} el éxito $(i-1)$-ésimo y el $i$-ésimo (cada $T_i$ es geométrica de parámetro $p$, ver clase siguiente):
+$$E(X) = \frac{k}{p}, \qquad V(X) = \frac{k(1-p)}{p^2}.$$
+\end{theorem}
+
+\begin{alertblock}{Caso particular $k=1$}
+Cuando $k=1$, $\text{BN}(1,p)$ es la \textbf{distribución geométrica}: número de ensayos hasta el primer éxito. La estudiaremos en detalle en la próxima clase.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Pascal}
+\begin{example}
+Un vendedor tiene probabilidad $p=0.2$ de cerrar una venta en cada visita, independientemente entre visitas. ¿Cuál es la probabilidad de que logre su \textbf{tercera} venta exactamente en la \textbf{séptima} visita?
+\end{example}
+
+\begin{block}{Resolución}
+$X=$ número de visitas hasta la 3\textsuperscript{ra} venta. $X\sim\text{BN}(k=3,\,p=0.2)$.
+$$P(X=7) = \binom{6}{2}(0.2)^3(0.8)^4 = 15 \times 0.008 \times 0.4096 \approx 0.0492.$$
+
+El número esperado de visitas hasta la tercera venta es $E(X) = k/p = 3/0.2 = 15$ visitas.
+\end{block}
+\end{frame}
+
+\section{Distribución Hipergeométrica}
+
+\begin{frame}{Planteo del modelo hipergeométrico}
+\begin{block}{Contexto}
+Una población finita de $N$ elementos contiene $K$ "éxitos" y $N-K$ "fracasos". Se extrae una muestra de tamaño $n$ \textbf{sin reposición}. Sea $X=$ número de éxitos en la muestra.
+\end{block}
+
+\begin{definition}[Distribución Hipergeométrica]
+$X\sim\text{H}(N,K,n)$ si
+$$p(x) = P(X=x) = \frac{\dbinom{K}{x}\dbinom{N-K}{n-x}}{\dbinom{N}{n}}, \qquad \max(0,n-N+K)\le x \le \min(n,K).$$
+\end{definition}
+
+\begin{alertblock}{Idea de la deducción}
+Regla de Laplace: casos favorables = elegir $x$ éxitos de los $K$ disponibles y $n-x$ fracasos de los $N-K$ restantes; casos totales = elegir $n$ elementos de los $N$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Esperanza y varianza; comparación con la Binomial}
+\begin{theorem}
+Si $X\sim\text{H}(N,K,n)$, con $p=K/N$:
+$$E(X) = n\frac{K}{N} = np, \qquad V(X) = np(1-p)\cdot\frac{N-n}{N-1}.$$
+\end{theorem}
+
+\begin{alertblock}{Relación con la Binomial}
+El factor $\dfrac{N-n}{N-1}$ se llama \textbf{factor de corrección para población finita}. Si $N$ es muy grande respecto de $n$ (por ejemplo, $n/N < 0.05$), el muestreo sin reposición se comporta aproximadamente como con reposición y
+$$\text{H}(N,K,n) \approx \text{Bi}(n,\,p=K/N).$$
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Hipergeométrica}
+\begin{example}
+Un lote contiene 20 artículos, de los cuales 4 son defectuosos. Se seleccionan 5 artículos al azar sin reposición. ¿Cuál es la probabilidad de que exactamente 2 sean defectuosos?
+\end{example}
+
+\begin{block}{Resolución}
+$N=20$, $K=4$, $n=5$, $X\sim\text{H}(20,4,5)$.
+$$P(X=2) = \frac{\binom{4}{2}\binom{16}{3}}{\binom{20}{5}} = \frac{6\times 560}{15504} = \frac{3360}{15504} \approx 0.2167.$$
+
+Comparación con la aproximación binomial ($p=4/20=0.2$):
+$$\binom{5}{2}(0.2)^2(0.8)^3 = 10\times 0.04\times 0.512 = 0.2048,$$
+razonablemente cercana, aunque $n/N=0.25$ no es tan pequeño.
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen: distribuciones discretas (parte I)}
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Distribución} & \textbf{$p(x)$} & \textbf{$E(X)$} & \textbf{$V(X)$} \\
+\midrule
+Bernoulli$(p)$ & $p^xq^{1-x}$ & $p$ & $pq$ \\
+Binomial$(n,p)$ & $\binom{n}{x}p^xq^{n-x}$ & $np$ & $npq$ \\
+Pascal$(k,p)$ & $\binom{x-1}{k-1}p^kq^{x-k}$ & $k/p$ & $kq/p^2$ \\
+Hipergeom.$(N,K,n)$ & $\dfrac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}$ & $n\frac{K}{N}$ & $np(1-p)\frac{N-n}{N-1}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{alertblock}{Claves para elegir el modelo}
+\begin{itemize}
+\item ¿Se cuenta el número de éxitos en $n$ ensayos fijos? $\to$ Binomial (con reposición) o Hipergeométrica (sin reposición, población finita).
+\item ¿Se cuenta el número de ensayos hasta lograr $k$ éxitos? $\to$ Pascal.
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,319 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 1: Experimentos aleatorios y espacio muestral}
+\subtitle{Unidad 1: Espacios de probabilidad}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Experimentos deterministicos y aleatorios}
+
+\begin{frame}{Dos tipos de experimentos}
+\begin{block}{Experimento determinístico}
+Aquel en el que, repitiéndolo en condiciones esencialmente iguales, el resultado es siempre el mismo (o predecible con certeza a partir de las condiciones iniciales).
+\end{block}
+\begin{exampleblock}{Ejemplos}
+\begin{itemize}
+\item Calentar agua a presión atmosférica normal hasta $100^\circ$C: hierve.
+\item Dejar caer un objeto desde una altura $h$: el tiempo de caída se calcula con las leyes de la física clásica.
+\end{itemize}
+\end{exampleblock}
+\begin{block}{Experimento aleatorio (o no determinístico)}
+Aquel en el que, aun repitiéndolo en condiciones esencialmente iguales, no se puede predecir con certeza el resultado individual, aunque sí se puede describir el conjunto de todos los resultados posibles.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplos de experimentos aleatorios}
+\begin{itemize}
+\item Lanzar una moneda y observar la cara que queda hacia arriba.
+\item Lanzar un dado y observar el número obtenido.
+\item Contar la cantidad de artículos defectuosos en un lote de producción.
+\item Medir el tiempo de vida útil de una lámpara.
+\item Registrar la cantidad de clientes que llegan a una caja de banco en una hora.
+\item Extraer una carta de un mazo y observar su palo.
+\end{itemize}
+\vspace{0.5em}
+\begin{alertblock}{Idea clave}
+La Probabilidad y la Estadística estudian precisamente estos fenómenos: no predicen \emph{qué} ocurrirá en un ensayo particular, sino que modelan matemáticamente la \emph{regularidad} que aparece cuando el experimento se repite muchas veces.
+\end{alertblock}
+\end{frame}
+
+\section{Espacio muestral}
+
+\begin{frame}{Espacio muestral}
+\begin{definition}
+El \textbf{espacio muestral} asociado a un experimento aleatorio $\mathcal{E}$ es el conjunto de todos los resultados posibles del experimento. Se denota habitualmente $\Omega$ (o $S$). Cada elemento $\omega \in \Omega$ se llama \textbf{punto muestral} o \textbf{resultado elemental}.
+\end{definition}
+
+\begin{block}{Clasificación de $\Omega$ según su cardinalidad}
+\begin{itemize}
+\item \textbf{Finito}: tiene un número finito de elementos.
+\item \textbf{Infinito numerable}: puede ponerse en correspondencia biunívoca con $\mathbb{N}$.
+\item \textbf{Continuo (no numerable)}: se identifica con un intervalo de $\mathbb{R}$ o una región de $\mathbb{R}^n$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplos de espacios muestrales}
+\begin{example}
+\textbf{Finito.} Lanzar un dado una vez:
+\[
+\Omega = \{1,2,3,4,5,6\}.
+\]
+\end{example}
+\begin{example}
+\textbf{Finito.} Lanzar dos monedas:
+\[
+\Omega = \{(c,c),(c,s),(s,c),(s,s)\}.
+\]
+\end{example}
+\begin{example}
+\textbf{Infinito numerable.} Lanzar una moneda hasta obtener la primera cara y contar el número de lanzamientos:
+\[
+\Omega = \{1,2,3,\dots\} = \mathbb{N}.
+\]
+\end{example}
+\begin{example}
+\textbf{Continuo.} Medir el tiempo de vida (en horas) de una lámpara:
+\[
+\Omega = [0,+\infty).
+\]
+\end{example}
+\end{frame}
+
+\section{Sucesos}
+
+\begin{frame}{Sucesos (eventos)}
+\begin{definition}
+Un \textbf{suceso} (o \textbf{evento}) es un subconjunto $A \subseteq \Omega$. Decimos que el suceso $A$ \textbf{ocurre} en un ensayo del experimento si el resultado obtenido $\omega$ pertenece a $A$.
+\end{definition}
+
+\begin{block}{Sucesos especiales}
+\begin{itemize}
+\item \textbf{Suceso seguro}: el propio $\Omega$; ocurre siempre.
+\item \textbf{Suceso imposible}: el conjunto vacío $\varnothing$; nunca ocurre.
+\item \textbf{Suceso elemental}: un subconjunto de $\Omega$ formado por un único punto muestral, $\{\omega\}$.
+\end{itemize}
+\end{block}
+
+\begin{example}
+Dado el experimento ``lanzar un dado'', con $\Omega=\{1,\dots,6\}$, el suceso ``sale un número par'' es
+\[
+A = \{2,4,6\} \subseteq \Omega.
+\]
+\end{example}
+\end{frame}
+
+\section{Álgebra de sucesos}
+
+\begin{frame}{Operaciones entre sucesos}
+Como los sucesos son subconjuntos de $\Omega$, se combinan con las operaciones usuales de conjuntos, que en este contexto tienen interpretación probabilística.
+
+\begin{block}{Unión: $A \cup B$}
+Ocurre si ocurre $A$, o $B$, o ambos. ``Al menos uno de los dos sucesos ocurre.''
+\end{block}
+\begin{block}{Intersección: $A \cap B$}
+Ocurre si ocurren simultáneamente $A$ y $B$. ``Ambos sucesos ocurren.''
+\end{block}
+\begin{block}{Complemento: $A^c = \Omega \setminus A$ (también $\overline{A}$)}
+Ocurre si no ocurre $A$.
+\end{block}
+\begin{block}{Diferencia: $A \setminus B = A \cap B^c$}
+Ocurre si ocurre $A$ pero no $B$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Diagramas de Venn}
+\centering
+\begin{tikzpicture}[scale=0.85]
+% Union
+\begin{scope}
+\draw (0,0) rectangle (3.4,2.6);
+\node at (0.25,2.35) {\footnotesize $\Omega$};
+\begin{scope}
+\clip (0,0) rectangle (3.4,2.6);
+\fill[blue!25] (1.15,1.3) circle (0.9);
+\fill[blue!25] (2.25,1.3) circle (0.9);
+\end{scope}
+\draw (1.15,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $A$};
+\draw (2.25,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $B$};
+\node at (1.7,-0.55) {\footnotesize $A \cup B$};
+\end{scope}
+% Interseccion
+\begin{scope}[xshift=4.2cm]
+\draw (0,0) rectangle (3.4,2.6);
+\node at (0.25,2.35) {\footnotesize $\Omega$};
+\begin{scope}
+\clip (1.15,1.3) circle (0.9);
+\fill[blue!45] (2.25,1.3) circle (0.9);
+\end{scope}
+\draw (1.15,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $A$};
+\draw (2.25,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $B$};
+\node at (1.7,-0.55) {\footnotesize $A \cap B$};
+\end{scope}
+% Complemento
+\begin{scope}[xshift=8.4cm]
+\draw (0,0) rectangle (3.4,2.6);
+\begin{scope}
+\clip (0,0) rectangle (3.4,2.6);
+\fill[blue!25] (0,0) rectangle (3.4,2.6);
+\fill[white] (1.7,1.3) circle (0.9);
+\end{scope}
+\draw (0,0) rectangle (3.4,2.6);
+\draw (1.7,1.3) circle (0.9) node{\footnotesize $A$};
+\node at (1.7,-0.55) {\footnotesize $A^c$};
+\end{scope}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Sucesos mutuamente excluyentes}
+\begin{definition}
+Dos sucesos $A$ y $B$ son \textbf{mutuamente excluyentes} (o incompatibles, o disjuntos) si
+\[
+A \cap B = \varnothing,
+\]
+es decir, no pueden ocurrir simultáneamente en un mismo ensayo.
+\end{definition}
+
+\begin{example}
+Al lanzar un dado, $A=\{1,2\}$ (``sale 1 o 2'') y $B=\{5,6\}$ (``sale 5 o 6'') son mutuamente excluyentes: $A \cap B = \varnothing$.
+\end{example}
+
+\begin{block}{Sistema completo de sucesos (partición de $\Omega$)}
+Una familia $\{A_1,A_2,\dots,A_n\}$ es un \textbf{sistema completo de sucesos} si:
+\begin{enumerate}
+\item $A_i \cap A_j = \varnothing$ para todo $i \neq j$ (mutuamente excluyentes dos a dos),
+\item $\displaystyle\bigcup_{i=1}^{n} A_i = \Omega$ (exhaustivos).
+\end{enumerate}
+Esta noción será central para el teorema de la probabilidad total (Clase 4).
+\end{block}
+\end{frame}
+
+\begin{frame}{Propiedades algebraicas de las operaciones}
+\begin{columns}[t]
+\begin{column}{0.5\textwidth}
+\textbf{Conmutatividad}
+\[A\cup B = B\cup A, \quad A\cap B = B\cap A\]
+\textbf{Asociatividad}
+\[(A\cup B)\cup C = A\cup(B\cup C)\]
+\textbf{Distributividad}
+\[A\cap(B\cup C)=(A\cap B)\cup(A\cap C)\]
+\[A\cup(B\cap C)=(A\cup B)\cap(A\cup C)\]
+\end{column}
+\begin{column}{0.5\textwidth}
+\textbf{Leyes de De Morgan}
+\[(A\cup B)^c = A^c \cap B^c\]
+\[(A\cap B)^c = A^c \cup B^c\]
+\textbf{Elemento neutro / absorbente}
+\[A\cup \varnothing = A, \quad A\cap \varnothing = \varnothing\]
+\[A\cup \Omega = \Omega, \quad A\cap \Omega = A\]
+\end{column}
+\end{columns}
+\end{frame}
+
+\section{Álgebra ($\sigma$-álgebra) de sucesos}
+
+\begin{frame}{El conjunto fundamental y el álgebra de sucesos}
+\begin{definition}
+Dado un espacio muestral $\Omega$, una familia $\mathcal{A}$ de subconjuntos de $\Omega$ es un \textbf{álgebra de sucesos} si satisface:
+\begin{enumerate}
+\item $\Omega \in \mathcal{A}$.
+\item Si $A \in \mathcal{A}$, entonces $A^c \in \mathcal{A}$ (cerrada bajo complemento).
+\item Si $A, B \in \mathcal{A}$, entonces $A \cup B \in \mathcal{A}$ (cerrada bajo unión finita).
+\end{enumerate}
+\end{definition}
+
+\begin{block}{$\sigma$-álgebra}
+Si además la familia es cerrada bajo \textbf{uniones numerables},
+\[
+A_1, A_2, \dots \in \mathcal{A} \;\Longrightarrow\; \bigcup_{i=1}^{\infty} A_i \in \mathcal{A},
+\]
+se dice que $\mathcal{A}$ es una $\sigma$-\textbf{álgebra}. Es la estructura sobre la cual se define, en la Clase 2, la función de probabilidad.
+\end{block}
+
+\begin{alertblock}{Observación}
+Cuando $\Omega$ es finito o infinito numerable, se suele tomar $\mathcal{A} = \mathcal{P}(\Omega)$, el conjunto de \emph{todos} los subconjuntos de $\Omega$ (partes de $\Omega$), que automáticamente es una $\sigma$-álgebra.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Consecuencias inmediatas de la definición}
+De los tres axiomas de álgebra se deducen otras propiedades de cierre:
+\begin{itemize}
+\item $\varnothing \in \mathcal{A}$, pues $\varnothing = \Omega^c$.
+\item Si $A,B\in\mathcal{A}$ entonces $A\cap B \in \mathcal{A}$, pues por De Morgan
+\[
+A \cap B = (A^c \cup B^c)^c.
+\]
+\item Si $A,B \in \mathcal{A}$ entonces $A\setminus B \in \mathcal{A}$, pues $A\setminus B = A \cap B^c$.
+\item Por inducción, el álgebra es cerrada bajo uniones e intersecciones \emph{finitas} de cualquier cantidad de sucesos.
+\end{itemize}
+\vspace{0.5em}
+\begin{block}{Por qué importa esta estructura}
+El álgebra (o $\sigma$-álgebra) de sucesos es precisamente la colección de subconjuntos de $\Omega$ a los que les vamos a poder asignar una probabilidad de manera consistente. Es el segundo ingrediente (junto con $\Omega$) de un espacio de probabilidad $(\Omega, \mathcal{A}, P)$.
+\end{block}
+\end{frame}
+
+\section{Ejemplo integrador}
+
+\begin{frame}{Ejemplo integrador}
+\begin{example}
+Se extraen, sin reposición, dos artículos de un lote que contiene piezas \textbf{buenas} (B) y \textbf{defectuosas} (D), y se registra el estado de cada una en el orden de extracción.
+\begin{itemize}
+\item Espacio muestral:
+\[
+\Omega = \{BB,\ BD,\ DB,\ DD\}.
+\]
+\item Sea $A$: ``la primera pieza extraída es defectuosa'':
+\[
+A = \{DB, DD\}.
+\]
+\item Sea $B$: ``al menos una pieza es defectuosa'':
+\[
+B = \{BD, DB, DD\}.
+\]
+\item $A \cap B = \{DB,DD\} = A$ (pues $A \subseteq B$).
+\item $A \cup B = \{BD,DB,DD\} = B$.
+\item $B^c = \{BB\}$: ``ninguna pieza es defectuosa''.
+\item $A$ y $\{BB\}$ son mutuamente excluyentes.
+\end{itemize}
+\end{example}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item Un \textbf{experimento aleatorio} no permite predecir su resultado individual, aunque sí se conocen todos los resultados posibles.
+\item El \textbf{espacio muestral} $\Omega$ reúne todos los resultados posibles; puede ser finito, infinito numerable o continuo.
+\item Un \textbf{suceso} es un subconjunto de $\Omega$; se combinan mediante unión, intersección, complemento y diferencia.
+\item Dos sucesos son \textbf{mutuamente excluyentes} si su intersección es vacía; un \textbf{sistema completo de sucesos} particiona a $\Omega$.
+\item El \textbf{álgebra} (o $\sigma$-álgebra) $\mathcal{A}$ de sucesos es la familia de subconjuntos de $\Omega$ a los que se les asignará probabilidad: contiene a $\Omega$ y es cerrada por complemento y uniones (finitas o numerables).
+\item Próxima clase: cómo asignar una \textbf{probabilidad} a cada suceso de $\mathcal{A}$ (axiomática de Kolmogorov).
+\end{itemize}
+\end{frame}
+
+\end{document}

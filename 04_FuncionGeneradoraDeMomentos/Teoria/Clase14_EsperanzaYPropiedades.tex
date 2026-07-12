@@ -1,0 +1,287 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 14: Esperanza matemática y sus propiedades}
+\subtitle{Unidad 4: Función generadora de momentos}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Motivación}
+
+\begin{frame}{¿Por qué resumir una variable aleatoria?}
+\begin{block}{Idea central}
+Hasta ahora describimos una variable aleatoria mediante su función de probabilidad puntual (caso discreto) o su función de densidad (caso continuo). Estas funciones contienen \textbf{toda} la información probabilística, pero muchas veces necesitamos un número que resuma el comportamiento ``típico'' de la variable.
+\end{block}
+
+\begin{itemize}
+\item ¿Cuál es el valor promedio que esperamos observar a largo plazo?
+\item ¿Cuánto se dispersan los valores respecto de ese promedio? (lo veremos en la Clase 15)
+\item Estas preguntas se responden con los llamados \textbf{momentos} de la distribución.
+\end{itemize}
+
+\begin{alertblock}{En esta clase}
+Definimos la esperanza matemática (primer momento), estudiamos sus propiedades y aprendemos a calcular la esperanza de funciones de una variable aleatoria.
+\end{alertblock}
+\end{frame}
+
+\section{Esperanza de una variable aleatoria discreta}
+
+\begin{frame}{Definición: caso discreto}
+\begin{definition}[Esperanza matemática -- caso discreto]
+Sea $X$ una variable aleatoria discreta con rango $R_X = \{x_1, x_2, x_3, \dots\}$ y función de probabilidad puntual $p(x_i) = P(X = x_i)$. La \textbf{esperanza matemática} (o valor esperado, o media) de $X$ es
+\[
+E(X) = \sum_{x_i \in R_X} x_i \, p(x_i),
+\]
+siempre que la serie converja \textbf{absolutamente}, es decir $\sum_{x_i} |x_i| \, p(x_i) < \infty$.
+\end{definition}
+
+\begin{block}{Notación}
+También se escribe $\mu$ o $\mu_X$ para $E(X)$. Si la serie no converge absolutamente, decimos que la esperanza \textbf{no existe}.
+\end{block}
+
+\begin{alertblock}{Interpretación}
+$E(X)$ es un promedio ponderado de los valores posibles de $X$, donde cada valor pesa según su probabilidad. Se interpreta como el valor promedio que tomaría $X$ si repitiéramos el experimento un número muy grande de veces (ley de los grandes números, Clase 17).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: dado equilibrado}
+\begin{example}
+Sea $X$ el resultado de tirar un dado equilibrado. Entonces $R_X = \{1,2,3,4,5,6\}$ y $p(x_i) = 1/6$ para cada $i$.
+\[
+E(X) = \sum_{i=1}^{6} i \cdot \frac{1}{6} = \frac{1}{6}(1+2+3+4+5+6) = \frac{21}{6} = 3.5
+\]
+\end{example}
+
+\begin{block}{Observación importante}
+$E(X) = 3.5$ \textbf{no es} un valor posible de $X$. La esperanza es un promedio a largo plazo, no un valor que necesariamente pueda observarse en una sola realización.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: variable Bernoulli}
+\begin{example}
+Sea $X \sim \text{Bernoulli}(p)$, es decir $P(X=1) = p$, $P(X=0) = 1-p$.
+\[
+E(X) = 0 \cdot (1-p) + 1 \cdot p = p.
+\]
+\end{example}
+
+\begin{example}[Binomial]
+Sea $X \sim \text{Bin}(n,p)$. Se puede demostrar (usando la definición y manipulación combinatoria, o más fácilmente como suma de $n$ Bernoulli independientes) que
+\[
+E(X) = np.
+\]
+\end{example}
+
+\begin{example}[Poisson]
+Sea $X \sim \text{Poisson}(\lambda)$. Entonces
+\[
+E(X) = \sum_{k=0}^{\infty} k \, \frac{e^{-\lambda}\lambda^k}{k!} = \lambda e^{-\lambda}\sum_{k=1}^{\infty} \frac{\lambda^{k-1}}{(k-1)!} = \lambda e^{-\lambda} e^{\lambda} = \lambda.
+\]
+\end{example}
+\end{frame}
+
+\section{Esperanza de una variable aleatoria continua}
+
+\begin{frame}{Definición: caso continuo}
+\begin{definition}[Esperanza matemática -- caso continuo]
+Sea $X$ una variable aleatoria continua con función de densidad $f(x)$. La esperanza matemática de $X$ es
+\[
+E(X) = \int_{-\infty}^{\infty} x\, f(x)\, dx,
+\]
+siempre que $\displaystyle\int_{-\infty}^{\infty} |x|\, f(x)\, dx < \infty$.
+\end{definition}
+
+\begin{block}{Analogía}
+La suma del caso discreto se reemplaza por una integral, y la función de probabilidad puntual por la densidad. La interpretación es la misma: un promedio ponderado por la ``masa de probabilidad''.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: distribución uniforme}
+\begin{example}
+Sea $X \sim U(a,b)$, con densidad $f(x) = \dfrac{1}{b-a}$ para $x \in [a,b]$.
+\[
+E(X) = \int_a^b x \cdot \frac{1}{b-a}\, dx = \frac{1}{b-a}\left[\frac{x^2}{2}\right]_a^b = \frac{b^2 - a^2}{2(b-a)} = \frac{a+b}{2}.
+\]
+Es decir, la esperanza es el punto medio del intervalo, como era de esperar por simetría.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: distribución exponencial}
+\begin{example}
+Sea $X \sim \text{Exp}(\lambda)$, con densidad $f(x) = \lambda e^{-\lambda x}$ para $x \geq 0$.
+\[
+E(X) = \int_0^\infty x \lambda e^{-\lambda x}\, dx.
+\]
+Integrando por partes con $u = x$, $dv = \lambda e^{-\lambda x} dx$:
+\[
+E(X) = \left[-x e^{-\lambda x}\right]_0^\infty + \int_0^\infty e^{-\lambda x}\, dx = 0 + \left[-\frac{1}{\lambda} e^{-\lambda x}\right]_0^\infty = \frac{1}{\lambda}.
+\]
+\end{example}
+
+\begin{block}{Distribución normal}
+Si $X \sim N(\mu, \sigma^2)$, se puede demostrar (usando simetría de la densidad respecto de $\mu$) que $E(X) = \mu$. El parámetro $\mu$ de la normal es, precisamente, su esperanza.
+\end{block}
+\end{frame}
+
+\section{Propiedades de la esperanza}
+
+\begin{frame}{Propiedades básicas}
+\begin{theorem}[Propiedades de la esperanza]
+Sean $X, Y$ variables aleatorias con esperanza finita y $a, b \in \mathbb{R}$ constantes. Entonces:
+\begin{enumerate}
+\item \textbf{Esperanza de una constante:} $E(c) = c$.
+\item \textbf{Homogeneidad:} $E(aX) = a\, E(X)$.
+\item \textbf{Linealidad:} $E(aX + b) = a\,E(X) + b$.
+\item \textbf{Aditividad:} $E(X+Y) = E(X) + E(Y)$ (vale siempre, incluso si $X$ e $Y$ no son independientes).
+\item Si $X \geq 0$ (con probabilidad 1), entonces $E(X) \geq 0$.
+\item Si $X \leq Y$ (con probabilidad 1), entonces $E(X) \leq E(Y)$ (monotonía).
+\end{enumerate}
+\end{theorem}
+\end{frame}
+
+\begin{frame}{Demostración de la linealidad (caso discreto)}
+\begin{proof}
+Sea $X$ discreta con función de probabilidad puntual $p(x_i)$. Por definición,
+\[
+E(aX+b) = \sum_i (a x_i + b)\, p(x_i) = a \sum_i x_i\, p(x_i) + b \sum_i p(x_i).
+\]
+Como $\sum_i x_i p(x_i) = E(X)$ y $\sum_i p(x_i) = 1$, se obtiene
+\[
+E(aX+b) = a\, E(X) + b. \qedhere
+\]
+\end{proof}
+
+\begin{block}{Caso continuo}
+La demostración es análoga, reemplazando la suma por una integral y usando la linealidad de la integral: $\int (ax+b)f(x)\,dx = a\int x f(x)\,dx + b \int f(x)\,dx$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Aditividad: $E(X+Y) = E(X)+E(Y)$}
+\begin{block}{Comentario importante}
+Esta propiedad es notable porque \textbf{no requiere independencia} entre $X$ e $Y$. Se demuestra usando la densidad (o función de probabilidad) conjunta:
+\[
+E(X+Y) = \iint (x+y) f_{X,Y}(x,y)\, dx\, dy = \iint x f_{X,Y}\, dx\,dy + \iint y f_{X,Y}\,dx\,dy = E(X) + E(Y).
+\]
+\end{block}
+
+\begin{alertblock}{Generalización}
+Por inducción, para cualquier combinación lineal de variables aleatorias $X_1,\dots,X_n$ y constantes $a_1,\dots,a_n$:
+\[
+E\left(\sum_{i=1}^n a_i X_i\right) = \sum_{i=1}^n a_i\, E(X_i).
+\]
+Esta propiedad será clave en la Clase 17 para demostrar la ley de los grandes números.
+\end{alertblock}
+\end{frame}
+
+\section{Esperanza de una función de una variable aleatoria}
+
+\begin{frame}{El ``teorema del estadístico inconsciente''}
+\begin{block}{Motivación}
+Si $X$ es una variable aleatoria y $g$ una función, entonces $Y = g(X)$ también es una variable aleatoria. ¿Cómo calculamos $E(Y)$?
+\end{block}
+
+Una forma sería hallar primero la distribución de $Y$ y luego aplicar la definición de esperanza a $Y$. Pero existe un atajo muy útil:
+
+\begin{theorem}[Ley del estadístico inconsciente]
+Sea $X$ una variable aleatoria y $g: \mathbb{R} \to \mathbb{R}$ una función. Entonces:
+\begin{itemize}
+\item Caso discreto: $\displaystyle E(g(X)) = \sum_{x_i \in R_X} g(x_i)\, p(x_i)$.
+\item Caso continuo: $\displaystyle E(g(X)) = \int_{-\infty}^{\infty} g(x)\, f(x)\, dx$.
+\end{itemize}
+\end{theorem}
+
+\begin{alertblock}{Utilidad}
+Permite calcular $E(g(X))$ \textbf{sin} necesidad de hallar la distribución de $Y=g(X)$: basta usar la distribución de $X$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: esperanza de $X^2$}
+\begin{example}
+Sea $X$ discreta con $P(X=-1) = 0.3$, $P(X=0)=0.4$, $P(X=1)=0.3$. Calculemos $E(X^2)$.
+
+\medskip
+Aplicando la ley del estadístico inconsciente con $g(x) = x^2$:
+\[
+E(X^2) = (-1)^2(0.3) + 0^2(0.4) + 1^2(0.3) = 0.3 + 0 + 0.3 = 0.6.
+\]
+\end{example}
+
+\begin{block}{Nota}
+Observar que $E(X) = -1(0.3)+0(0.4)+1(0.3) = 0$, pero $E(X^2) = 0.6 \neq [E(X)]^2 = 0$. En general $E(g(X)) \neq g(E(X))$: la esperanza no ``conmuta'' con funciones no lineales.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: caso continuo}
+\begin{example}
+Sea $X \sim U(0,1)$ y $Y = e^X$. Calculemos $E(Y)$ sin hallar la densidad de $Y$.
+\[
+E(Y) = E(e^X) = \int_0^1 e^x \cdot 1\, dx = \left[e^x\right]_0^1 = e - 1 \approx 1.718.
+\]
+\end{example}
+
+\begin{example}[Momentos de orden $k$]
+En general, definimos el \textbf{momento de orden $k$} de $X$ como $E(X^k)$, tomando $g(x) = x^k$. Por ejemplo, para $X \sim \text{Exp}(\lambda)$:
+\[
+E(X^2) = \int_0^\infty x^2 \lambda e^{-\lambda x}\, dx = \frac{2}{\lambda^2}
+\]
+(usando integración por partes dos veces, o la función Gamma). Este momento será fundamental para calcular la varianza en la próxima clase.
+\end{example}
+\end{frame}
+
+\begin{frame}{Caso especial: función de dos variables}
+\begin{block}{Extensión a $g(X,Y)$}
+Si $X,Y$ tienen densidad (o función de probabilidad) conjunta $f_{X,Y}(x,y)$, entonces
+\[
+E(g(X,Y)) = \iint_{\mathbb{R}^2} g(x,y)\, f_{X,Y}(x,y)\, dx\, dy
+\]
+(análogamente en el caso discreto, con doble suma). Esta versión se usará en la Clase 16 para definir la covarianza $\text{Cov}(X,Y) = E[(X-\mu_X)(Y-\mu_Y)]$.
+\end{block}
+
+\begin{example}
+Si $X, Y$ son independientes, se puede demostrar que $E(XY) = E(X)\,E(Y)$. En general, \textbf{sin} independencia, esta igualdad puede fallar.
+\end{example}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Conceptos clave}
+\begin{itemize}
+\item La \textbf{esperanza matemática} $E(X)$ resume el valor ``central'' o promedio a largo plazo de una variable aleatoria.
+\item Caso discreto: $E(X) = \sum x_i p(x_i)$. Caso continuo: $E(X) = \int x f(x)\, dx$.
+\item Propiedades: $E(c)=c$; $E(aX+b) = aE(X)+b$; $E(X+Y) = E(X)+E(Y)$ (sin necesidad de independencia).
+\item \textbf{Ley del estadístico inconsciente:} $E(g(X)) = \sum g(x_i)p(x_i)$ o $\int g(x) f(x)\, dx$, según el caso.
+\item En general $E(g(X)) \neq g(E(X))$.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Próxima clase}
+Usaremos $E(X)$ y $E(X^2)$ para definir la \textbf{varianza}, estudiar la desigualdad de Chebyshev y la esperanza condicional.
+\end{alertblock}
+\end{frame}
+
+\end{document}
