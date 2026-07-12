@@ -228,6 +228,20 @@ Existe evidencia estadísticamente significativa (al 5\%) de que el diámetro me
 El gráfico de cajas confirma lo que sugiere la tabla ANOVA: las dispersiones dentro de cada máquina son comparables (homocedasticidad razonable), mientras que las posiciones (medianas, en rojo) difieren notoriamente entre máquinas; en particular B se separa claramente del resto.
 \end{frame}
 
+\begin{frame}{Robustez de la prueba F}
+\begin{block}{¿Qué tan sensible es la prueba F a violaciones de los supuestos?}
+\begin{itemize}
+\item \textbf{Normalidad}: la prueba $F$ es razonablemente \textbf{robusta} a apartamientos moderados de la normalidad, especialmente con tamaños muestrales $n_i$ no demasiado pequeños (por un efecto tipo Teorema Central del Límite sobre las medias $\bar Y_{i\cdot}$).
+\item \textbf{Homocedasticidad}: la prueba es más sensible a la desigualdad de varianzas, en particular si los $n_i$ son muy distintos entre sí. En diseños equilibrados ($n_i$ iguales), la prueba $F$ tolera mejor esta violación.
+\item \textbf{Independencia}: es el supuesto más crítico; su violación (por ejemplo, mediciones repetidas mal tratadas, o falta de aleatorización) puede invalidar completamente las conclusiones, y no se corrige con tamaño de muestra grande.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{En la práctica}
+Frente a evidencia de heterocedasticidad marcada existen alternativas como la prueba de \textbf{Welch} o transformaciones de la variable respuesta; frente a no-normalidad severa, alternativas no paramétricas como la prueba de \textbf{Kruskal--Wallis}. Ambas quedan fuera del alcance de este curso introductorio.
+\end{alertblock}
+\end{frame}
+
 \section{Comparaciones múltiples}
 
 \begin{frame}{¿Y ahora qué? Comparaciones múltiples}
