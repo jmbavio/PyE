@@ -1,0 +1,326 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 4: Probabilidad condicional, independencia y teorema de Bayes}
+\subtitle{Unidad 1: Espacios de probabilidad}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Probabilidad condicional}
+
+\begin{frame}{Motivación}
+\begin{example}
+Se lanza un dado equilibrado. Sea $A$: ``sale un número par'' y $B$: ``sale un número mayor que 3''. Sabemos que $P(A)=1/2$. Pero si nos informan que \emph{ya ocurrió} $B$ (el resultado fue 4, 5 o 6), ¿cómo cambia la probabilidad de $A$?
+\end{example}
+\begin{block}{Idea intuitiva}
+Al saber que ocurrió $B=\{4,5,6\}$, el espacio muestral ``efectivo'' se reduce a $B$. Dentro de $B$, los resultados favorables a $A$ son $A\cap B = \{4,6\}$. Entonces la nueva probabilidad de $A$, dado que ocurrió $B$, es
+\[
+\frac{|A\cap B|}{|B|} = \frac{2}{3}.
+\]
+Esto motiva la definición general de probabilidad condicional.
+\end{block}
+\end{frame}
+
+\begin{frame}{Definición de probabilidad condicional}
+\begin{definition}
+Sean $A, B \in \mathcal{A}$ con $P(B) > 0$. La \textbf{probabilidad condicional} de $A$ dado $B$ es
+\[
+P(A \mid B) = \frac{P(A \cap B)}{P(B)}.
+\]
+\end{definition}
+\begin{alertblock}{Verificación en el ejemplo del dado}
+$P(A\cap B) = P(\{4,6\}) = 2/6$, $\; P(B) = 3/6$. Entonces
+\[
+P(A\mid B) = \frac{2/6}{3/6} = \frac{2}{3},
+\]
+que coincide con el cálculo intuitivo.
+\end{alertblock}
+\begin{block}{$P(\cdot \mid B)$ es una probabilidad}
+Fijado $B$ con $P(B)>0$, la función $A \mapsto P(A\mid B)$ satisface los tres axiomas de Kolmogorov sobre $\mathcal{A}$ (no negatividad, $P(\Omega\mid B)=1$, $\sigma$-aditividad). Por lo tanto todas las propiedades de la Clase 2 (complemento, monotonía, unión, etc.) valen también para probabilidades condicionales.
+\end{block}
+\end{frame}
+
+\begin{frame}{Propiedades de la probabilidad condicional}
+Para $B$ fijo con $P(B)>0$:
+\begin{itemize}
+\item $P(\Omega \mid B) = 1$, $\quad P(\varnothing\mid B) = 0$.
+\item $P(A^c \mid B) = 1 - P(A\mid B)$.
+\item Si $A_1\cap A_2 = \varnothing$: $\; P(A_1\cup A_2 \mid B) = P(A_1\mid B) + P(A_2\mid B)$.
+\item Si $A \subseteq B$: $\; P(A\mid B) = \dfrac{P(A)}{P(B)}$.
+\item Si $B \subseteq A$: $\; P(A \mid B) = 1$.
+\end{itemize}
+\end{frame}
+
+\section{Regla del producto}
+
+\begin{frame}{Teorema de la probabilidad compuesta}
+\begin{theorem}[Regla del producto]
+Si $P(B) > 0$, entonces
+\[
+P(A \cap B) = P(B)\cdot P(A\mid B).
+\]
+Simétricamente, si $P(A)>0$: $\; P(A\cap B) = P(A) \cdot P(B\mid A)$.
+\end{theorem}
+\begin{proof}
+Se despeja directamente de la definición de probabilidad condicional: $P(A\mid B) = P(A\cap B)/P(B) \Rightarrow P(A\cap B) = P(B)P(A\mid B)$.
+\end{proof}
+\begin{theorem}[Regla del producto generalizada]
+Si $P(A_1\cap A_2 \cap \cdots \cap A_{n-1}) > 0$, entonces
+\[
+P(A_1\cap A_2\cap\cdots\cap A_n) = P(A_1)\,P(A_2\mid A_1)\,P(A_3\mid A_1\cap A_2)\cdots P(A_n \mid A_1\cap\cdots\cap A_{n-1}).
+\]
+\end{theorem}
+\begin{proof}
+Por inducción, aplicando la regla del producto (caso $n=2$) reiteradamente al ir agregando un suceso a la intersección condicionante.
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo: regla del producto}
+\begin{example}
+Una urna contiene 5 bolillas rojas y 3 negras. Se extraen 3 bolillas sucesivamente, \textbf{sin reposición}. Calcular la probabilidad de que las tres sean rojas.
+\end{example}
+\begin{block}{Resolución}
+Sea $A_i$: ``la $i$-ésima extracción es roja''. Aplicamos la regla del producto generalizada:
+\[
+P(A_1\cap A_2\cap A_3) = P(A_1)\cdot P(A_2\mid A_1)\cdot P(A_3\mid A_1\cap A_2).
+\]
+\[
+P(A_1) = \frac{5}{8}, \qquad P(A_2\mid A_1) = \frac{4}{7}, \qquad P(A_3\mid A_1\cap A_2) = \frac{3}{6}.
+\]
+\[
+P(A_1\cap A_2\cap A_3) = \frac{5}{8}\cdot\frac{4}{7}\cdot\frac{3}{6} = \frac{60}{336} = \frac{5}{28} \approx 0{,}1786.
+\]
+\end{block}
+\end{frame}
+
+\section{Independencia estocástica}
+
+\begin{frame}{Independencia de dos sucesos}
+\begin{definition}
+Dos sucesos $A, B \in \mathcal{A}$ son \textbf{estocásticamente independientes} si
+\[
+P(A\cap B) = P(A)\cdot P(B).
+\]
+\end{definition}
+\begin{block}{Equivalencia con probabilidad condicional}
+Si $P(B)>0$, la independencia equivale a $P(A\mid B) = P(A)$: saber que ocurrió $B$ no modifica la probabilidad de $A$. Análogamente, si $P(A)>0$: $P(B\mid A)=P(B)$.
+\end{block}
+\begin{alertblock}{Independencia $\neq$ exclusión mutua}
+Si $A$ y $B$ son mutuamente excluyentes ($A\cap B=\varnothing$) y ambos tienen probabilidad positiva, entonces $P(A\cap B)=0 \neq P(A)P(B) > 0$: son \textbf{dependientes}. Ocurrencia de uno anula al otro, lo cual es información relevante. No confundir ambos conceptos.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Independencia de varios sucesos}
+\begin{definition}[Independencia de a pares]
+$A_1,\dots,A_n$ son \textbf{independientes de a pares} si $P(A_i\cap A_j)=P(A_i)P(A_j)$ para todo $i\neq j$.
+\end{definition}
+\begin{definition}[Independencia mutua (o conjunta)]
+$A_1,\dots,A_n$ son \textbf{mutuamente independientes} si para \textbf{todo} subconjunto de índices $\{i_1,\dots,i_k\}\subseteq\{1,\dots,n\}$ ($k\geq 2$) se cumple
+\[
+P(A_{i_1}\cap A_{i_2}\cap \cdots \cap A_{i_k}) = P(A_{i_1})\,P(A_{i_2})\cdots P(A_{i_k}).
+\]
+\end{definition}
+\begin{alertblock}{La independencia de a pares NO implica independencia mutua}
+Se necesitan verificar \textbf{todas} las combinaciones, no solo las de a pares (ver ejemplo siguiente).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: independencia de a pares sin independencia mutua}
+\begin{example}
+Se lanzan dos monedas equilibradas. Definimos:
+\begin{itemize}
+\item $A$: ``sale cara en la 1\textsuperscript{ra} moneda'',
+\item $B$: ``sale cara en la 2\textsuperscript{da} moneda'',
+\item $C$: ``las dos monedas muestran el mismo resultado''.
+\end{itemize}
+\end{example}
+\begin{block}{Resolución}
+$\Omega=\{cc,cs,sc,ss\}$, cada uno con probabilidad $1/4$. $A=\{cc,cs\}$, $B=\{cc,sc\}$, $C=\{cc,ss\}$, todos con probabilidad $1/2$.
+\[
+P(A\cap B) = P(\{cc\}) = \tfrac14 = \tfrac12\cdot\tfrac12=P(A)P(B) \;\checkmark
+\]
+Análogamente $P(A\cap C) = P(A)P(C)$ y $P(B\cap C)=P(B)P(C)$: son independientes \textbf{de a pares}. Pero
+\[
+P(A\cap B\cap C) = P(\{cc\}) = \tfrac14 \neq \tfrac12\cdot\tfrac12\cdot\tfrac12 = \tfrac18,
+\]
+por lo tanto \textbf{no} son mutuamente independientes.
+\end{block}
+\end{frame}
+
+\section{Teorema de la probabilidad total}
+
+\begin{frame}{Sistema completo de sucesos (recordatorio)}
+\begin{definition}
+$\{B_1,\dots,B_n\}$ es un \textbf{sistema completo de sucesos} (o partición de $\Omega$) si:
+\begin{enumerate}
+\item $B_i \cap B_j = \varnothing$ para $i\neq j$,
+\item $\displaystyle\bigcup_{i=1}^n B_i = \Omega$,
+\item $P(B_i) > 0$ para todo $i$.
+\end{enumerate}
+\end{definition}
+\centering
+\begin{tikzpicture}[scale=0.8]
+\draw (0,0) rectangle (7,3);
+\node at (0.4,2.7) {\footnotesize $\Omega$};
+\draw (1.4,0) -- (1.4,3);
+\draw (3.0,0) -- (3.0,3);
+\draw (4.3,0) -- (4.3,3);
+\draw (5.7,0) -- (5.7,3);
+\node at (0.7,1.5) {\footnotesize $B_1$};
+\node at (2.2,1.5) {\footnotesize $B_2$};
+\node at (3.65,1.5) {\footnotesize $B_3$};
+\node at (5.0,1.5) {\footnotesize $\cdots$};
+\node at (6.35,1.5) {\footnotesize $B_n$};
+\draw[thick] (2.5,0.6) ellipse (2.3 and 0.9);
+\node at (2.5,-0.4) {\footnotesize $A$};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Teorema de la probabilidad total}
+\begin{theorem}[Probabilidad total]
+Sea $\{B_1,\dots,B_n\}$ un sistema completo de sucesos y $A \in \mathcal{A}$ un suceso cualquiera. Entonces
+\[
+P(A) = \sum_{i=1}^{n} P(B_i)\, P(A\mid B_i).
+\]
+\end{theorem}
+\begin{proof}
+Como $\{B_i\}$ particiona $\Omega$, también particiona a $A$:
+\[
+A = A \cap \Omega = A \cap \left(\bigcup_{i=1}^n B_i\right) = \bigcup_{i=1}^n (A \cap B_i),
+\]
+y los conjuntos $A\cap B_i$ son disjuntos dos a dos (pues los $B_i$ lo son). Por aditividad finita,
+\[
+P(A) = \sum_{i=1}^n P(A\cap B_i).
+\]
+Aplicando la regla del producto a cada término, $P(A\cap B_i) = P(B_i)P(A\mid B_i)$, se obtiene el resultado. \qedhere
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo: probabilidad total (control de calidad)}
+\begin{example}
+Una fábrica recibe piezas de tres proveedores: el proveedor 1 provee el $50\%$ de las piezas, el proveedor 2 el $30\%$ y el proveedor 3 el $20\%$. Las proporciones de piezas defectuosas son $2\%$, $5\%$ y $3\%$ respectivamente. Se elige una pieza al azar del stock total. ¿Cuál es la probabilidad de que sea defectuosa?
+\end{example}
+\begin{block}{Resolución}
+Sea $B_i$: ``la pieza proviene del proveedor $i$'' ($i=1,2,3$), sistema completo con $P(B_1)=0{,}5$, $P(B_2)=0{,}3$, $P(B_3)=0{,}2$. Sea $D$: ``la pieza es defectuosa'', con $P(D\mid B_1)=0{,}02$, $P(D\mid B_2)=0{,}05$, $P(D\mid B_3)=0{,}03$.
+\[
+P(D) = 0{,}5(0{,}02)+0{,}3(0{,}05)+0{,}2(0{,}03) = 0{,}01+0{,}015+0{,}006 = 0{,}031.
+\]
+La probabilidad de que una pieza tomada al azar sea defectuosa es $3{,}1\%$.
+\end{block}
+\end{frame}
+
+\section{Teorema de Bayes}
+
+\begin{frame}{Teorema de Bayes}
+\begin{theorem}[Regla de Bayes]
+Sea $\{B_1,\dots,B_n\}$ un sistema completo de sucesos y $A\in\mathcal{A}$ con $P(A)>0$. Entonces, para cada $j=1,\dots,n$:
+\[
+P(B_j \mid A) = \frac{P(B_j)\,P(A\mid B_j)}{\displaystyle\sum_{i=1}^{n} P(B_i)\,P(A\mid B_i)}.
+\]
+\end{theorem}
+\begin{proof}
+Por la definición de probabilidad condicional y la regla del producto:
+\[
+P(B_j\mid A) = \frac{P(B_j\cap A)}{P(A)} = \frac{P(B_j)P(A\mid B_j)}{P(A)}.
+\]
+El numerador es la regla del producto aplicada a $B_j$ y $A$. El denominador $P(A)$ se reescribe usando el \textbf{teorema de la probabilidad total}:
+\[
+P(A) = \sum_{i=1}^n P(B_i)P(A\mid B_i).
+\]
+Sustituyendo se obtiene la fórmula de Bayes. \qedhere
+\end{proof}
+\end{frame}
+
+\begin{frame}{Interpretación del teorema de Bayes}
+\begin{block}{Probabilidades a priori y a posteriori}
+\begin{itemize}
+\item $P(B_j)$: probabilidad \textbf{a priori} de la ``causa'' $B_j$ (antes de observar el ``efecto'' $A$).
+\item $P(A\mid B_j)$: verosimilitud del efecto $A$ dado que la causa fue $B_j$.
+\item $P(B_j\mid A)$: probabilidad \textbf{a posteriori} de la causa $B_j$, una vez observado el efecto $A$.
+\end{itemize}
+\end{block}
+\begin{alertblock}{Uso típico}
+El teorema de Bayes permite ``invertir'' probabilidades condicionales: a partir de $P(A\mid B_j)$ (fácil de estimar, p. ej. de datos históricos) se obtiene $P(B_j\mid A)$ (lo que realmente interesa: dado el efecto observado, cuál es la causa más probable).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: control de calidad (continuación)}
+\begin{example}
+Retomando el ejemplo anterior: si se elige una pieza al azar y resulta \textbf{defectuosa}, ¿cuál es la probabilidad de que provenga del proveedor 2?
+\end{example}
+\begin{block}{Resolución}
+Ya calculamos $P(D) = 0{,}031$. Por el teorema de Bayes:
+\[
+P(B_2\mid D) = \frac{P(B_2)P(D\mid B_2)}{P(D)} = \frac{0{,}3 \times 0{,}05}{0{,}031} = \frac{0{,}015}{0{,}031} \approx 0{,}4839.
+\]
+Es decir, aunque el proveedor 2 solo aporta el $30\%$ de las piezas, dado que la pieza resultó defectuosa, la probabilidad de que provenga de ese proveedor sube a casi el $48{,}4\%$ (es el proveedor con mayor tasa de defectos).
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: diagnóstico médico}
+\begin{example}
+Una enfermedad afecta al $1\%$ de la población. Existe un test diagnóstico con sensibilidad del $95\%$ (detecta correctamente al enfermo) y especificidad del $90\%$ (da negativo correctamente en sanos). Si una persona elegida al azar da \textbf{positivo}, ¿cuál es la probabilidad de que efectivamente esté enferma?
+\end{example}
+\begin{block}{Resolución}
+Sea $E$: ``está enferma'', $E^c$: ``está sana'', $T^+$: ``test positivo''. Sistema completo: $\{E,E^c\}$.
+\[
+P(E)=0{,}01,\; P(E^c)=0{,}99,\; P(T^+\mid E) = 0{,}95,\; P(T^+\mid E^c) = 1-0{,}90 = 0{,}10.
+\]
+Probabilidad total:
+\[
+P(T^+) = 0{,}01(0{,}95) + 0{,}99(0{,}10) = 0{,}0095+0{,}099 = 0{,}1085.
+\]
+Bayes:
+\[
+P(E\mid T^+) = \frac{0{,}01 \times 0{,}95}{0{,}1085} = \frac{0{,}0095}{0{,}1085} \approx 0{,}0876.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Diagnóstico médico: interpretación}
+\begin{alertblock}{Resultado contraintuitivo pero correcto}
+Aunque el test tiene $95\%$ de sensibilidad, dado un resultado positivo la probabilidad de estar realmente enfermo es de apenas $8{,}76\%$. Esto se debe a que la enfermedad es \textbf{poco frecuente} ($1\%$ de prevalencia): la mayoría de los positivos son ``falsos positivos'' provenientes del enorme grupo de sanos ($99\%$ de la población), aun con una especificidad relativamente alta ($90\%$).
+\end{alertblock}
+\begin{block}{Moraleja}
+El teorema de Bayes muestra que la probabilidad a posteriori depende fuertemente de la probabilidad \textbf{a priori} (prevalencia), no solo de la calidad del test. Es un ejemplo clásico de por qué la intuición sin cálculo formal puede engañar.
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item \textbf{Probabilidad condicional}: $P(A\mid B) = \dfrac{P(A\cap B)}{P(B)}$, para $P(B)>0$; satisface los axiomas de Kolmogorov.
+\item \textbf{Regla del producto}: $P(A\cap B) = P(B)P(A\mid B)$, generalizable a $n$ sucesos.
+\item \textbf{Independencia}: $A,B$ independientes si $P(A\cap B)=P(A)P(B)$; distinguir de exclusión mutua. La independencia de a pares no implica independencia mutua.
+\item \textbf{Probabilidad total}: dado un sistema completo $\{B_i\}$, $\; P(A) = \sum_i P(B_i)P(A\mid B_i)$.
+\item \textbf{Teorema de Bayes}: $\; P(B_j\mid A) = \dfrac{P(B_j)P(A\mid B_j)}{\sum_i P(B_i)P(A\mid B_i)}$; permite pasar de probabilidades a priori a probabilidades a posteriori.
+\item Con esto se completa la Unidad 1. La Unidad 2 introduce las \textbf{variables aleatorias}.
+\end{itemize}
+\end{frame}
+
+\end{document}

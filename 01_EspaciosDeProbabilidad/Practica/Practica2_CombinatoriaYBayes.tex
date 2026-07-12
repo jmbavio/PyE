@@ -1,0 +1,201 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{\vspace{-1.5cm}Práctica 2: Análisis combinatorio, probabilidad condicional y teorema de Bayes \\[0.3em] \large Unidad 1: Espacios de probabilidad}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Un local de comidas rápidas ofrece 5 tipos de hamburguesa, 4 tipos de guarnición y 3 bebidas. Un cliente arma un menú eligiendo una opción de cada categoría.
+\begin{enumerate}[label=(\alph*)]
+\item ¿Cuántos menús distintos puede armar?
+\item Si además puede elegir agregar o no un postre (de entre 6 postres disponibles, o ninguno), ¿cuántos menús distintos hay ahora?
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Por el principio multiplicativo: $5\times 4\times 3 = 60$ menús distintos.
+\item Las opciones de postre son 6 postres más la opción ``ningún postre'', es decir 7 alternativas. Entonces:
+\[
+5\times 4\times 3\times 7 = 420 \text{ menús distintos.}
+\]
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+En una línea de producción se deben ensamblar 6 componentes electrónicos distintos en una placa, uno a continuación de otro, y el orden de ensamblado afecta el resultado final (tiempos de secado, accesibilidad, etc.).
+\begin{enumerate}[label=(\alph*)]
+\item ¿De cuántas formas distintas se puede ordenar el ensamblado de los 6 componentes?
+\item Si 2 de los 6 componentes deben ir necesariamente uno junto al otro (en cualquier orden entre ellos, pero adyacentes), ¿de cuántas formas se puede realizar el ensamblado?
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Es una permutación simple de 6 objetos distintos: $6! = 720$.
+\item ``Pegamos'' los dos componentes que deben ir juntos, tratándolos como un único bloque. Ahora hay 5 unidades a ordenar (el bloque + los otros 4 componentes): $5!=120$ formas. Dentro del bloque, los 2 componentes se pueden ordenar de $2!=2$ formas. Por el principio multiplicativo:
+\[
+5! \times 2! = 120\times 2 = 240 \text{ formas.}
+\]
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Una comisión de 4 personas debe formarse a partir de un grupo de 7 mujeres y 5 hombres (12 personas en total).
+\begin{enumerate}[label=(\alph*)]
+\item ¿De cuántas formas se puede formar la comisión, sin restricciones?
+\item ¿De cuántas formas si la comisión debe tener exactamente 2 mujeres y 2 hombres?
+\item Si la comisión se forma completamente al azar, ¿cuál es la probabilidad de que resulte con exactamente 2 mujeres y 2 hombres?
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+El orden dentro de la comisión no importa: usamos combinaciones.
+\begin{enumerate}[label=(\alph*)]
+\item $N=\dbinom{12}{4} = \dfrac{12!}{4!\,8!} = 495$.
+\item Elegimos 2 mujeres de las 7 y 2 hombres de los 5:
+\[
+n_A = \binom{7}{2}\binom{5}{2} = 21\times 10 = 210.
+\]
+\item Por la regla de Laplace:
+\[
+P(A) = \frac{n_A}{N} = \frac{210}{495} = \frac{14}{33} \approx 0{,}4242.
+\]
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+De un mazo de 40 cartas españolas se extraen simultáneamente (sin reposición) 3 cartas. Calcular la probabilidad de que:
+\begin{enumerate}[label=(\alph*)]
+\item las tres sean ``figuras'' (sota, caballo o rey; hay 12 figuras en total).
+\item exactamente 2 sean ases (hay 4 ases en el mazo).
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+Casos posibles totales: $N=\dbinom{40}{3} = 9880$.
+\begin{enumerate}[label=(\alph*)]
+\item Casos favorables: elegir 3 figuras entre las 12 disponibles: $\dbinom{12}{3}=220$.
+\[
+P(A) = \frac{220}{9880} \approx 0{,}02227.
+\]
+\item Casos favorables: 2 ases de los 4, y 1 carta no-as de las 36 restantes:
+\[
+n_B = \binom{4}{2}\binom{36}{1} = 6\times 36 = 216.
+\]
+\[
+P(B) = \frac{216}{9880} \approx 0{,}02186.
+\]
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Una fábrica textil produce rollos de tela y, por experiencia histórica, sabe que el $4\%$ de los rollos presenta alguna falla de tejido. Se inspeccionan 5 rollos elegidos al azar de manera independiente entre sí.
+\begin{enumerate}[label=(\alph*)]
+\item ¿Cuál es la probabilidad de que ninguno de los 5 rollos tenga falla?
+\item ¿Cuál es la probabilidad de que al menos uno tenga falla?
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+Sea $F_i$: ``el rollo $i$ tiene falla'', con $P(F_i)=0{,}04$ para cada $i$, y los sucesos son independientes entre sí (inspecciones independientes).
+\begin{enumerate}[label=(\alph*)]
+\item ``Ninguno tiene falla'' $= F_1^c\cap F_2^c\cap F_3^c\cap F_4^c\cap F_5^c$. Por independencia mutua:
+\[
+P(\text{ninguno con falla}) = (1-0{,}04)^5 = 0{,}96^5 \approx 0{,}8154.
+\]
+\item El complemento de ``ninguno con falla'' es ``al menos uno con falla'':
+\[
+P(\text{al menos uno con falla}) = 1-0{,}8154 = 0{,}1846.
+\]
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+En una urna hay 8 bolillas: 5 blancas y 3 negras. Se extraen 2 bolillas, una a continuación de la otra, \textbf{sin reposición}.
+\begin{enumerate}[label=(\alph*)]
+\item Calcular la probabilidad de que la segunda bolilla extraída sea blanca, sabiendo que la primera fue blanca.
+\item Calcular la probabilidad de que ambas sean blancas (usando la regla del producto).
+\item Calcular la probabilidad de que la segunda sea blanca (sin condicionar sobre el resultado de la primera), usando el teorema de la probabilidad total.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+Sean $B_1$: ``la primera es blanca'', $B_2$: ``la segunda es blanca''.
+\begin{enumerate}[label=(\alph*)]
+\item Si la primera fue blanca, quedan 7 bolillas: 4 blancas y 3 negras.
+\[
+P(B_2\mid B_1) = \frac{4}{7} \approx 0{,}5714.
+\]
+\item Por la regla del producto: $P(B_1) = 5/8$, luego
+\[
+P(B_1\cap B_2) = P(B_1)\cdot P(B_2\mid B_1) = \frac{5}{8}\cdot\frac{4}{7} = \frac{20}{56}=\frac{5}{14}\approx 0{,}3571.
+\]
+\item $\{B_1,B_1^c\}$ es un sistema completo de sucesos. Necesitamos también $P(B_2\mid B_1^c)$: si la primera fue negra, quedan 5 blancas y 2 negras entre 7, luego $P(B_2\mid B_1^c)=5/7$. Por el teorema de la probabilidad total:
+\[
+P(B_2) = P(B_1)P(B_2\mid B_1) + P(B_1^c)P(B_2\mid B_1^c) = \frac{5}{8}\cdot\frac{4}{7} + \frac{3}{8}\cdot\frac{5}{7} = \frac{20}{56}+\frac{15}{56}=\frac{35}{56}=\frac{5}{8}.
+\]
+Notablemente, $P(B_2)=P(B_1)=5/8$: en extracciones sin reposición, la probabilidad marginal de obtener blanca es la misma en cualquier posición de la secuencia.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Tres máquinas $M_1$, $M_2$ y $M_3$ producen, respectivamente, el $25\%$, el $35\%$ y el $40\%$ del total de piezas de una fábrica. Las proporciones de piezas defectuosas de cada máquina son $5\%$, $4\%$ y $2\%$ respectivamente.
+\begin{enumerate}[label=(\alph*)]
+\item Calcular la probabilidad de que una pieza elegida al azar del total de la producción sea defectuosa.
+\item Si se elige una pieza al azar y resulta defectuosa, calcular la probabilidad de que haya sido producida por la máquina $M_1$.
+\item ¿Cuál de las tres máquinas es la ``más sospechosa'' de haber producido una pieza que resultó defectuosa? Justificar con el cálculo de las tres probabilidades a posteriori.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+Sea $D$: ``la pieza es defectuosa''. Datos: $P(M_1)=0{,}25$, $P(M_2)=0{,}35$, $P(M_3)=0{,}40$; $P(D\mid M_1)=0{,}05$, $P(D\mid M_2)=0{,}04$, $P(D\mid M_3)=0{,}02$.
+\begin{enumerate}[label=(\alph*)]
+\item Por el teorema de la probabilidad total:
+\[
+P(D) = 0{,}25(0{,}05)+0{,}35(0{,}04)+0{,}40(0{,}02) = 0{,}0125+0{,}014+0{,}008 = 0{,}0345.
+\]
+\item Por el teorema de Bayes:
+\[
+P(M_1\mid D) = \frac{P(M_1)P(D\mid M_1)}{P(D)} = \frac{0{,}0125}{0{,}0345} \approx 0{,}3623.
+\]
+\item Calculamos también las otras dos:
+\[
+P(M_2\mid D) = \frac{0{,}014}{0{,}0345}\approx 0{,}4058, \qquad P(M_3\mid D) = \frac{0{,}008}{0{,}0345}\approx 0{,}2319.
+\]
+Verificación: $0{,}3623+0{,}4058+0{,}2319 = 1{,}0000$ (correcto, forman una partición). La máquina \textbf{más sospechosa} es $M_2$, con probabilidad a posteriori $\approx 40{,}6\%$, a pesar de que $M_3$ produce más piezas en total: lo que domina es la combinación entre volumen de producción y tasa de defectos.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+En una universidad, el $60\%$ de los estudiantes de primer año son de la ciudad y el $40\%$ son de otras localidades. La probabilidad de que un estudiante de la ciudad abandone la carrera en el primer año es del $10\%$, mientras que para los estudiantes de otras localidades es del $25\%$.
+\begin{enumerate}[label=(\alph*)]
+\item Calcular la probabilidad de que un estudiante elegido al azar abandone la carrera en el primer año.
+\item Si se sabe que un estudiante \textbf{no} abandonó la carrera, calcular la probabilidad de que sea de otra localidad.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+Sean $C$: ``es de la ciudad'', $C^c$: ``es de otra localidad'', $A$: ``abandona la carrera''. Datos: $P(C)=0{,}60$, $P(C^c)=0{,}40$, $P(A\mid C)=0{,}10$, $P(A\mid C^c)=0{,}25$.
+\begin{enumerate}[label=(\alph*)]
+\item Probabilidad total:
+\[
+P(A) = 0{,}60(0{,}10)+0{,}40(0{,}25) = 0{,}06+0{,}10=0{,}16.
+\]
+\item Necesitamos $P(C^c\mid A^c)$. Primero, $P(A^c)=1-0{,}16=0{,}84$. Además $P(A^c\mid C^c)=1-P(A\mid C^c)=1-0{,}25=0{,}75$. Por Bayes:
+\[
+P(C^c\mid A^c) = \frac{P(C^c)P(A^c\mid C^c)}{P(A^c)} = \frac{0{,}40\times 0{,}75}{0{,}84} = \frac{0{,}30}{0{,}84}\approx 0{,}3571.
+\]
+\end{enumerate}
+\end{solucion}
+
+\end{document}
