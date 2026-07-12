@@ -1,0 +1,186 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 3: Intervalos para la Varianza y Comparación de Dos Poblaciones \\ \large Unidad 6: Estimación de parámetros}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Un fabricante de resistencias eléctricas quiere controlar la variabilidad de la resistencia (en ohms) de sus productos. En una muestra de $n=20$ resistencias, supuestas de una población normal, se obtuvo $s^2=2.8$ ohm$^2$. Construir un IC del $95\%$ para $\sigma^2$.
+\end{ejercicio}
+
+\begin{solucion}
+$g.l.=n-1=19$. De tabla $\chi^2$: $\chi^2_{19,0.025}=32.852$, $\chi^2_{19,0.975}=8.907$.
+\[
+IC(\sigma^2;0.95) = \left(\frac{(n-1)s^2}{\chi^2_{19,0.025}},\ \frac{(n-1)s^2}{\chi^2_{19,0.975}}\right) = \left(\frac{19\cdot 2.8}{32.852},\ \frac{19\cdot 2.8}{8.907}\right)
+\]
+\[
+= \left(\frac{53.2}{32.852},\ \frac{53.2}{8.907}\right) = (1.619,\ 5.973) \text{ ohm}^2.
+\]
+Con un $95\%$ de confianza, la varianza poblacional de la resistencia está entre $1.619$ y $5.973$ ohm$^2$.
+\end{solucion}
+
+\begin{ejercicio}
+A partir del ejercicio anterior, construir el intervalo de confianza del $95\%$ correspondiente para el desvío estándar $\sigma$.
+\end{ejercicio}
+
+\begin{solucion}
+Tomando raíz cuadrada a los extremos del intervalo hallado para $\sigma^2$:
+\[
+IC(\sigma;0.95) = \left(\sqrt{1.619},\ \sqrt{5.973}\right) = (1.272,\ 2.444) \text{ ohms}.
+\]
+\end{solucion}
+
+\begin{ejercicio}
+Una embotelladora de gaseosas necesita que la variabilidad del volumen llenado sea baja. En una muestra de $n=12$ botellas (población normal) se midió $s=3.5$ ml. Construir un IC del $90\%$ para $\sigma^2$ y para $\sigma$.
+\end{ejercicio}
+
+\begin{solucion}
+$g.l.=11$. De tabla $\chi^2$: $\chi^2_{11,0.05}=19.675$, $\chi^2_{11,0.95}=4.575$. $s^2=3.5^2=12.25$ ml$^2$.
+\[
+IC(\sigma^2;0.90) = \left(\frac{11\cdot 12.25}{19.675},\ \frac{11\cdot 12.25}{4.575}\right) = \left(\frac{134.75}{19.675},\ \frac{134.75}{4.575}\right) = (6.849,\ 29.454) \text{ ml}^2.
+\]
+\[
+IC(\sigma;0.90) = (\sqrt{6.849},\ \sqrt{29.454}) = (2.617,\ 5.427) \text{ ml}.
+\]
+\end{solucion}
+
+\begin{ejercicio}
+Se comparan dos métodos de enseñanza (A y B) midiendo el puntaje obtenido en un examen final por dos grupos independientes de alumnos. Grupo A: $n_1=30$, $\overline x=72$, con desvío poblacional conocido de estudios previos $\sigma_1=8$. Grupo B: $n_2=35$, $\overline y=68$, con $\sigma_2=10$. Construir un IC del $95\%$ para $\mu_1-\mu_2$.
+\end{ejercicio}
+
+\begin{solucion}
+$z_{0.025}=1.96$.
+\[
+\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}} = \sqrt{\frac{64}{30}+\frac{100}{35}} = \sqrt{2.1333+2.8571} = \sqrt{4.9905} \approx 2.2340.
+\]
+\[
+IC(\mu_1-\mu_2;0.95) = (72-68)\pm 1.96(2.2340) = 4\pm 4.379 = (-0.379,\ 8.379).
+\]
+Como el intervalo incluye al $0$, no hay evidencia suficiente (al $95\%$) de que los métodos difieran en el puntaje medio.
+\end{solucion}
+
+\begin{ejercicio}
+Dos proveedores de cemento entregan bolsas cuyo peso (en kg) se supone normal, con varianzas desconocidas pero que se asumen iguales. Proveedor 1: $n_1=15$, $\overline x=50.2$, $s_1=1.1$. Proveedor 2: $n_2=12$, $\overline y=49.6$, $s_2=1.3$. Construir un IC del $95\%$ para $\mu_1-\mu_2$ usando el estimador de varianza combinado (\emph{pooled}).
+\end{ejercicio}
+
+\begin{solucion}
+Varianza combinada:
+\[
+s_p^2 = \frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2} = \frac{14(1.1)^2+11(1.3)^2}{15+12-2} = \frac{14(1.21)+11(1.69)}{25} = \frac{16.94+18.59}{25} = \frac{35.53}{25} = 1.4212.
+\]
+\[
+s_p = \sqrt{1.4212} \approx 1.1921.
+\]
+$g.l.=25$: $t_{25,0.025}=2.060$.
+\[
+s_p\sqrt{\frac{1}{n_1}+\frac{1}{n_2}} = 1.1921\sqrt{\frac{1}{15}+\frac{1}{12}} = 1.1921\sqrt{0.0667+0.0833} = 1.1921\sqrt{0.15} = 1.1921(0.3873) \approx 0.4616.
+\]
+\[
+IC(\mu_1-\mu_2;0.95) = (50.2-49.6)\pm 2.060(0.4616) = 0.6\pm 0.951 = (-0.351,\ 1.551) \text{ kg}.
+\]
+El intervalo incluye al $0$: no hay evidencia significativa de diferencia entre los pesos medios de ambos proveedores, al $95\%$ de confianza.
+\end{solucion}
+
+\begin{ejercicio}
+Para comprobar la eficacia de un programa de entrenamiento, se mide el tiempo (en segundos) que tardan $8$ atletas en recorrer $100$ metros, antes y después del programa:
+\begin{center}
+\begin{tabular}{lcccccccc}
+\toprule
+Atleta & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+\midrule
+Antes & 13.2 & 12.8 & 13.5 & 14.0 & 13.1 & 12.9 & 13.7 & 13.4 \\
+Después & 12.9 & 12.7 & 13.1 & 13.6 & 12.8 & 12.9 & 13.3 & 13.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Construir un IC del $95\%$ para la reducción media del tiempo (muestras apareadas).
+\end{ejercicio}
+
+\begin{solucion}
+Diferencias $d_i = \text{antes}-\text{después}$:
+\[
+0.3,\ 0.1,\ 0.4,\ 0.4,\ 0.3,\ 0.0,\ 0.4,\ 0.4.
+\]
+\[
+\overline d = \frac{0.3+0.1+0.4+0.4+0.3+0.0+0.4+0.4}{8} = \frac{2.3}{8} = 0.2875.
+\]
+Desviaciones al cuadrado respecto de $0.2875$: $0.00016,\ 0.03516,\ 0.01266,\ 0.01266,\ 0.00016,\ 0.08266,\ 0.01266,\ 0.01266$. Suma $\approx 0.1688$.
+\[
+s_D^2 = \frac{0.1688}{7} \approx 0.02411, \qquad s_D \approx 0.1553.
+\]
+$g.l.=7$: $t_{7,0.025}=2.365$.
+\[
+E = 2.365\cdot\frac{0.1553}{\sqrt 8} = 2.365\cdot\frac{0.1553}{2.8284} = 2.365(0.0549) \approx 0.1298.
+\]
+\[
+IC(\mu_D;0.95) = 0.2875\pm 0.1298 = (0.1577,\ 0.4173) \text{ segundos}.
+\]
+Como el intervalo no incluye al $0$ (ambos extremos positivos), hay evidencia de que el entrenamiento efectivamente reduce el tiempo, en promedio entre $0.16$ y $0.42$ segundos.
+\end{solucion}
+
+\begin{ejercicio}
+Dos máquinas (M1 y M2) producen piezas cuyo diámetro se supone normal. Se quiere verificar si tienen la misma variabilidad, calculando primero un IC para el cociente de varianzas. Muestras: M1: $n_1=10$, $s_1^2=0.045$; M2: $n_2=13$, $s_2^2=0.020$. Construir un IC del $90\%$ para $\sigma_1^2/\sigma_2^2$ e interpretar.
+\end{ejercicio}
+
+\begin{solucion}
+$g.l.=(n_1-1,n_2-1)=(9,12)$. De tabla $F$: $F_{9,12,0.05}=2.80$. Para la otra cola, usamos $F_{9,12,0.95}=1/F_{12,9,0.05}=1/2.90\approx 0.3448$.
+\[
+IC\left(\frac{\sigma_1^2}{\sigma_2^2};0.90\right) = \left(\frac{s_1^2}{s_2^2}\cdot\frac{1}{F_{9,12,0.05}},\ \frac{s_1^2}{s_2^2}\cdot\frac{1}{F_{9,12,0.95}}\right).
+\]
+\[
+\frac{s_1^2}{s_2^2} = \frac{0.045}{0.020} = 2.25.
+\]
+\[
+IC = \left(\frac{2.25}{2.80},\ \frac{2.25}{0.3448}\right) = (0.804,\ 6.527).
+\]
+Como el intervalo incluye al valor $1$, no hay evidencia (al $90\%$ de confianza) de que las varianzas de ambas máquinas sean distintas.
+\end{solucion}
+
+\begin{ejercicio}
+Dos laboratorios (X e Y) miden la concentración de un contaminante en muestras de agua, con métodos distintos. Laboratorio X: $n_1=8$, $s_1^2=1.44$. Laboratorio Y: $n_2=10$, $s_2^2=0.36$. Se sospecha que el método X es más variable. Construir un IC del $95\%$ para $\sigma_1^2/\sigma_2^2$.
+\end{ejercicio}
+
+\begin{solucion}
+$g.l.=(7,9)$. De tabla $F$: $F_{7,9,0.025}=4.20$. Para la cola inferior: $F_{7,9,0.975}=1/F_{9,7,0.025}=1/4.82\approx 0.2075$.
+\[
+\frac{s_1^2}{s_2^2} = \frac{1.44}{0.36} = 4.0.
+\]
+\[
+IC\left(\frac{\sigma_1^2}{\sigma_2^2};0.95\right) = \left(\frac{4.0}{4.20},\ \frac{4.0}{0.2075}\right) = (0.952,\ 19.277).
+\]
+Aunque el límite inferior está apenas por debajo de $1$, el intervalo es muy amplio (a causa de los tamaños muestrales chicos) e incluye al $1$: no puede afirmarse, con $95\%$ de confianza, que las varianzas sean distintas, aunque la estimación puntual ($s_1^2/s_2^2=4$) sugiere mayor variabilidad en el laboratorio X. Se recomendaría aumentar el tamaño muestral para obtener una conclusión más precisa.
+\end{solucion}
+
+\begin{ejercicio}
+Un ingeniero de control de calidad midió el peso neto (en gramos) de $n=18$ paquetes de un producto, obteniendo $s=4.2$ g, y desea saber si la variabilidad del proceso es aceptable: la norma exige que $\sigma \le 3.5$ g. Construir un IC del $95\%$ para $\sigma$ y discutir si el proceso cumple la norma.
+\end{ejercicio}
+
+\begin{solucion}
+$g.l.=17$. De tabla $\chi^2$: $\chi^2_{17,0.025}=30.191$, $\chi^2_{17,0.975}=7.564$. $s^2=4.2^2=17.64$ g$^2$.
+\[
+IC(\sigma^2;0.95) = \left(\frac{17\cdot 17.64}{30.191},\ \frac{17\cdot 17.64}{7.564}\right) = \left(\frac{299.88}{30.191},\ \frac{299.88}{7.564}\right) = (9.933,\ 39.649) \text{ g}^2.
+\]
+\[
+IC(\sigma;0.95) = (\sqrt{9.933},\ \sqrt{39.649}) = (3.152,\ 6.297) \text{ g}.
+\]
+Como el intervalo $(3.152,\ 6.297)$ incluye valores mayores que $3.5$ g (de hecho, la mayor parte del intervalo supera ese valor), no se puede afirmar, con $95\%$ de confianza, que $\sigma\le 3.5$ g: hay evidencia de que la variabilidad del proceso podría estar excediendo la norma exigida.
+\end{solucion}
+
+\end{document}

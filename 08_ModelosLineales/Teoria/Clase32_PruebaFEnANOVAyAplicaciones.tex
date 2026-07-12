@@ -89,6 +89,18 @@ el percentil $(1-\alpha)$ de la distribución $F$ con $k-1$ y $N-k$ grados de li
 \end{center}
 \end{frame}
 
+\begin{frame}{Caso particular: $k=2$ y la prueba $t$}
+Cuando $k=2$, el ANOVA de un factor debe coincidir con la prueba $t$ para dos muestras independientes de la Unidad 7 (con varianzas poblacionales iguales, el caso ``pooled''). En efecto, puede demostrarse que
+\[
+F = \frac{CMTr}{CME} = T^2,
+\]
+donde $T$ es el estadístico $t$ de dos muestras con varianza combinada (\emph{pooled}) y $N-2$ grados de libertad, exactamente los mismos grados de libertad que $N-k$ con $k=2$.
+
+\begin{block}{Conclusión conceptual}
+El ANOVA de un factor es la \textbf{generalización natural} de la prueba $t$ de dos muestras a $k\geq2$ grupos: mismo tipo de supuestos (normalidad, homocedasticidad, independencia), mismo tipo de estadístico (basado en una razón de variabilidades), aplicado ahora a más de dos poblaciones.
+\end{block}
+\end{frame}
+
 \section{Ejemplo numérico completo}
 
 \begin{frame}{Ejemplo: comparación de cuatro máquinas}
