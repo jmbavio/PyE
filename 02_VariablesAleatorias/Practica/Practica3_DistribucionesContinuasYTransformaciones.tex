@@ -1,0 +1,147 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 3: Distribuciones continuas y transformaciones \\ \large Unidad 2: Variables aleatorias}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+El tiempo de reacción de un fármaco, en minutos, sigue una distribución $N(\mu=30,\sigma=5)$. Calcular: (a) la probabilidad de que el efecto se manifieste antes de los 25 minutos; (b) la probabilidad de que se manifieste entre 28 y 35 minutos; (c) el tiempo $t_0$ tal que solo el 5\% de los pacientes tarda más de $t_0$ minutos.
+\end{ejercicio}
+\begin{solucion}
+Sea $X\sim N(30,25)$ (es decir $\sigma=5$).
+
+(a) $Z=\dfrac{25-30}{5}=-1$. $$P(X<25) = \Phi(-1) = 1-\Phi(1) = 1-0.8413 = 0.1587.$$
+
+(b) $Z_1=\dfrac{28-30}{5}=-0.4$, $Z_2=\dfrac{35-30}{5}=1$.
+$$P(28<X<35) = \Phi(1)-\Phi(-0.4) = 0.8413-(1-0.6554) = 0.8413-0.3446 = 0.4967.$$
+
+(c) Buscamos $z_0$ tal que $\Phi(z_0)=0.95 \Rightarrow z_0\approx1.645$.
+$$t_0 = \mu+z_0\sigma = 30+1.645(5) = 38.225 \text{ minutos}.$$
+\end{solucion}
+
+\begin{ejercicio}
+Una empresa produce ejes cuyo diámetro (en mm) se distribuye $N(50, 0.04)$ (es decir, $\sigma^2=0.04$, $\sigma=0.2$). Las especificaciones exigen un diámetro entre 49.7 y 50.3 mm. ¿Qué porcentaje de la producción cumple con las especificaciones?
+\end{ejercicio}
+\begin{solucion}
+$X\sim N(50,\sigma=0.2)$. $Z_1=\dfrac{49.7-50}{0.2}=-1.5$, $Z_2=\dfrac{50.3-50}{0.2}=1.5$.
+$$P(49.7<X<50.3) = \Phi(1.5)-\Phi(-1.5) = 2\Phi(1.5)-1 = 2(0.9332)-1 = 0.8664.$$
+El 86.64\% de la producción cumple con las especificaciones.
+\end{solucion}
+
+\begin{ejercicio}
+El tiempo de vida útil (en horas) de una lámpara LED se modela con una distribución exponencial de media 5000 horas. (a) Hallar la probabilidad de que una lámpara dure más de 6000 horas. (b) Si una lámpara ya lleva funcionando 4000 horas, ¿cuál es la probabilidad de que dure al menos 2000 horas más? (c) ¿Cuál es la probabilidad de que falle antes de las 1000 horas?
+\end{ejercicio}
+\begin{solucion}
+$\lambda = 1/5000 = 0.0002$. $X\sim\text{Exp}(0.0002)$.
+
+(a) $$P(X>6000) = e^{-0.0002\times6000} = e^{-1.2} \approx 0.3012.$$
+
+(b) Por falta de memoria: $$P(X>4000+2000\mid X>4000) = P(X>2000) = e^{-0.0002\times2000}=e^{-0.4}\approx 0.6703.$$
+
+(c) $$P(X<1000) = 1-e^{-0.0002\times1000} = 1-e^{-0.2} \approx 1-0.8187 = 0.1813.$$
+\end{solucion}
+
+\begin{ejercicio}
+A una sucursal bancaria llegan clientes según un proceso de Poisson con tasa de 6 clientes por hora. (a) ¿Cuál es la distribución del tiempo (en horas) entre llegadas consecutivas, y cuál es su media? (b) Hallar la probabilidad de que transcurran más de 15 minutos entre dos llegadas consecutivas. (c) ¿Cuál es el tiempo esperado hasta que lleguen 4 clientes?
+\end{ejercicio}
+\begin{solucion}
+(a) El tiempo $T$ entre llegadas consecutivas es $T\sim\text{Exp}(\lambda=6)$ (por hora), con $E(T)=1/6$ hora $=10$ minutos.
+
+(b) 15 minutos $=0.25$ horas. $$P(T>0.25) = e^{-6\times0.25} = e^{-1.5} \approx 0.2231.$$
+
+(c) El tiempo $Y$ hasta el 4.º cliente es $Y\sim\text{Gamma}(\alpha=4,\lambda=6)$ (suma de 4 tiempos exponenciales independientes):
+$$E(Y) = \frac{\alpha}{\lambda} = \frac{4}{6} = \frac{2}{3} \text{ hora} = 40 \text{ minutos}.$$
+\end{solucion}
+
+\begin{ejercicio}
+El tiempo de procesamiento de una tarea en un servidor sigue una distribución Gamma con parámetros $\alpha=3$ (forma) y $\lambda=0.5$ (por minuto). Hallar el tiempo esperado de procesamiento y su varianza. ¿Qué representa físicamente este modelo si se sabe que las tareas llegan según un proceso de Poisson de tasa $0.5$ por minuto?
+\end{ejercicio}
+\begin{solucion}
+$X\sim\text{Gamma}(3,0.5)$:
+$$E(X) = \frac{\alpha}{\lambda} = \frac{3}{0.5} = 6 \text{ minutos}, \qquad V(X) = \frac{\alpha}{\lambda^2} = \frac{3}{0.25}=12 \text{ minutos}^2.$$
+Físicamente, $X$ representa el tiempo que transcurre hasta la ocurrencia del tercer evento (tercera tarea) de un proceso de Poisson de tasa $0.5$ por minuto; es la suma de 3 tiempos exponenciales independientes entre llegadas.
+\end{solucion}
+
+\begin{ejercicio}
+Sea $X$ una v.a. con densidad $f(x) = 3x^2$ para $0\le x\le 1$ (y 0 en otro caso). Se define $Y=X^3$. Hallar la densidad de $Y$ usando el método de la función de distribución, y verificar el resultado con el método del jacobiano.
+\end{ejercicio}
+\begin{solucion}
+\textbf{Método de la f.d.a.:} Para $0\le y\le 1$, como $g(x)=x^3$ es creciente:
+$$F_Y(y) = P(X^3\le y) = P(X\le y^{1/3}) = F_X(y^{1/3}) = \int_0^{y^{1/3}}3x^2\,dx = \left[x^3\right]_0^{y^{1/3}} = y.$$
+Derivando: $f_Y(y)=1$ para $0\le y\le 1$, es decir $Y\sim\text{Uniforme}(0,1)$.
+
+\textbf{Método del jacobiano:} $h(y)=y^{1/3}$, $h'(y)=\frac{1}{3}y^{-2/3}$.
+$$f_Y(y) = f_X(h(y))|h'(y)| = 3(y^{1/3})^2\cdot\frac{1}{3}y^{-2/3} = 3y^{2/3}\cdot\frac{1}{3}y^{-2/3} = 1.$$
+Ambos métodos coinciden: $f_Y(y)=1$ en $[0,1]$.
+\end{solucion}
+
+\begin{ejercicio}
+Sea $X\sim\text{Exp}(\lambda)$ y se define $Y=e^{-\lambda X}$. Hallar la densidad de $Y$ y reconocer la distribución resultante.
+\end{ejercicio}
+\begin{solucion}
+Como $X\ge0$, $Y=e^{-\lambda X}\in(0,1]$. La función $g(x)=e^{-\lambda x}$ es decreciente, con inversa $x=h(y) = -\dfrac{\ln y}{\lambda}$.
+
+\textbf{Método de la f.d.a.:} para $0<y<1$,
+$$F_Y(y) = P(Y\le y) = P(e^{-\lambda X}\le y) = P\left(X\ge -\frac{\ln y}{\lambda}\right) = 1-F_X\left(-\frac{\ln y}{\lambda}\right).$$
+Como $F_X(x)=1-e^{-\lambda x}$:
+$$F_Y(y) = 1-\left[1-e^{-\lambda\cdot(-\ln y/\lambda)}\right] = e^{\ln y} = y.$$
+Derivando, $f_Y(y)=1$ para $0<y<1$: es decir, $Y\sim\text{Uniforme}(0,1)$. (Este es un caso particular del método de transformación integral inversa, usado para simular variables aleatorias.)
+\end{solucion}
+
+\begin{ejercicio}
+El error de medición $X$ (en mm) de un instrumento sigue $N(0,\sigma^2)$ con $\sigma=0.5$. Se define $Y=X^2$ (el error cuadrático). Hallar la densidad de $Y$ para $y>0$ usando el método de la función de distribución (notar que $g(x)=x^2$ no es monótona en $\mathbb{R}$, hay que considerar ambas ramas).
+\end{ejercicio}
+\begin{solucion}
+Para $y>0$:
+$$F_Y(y) = P(X^2\le y) = P(-\sqrt{y}\le X\le \sqrt{y}) = F_X(\sqrt{y})-F_X(-\sqrt{y}).$$
+Derivando respecto de $y$ (regla de la cadena, con $\frac{d}{dy}\sqrt{y}=\frac{1}{2\sqrt{y}}$):
+$$f_Y(y) = f_X(\sqrt{y})\cdot\frac{1}{2\sqrt{y}} + f_X(-\sqrt{y})\cdot\frac{1}{2\sqrt{y}} = \frac{f_X(\sqrt{y})}{\sqrt{y}}$$
+(usando que $f_X$ es simétrica, $f_X(\sqrt y)=f_X(-\sqrt y)$). Sustituyendo $f_X(x) = \dfrac{1}{\sigma\sqrt{2\pi}}e^{-x^2/(2\sigma^2)}$:
+$$f_Y(y) = \frac{1}{\sigma\sqrt{2\pi y}}e^{-y/(2\sigma^2)}, \qquad y>0.$$
+Con $\sigma=0.5$: $f_Y(y) = \dfrac{1}{0.5\sqrt{2\pi y}}e^{-y/0.5} = \dfrac{1}{\sqrt{2\pi y}\,(0.5)}e^{-2y}$. (Esta distribución es un caso particular de la familia Gamma, conocida como Chi-cuadrado con 1 grado de libertad escalada por $\sigma^2$.)
+\end{solucion}
+
+\begin{ejercicio}
+Los pesos de los paquetes en una línea de producción siguen $N(\mu=2000\text{ g}, \sigma=50\text{ g})$. Se rechazan los paquetes que pesan menos de 1900 g o más de 2100 g. (a) ¿Qué porcentaje de paquetes se rechaza? (b) Si se producen 500 paquetes por día, ¿cuántos se espera rechazar?
+\end{ejercicio}
+\begin{solucion}
+$X\sim N(2000,50)$. $Z_1=\dfrac{1900-2000}{50}=-2$, $Z_2=\dfrac{2100-2000}{50}=2$.
+
+$$P(\text{aceptado}) = P(1900\le X\le2100) = \Phi(2)-\Phi(-2) = 2\Phi(2)-1 = 2(0.9772)-1=0.9544.$$
+
+(a) $$P(\text{rechazado}) = 1-0.9544 = 0.0456 = 4.56\%.$$
+
+(b) Número esperado de rechazados por día: $500\times0.0456 \approx 22.8$, es decir, aproximadamente 23 paquetes por día.
+\end{solucion}
+
+\begin{ejercicio}
+El tiempo entre fallas sucesivas (en días) de una máquina industrial sigue una distribución exponencial con tasa $\lambda=0.05$ fallas por día. (a) Calcular la probabilidad de que la próxima falla ocurra dentro de los primeros 10 días. (b) Calcular la mediana del tiempo entre fallas (el valor $m$ tal que $F(m)=0.5$). (c) Comparar la mediana con la media $E(X)=1/\lambda$ y explicar por qué difieren.
+\end{ejercicio}
+\begin{solucion}
+$X\sim\text{Exp}(0.05)$.
+
+(a) $$P(X\le10) = 1-e^{-0.05\times10} = 1-e^{-0.5} \approx 1-0.6065 = 0.3935.$$
+
+(b) $F(m)=1-e^{-0.05m}=0.5 \Rightarrow e^{-0.05m}=0.5 \Rightarrow -0.05m=\ln(0.5) \Rightarrow m = \dfrac{\ln 2}{0.05} \approx 13.86$ días.
+
+(c) La media es $E(X)=1/0.05=20$ días, mayor que la mediana ($\approx13.86$ días). Esto se debe a que la distribución exponencial es \textbf{asimétrica a la derecha} (cola larga hacia valores grandes), lo que hace que la media —sensible a valores extremos— sea mayor que la mediana.
+\end{solucion}
+
+\end{document}

@@ -240,66 +240,54 @@ $y_i$ & 32 & 38 & 41 & 45 & 48 & 53 & 55 & 61 \\
 \end{tabular}
 \end{table}
 
-Ya sabemos: $\hat\beta_0\approx 28.03$, $\hat\beta_1\approx 3.345$, $S_{xx}=42$, $S_{yy}=290.5$, $S_{xy}=140.5$, $\bar x=5.5$.
+Ya sabemos: $\hat\beta_0\approx 25.214$, $\hat\beta_1\approx 3.893$, $S_{xx}=42$, $S_{yy}=641.875$, $S_{xy}=163.5$, $\bar x=5.5$.
 
-Calculamos $SCR = \hat\beta_1 S_{xy} = 3.345\times140.5 \approx 470.0$ y $SCE = SCT-SCR = S_{yy}-SCR \approx 290.5-470.0$...
-
-\textit{(revisamos con más precisión en la próxima diapositiva)}
-\end{frame}
-
-\begin{frame}{Ejemplo: cálculo preciso de $SCE$ y $CME$}
-Usando $\hat\beta_1 = 140.5/42 = 3.345238\ldots$ (mantenemos más decimales para precisión):
 \[
-SCR = \hat\beta_1\, S_{xy} = \frac{S_{xy}^2}{S_{xx}} = \frac{140.5^2}{42} = \frac{19740.25}{42} \approx 469.986.
+SCR = \hat\beta_1\, S_{xy} = \frac{S_{xy}^2}{S_{xx}} = \frac{163.5^2}{42} = \frac{26732.25}{42} \approx 636.482.
 \]
 \[
-SCE = S_{yy} - SCR = 290.5 - 469.986 \ \ \Rightarrow\ \ \text{revisar signo: } SCE=SCT-SCR.
-\]
-
-Dado que $S_{yy}=SCT=290.5 < SCR\approx469.99$ no es posible ($SCE\ge0$); recalculamos $S_{yy}$ con más precisión: $\sum y_i^2=17681$ exacto, $n\bar y^2 = 8(46.625)^2 = 8(2173.890625)=17391.125$, por lo tanto
-\[
-S_{yy} = 17681 - 17391.125 = 289.875.
-\]
-Con $S_{xy}=140.5$ exacto: $SCR = 140.5^2/42 = 469.9464$. Esto sigue superando a $S_{yy}$, indicando un error de redondeo en $\bar y$: $\bar y = 373/8 = 46.625$ exacto, por lo que $S_{yy}=289.875$ es el valor correcto (se corrige el valor aproximado de la Clase 29).
-\[
-SCE = S_{yy} - SCR = 289.875-\dots
+SCE = SCT - SCR = S_{yy} - SCR = 641.875 - 636.482 \approx 5.393.
 \]
 \end{frame}
 
 \begin{frame}{Ejemplo: tabla ANOVA de la regresión}
-Dado que en este conjunto de datos la relación es casi perfectamente lineal, $SCR$ resulta muy cercano (por redondeo, ligeramente superior) a $S_{yy}$; tomamos como valores de trabajo, redondeados a 3 decimales, $SCR\approx 289.09$ y $SCE\approx 0.79$ (obtenidos calculando directamente $\sum e_i^2$ a partir de los residuos, el procedimiento numéricamente más estable):
-
 \begin{table}[htbp]
 \centering
 \begin{tabular}{lcccc}
 \toprule
 Fuente & SC & gl & CM & F \\
 \midrule
-Regresión & $289.09$ & $1$ & $289.09$ & $2194.6$ \\
-Error & $0.79$ & $6$ & $0.132$ & \\
+Regresión & $636.482$ & $1$ & $636.482$ & $708.1$ \\
+Error & $5.393$ & $6$ & $0.899$ & \\
 \midrule
-Total & $289.87$ & $7$ & & \\
+Total & $641.875$ & $7$ & & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Con $F_{1,6;0.05}=5.99$: como $F=2194.6 \gg 5.99$, se \textbf{rechaza} $H_0:\beta_1=0$: la regresión es altamente significativa.
+\[
+CME = \frac{SCE}{n-2} = \frac{5.393}{6} \approx 0.899, \qquad F = \frac{CMR}{CME} = \frac{636.482}{0.899} \approx 708.1.
+\]
+
+Con $F_{1,6;0.05}=5.99$: como $F=708.1 \gg 5.99$, se \textbf{rechaza} $H_0:\beta_1=0$: la regresión es altamente significativa.
 \end{frame}
 
 \begin{frame}{Ejemplo: IC para $\beta_1$ y predicción}
-Con $CME=0.132$, $\widehat{ee}(\hat\beta_1)=\sqrt{0.132/42}=\sqrt{0.003143}\approx0.0561$.
+Con $CME=0.899$, $\widehat{ee}(\hat\beta_1)=\sqrt{0.899/42}=\sqrt{0.02140}\approx0.1463$.
 
 IC del 95\% para $\beta_1$ ($t_{6;0.025}=2.447$):
 \[
-3.345 \pm 2.447(0.0561) = 3.345\pm0.137 \ \Rightarrow\ (3.208,\ 3.482).
+3.893 \pm 2.447(0.1463) = 3.893\pm0.358 \ \Rightarrow\ (3.535,\ 4.251).
 \]
 Como el intervalo no contiene al $0$, se confirma (por otra vía) el rechazo de $H_0:\beta_1=0$.
 
-\textbf{Predicción en $x_0=6.5$} (respuesta media): $\hat y_0 = 28.03+3.345(6.5)\approx49.77$ kg, con
+\textbf{Predicción en $x_0=6.5$} (respuesta media): $\hat y_0 = 25.214+3.893(6.5)\approx50.518$ kg, con
 \[
-\widehat{ee}(\hat y_0)=\sqrt{0.132\left[\tfrac18+\tfrac{(6.5-5.5)^2}{42}\right]} = \sqrt{0.132(0.1488)}\approx0.140,
+\widehat{ee}(\hat y_0)=\sqrt{0.899\left[\tfrac18+\tfrac{(6.5-5.5)^2}{42}\right]} = \sqrt{0.899(0.1488)}\approx0.366,
 \]
-IC del 95\%: $49.77\pm2.447(0.140) \approx (49.42,\ 50.12)$ kg.
+IC del 95\%: $50.518\pm2.447(0.366) \approx (49.62,\ 51.41)$ kg.
+
+Para el valor \textbf{individual} futuro, $\widehat{ee}\approx1.016$, y el intervalo de \textbf{predicción} del 95\% es $(48.03,\ 53.00)$ kg, claramente más ancho.
 \end{frame}
 
 \section{Resumen}

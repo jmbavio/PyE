@@ -1,0 +1,146 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 2: Distribuciones discretas \\ \large Unidad 2: Variables aleatorias}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Un proceso de fabricación de circuitos integrados produce, en promedio, un 8\% de unidades defectuosas. Se selecciona una muestra aleatoria de 15 circuitos (la producción es lo suficientemente grande como para suponer ensayos independientes). Calcular la probabilidad de que: (a) exactamente 2 sean defectuosos; (b) a lo sumo 1 sea defectuoso; (c) al menos 2 sean defectuosos.
+\end{ejercicio}
+\begin{solucion}
+Sea $X=$ número de defectuosos en la muestra. $X\sim\text{Bi}(n=15,\,p=0.08)$.
+
+(a) $$P(X=2) = \binom{15}{2}(0.08)^2(0.92)^{13} = 105\times 0.0064\times 0.3405 \approx 0.2290.$$
+
+(b) $$P(X\le 1) = P(X=0)+P(X=1) = (0.92)^{15} + 15(0.08)(0.92)^{14}.$$
+$(0.92)^{15}\approx 0.2863$; $(0.92)^{14}\approx 0.3112$, entonces
+$$P(X\le1) \approx 0.2863 + 15\times0.08\times0.3112 = 0.2863+0.3734 = 0.6597.$$
+
+(c) $P(X\ge 2) = 1-P(X\le 1) = 1-0.6597 = 0.3403$.
+\end{solucion}
+
+\begin{ejercicio}
+Un vendedor de seguros cierra una póliza en el 30\% de sus visitas, independientemente entre visitas. Si realiza 10 visitas en un día, hallar el número esperado de pólizas cerradas y su desvío estándar. ¿Cuál es la probabilidad de que cierre exactamente 3 pólizas?
+\end{ejercicio}
+\begin{solucion}
+$X\sim\text{Bi}(n=10,p=0.3)$.
+$$E(X) = np = 10(0.3) = 3, \qquad V(X)=npq = 10(0.3)(0.7)=2.1, \qquad \sigma_X = \sqrt{2.1}\approx 1.449.$$
+$$P(X=3) = \binom{10}{3}(0.3)^3(0.7)^7 = 120\times 0.027\times 0.0824 \approx 0.2668.$$
+\end{solucion}
+
+\begin{ejercicio}
+Un técnico revisa computadoras hasta encontrar la tercera con falla de disco. La probabilidad de que una computadora tenga esa falla es $p=0.15$, independiente entre unidades. Calcular la probabilidad de que deba revisar exactamente 10 computadoras, y el número esperado de revisiones.
+\end{ejercicio}
+\begin{solucion}
+Sea $X=$ número de computadoras revisadas hasta la tercera falla. $X\sim\text{BN}(k=3,p=0.15)$ (distribución de Pascal).
+$$P(X=10) = \binom{9}{2}(0.15)^3(0.85)^7 = 36\times 0.003375\times 0.3206 \approx 0.03896.$$
+$$E(X) = \frac{k}{p} = \frac{3}{0.15} = 20 \text{ computadoras}.$$
+\end{solucion}
+
+\begin{ejercicio}
+De un lote de 50 componentes electrónicos, 8 están fuera de especificación. Se seleccionan 6 al azar, sin reposición, para un control de calidad. Calcular la probabilidad de que exactamente 2 estén fuera de especificación. Comparar con la aproximación binomial.
+\end{ejercicio}
+\begin{solucion}
+$X\sim\text{H}(N=50,K=8,n=6)$.
+$$P(X=2) = \frac{\binom{8}{2}\binom{42}{4}}{\binom{50}{6}} = \frac{28\times 111930}{15890700} = \frac{3134040}{15890700} \approx 0.1973.$$
+
+Aproximación binomial con $p=K/N=8/50=0.16$:
+$$P(X=2)\approx \binom{6}{2}(0.16)^2(0.84)^4 = 15\times 0.0256\times 0.4979 \approx 0.1912,$$
+razonablemente cercana (aquí $n/N=6/50=0.12$, moderadamente pequeño).
+\end{solucion}
+
+\begin{ejercicio}
+A un servidor web llegan solicitudes según un proceso de Poisson con tasa de 12 solicitudes por minuto. Calcular la probabilidad de que en un intervalo de 15 segundos lleguen: (a) exactamente 2 solicitudes; (b) ninguna solicitud; (c) más de 4 solicitudes.
+\end{ejercicio}
+\begin{solucion}
+La tasa en 15 segundos (0.25 min) es $\lambda = 12\times 0.25 = 3$. Sea $X\sim\text{Po}(3)$.
+
+(a) $$P(X=2) = \frac{e^{-3}3^2}{2!} = \frac{0.0498\times9}{2} \approx 0.2240.$$
+
+(b) $$P(X=0) = e^{-3} \approx 0.0498.$$
+
+(c) $$P(X>4) = 1-P(X\le4) = 1-\left[P(0)+P(1)+P(2)+P(3)+P(4)\right].$$
+Con $P(0)=0.0498$, $P(1)=0.1494$, $P(2)=0.2240$, $P(3)=0.2240$, $P(4)=0.1680$, la suma es $0.8152$, entonces
+$$P(X>4) = 1-0.8152 = 0.1848.$$
+\end{solucion}
+
+\begin{ejercicio}
+En una fábrica textil, la probabilidad de que un metro de tela tenga algún defecto es de 0.02. Se inspeccionan 200 metros de tela. Usando la aproximación de Poisson a la Binomial, estimar la probabilidad de encontrar exactamente 5 metros defectuosos.
+\end{ejercicio}
+\begin{solucion}
+$n=200$, $p=0.02$ (evento raro, $n$ grande): condiciones para aproximar por Poisson con $\lambda=np=200\times0.02=4$.
+$$P(X=5) \approx \frac{e^{-4}4^5}{5!} = \frac{0.0183\times1024}{120} \approx 0.1563.$$
+\end{solucion}
+
+\begin{ejercicio}
+La probabilidad de que un pozo petrolero exploratorio resulte productivo es $p=0.1$, independiente entre pozos. (a) ¿Cuál es la probabilidad de que el primer pozo productivo se encuentre en el quinto intento? (b) Si ya se perforaron 4 pozos sin éxito, ¿cuál es la probabilidad de necesitar al menos 3 intentos más (usando la propiedad de falta de memoria)?
+\end{ejercicio}
+\begin{solucion}
+Sea $X=$ número de pozos perforados hasta el primero productivo. $X\sim\text{Ge}(p=0.1)$.
+
+(a) $$P(X=5) = (0.9)^4(0.1) = 0.6561\times0.1 = 0.06561.$$
+
+(b) Por falta de memoria, $P(X>4+2\mid X>4) = P(X>2) = (0.9)^2 = 0.81$.
+(Nota: "al menos 3 intentos más" desde el pozo 5 en adelante equivale a $P(X>4+2\mid X>4)$, pues los primeros 2 intentos adicionales —pozos 5 y 6— también deben fallar.)
+\end{solucion}
+
+\begin{ejercicio}
+Un comité de selección está formado eligiendo 5 personas de un grupo de 12 candidatos, de los cuales 7 son mujeres y 5 son hombres, mediante sorteo (sin reposición). (a) Hallar la probabilidad de que el comité tenga exactamente 3 mujeres. (b) Hallar el número esperado de mujeres en el comité.
+\end{ejercicio}
+\begin{solucion}
+$X=$ número de mujeres en el comité. $X\sim\text{H}(N=12,K=7,n=5)$.
+
+(a) $$P(X=3) = \frac{\binom{7}{3}\binom{5}{2}}{\binom{12}{5}} = \frac{35\times10}{792} = \frac{350}{792} \approx 0.4419.$$
+
+(b) $$E(X) = n\frac{K}{N} = 5\times\frac{7}{12} = \frac{35}{12} \approx 2.9167 \text{ mujeres}.$$
+\end{solucion}
+
+\begin{ejercicio}
+Un examen tipo verdadero/falso tiene 20 preguntas. Un alumno que no estudió responde al azar cada pregunta (independientemente, $p=0.5$ de acertar cada una). (a) ¿Cuál es la probabilidad de que apruebe si necesita al menos 12 respuestas correctas? (b) Calcular $E(X)$ y $V(X)$.
+\end{ejercicio}
+\begin{solucion}
+$X\sim\text{Bi}(n=20,p=0.5)$.
+
+(a) $$P(X\ge12) = \sum_{x=12}^{20}\binom{20}{x}(0.5)^{20}.$$
+Usando valores de la tabla binomial (o cálculo directo), $P(X\ge12) \approx 0.2517$.
+
+(b) $$E(X) = np = 20(0.5)=10, \qquad V(X) = npq = 20(0.5)(0.5)=5.$$
+\end{solucion}
+
+\begin{ejercicio}
+En una central de atención telefónica, el número de llamadas recibidas por hora sigue una distribución de Poisson con media 6. (a) Calcular la probabilidad de recibir entre 4 y 8 llamadas (inclusive) en una hora. (b) Si se consideran dos horas independientes, ¿cuál es la distribución del número total de llamadas, y cuál es su media?
+\end{ejercicio}
+\begin{solucion}
+(a) $X\sim\text{Po}(6)$. Usando la f.p.p. $p(x)=e^{-6}6^x/x!$:
+\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+$x$ & 4 & 5 & 6 & 7 & 8 \\
+\midrule
+$p(x)$ & 0.1339 & 0.1606 & 0.1606 & 0.1377 & 0.1033 \\
+\bottomrule
+\end{tabular}
+\end{center}
+$$P(4\le X\le 8) = 0.1339+0.1606+0.1606+0.1377+0.1033 = 0.6961.$$
+
+(b) La suma de dos Poisson independientes es Poisson con parámetro la suma de tasas: $Y=X_1+X_2\sim\text{Po}(6+6)=\text{Po}(12)$, con $E(Y)=12$ llamadas en dos horas.
+\end{solucion}
+
+\end{document}

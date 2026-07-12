@@ -12,3 +12,4 @@
 *.synctex.gz
 *.pass1.log
 *.pass2.log
+*.buildlog

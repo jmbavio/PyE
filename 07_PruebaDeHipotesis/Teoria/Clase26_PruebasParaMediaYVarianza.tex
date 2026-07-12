@@ -30,6 +30,26 @@
 \tableofcontents
 \end{frame}
 
+\section{Introducción}
+
+\begin{frame}{De los conceptos generales a las pruebas concretas}
+En la clase anterior vimos el marco general de una prueba de hipótesis: $H_0$, $H_1$, error tipo I y II, estadístico de prueba, región crítica y valor p. Ahora aplicamos ese marco a los parámetros más habituales de \textbf{una} población: la media $\mu$ y la varianza $\sigma^2$.
+
+\begin{block}{Lo que cambia entre pruebas}
+Lo único que varía de una prueba a otra es:
+\begin{itemize}
+\item el \textbf{estadístico} utilizado,
+\item su \textbf{distribución bajo $H_0$},
+\item y en consecuencia, la forma de la \textbf{región crítica}.
+\end{itemize}
+Los pasos 1, 2, 6 y 7 (formular hipótesis, fijar $\alpha$, decidir, concluir) son siempre los mismos.
+\end{block}
+
+\begin{alertblock}{En esta clase}
+Cuatro situaciones: media con varianza conocida ($Z$), media con varianza desconocida ($T$ de Student), y varianza poblacional ($\chi^2$), todas para una única población normal.
+\end{alertblock}
+\end{frame}
+
 \section{Prueba para la media (varianza conocida)}
 
 \begin{frame}{Prueba para $\mu$ con $\sigma^2$ conocida}
@@ -144,6 +164,26 @@ t=\frac{41\,200-40\,000}{1500/\sqrt{16}}=\frac{1200}{375}=3.20.
 \end{example}
 \end{frame}
 
+\begin{frame}{¿Estadístico $Z$ o $T$? Criterio de elección}
+\begin{block}{Regla práctica}
+\begin{itemize}
+\item Si $\sigma^2$ es \textbf{conocida} (dato del problema, o histórico muy confiable) $\Rightarrow$ usar $Z$.
+\item Si $\sigma^2$ es \textbf{desconocida} y debe estimarse con $S^2$ a partir de la propia muestra $\Rightarrow$ usar $T$ (Student, $n-1$ gl).
+\item Con $n$ grande ($n\ge30$), la diferencia práctica entre $Z$ y $T$ es despreciable, pero conceptualmente el estadístico correcto sigue siendo $T$ si $\sigma^2$ no se conoce.
+\end{itemize}
+\end{block}
+
+\begin{exampleblock}{Ejemplo: prueba bilateral con $T$, dos colas}
+Un laboratorio farmacéutico debe verificar que los comprimidos contienen $\mu_0=250$ mg del principio activo. En $n=10$ comprimidos se midió $\overline{x}=247.5$ mg y $s=4.8$ mg. Con $\alpha=0.05$:
+
+$H_0:\mu=250$ vs. $H_1:\mu\neq250$. Región crítica (gl$=9$): $|T|>t_{9,\,0.025}=2.262$.
+\[
+t=\frac{247.5-250}{4.8/\sqrt{10}}=\frac{-2.5}{1.518}=-1.65.
+\]
+Como $|-1.65|=1.65<2.262$, \textbf{no se rechaza} $H_0$: no hay evidencia de que el contenido medio difiera de $250$ mg.
+\end{exampleblock}
+\end{frame}
+
 \section{Prueba para la varianza poblacional}
 
 \begin{frame}{Prueba de hipótesis para $\sigma^2$}
@@ -211,6 +251,46 @@ Un laboratorio requiere que la varianza de las mediciones de un instrumento sea 
 \textbf{Decisión:} como $23.52<23.68$, \textbf{no se rechaza} $H_0$ (aunque el valor está muy cerca del límite crítico).
 
 \textbf{Conclusión:} al nivel $10\%$, no hay evidencia suficiente para afirmar que la varianza difiere de $0.25$; el resultado sugiere revisar el proceso con una muestra mayor.
+\end{example}
+\end{frame}
+
+\begin{frame}{Forma de la distribución $\chi^2_{n-1}$}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=9.5cm, height=5cm,
+  axis lines=left, ytick=\empty,
+  xlabel={$\chi^2$}, ylabel={densidad},
+  xmin=0, xmax=40, ymin=0,
+  legend pos=north east, legend style={font=\footnotesize},
+]
+\addplot[domain=0.1:40, samples=150, thick, blue] {x^(2)*exp(-x/2)};
+\addlegendentry{$\chi^2_{5}$ (asimétrica, cola derecha larga)}
+\addplot[domain=0.1:40, samples=150, thick, red, dashed] {x^(7)*exp(-x/2)*0.02};
+\addlegendentry{$\chi^2_{15}$ (más simétrica al crecer gl)}
+\end{axis}
+\end{tikzpicture}
+\vspace{0.2cm}
+
+A diferencia de $Z$ y $T$, la distribución $\chi^2$ es \textbf{asimétrica} y solo toma valores no negativos; por eso, en el caso bilateral, los valores críticos inferior y superior no son simétricos respecto de un centro.
+\end{frame}
+
+\begin{frame}{Ejemplo: prueba para $\sigma^2$, cola izquierda}
+\begin{example}
+Un nuevo método de medición promete \textbf{reducir} la variabilidad respecto del método actual, cuya varianza es $\sigma_0^2=9$. En una muestra de $n=25$ mediciones con el nuevo método se obtuvo $s^2=5.2$. Con $\alpha=0.05$, ¿hay evidencia de que el nuevo método reduce la variabilidad?
+
+\textbf{Hipótesis:} $H_0:\sigma^2\ge9$ vs. $H_1:\sigma^2<9$ (se usa $H_0:\sigma^2=9$).
+
+\textbf{Región crítica} (gl$=24$): $\chi^2<\chi^2_{24,\,0.95}=13.85$.
+
+\textbf{Cálculo:}
+\[
+\chi^2=\frac{24\times5.2}{9}=\frac{124.8}{9}=13.87.
+\]
+
+\textbf{Decisión:} $13.87>13.85\Rightarrow$ \textbf{no se rechaza} $H_0$ (por un margen mínimo).
+
+\textbf{Conclusión:} al $5\%$, la evidencia no alcanza —por muy poco— para afirmar que el nuevo método reduce la variabilidad; se sugiere ampliar la muestra.
 \end{example}
 \end{frame}
 
