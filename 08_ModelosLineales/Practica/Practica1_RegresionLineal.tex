@@ -1,0 +1,297 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 1: Regresión lineal simple \\ \large Unidad 8: Modelos lineales}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+En un proceso de secado industrial, se registran la \textbf{temperatura del horno} $X$ (en $^\circ$C) y el \textbf{contenido de humedad residual} $Y$ (en \%) de la lámina de papel a la salida, sobre $n=8$ lotes:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|cccccccc}
+\toprule
+$x_i$ (°C) & 60 & 65 & 70 & 75 & 80 & 85 & 90 & 95 \\
+$y_i$ (\%) & 14.8 & 13.9 & 12.7 & 11.5 & 10.9 & 9.0 & 8.4 & 6.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{enumerate}[label=(\alph*)]
+\item Ajuste la recta de mínimos cuadrados $\hat y = \hat\beta_0+\hat\beta_1 x$.
+\item Calcule el coeficiente de determinación $R^2$ e interprételo.
+\item Interprete el signo y la magnitud de $\hat\beta_1$ en el contexto del problema.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+Con $n=8$: $\sum x_i=620$, $\bar x=77.5$; $\sum y_i=87.4$, $\bar y=10.925$; $\sum x_i^2=49100$; $\sum y_i^2=1014.6$; $\sum x_iy_i=6525.0$.
+
+\[
+S_{xx}=\sum x_i^2-n\bar x^2 = 49100-8(77.5)^2 = 49100-48050=1050.0,
+\]
+\[
+S_{yy}=\sum y_i^2-n\bar y^2 = 1014.6-8(10.925)^2 \approx 1014.6-954.845=59.755,
+\]
+\[
+S_{xy}=\sum x_iy_i-n\bar x\bar y = 6525.0-8(77.5)(10.925) \approx 6525.0-6773.5=-248.5.
+\]
+
+\textbf{(a)}
+\[
+\hat\beta_1=\frac{S_{xy}}{S_{xx}}=\frac{-248.5}{1050.0}\approx -0.2367,
+\qquad
+\hat\beta_0=\bar y-\hat\beta_1\bar x = 10.925-(-0.2367)(77.5)\approx 29.267.
+\]
+\[
+\hat y = 29.267 - 0.2367\,x.
+\]
+
+\textbf{(b)} $SCE=\sum(y_i-\hat y_i)^2\approx 0.943$ (calculado a partir de los residuos), $SCT=S_{yy}\approx59.755$, luego $SCR=SCT-SCE\approx58.812$ y
+\[
+R^2 = \frac{SCR}{SCT} \approx \frac{58.812}{59.755} \approx 0.9842.
+\]
+El modelo lineal explica aproximadamente el $98.4\%$ de la variabilidad observada en la humedad residual; el ajuste es muy bueno.
+
+\textbf{(c)} $\hat\beta_1\approx-0.237<0$: por cada grado adicional de temperatura del horno, la humedad residual esperada \textbf{disminuye} en aproximadamente $0.237$ puntos porcentuales, dentro del rango de temperaturas estudiado ($60$ a $95\,^\circ$C). Esto es consistente con lo esperado en un proceso de secado: a mayor temperatura, mayor evaporación de humedad.
+\end{solucion}
+
+\begin{ejercicio}
+Con los datos del Ejercicio 1:
+\begin{enumerate}[label=(\alph*)]
+\item Pruebe, al nivel $\alpha=0.05$, si existe relación lineal significativa entre la temperatura y la humedad residual ($H_0:\beta_1=0$ vs. $H_1:\beta_1\neq0$).
+\item Construya un intervalo de confianza del 95\% para $\beta_1$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\[
+CME = SCE/(n-2) = 0.943/6 \approx 0.1572.
+\]
+\[
+\widehat{ee}(\hat\beta_1)=\sqrt{CME/S_{xx}}=\sqrt{0.1572/1050.0}\approx0.01224.
+\]
+
+\textbf{(a)} Estadístico de prueba:
+\[
+T=\frac{\hat\beta_1-0}{\widehat{ee}(\hat\beta_1)}=\frac{-0.2367}{0.01224}\approx-19.34.
+\]
+Valor crítico: $t_{6;0.025}=2.447$. Como $|T|=19.34 > 2.447$, se \textbf{rechaza} $H_0$: existe evidencia muy fuerte de relación lineal (significativa) entre la temperatura y la humedad residual.
+
+\textbf{(b)} IC del 95\% para $\beta_1$:
+\[
+-0.2367 \pm 2.447(0.01224) = -0.2367\pm0.0299 \ \Rightarrow\ (-0.2667,\ -0.2068).
+\]
+El intervalo no contiene al $0$, confirmando el rechazo de $H_0$ del inciso (a). Con 95\% de confianza, cada grado adicional de temperatura reduce la humedad residual esperada entre $0.207$ y $0.267$ puntos porcentuales.
+\end{solucion}
+
+\begin{ejercicio}
+Una cadena de tiendas quiere estudiar la relación entre el \textbf{gasto mensual en publicidad} $X$ (en miles de \$) y las \textbf{ventas mensuales} $Y$ (en miles de \$) de $n=7$ sucursales:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|ccccccc}
+\toprule
+$x_i$ & 10 & 15 & 20 & 25 & 30 & 35 & 40 \\
+$y_i$ & 105 & 120 & 138 & 141 & 158 & 163 & 180 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{enumerate}[label=(\alph*)]
+\item Ajuste la recta de mínimos cuadrados.
+\item Arme la tabla ANOVA de la regresión y pruebe la significancia global del modelo con un estadístico $F$, al nivel $\alpha=0.05$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+$n=7$: $\sum x_i=175$, $\bar x=25$; $\sum y_i=1005$, $\bar y\approx143.571$; $\sum x_i^2=5075$; $\sum y_i^2=148283$; $\sum x_iy_i=26780$.
+
+\[
+S_{xx}=5075-7(25)^2=5075-4375=700, \qquad
+S_{yy}=148283-7(143.571)^2\approx3993.71,
+\]
+\[
+S_{xy}=26780-7(25)(143.571)\approx26780-25125=1655.0.
+\]
+
+\textbf{(a)}
+\[
+\hat\beta_1=\frac{1655.0}{700}\approx2.364, \qquad \hat\beta_0=143.571-2.364(25)\approx84.464.
+\]
+\[
+\hat y = 84.464+2.364\,x.
+\]
+
+\textbf{(b)} $SCR=\hat\beta_1 S_{xy}=2.364(1655.0)\approx3912.89$; $SCT=S_{yy}\approx3993.71$; $SCE=SCT-SCR\approx80.82$.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Regresión & $3912.89$ & $1$ & $3912.89$ & $242.07$ \\
+Error & $80.82$ & $5$ & $16.164$ & \\
+\midrule
+Total & $3993.71$ & $6$ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con $F_{1,5;0.05}=6.61$: como $F_{\text{calc}}\approx242.07 \gg 6.61$, se \textbf{rechaza} $H_0:\beta_1=0$. La regresión es altamente significativa: el gasto en publicidad explica de manera significativa las variaciones en las ventas.
+\end{solucion}
+
+\begin{ejercicio}
+Con los datos y el ajuste del Ejercicio 3:
+\begin{enumerate}[label=(\alph*)]
+\item Estime la venta media esperada para una sucursal con $x_0=28$ (miles de \$ de publicidad) y construya un intervalo de confianza del 95\% para esa respuesta media.
+\item Construya un intervalo de predicción del 95\% para las ventas de una \textbf{nueva} sucursal particular que invierta $x_0=28$.
+\item Compare la amplitud de ambos intervalos y explique por qué difieren.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+$CME=16.164$, $t_{5;0.025}=2.571$.
+
+\textbf{(a)} $\hat y_0 = 84.464+2.364(28)\approx150.65$.
+\[
+\widehat{ee}(\hat y_0)=\sqrt{CME\left[\frac1n+\frac{(x_0-\bar x)^2}{S_{xx}}\right]}=\sqrt{16.164\left[\frac17+\frac{(28-25)^2}{700}\right]}=\sqrt{16.164(0.15571)}\approx1.587.
+\]
+IC 95\% para la respuesta media: $150.65\pm2.571(1.587) \approx (146.57,\ 154.73)$ miles de \$.
+
+\textbf{(b)}
+\[
+\widehat{ee}_{\text{pred}}=\sqrt{CME\left[1+\frac1n+\frac{(x_0-\bar x)^2}{S_{xx}}\right]}=\sqrt{16.164(1.15571)}\approx4.323.
+\]
+Intervalo de predicción 95\%: $150.65\pm2.571(4.323)\approx(139.53,\ 161.77)$ miles de \$.
+
+\textbf{(c)} El intervalo de predicción (b) es notablemente más ancho que el de la respuesta media (a), porque además de la incertidumbre en la estimación de la recta (presente en ambos), incorpora la variabilidad propia de una observación individual nueva ($+1$ dentro de la raíz).
+\end{solucion}
+
+\begin{ejercicio}
+Un analista ajustó una regresión lineal simple con $n=12$ observaciones y obtuvo la siguiente salida parcial:
+\[
+S_{xx}=840, \qquad S_{xy}=630, \qquad SCT=520, \qquad SCE=126.
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Complete los valores de $\hat\beta_1$, $SCR$, $R^2$ y $CME$.
+\item Pruebe $H_0:\beta_1=0$ mediante un estadístico $F$, al nivel $\alpha=0.05$ (use $F_{1,10;0.05}=4.96$).
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)}
+\[
+\hat\beta_1=\frac{S_{xy}}{S_{xx}}=\frac{630}{840}=0.75.
+\]
+\[
+SCR = SCT-SCE = 520-126=394.
+\]
+\[
+R^2=\frac{SCR}{SCT}=\frac{394}{520}\approx0.7577.
+\]
+\[
+CME=\frac{SCE}{n-2}=\frac{126}{10}=12.6.
+\]
+
+\textbf{(b)}
+\[
+F=\frac{SCR/1}{SCE/(n-2)}=\frac{394}{12.6}\approx31.27.
+\]
+Como $F_{\text{calc}}\approx31.27 > 4.96=F_{1,10;0.05}$, se \textbf{rechaza} $H_0:\beta_1=0$: la regresión es significativa al 5\%.
+\end{solucion}
+
+\begin{ejercicio}
+Indique si cada afirmación es \textbf{verdadera} o \textbf{falsa}, justificando brevemente.
+\begin{enumerate}[label=(\alph*)]
+\item En la recta de mínimos cuadrados, la suma de los residuos $\sum e_i$ es siempre igual a $0$.
+\item Un valor de $R^2$ alto garantiza que $X$ es la \textbf{causa} de los cambios observados en $Y$.
+\item Si $\hat\beta_1>0$, entonces necesariamente el coeficiente de correlación $r$ también es positivo.
+\item La recta de mínimos cuadrados minimiza la suma de las distancias \textbf{perpendiculares} de los puntos a la recta.
+\item Un único punto atípico (outlier), alejado de la nube de puntos en la dirección de $x$, puede modificar sustancialmente la pendiente estimada $\hat\beta_1$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a) Verdadero.} Es consecuencia directa de la primera ecuación normal, $\sum(y_i-\hat\beta_0-\hat\beta_1x_i)=0$.
+
+\textbf{(b) Falso.} $R^2$ mide la proporción de variabilidad de $Y$ explicada \textbf{linealmente} por $X$ dentro de los datos observados, pero correlación (o buen ajuste) no implica causalidad: podría existir una variable de confusión, o la relación podría ser casual dentro del rango estudiado.
+
+\textbf{(c) Verdadero.} $\hat\beta_1=S_{xy}/S_{xx}$ y $r=S_{xy}/\sqrt{S_{xx}S_{yy}}$ comparten el mismo numerador $S_{xy}$, y $S_{xx},S_{yy}>0$; por lo tanto $\hat\beta_1$ y $r$ tienen siempre el mismo signo.
+
+\textbf{(d) Falso.} Minimiza la suma de las distancias \textbf{verticales} al cuadrado (en la dirección de $Y$), no las distancias perpendiculares (eso correspondería a otro método, la regresión ortogonal o \emph{total least squares}).
+
+\textbf{(e) Verdadero.} Un valor de $x$ muy alejado del resto (alto \emph{leverage}) tiene gran influencia en la pendiente estimada, ya que $\hat\beta_1=\sum c_i y_i$ con $c_i=(x_i-\bar x)/S_{xx}$: cuanto más lejos está $x_i$ de $\bar x$, mayor es $|c_i|$ y mayor su peso en la estimación.
+\end{solucion}
+
+\begin{ejercicio}
+Se estudia la relación entre la \textbf{antigüedad} $X$ de una máquina (en años) y su \textbf{costo anual de mantenimiento} $Y$ (en miles de \$), sobre $n=9$ máquinas similares:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|ccccccccc}
+\toprule
+$x_i$ (años) & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+$y_i$ (miles \$) & 2.1 & 2.6 & 3.0 & 3.8 & 4.1 & 5.0 & 5.4 & 6.3 & 6.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{enumerate}[label=(\alph*)]
+\item Ajuste la recta de mínimos cuadrados y calcule $R^2$.
+\item Pruebe $H_0:\beta_1=0$ vs. $H_1:\beta_1>0$ al nivel $\alpha=0.01$ (prueba unilateral, pues se espera que el costo aumente con la antigüedad).
+\item Estime el costo medio esperado de mantenimiento para una máquina de $x_0=6.5$ años, con un intervalo de confianza del 95\%.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+$n=9$: $\sum x_i=45$, $\bar x=5$; $\sum y_i=39.2$, $\bar y\approx4.3556$; $\sum x_i^2=285$; $\sum y_i^2=192.88$; $\sum x_iy_i=232.3$.
+
+\[
+S_{xx}=285-9(5)^2=285-225=60, \qquad S_{yy}=192.88-9(4.3556)^2\approx22.142,
+\]
+\[
+S_{xy}=232.3-9(5)(4.3556)\approx232.3-196.0=36.3.
+\]
+
+\textbf{(a)}
+\[
+\hat\beta_1=\frac{36.3}{60}=0.605, \qquad \hat\beta_0=4.3556-0.605(5)\approx1.3306.
+\]
+\[
+\hat y = 1.331+0.605\,x.
+\]
+$SCR=\hat\beta_1S_{xy}=0.605(36.3)\approx21.962$; $SCE=SCT-SCR\approx22.142-21.962=0.181$; $R^2\approx21.962/22.142\approx0.9918$: el modelo explica cerca del $99.2\%$ de la variabilidad del costo de mantenimiento.
+
+\textbf{(b)} $CME=SCE/(n-2)=0.180/7\approx0.02582$; $\widehat{ee}(\hat\beta_1)=\sqrt{0.02582/60}\approx0.02074$.
+\[
+T=\frac{0.605}{0.02074}\approx29.17.
+\]
+Valor crítico unilateral: $t_{7;0.01}=2.998$. Como $T\approx29.17\gg2.998$, se \textbf{rechaza} $H_0$: hay evidencia contundente de que el costo de mantenimiento aumenta con la antigüedad.
+
+\textbf{(c)} $\hat y_0=1.331+0.605(6.5)\approx5.264$.
+\[
+\widehat{ee}(\hat y_0)=\sqrt{0.02582\left[\frac19+\frac{(6.5-5)^2}{60}\right]}=\sqrt{0.02582(0.1486)}\approx0.0619.
+\]
+Con $t_{7;0.025}=2.365$: IC 95\% $= 5.264\pm2.365(0.0619)\approx(5.117,\ 5.411)$ miles de \$.
+\end{solucion}
+
+\end{document}

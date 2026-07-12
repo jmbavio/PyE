@@ -1,0 +1,271 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 1: Distribución conjunta y distribuciones condicionales \\ \large Unidad 3: Vectores aleatorios}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Se lanzan dos dados equilibrados. Sea $X$ el resultado del primer dado e $Y$ el máximo entre los dos resultados.
+\begin{enumerate}[label=(\alph*)]
+\item Construir la tabla de la función de probabilidad conjunta de $(X,Y)$.
+\item Calcular $P(X\le 2, Y\le 3)$.
+\item Hallar la distribución marginal de $Y$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+Hay 36 resultados equiprobables $(i,j)$, $i,j\in\{1,\ldots,6\}$, con $X=i$, $Y=\max(i,j)$.
+
+\textbf{(a)} Para cada valor de $X=i$ y de $Y=y$ con $y\ge i$: si $y>i$, hay un único $j=y$ que da $Y=y$ (probabilidad $1/36$); si $y=i$, hay $i$ valores de $j\le i$ que dan $Y=i$ (probabilidad $i/36$). La tabla (valores $\times 36$) es:
+
+\begin{center}
+\begin{tabular}{c|cccccc}
+\toprule
+$X\backslash Y$ & 1 & 2 & 3 & 4 & 5 & 6 \\
+\midrule
+1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+2 & 0 & 2 & 1 & 1 & 1 & 1 \\
+3 & 0 & 0 & 3 & 1 & 1 & 1 \\
+4 & 0 & 0 & 0 & 4 & 1 & 1 \\
+5 & 0 & 0 & 0 & 0 & 5 & 1 \\
+6 & 0 & 0 & 0 & 0 & 0 & 6 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{(b)} $P(X\le2,Y\le3) = \dfrac{1+1+1+0+2+1}{36} = \dfrac{6}{36}=\dfrac16$.
+
+\textbf{(c)} Sumando cada columna: $p_Y(y) = \dfrac{2y-1}{36}$ para $y=1,\ldots,6$ (se verifica $\sum_{y=1}^6 (2y-1) = 36$).
+\end{solucion}
+
+\begin{ejercicio}
+La función de densidad conjunta de $(X,Y)$ es
+\[
+f_{X,Y}(x,y) = \begin{cases} c\,xy & 0<x<1,\; 0<y<2 \\ 0 & \text{en otro caso.}\end{cases}
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Hallar $c$.
+\item Calcular $P(X<Y/2)$.
+\item Hallar las densidades marginales $f_X$ y $f_Y$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)}
+\[
+\int_0^1\int_0^2 c\,xy\,dy\,dx = c\int_0^1 x\left[\frac{y^2}{2}\right]_0^2 dx = c\int_0^1 2x\,dx = c \implies c=1.
+\]
+
+\textbf{(b)} La región $\{0<x<1,\,0<y<2,\, x<y/2\}$ equivale a $y>2x$, con $x\in(0,1)$, $y\in(2x,2)$:
+\[
+P(X<Y/2) = \int_0^1 \int_{2x}^2 xy\,dy\,dx = \int_0^1 x\left[\frac{y^2}{2}\right]_{2x}^{2} dx = \int_0^1 x\left(2 - 2x^2\right) dx = \int_0^1 (2x-2x^3)\,dx = 1-\tfrac12 = \tfrac12.
+\]
+
+\textbf{(c)}
+\[
+f_X(x) = \int_0^2 xy\,dy = x\left[\frac{y^2}{2}\right]_0^2 = 2x, \quad 0<x<1; \qquad
+f_Y(y) = \int_0^1 xy\,dx = y\left[\frac{x^2}{2}\right]_0^1 = \frac{y}{2}, \quad 0<y<2.
+\]
+Se verifica que ambas integran 1: $\int_0^1 2x\,dx=1$ y $\int_0^2 \tfrac{y}{2}\,dy=1$.
+\end{solucion}
+
+\begin{ejercicio}
+Un taller mecánico tiene dos elevadores. Sea $X$ el número de elevadores ocupados a las 9:00 AM e $Y$ el número ocupado a las 11:00 AM, con la siguiente función de probabilidad conjunta:
+
+\begin{center}
+\begin{tabular}{c|ccc}
+\toprule
+$X\backslash Y$ & 0 & 1 & 2 \\
+\midrule
+0 & 0.10 & 0.05 & 0.02 \\
+1 & 0.08 & 0.20 & 0.10 \\
+2 & 0.02 & 0.15 & 0.28 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{enumerate}[label=(\alph*)]
+\item Verificar que es una función de probabilidad conjunta válida.
+\item Hallar las distribuciones marginales de $X$ y de $Y$.
+\item Calcular $P(X=Y)$ (ambos elevadores mantienen la misma ocupación).
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)} Todos los valores son $\ge 0$ y la suma total es
+\[
+0.10+0.05+0.02+0.08+0.20+0.10+0.02+0.15+0.28 = 1.00. \quad\checkmark
+\]
+
+\textbf{(b)} Sumando filas: $p_X(0)=0.17$, $p_X(1)=0.38$, $p_X(2)=0.45$. Sumando columnas: $p_Y(0)=0.20$, $p_Y(1)=0.40$, $p_Y(2)=0.40$.
+
+\textbf{(c)} $P(X=Y) = p(0,0)+p(1,1)+p(2,2) = 0.10+0.20+0.28 = 0.58$.
+\end{solucion}
+
+\begin{ejercicio}
+Con los datos del Ejercicio 3, hallar la distribución condicional de $Y$ dado $X=1$, y calcular $E[Y\mid X=1]$.
+\end{ejercicio}
+
+\begin{solucion}
+$p_X(1) = 0.38$. Entonces:
+\[
+p_{Y\mid X}(0\mid 1) = \frac{0.08}{0.38} \approx 0.2105, \quad
+p_{Y\mid X}(1\mid 1) = \frac{0.20}{0.38} \approx 0.5263, \quad
+p_{Y\mid X}(2\mid 1) = \frac{0.10}{0.38} \approx 0.2632.
+\]
+(Suma $\approx 1$, salvo redondeo.)
+\[
+E[Y\mid X=1] = 0(0.2105)+1(0.5263)+2(0.2632) = 0.5263+0.5264 \approx 1.0526.
+\]
+\end{solucion}
+
+\begin{ejercicio}
+La densidad conjunta de $(X,Y)$ es
+\[
+f_{X,Y}(x,y) = \begin{cases} e^{-x-y} & x>0,\, y>0 \\ 0 & \text{en otro caso.}\end{cases}
+\]
+Determinar si $X$ e $Y$ son independientes. En caso afirmativo, identificar sus distribuciones marginales.
+\end{ejercicio}
+
+\begin{solucion}
+El soporte $\{x>0\}\times\{y>0\}$ es un producto cartesiano, y
+\[
+f_{X,Y}(x,y) = e^{-x}\cdot e^{-y} = g(x)\,h(y),
+\]
+con $g(x)=e^{-x}$, $h(y)=e^{-y}$, ambas densidades exponenciales de parámetro 1 (integran 1 cada una). Por lo tanto $X$ e $Y$ son \textbf{independientes}, con $X\sim\text{Exp}(1)$ e $Y\sim\text{Exp}(1)$.
+\end{solucion}
+
+\begin{ejercicio}
+La densidad conjunta de $(X,Y)$ es
+\[
+f_{X,Y}(x,y) = \begin{cases} 8xy & 0<x<y<1 \\ 0 & \text{en otro caso.}\end{cases}
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Verificar que es una densidad válida.
+\item Hallar $f_X$ y $f_Y$.
+\item Determinar si $X$ e $Y$ son independientes.
+\item Hallar $f_{X\mid Y}(x\mid y)$ y calcular $P(X<1/2\mid Y=3/4)$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)}
+\[
+\int_0^1\int_0^y 8xy\,dx\,dy = \int_0^1 8y\left[\frac{x^2}{2}\right]_0^y dy = \int_0^1 4y^3\,dy = 1. \quad\checkmark
+\]
+
+\textbf{(b)} Para $0<x<1$, $y$ varía en $(x,1)$:
+\[
+f_X(x) = \int_x^1 8xy\,dy = 8x\left[\frac{y^2}{2}\right]_x^1 = 4x(1-x^2), \quad 0<x<1.
+\]
+Para $0<y<1$, $x$ varía en $(0,y)$:
+\[
+f_Y(y) = \int_0^y 8xy\,dx = 8y\left[\frac{x^2}{2}\right]_0^y = 4y^3, \quad 0<y<1.
+\]
+
+\textbf{(c)} El soporte $\{0<x<y<1\}$ es un \textbf{triángulo}, no un rectángulo (producto cartesiano), por lo que $X$ e $Y$ \textbf{no son independientes} (aunque se podría intentar factorizar la fórmula, la restricción $x<y$ liga a ambas variables).
+
+\textbf{(d)} Para $0<x<y$:
+\[
+f_{X\mid Y}(x\mid y) = \frac{8xy}{4y^3} = \frac{2x}{y^2}, \quad 0<x<y.
+\]
+Con $y=3/4$: $f_{X\mid Y}(x\mid 3/4) = \dfrac{2x}{9/16} = \dfrac{32x}{9}$, para $0<x<3/4$.
+\[
+P\left(X<\tfrac12 \,\middle|\, Y=\tfrac34\right) = \int_0^{1/2} \frac{32x}{9}\,dx = \frac{32}{9}\left[\frac{x^2}{2}\right]_0^{1/2} = \frac{32}{9}\cdot\frac18 = \frac{4}{9}.
+\]
+\end{solucion}
+
+\begin{ejercicio}
+En una fábrica, $X$ es el número de defectos menores y $Y$ el número de defectos mayores en una pieza producida, con la siguiente función de probabilidad conjunta:
+
+\begin{center}
+\begin{tabular}{c|ccc}
+\toprule
+$X\backslash Y$ & 0 & 1 & 2 \\
+\midrule
+0 & 0.30 & 0.10 & 0.05 \\
+1 & 0.15 & 0.20 & 0.05 \\
+2 & 0.05 & 0.05 & 0.05 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{enumerate}[label=(\alph*)]
+\item ¿Son $X$ e $Y$ independientes? Justificar comparando $p_{X,Y}(0,0)$ con $p_X(0)\,p_Y(0)$.
+\item Calcular $P(X+Y\le 1)$ (la pieza tiene a lo sumo 1 defecto en total).
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)} Marginales: $p_X(0)=0.45$, $p_X(1)=0.40$, $p_X(2)=0.15$; $p_Y(0)=0.50$, $p_Y(1)=0.35$, $p_Y(2)=0.15$.
+
+Comparamos: $p_{X,Y}(0,0) = 0.30$, mientras que $p_X(0)\,p_Y(0) = 0.45\times 0.50 = 0.225$. Como $0.30 \ne 0.225$, $X$ e $Y$ \textbf{no son independientes}.
+
+\textbf{(b)} $\{X+Y\le 1\}$ incluye $(0,0),(0,1),(1,0)$:
+\[
+P(X+Y\le1) = 0.30+0.10+0.15 = 0.55.
+\]
+\end{solucion}
+
+\begin{ejercicio}
+Sea $(X,Y)$ con densidad conjunta uniforme sobre el círculo unitario: $f_{X,Y}(x,y) = \dfrac{1}{\pi}$ para $x^2+y^2<1$, y $0$ en otro caso.
+\begin{enumerate}[label=(\alph*)]
+\item Hallar $f_X(x)$ para $-1<x<1$.
+\item ¿Son $X$ e $Y$ independientes? Justificar sin hacer más cuentas que las necesarias.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)} Para $x$ fijo en $(-1,1)$, $y$ varía en $\left(-\sqrt{1-x^2}, \sqrt{1-x^2}\right)$:
+\[
+f_X(x) = \int_{-\sqrt{1-x^2}}^{\sqrt{1-x^2}} \frac{1}{\pi}\, dy = \frac{2\sqrt{1-x^2}}{\pi}, \quad -1<x<1.
+\]
+
+\textbf{(b)} El soporte $\{x^2+y^2<1\}$ es un \textbf{círculo}, que no es un producto cartesiano de intervalos (el rango de $y$ depende de $x$). Por lo tanto, $X$ e $Y$ \textbf{no son independientes}, sin necesidad de calcular $f_Y$ ni comparar productos: alcanza con observar la forma del soporte.
+\end{solucion}
+
+\begin{ejercicio}
+Se seleccionan al azar y sin reposición 3 componentes electrónicos de un lote de 10, de los cuales 4 son defectuosos. Sea $X$ el número de defectuosos entre los dos primeros extraídos e $Y$ el número de defectuosos entre los tres extraídos.
+\begin{enumerate}[label=(\alph*)]
+\item Hallar la distribución condicional de $X$ dado $Y=2$.
+\item Calcular $E[X\mid Y=2]$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+Denotemos $D$=defectuoso, $B$=bueno. Hay $\binom{10}{3}=120$ formas de elegir 3 componentes (equiprobables si pensamos en el orden fijo de extracción, pero trabajemos con el número de defectuosos).
+
+$Y=2$ significa que, de los 3 extraídos, 2 son defectuosos y 1 es bueno. Dado $Y=2$, $X$ (defectuosos entre los dos primeros) puede ser 1 o 2, según si el bueno fue el tercero extraído o no.
+
+Pensemos en las $3! = 6$ órdenes igualmente probables de colocar 2 D y 1 B en las tres posiciones (dado que hay exactamente 2 D y 1 B entre los tres extraídos, por simetría cada una de las $\binom{3}{1}=3$ posiciones para el bueno es igualmente probable):
+\begin{itemize}
+\item B en posición 1: D,D en posiciones 2,3 $\Rightarrow$ $X$ (defectuosos en las 2 primeras) $=1$.
+\item B en posición 2: D,D en posiciones 1,3 $\Rightarrow$ $X=1$.
+\item B en posición 3: D,D en posiciones 1,2 $\Rightarrow$ $X=2$.
+\end{itemize}
+Cada una de las 3 posiciones del bueno es igualmente probable, luego:
+\[
+P(X=1\mid Y=2) = \frac{2}{3}, \qquad P(X=2\mid Y=2) = \frac{1}{3}.
+\]
+
+\textbf{(b)} $E[X\mid Y=2] = 1\cdot\tfrac23 + 2\cdot\tfrac13 = \tfrac43 \approx 1.33$.
+\end{solucion}
+
+\end{document}

@@ -1,0 +1,325 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 32: Prueba F en ANOVA y aplicaciones}
+\subtitle{Unidad 8: Modelos lineales}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{El estadístico F}
+
+\begin{frame}{Distribución de $CMTr$ y $CME$ bajo normalidad}
+Recordemos, de la Clase 31, la tabla ANOVA con $CMTr=SCTr/(k-1)$ y $CME=SCE/(N-k)$, calculados a partir de $k$ muestras normales independientes con igual varianza $\sigma^2$.
+
+\begin{block}{Resultados distribucionales (sin demostración)}
+Bajo los supuestos del Modelo I:
+\[
+\frac{SCE}{\sigma^2} \sim \chi^2_{N-k} \qquad \text{siempre},
+\]
+\[
+\frac{SCTr}{\sigma^2} \sim \chi^2_{k-1} \qquad \text{bajo } H_0:\mu_1=\cdots=\mu_k,
+\]
+y $SCTr$ y $SCE$ son \textbf{independientes} (teorema de Cochran, análogo al resultado de independencia entre $\bar X$ y $S^2$ visto en la Unidad 5).
+\end{block}
+\end{frame}
+
+\begin{frame}{El estadístico F para la prueba de igualdad de medias}
+Como cociente de dos $\chi^2$ independientes, cada una dividida por sus grados de libertad, tenemos por definición una distribución $F$:
+
+\begin{alertblock}{Estadístico de prueba}
+\[
+F = \frac{CMTr}{CME} = \frac{SCTr/(k-1)}{SCE/(N-k)} \ \sim\ F_{k-1,\,N-k} \qquad \text{bajo } H_0.
+\]
+\end{alertblock}
+
+\begin{block}{Regla de decisión}
+Se rechaza $H_0:\mu_1=\cdots=\mu_k$ al nivel $\alpha$ si
+\[
+F_{\text{calc}} > F_{k-1,\,N-k;\,\alpha},
+\]
+el percentil $(1-\alpha)$ de la distribución $F$ con $k-1$ y $N-k$ grados de libertad. La prueba es \textbf{siempre unilateral a derecha}: valores grandes de $F$ (mucha variabilidad entre grupos respecto de la variabilidad dentro de los grupos) son evidencia en contra de $H_0$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Por qué la prueba es unilateral}
+\begin{itemize}
+\item Si $H_0$ es verdadera, $CMTr$ y $CME$ estiman ambos a $\sigma^2$: se espera $F\approx 1$.
+\item Si $H_0$ es falsa, $E(CMTr) > \sigma^2 = E(CME)$: se espera $F>1$, y cuanto mayor la diferencia entre las medias, mayor $F$.
+\item Valores de $F$ \textbf{muy pequeños} (mucho menores que 1) no son evidencia en contra de $H_0$; en la práctica no se los penaliza (aunque en un diseño mal aleatorizado podrían indicar otro problema).
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=8cm,height=4.5cm,xlabel={$f$},ylabel={densidad},
+  xmin=0,xmax=6,ymin=0, tick label style={font=\scriptsize}, label style={font=\small},
+  axis lines=left]
+\addplot[domain=0.05:6,samples=100,blue,thick] {
+  (x^(1.5-1) * (1+(3/16)*x)^(-(3+16)/2)) * 2.6
+};
+\addplot[domain=3.24:6,samples=50,blue,fill=blue!25,draw=none] {
+  (x^(1.5-1) * (1+(3/16)*x)^(-(3+16)/2)) * 2.6
+} \closedcycle;
+\node at (4.3,0.15) {\scriptsize región de rechazo};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Caso particular: $k=2$ y la prueba $t$}
+Cuando $k=2$, el ANOVA de un factor debe coincidir con la prueba $t$ para dos muestras independientes de la Unidad 7 (con varianzas poblacionales iguales, el caso ``pooled''). En efecto, puede demostrarse que
+\[
+F = \frac{CMTr}{CME} = T^2,
+\]
+donde $T$ es el estadístico $t$ de dos muestras con varianza combinada (\emph{pooled}) y $N-2$ grados de libertad, exactamente los mismos grados de libertad que $N-k$ con $k=2$.
+
+\begin{block}{Conclusión conceptual}
+El ANOVA de un factor es la \textbf{generalización natural} de la prueba $t$ de dos muestras a $k\geq2$ grupos: mismo tipo de supuestos (normalidad, homocedasticidad, independencia), mismo tipo de estadístico (basado en una razón de variabilidades), aplicado ahora a más de dos poblaciones.
+\end{block}
+\end{frame}
+
+\section{Ejemplo numérico completo}
+
+\begin{frame}{Ejemplo: comparación de cuatro máquinas}
+Una fábrica cuenta con \textbf{4 máquinas} (A, B, C, D) que producen piezas del mismo tipo. Se desea saber si el \textbf{diámetro medio} (en décimas de mm por encima de un valor nominal) de las piezas es el mismo para las cuatro máquinas. Se toman $n_i=5$ piezas de cada máquina ($N=20$):
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|ccccc|c}
+\toprule
+Máquina & \multicolumn{5}{c|}{Observaciones} & Total $T_i$ \\
+\midrule
+A & 23 & 25 & 21 & 24 & 22 & 115 \\
+B & 27 & 29 & 26 & 28 & 30 & 140 \\
+C & 22 & 20 & 23 & 21 & 19 & 105 \\
+D & 25 & 24 & 27 & 26 & 23 & 125 \\
+\bottomrule
+\end{tabular}
+\caption{Diámetros (décimas de mm sobre el nominal) por máquina}
+\end{table}
+
+$k=4$ tratamientos, $n_i=5$ cada uno, $N=20$. Total general $T = 115+140+105+125=485$.
+\end{frame}
+
+\begin{frame}{Ejemplo: medias por tratamiento}
+\[
+\bar Y_{A\cdot} = \frac{115}{5}=23.0, \quad \bar Y_{B\cdot} = \frac{140}{5}=28.0, \quad \bar Y_{C\cdot} = \frac{105}{5}=21.0, \quad \bar Y_{D\cdot} = \frac{125}{5}=25.0.
+\]
+\[
+\bar Y_{\cdot\cdot} = \frac{T}{N} = \frac{485}{20} = 24.25.
+\]
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=8.5cm,height=5cm,ybar,bar width=25pt,
+  symbolic x coords={A,B,C,D}, xtick=data,
+  ylabel={diámetro medio}, ymin=0,ymax=32,
+  tick label style={font=\scriptsize}, label style={font=\small},
+  nodes near coords, nodes near coords style={font=\scriptsize}]
+\addplot[fill=blue!35] coordinates {(A,23.0) (B,28.0) (C,21.0) (D,25.0)};
+\draw[red,thick,dashed] (axis cs:A,24.25) -- (axis cs:D,24.25) node[right,black,font=\scriptsize]{};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+Las medias muestrales difieren claramente entre sí; el ANOVA cuantifica si esa diferencia es estadísticamente significativa o atribuible al azar.
+\end{frame}
+
+\begin{frame}{Ejemplo: cálculo de las sumas de cuadrados}
+Con $\sum_{i,j} Y_{ij}^2 = 11935$ (suma de los 20 valores al cuadrado) y $T=485$, $N=20$:
+
+\[
+SCTo = \sum_{i,j} Y_{ij}^2 - \frac{T^2}{N} = 11935 - \frac{485^2}{20} = 11935 - 11761.25 = 173.75.
+\]
+
+\[
+SCTr = \sum_{i=1}^4 \frac{T_i^2}{n_i} - \frac{T^2}{N} = \frac{115^2+140^2+105^2+125^2}{5} - 11761.25
+\]
+\[
+= \frac{13225+19600+11025+15625}{5} - 11761.25 = \frac{59475}{5}-11761.25
+\]
+\[
+= 11895-11761.25 = 133.75.
+\]
+
+\[
+SCE = SCTo - SCTr = 173.75 - 133.75 = 40.0.
+\]
+\end{frame}
+
+\begin{frame}{Ejemplo: tabla ANOVA}
+Grados de libertad: $k-1=3$, $N-k=16$, $N-1=19$.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente de variación & SC & gl & CM & F \\
+\midrule
+Entre máquinas & $133.75$ & $3$ & $44.583$ & $17.83$ \\
+Dentro (error) & $40.00$ & $16$ & $2.500$ & \\
+\midrule
+Total & $173.75$ & $19$ & & \\
+\bottomrule
+\end{tabular}
+\caption{Tabla ANOVA -- comparación de 4 máquinas}
+\end{table}
+
+\[
+CMTr = \frac{133.75}{3} \approx 44.583, \qquad CME = \frac{40.0}{16} = 2.5, \qquad F = \frac{44.583}{2.5}\approx 17.83.
+\]
+\end{frame}
+
+\begin{frame}{Ejemplo: decisión y conclusión}
+Planteamos, al nivel $\alpha=0.05$:
+\[
+H_0: \mu_A=\mu_B=\mu_C=\mu_D \qquad \text{vs.} \qquad H_1: \text{al menos una media difiere.}
+\]
+
+Valor crítico: $F_{3,16;\,0.05} \approx 3.24$.
+
+\begin{alertblock}{Decisión}
+Como $F_{\text{calc}} \approx 17.83 > 3.24 = F_{3,16;0.05}$, se \textbf{rechaza} $H_0$.
+\end{alertblock}
+
+\begin{block}{Conclusión}
+Existe evidencia estadísticamente significativa (al 5\%) de que el diámetro medio de las piezas \textbf{no es el mismo} para las cuatro máquinas. El factor ``máquina'' tiene un efecto real sobre el diámetro producido. (El valor $p$ asociado a $F=17.83$ con $3$ y $16$ gl es muy pequeño, $p<0.0001$.)
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: diagrama de caja comparativo}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=9cm,height=5.5cm,
+  xlabel={Máquina}, ylabel={diámetro},
+  xtick={1,2,3,4}, xticklabels={A,B,C,D},
+  xmin=0.5,xmax=4.5, ymin=17,ymax=32,
+  tick label style={font=\scriptsize}, label style={font=\small}]
+% Maquina A: min 21, Q1 21.5, med 23, Q3 24.5, max 25
+\draw[thick] (axis cs:1,21) -- (axis cs:1,21.5);
+\draw[thick,fill=blue!25] (axis cs:0.75,21.5) rectangle (axis cs:1.25,24.5);
+\draw[thick,red] (axis cs:0.75,23) -- (axis cs:1.25,23);
+\draw[thick] (axis cs:1,24.5) -- (axis cs:1,25);
+% Maquina B: min 26, Q1 26.5, med 28, Q3 29.5, max 30
+\draw[thick] (axis cs:2,26) -- (axis cs:2,26.5);
+\draw[thick,fill=blue!25] (axis cs:1.75,26.5) rectangle (axis cs:2.25,29.5);
+\draw[thick,red] (axis cs:1.75,28) -- (axis cs:2.25,28);
+\draw[thick] (axis cs:2,29.5) -- (axis cs:2,30);
+% Maquina C: min 19, Q1 19.5, med 21, Q3 22.5, max 23
+\draw[thick] (axis cs:3,19) -- (axis cs:3,19.5);
+\draw[thick,fill=blue!25] (axis cs:2.75,19.5) rectangle (axis cs:3.25,22.5);
+\draw[thick,red] (axis cs:2.75,21) -- (axis cs:3.25,21);
+\draw[thick] (axis cs:3,22.5) -- (axis cs:3,23);
+% Maquina D: min 23, Q1 23.5, med 25, Q3 26.5, max 27
+\draw[thick] (axis cs:4,23) -- (axis cs:4,23.5);
+\draw[thick,fill=blue!25] (axis cs:3.75,23.5) rectangle (axis cs:4.25,26.5);
+\draw[thick,red] (axis cs:3.75,25) -- (axis cs:4.25,25);
+\draw[thick] (axis cs:4,26.5) -- (axis cs:4,27);
+\end{axis}
+\end{tikzpicture}
+\end{center}
+El gráfico de cajas confirma lo que sugiere la tabla ANOVA: las dispersiones dentro de cada máquina son comparables (homocedasticidad razonable), mientras que las posiciones (medianas, en rojo) difieren notoriamente entre máquinas; en particular B se separa claramente del resto.
+\end{frame}
+
+\begin{frame}{Robustez de la prueba F}
+\begin{block}{¿Qué tan sensible es la prueba F a violaciones de los supuestos?}
+\begin{itemize}
+\item \textbf{Normalidad}: la prueba $F$ es razonablemente \textbf{robusta} a apartamientos moderados de la normalidad, especialmente con tamaños muestrales $n_i$ no demasiado pequeños (por un efecto tipo Teorema Central del Límite sobre las medias $\bar Y_{i\cdot}$).
+\item \textbf{Homocedasticidad}: la prueba es más sensible a la desigualdad de varianzas, en particular si los $n_i$ son muy distintos entre sí. En diseños equilibrados ($n_i$ iguales), la prueba $F$ tolera mejor esta violación.
+\item \textbf{Independencia}: es el supuesto más crítico; su violación (por ejemplo, mediciones repetidas mal tratadas, o falta de aleatorización) puede invalidar completamente las conclusiones, y no se corrige con tamaño de muestra grande.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{En la práctica}
+Frente a evidencia de heterocedasticidad marcada existen alternativas como la prueba de \textbf{Welch} o transformaciones de la variable respuesta; frente a no-normalidad severa, alternativas no paramétricas como la prueba de \textbf{Kruskal--Wallis}. Ambas quedan fuera del alcance de este curso introductorio.
+\end{alertblock}
+\end{frame}
+
+\section{Comparaciones múltiples}
+
+\begin{frame}{¿Y ahora qué? Comparaciones múltiples}
+Rechazar $H_0$ nos dice que \textbf{no todas} las medias son iguales, pero no cuáles difieren de cuáles.
+
+\begin{block}{Procedimientos de comparaciones múltiples (mención breve)}
+\begin{itemize}
+\item \textbf{Prueba de Tukey (HSD)}: compara todos los pares de medias $\bar Y_{i\cdot}-\bar Y_{j\cdot}$ controlando la tasa de error \textbf{global} (familywise) en $\alpha$, usando la distribución del \textbf{rango studentizado}.
+\item \textbf{Prueba de Bonferroni}: ajusta el nivel de significación de cada comparación de a pares dividiendo $\alpha$ por el número de comparaciones.
+\item \textbf{Contrastes planificados}: comparaciones específicas decididas \emph{antes} de ver los datos (por ejemplo, ``control vs.\ tratamientos'').
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Idea general}
+Estas técnicas evitan el mismo problema de inflación del error de tipo I que motivó el uso del ANOVA en primer lugar (Clase 31), aplicado ahora a la etapa de comparaciones posteriores (\emph{post-hoc}) al rechazo de $H_0$. Su desarrollo detallado excede el alcance de este curso introductorio.
+\end{alertblock}
+\end{frame}
+
+\section{Síntesis integradora del curso}
+
+\begin{frame}{Regresión y ANOVA: dos caras del mismo modelo lineal}
+Ambos procedimientos de esta unidad son casos particulares de un mismo marco general, el \textbf{modelo lineal}:
+\[
+\text{observación} = \text{parte sistemática (explicada por el modelo)} + \text{error aleatorio}.
+\]
+
+\begin{block}{Paralelismo estructural}
+\begin{itemize}
+\item \textbf{Regresión}: $Y_i=\beta_0+\beta_1 x_i+\varepsilon_i$, con $SCT=SCR+SCE$.
+\item \textbf{ANOVA}: $Y_{ij}=\mu+\tau_i+\varepsilon_{ij}$, con $SCTo=SCTr+SCE$.
+\end{itemize}
+En ambos casos: se descompone la variabilidad total, se cuenta grados de libertad, se arma una \textbf{tabla ANOVA}, y se prueba significancia con un estadístico $F=CM_{\text{explicado}}/CME$.
+\end{block}
+
+De hecho, el ANOVA de un factor puede escribirse como una regresión con variables \textbf{indicadoras} (dummy) de cada tratamiento: son, formalmente, el mismo modelo lineal general.
+\end{frame}
+
+\begin{frame}{El hilo conductor de la materia}
+\begin{block}{De la probabilidad a la inferencia en modelos lineales}
+\begin{itemize}
+\item \textbf{Unidades 1--4}: construimos el lenguaje de la probabilidad, variables y vectores aleatorios, esperanza y funciones generadoras.
+\item \textbf{Unidad 5}: estudiamos cómo se comportan estadísticos calculados sobre muestras aleatorias ($\bar X$, $S^2$) y sus distribuciones ($\chi^2$, $t$, $F$).
+\item \textbf{Unidad 6}: usamos esas distribuciones para \textbf{estimar} parámetros poblacionales, puntual y por intervalos.
+\item \textbf{Unidad 7}: formalizamos la \textbf{prueba de hipótesis} como procedimiento de decisión bajo incertidumbre.
+\item \textbf{Unidad 8}: aplicamos todo lo anterior a \textbf{modelos con más de un parámetro} (regresión y ANOVA), donde estimación e inferencia se combinan para estudiar relaciones entre variables y diferencias entre poblaciones.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Idea final}
+La estadística inferencial es, en el fondo, siempre el mismo esquema: un \textbf{estimador}, su \textbf{distribución muestral} (bajo supuestos del modelo) y una \textbf{regla de decisión} basada en esa distribución. Los modelos lineales de esta unidad son la culminación natural de ese esquema aplicado a problemas con datos reales.
+\end{alertblock}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase y cierre del curso}
+\begin{itemize}
+\item Bajo $H_0$ y normalidad, $F=CMTr/CME \sim F_{k-1,N-k}$; se rechaza $H_0$ (prueba unilateral a derecha) si $F_{\text{calc}}>F_{k-1,N-k;\alpha}$.
+\item En el ejemplo de las 4 máquinas, $F\approx17.83 > F_{3,16;0.05}\approx3.24$: se rechaza la igualdad de medias.
+\item Rechazar $H_0$ motiva \textbf{comparaciones múltiples} (Tukey, Bonferroni, contrastes) para identificar qué medias difieren.
+\item Regresión y ANOVA comparten la misma estructura de modelo lineal: descomposición de variabilidad, tabla ANOVA, prueba $F$.
+\item Esto cierra la Unidad 8 y el curso: desde los axiomas de probabilidad hasta la construcción, estimación y prueba de modelos lineales sobre datos reales.
+\end{itemize}
+\end{frame}
+
+\end{document}

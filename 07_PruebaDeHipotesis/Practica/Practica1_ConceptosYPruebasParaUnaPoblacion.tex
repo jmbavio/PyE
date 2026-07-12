@@ -1,0 +1,173 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 1: Conceptos generales y pruebas para una población \\ \large Unidad 7: Prueba de hipótesis}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Una empresa de telefonía afirma que el tiempo medio de espera en su línea de atención al cliente es de $\mu_0=5$ minutos. Un usuario sospecha que el tiempo medio real es mayor.
+\begin{enumerate}[label=(\alph*)]
+\item Formule $H_0$ y $H_1$ para este problema.
+\item Indique en qué consistiría cometer un error de tipo I y un error de tipo II en este contexto, y cuál de los dos parece más costoso para la empresa.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)} Sea $\mu$ el tiempo medio real de espera. Como la sospecha (lo que se quiere probar con evidencia) es que el tiempo es mayor al declarado:
+\[
+H_0:\mu\le5 \qquad \text{vs.} \qquad H_1:\mu>5.
+\]
+(Para el cálculo se trabaja con el punto frontera $H_0:\mu=5$.)
+
+\textbf{(b)} \textbf{Error de tipo I:} rechazar $H_0$ siendo verdadera, es decir, concluir que el tiempo medio de espera supera los $5$ minutos cuando en realidad no los supera. Esto perjudicaría la imagen de la empresa sin motivo. \textbf{Error de tipo II:} no rechazar $H_0$ siendo falsa, es decir, no detectar que el tiempo medio de espera realmente supera los $5$ minutos, dejando sin corregir un problema real de atención al cliente. Desde la perspectiva del usuario (o de un ente regulador), el error de tipo II es más costoso, pues permite que la empresa siga incumpliendo su promesa de servicio sin ser detectada.
+\end{solucion}
+
+\begin{ejercicio}
+Para cada una de las siguientes situaciones, plantee $H_0$ y $H_1$ en términos del parámetro correspondiente:
+\begin{enumerate}[label=(\alph*)]
+\item Un fabricante de pilas afirma que la duración media es de $300$ horas. Un laboratorio independiente quiere verificar si la duración media \textbf{difiere} de ese valor.
+\item Un nuevo proceso de soldadura busca \textbf{reducir} la variabilidad (varianza) de la resistencia de las uniones, respecto de la varianza histórica $\sigma_0^2=15$.
+\item Una droguería sostiene que al menos el $90\%$ de sus comprimidos cumple con el peso especificado; un inspector quiere comprobar si la proporción real es \textbf{menor}.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)} $H_0:\mu=300$ vs. $H_1:\mu\neq300$ (bilateral).
+
+\textbf{(b)} $H_0:\sigma^2\ge15$ vs. $H_1:\sigma^2<15$ (unilateral izquierda; se trabaja con $H_0:\sigma^2=15$).
+
+\textbf{(c)} Con $p$ la proporción real de comprimidos que cumple el peso: $H_0:p\ge0.90$ vs. $H_1:p<0.90$ (unilateral izquierda).
+\end{solucion}
+
+\begin{ejercicio}
+Una fábrica de tornillos indica que el diámetro medio de su producción es $\mu_0=8.00$ mm, con una desviación estándar poblacional conocida (por control histórico) de $\sigma=0.15$ mm. Se toma una muestra aleatoria de $n=49$ tornillos y se obtiene $\overline{x}=7.95$ mm. Utilizando $\alpha=0.05$, ¿hay evidencia de que el diámetro medio difiere del especificado?
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\mu=8.00$ vs. $H_1:\mu\neq8.00$.
+
+\textbf{Estadístico:} $\displaystyle Z=\frac{\overline{X}-8.00}{0.15/\sqrt{49}}\sim N(0,1)$ bajo $H_0$.
+
+\textbf{Región crítica} ($\alpha=0.05$, bilateral): $|Z|>z_{0.025}=1.96$.
+
+\textbf{Cálculo:}
+\[
+z=\frac{7.95-8.00}{0.15/\sqrt{49}}=\frac{-0.05}{0.15/7}=\frac{-0.05}{0.02143}=-2.33.
+\]
+
+\textbf{Decisión:} como $|-2.33|=2.33>1.96$, se \textbf{rechaza} $H_0$.
+
+\textbf{Conclusión:} con un $5\%$ de significación, hay evidencia estadísticamente significativa de que el diámetro medio de los tornillos difiere de $8.00$ mm.
+
+\textbf{Valor p:} $p=2\cdot P(Z<-2.33)=2\times0.0099=0.0198$, menor que $\alpha=0.05$, consistente con el rechazo.
+\end{solucion}
+
+\begin{ejercicio}
+El tiempo medio que un operario tarda en armar una pieza es, según un estudio antiguo, de $\mu_0=12$ minutos. Se desea verificar si un nuevo método de trabajo \textbf{reduce} ese tiempo. En una muestra de $n=20$ operarios que usaron el nuevo método se obtuvo $\overline{x}=11.2$ minutos y $s=1.8$ minutos. Suponiendo que el tiempo se distribuye normalmente, pruebe con $\alpha=0.01$ si el nuevo método reduce el tiempo medio de armado.
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\mu\ge12$ vs. $H_1:\mu<12$ (se usa $H_0:\mu=12$).
+
+\textbf{Estadístico:} como $\sigma$ es desconocida, $\displaystyle T=\frac{\overline{X}-12}{S/\sqrt{20}}\sim t_{19}$ bajo $H_0$.
+
+\textbf{Región crítica:} $T<-t_{19,\,0.01}=-2.539$.
+
+\textbf{Cálculo:}
+\[
+t=\frac{11.2-12}{1.8/\sqrt{20}}=\frac{-0.8}{0.4025}=-1.99.
+\]
+
+\textbf{Decisión:} como $-1.99>-2.539$ (no cae en la región crítica), \textbf{no se rechaza} $H_0$.
+
+\textbf{Conclusión:} con un $1\%$ de significación, no hay evidencia suficiente de que el nuevo método reduzca el tiempo medio de armado. (Con $\alpha=0.05$, $-t_{19,0.05}=-1.729$, y sí se hubiera rechazado $H_0$; esto ilustra la importancia de fijar $\alpha$ antes de observar los datos.)
+\end{solucion}
+
+\begin{ejercicio}
+Una máquina embotelladora debe llenar botellas de gaseosa con una varianza no mayor a $\sigma_0^2=2\ \text{mL}^2$ para cumplir con el control de calidad. En una muestra de $n=25$ botellas se midió una cuasivarianza muestral $s^2=3.1\ \text{mL}^2$. Suponiendo que el volumen se distribuye normalmente, pruebe con $\alpha=0.05$ si hay evidencia de que la variabilidad del proceso excede la tolerancia admitida.
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\sigma^2\le2$ vs. $H_1:\sigma^2>2$ (se usa $H_0:\sigma^2=2$).
+
+\textbf{Estadístico:} $\displaystyle \chi^2=\frac{(n-1)S^2}{2}\sim\chi^2_{24}$ bajo $H_0$.
+
+\textbf{Región crítica:} $\chi^2>\chi^2_{24,\,0.05}=36.42$.
+
+\textbf{Cálculo:}
+\[
+\chi^2=\frac{24\times3.1}{2}=\frac{74.4}{2}=37.2.
+\]
+
+\textbf{Decisión:} $37.2>36.42\Rightarrow$ se \textbf{rechaza} $H_0$.
+
+\textbf{Conclusión:} al $5\%$ de significación, hay evidencia de que la variabilidad del proceso de llenado supera la tolerancia especificada; conviene revisar y ajustar la máquina.
+\end{solucion}
+
+\begin{ejercicio}
+Un fabricante de resortes desea que la varianza de la constante elástica de sus productos sea exactamente $\sigma_0^2=0.04$ (unidades al cuadrado). Sobre una muestra de $n=18$ resortes se midió $s^2=0.061$. Suponiendo normalidad, pruebe con $\alpha=0.10$ si hay evidencia de que la varianza real difiere de la especificada.
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\sigma^2=0.04$ vs. $H_1:\sigma^2\neq0.04$.
+
+\textbf{Estadístico:} $\displaystyle \chi^2=\frac{(n-1)S^2}{0.04}\sim\chi^2_{17}$ bajo $H_0$.
+
+\textbf{Región crítica} ($\alpha=0.10$): se rechaza si $\chi^2<\chi^2_{17,\,0.95}=8.672$ o $\chi^2>\chi^2_{17,\,0.05}=27.59$.
+
+\textbf{Cálculo:}
+\[
+\chi^2=\frac{17\times0.061}{0.04}=\frac{1.037}{0.04}=25.93.
+\]
+
+\textbf{Decisión:} como $8.672<25.93<27.59$, \textbf{no se rechaza} $H_0$.
+
+\textbf{Conclusión:} al $10\%$ de significación, no hay evidencia suficiente para afirmar que la varianza de la constante elástica difiere de $0.04$.
+\end{solucion}
+
+\begin{ejercicio}
+Se sabe que el contenido de nicotina de cierta marca de cigarrillos tiene una desviación estándar poblacional $\sigma=1.1$ mg (dato de control histórico muy estable, considerado conocido). Un nuevo lote de $n=30$ cigarrillos arrojó un contenido medio muestral $\overline{x}=22.3$ mg. La especificación del producto indica que el contenido medio nominal es $\mu_0=22.0$ mg.
+\begin{enumerate}[label=(\alph*)]
+\item Realice la prueba de hipótesis correspondiente con $\alpha=0.05$ para $H_1:\mu\neq22.0$.
+\item Construya el intervalo de confianza del $95\%$ para $\mu$ y verifique que la conclusión es coherente con la de la parte (a), usando la dualidad entre pruebas de hipótesis e intervalos de confianza.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)} $H_0:\mu=22.0$ vs. $H_1:\mu\neq22.0$. Estadístico: $\displaystyle Z=\frac{\overline{X}-22.0}{1.1/\sqrt{30}}$. Región crítica: $|Z|>1.96$.
+\[
+z=\frac{22.3-22.0}{1.1/\sqrt{30}}=\frac{0.3}{0.2008}=1.49.
+\]
+Como $1.49<1.96$, \textbf{no se rechaza} $H_0$: no hay evidencia de que el contenido medio difiera del nominal.
+
+\textbf{(b)} $\displaystyle IC_{95\%}(\mu)=\overline{x}\pm z_{0.025}\frac{\sigma}{\sqrt{n}}=22.3\pm1.96\times0.2008=22.3\pm0.394=(21.91;\,22.69)$.
+
+Como $\mu_0=22.0\in(21.91;\,22.69)$, el intervalo contiene al valor hipotético, lo que es coherente con no rechazar $H_0$ en (a).
+\end{solucion}
+
+\begin{ejercicio}
+Explique, con sus palabras y usando un ejemplo, por qué la afirmación ``no rechazar $H_0$'' no es equivalente a ``$H_0$ es verdadera''. Relacione su respuesta con el concepto de potencia de una prueba.
+\end{ejercicio}
+
+\begin{solucion}
+No rechazar $H_0$ significa únicamente que, con la muestra disponible y el nivel de significación elegido, la evidencia no fue suficiente para descartarla; no implica que se haya \emph{demostrado} que $H_0$ es cierta. Por ejemplo, si se prueba $H_0:\mu=50$ con una muestra pequeña ($n=5$) y una gran variabilidad, es posible no rechazar $H_0$ incluso si el verdadero $\mu$ fuera $52$, simplemente porque la prueba tiene poca \textbf{potencia} (baja capacidad de detectar esa diferencia) con ese tamaño de muestra. Si se aumentara $n$, la misma diferencia real podría conducir al rechazo de $H_0$. Por eso, la conclusión correcta ante un no rechazo es ``la evidencia muestral no permite descartar $H_0$ al nivel $\alpha$'', no ``se comprobó que $H_0$ es verdadera''.
+\end{solucion}
+
+\end{document}

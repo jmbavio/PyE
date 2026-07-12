@@ -1,0 +1,304 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 22: Métodos de Estimación}
+\subtitle{Unidad 6: Estimación de parámetros}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Método de mínimos cuadrados}
+
+\begin{frame}{Idea general del método de mínimos cuadrados}
+\begin{block}{Motivación}
+Dado un conjunto de observaciones $x_1,\dots,x_n$ que en teoría deberían ajustarse a un modelo con parámetro(s) $\theta$, el \textbf{método de mínimos cuadrados (MC)} elige como estimador el valor $\widehat\theta$ que \textbf{minimiza la suma de los cuadrados de los errores} entre los datos observados y los valores predichos por el modelo.
+\end{block}
+
+\begin{definition}[Estimador de mínimos cuadrados]
+Si el modelo predice $E(X_i) = g(\theta)$, el estimador de MC de $\theta$ es el que minimiza
+\[
+Q(\theta) = \sum_{i=1}^n \left(x_i - g(\theta)\right)^2.
+\]
+\end{definition}
+
+\begin{alertblock}{Uso típico}
+Es la base de la \textbf{regresión lineal} (Unidad 8): allí $g$ depende de variables explicativas y se minimiza la suma de residuos al cuadrado. Aquí lo presentamos en su versión más simple, para fijar la idea.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: mínimos cuadrados para estimar $\mu$}
+\begin{example}
+Sea $X_1,\dots,X_n$ m.a.\ con $E(X_i)=\mu$ (modelo $g(\mu)=\mu$ constante). Buscamos $\widehat\mu$ que minimice
+\[
+Q(\mu) = \sum_{i=1}^n (x_i-\mu)^2.
+\]
+Derivando e igualando a cero:
+\[
+Q'(\mu) = -2\sum_{i=1}^n (x_i-\mu) = 0 \;\Longrightarrow\; \sum_{i=1}^n x_i = n\mu \;\Longrightarrow\; \widehat\mu = \frac{1}{n}\sum_{i=1}^n x_i = \overline x.
+\]
+Como $Q''(\mu) = 2n>0$, es efectivamente un mínimo. \textbf{Conclusión:} el estimador de mínimos cuadrados de $\mu$ coincide con la media muestral $\overline X$.
+\end{example}
+\end{frame}
+
+\section{Función de verosimilitud}
+
+\begin{frame}{Motivación del método de máxima verosimilitud}
+\begin{block}{Pregunta central}
+Dada una muestra observada $x_1,\dots,x_n$, ¿qué valor de $\theta$ hace que \textbf{sea más "verosímil" (plausible)} haber observado exactamente esos datos?
+\end{block}
+
+\begin{definition}[Función de verosimilitud]
+Sea $X_1,\dots,X_n$ m.a.\ de una población con función de probabilidad/densidad $f(x;\theta)$. La \textbf{función de verosimilitud} es
+\[
+L(\theta) = L(\theta \mid x_1,\dots,x_n) = \prod_{i=1}^n f(x_i;\theta),
+\]
+vista como función de $\theta$ (los datos $x_1,\dots,x_n$ están fijos, son los observados).
+\end{definition}
+
+\begin{alertblock}{Diferencia clave con la densidad conjunta}
+$f(x_1,\dots,x_n;\theta)$ es función de los datos, con $\theta$ fijo. $L(\theta)$ es la \emph{misma expresión} pero pensada como función de $\theta$, con los datos fijos.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Estimador de máxima verosimilitud (EMV)}
+\begin{definition}[EMV]
+El \textbf{estimador de máxima verosimilitud} de $\theta$ es el valor $\widehat\theta$ que maximiza $L(\theta)$:
+\[
+\widehat\theta_{EMV} = \operatorname*{arg\,max}_{\theta \in \Theta} L(\theta).
+\]
+\end{definition}
+
+\begin{block}{Log-verosimilitud}
+Como $\log$ es una función estrictamente creciente, maximizar $L(\theta)$ equivale a maximizar
+\[
+\ell(\theta) = \ln L(\theta) = \sum_{i=1}^n \ln f(x_i;\theta),
+\]
+que en general es mucho más fácil de derivar (transforma productos en sumas).
+\end{block}
+
+\begin{alertblock}{Receta general}
+1) Escribir $L(\theta)$. \quad 2) Tomar $\ell(\theta)=\ln L(\theta)$. \quad 3) Resolver $\dfrac{d\ell}{d\theta}=0$. \quad 4) Verificar que es máximo ($\ell''<0$).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Interpretación gráfica de la verosimilitud}
+\begin{block}{¿Qué significa "maximizar" $L(\theta)$?}
+Para cada valor posible de $\theta$, $L(\theta)$ mide qué tan "compatible" es ese valor con los datos observados. El EMV es el punto más alto de esa curva.
+\end{block}
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+\begin{axis}[
+  width=8cm, height=4.5cm,
+  xlabel={$\theta$}, ylabel={$\ell(\theta)$},
+  ymin=-8, ymax=0.5,
+  xtick=\empty, ytick=\empty,
+  axis lines=middle,
+]
+\addplot[domain=0.05:5,samples=80,thick,blue] {-(x-2)^2/2 - 0.3};
+\draw[dashed] (axis cs:2,-8) -- (axis cs:2,-0.3);
+\node[below] at (axis cs:2,-8) {$\widehat\theta_{EMV}$};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\begin{alertblock}{Condición de máximo}
+En el máximo, $\ell'(\widehat\theta)=0$ y $\ell''(\widehat\theta)<0$ (concavidad hacia abajo).
+\end{alertblock}
+\end{frame}
+
+\section{EMV en distribuciones discretas}
+
+\begin{frame}{EMV para la distribución Bernoulli}
+\begin{example}
+Sea $X_1,\dots,X_n$ m.a.\ de $X\sim \text{Be}(p)$, con $f(x;p) = p^x(1-p)^{1-x}$, $x\in\{0,1\}$.
+\[
+L(p) = \prod_{i=1}^n p^{x_i}(1-p)^{1-x_i} = p^{\sum x_i}(1-p)^{n-\sum x_i}.
+\]
+Sea $t=\sum_{i=1}^n x_i$ (cantidad de éxitos). Entonces
+\[
+\ell(p) = t\ln p + (n-t)\ln(1-p).
+\]
+Derivando:
+\[
+\ell'(p) = \frac{t}{p} - \frac{n-t}{1-p} = 0 \;\Longrightarrow\; t(1-p) = (n-t)p \;\Longrightarrow\; t = np \;\Longrightarrow\; \widehat p = \frac{t}{n} = \overline x.
+\]
+Como $\ell''(p) = -t/p^2 - (n-t)/(1-p)^2 < 0$, es máximo. \textbf{El EMV de $p$ es la proporción muestral} $\widehat p = \overline X$.
+\end{example}
+\end{frame}
+
+\begin{frame}{EMV para la distribución de Poisson}
+\begin{example}
+Sea $X_1,\dots,X_n$ m.a.\ de $X\sim \text{Poisson}(\lambda)$, $f(x;\lambda)=\dfrac{e^{-\lambda}\lambda^x}{x!}$.
+\[
+L(\lambda) = \prod_{i=1}^n \frac{e^{-\lambda}\lambda^{x_i}}{x_i!} = \frac{e^{-n\lambda}\lambda^{\sum x_i}}{\prod x_i!}.
+\]
+\[
+\ell(\lambda) = -n\lambda + \left(\sum_{i=1}^n x_i\right)\ln\lambda - \ln\left(\prod x_i!\right).
+\]
+\[
+\ell'(\lambda) = -n + \frac{\sum x_i}{\lambda} = 0 \;\Longrightarrow\; \widehat\lambda = \frac{1}{n}\sum_{i=1}^n x_i = \overline x.
+\]
+Como $\ell''(\lambda) = -\sum x_i/\lambda^2 < 0$ (si algún $x_i>0$), es máximo. \textbf{El EMV de $\lambda$ es $\overline X$.}
+\end{example}
+\end{frame}
+
+\section{EMV en distribuciones continuas}
+
+\begin{frame}{EMV para la distribución exponencial}
+\begin{example}
+Sea $X_1,\dots,X_n$ m.a.\ de $X\sim \text{Exp}(\lambda)$, $f(x;\lambda)=\lambda e^{-\lambda x}$, $x>0$.
+\[
+L(\lambda) = \prod_{i=1}^n \lambda e^{-\lambda x_i} = \lambda^n e^{-\lambda \sum x_i}.
+\]
+\[
+\ell(\lambda) = n\ln\lambda - \lambda\sum_{i=1}^n x_i.
+\]
+\[
+\ell'(\lambda) = \frac{n}{\lambda} - \sum_{i=1}^n x_i = 0 \;\Longrightarrow\; \widehat\lambda = \frac{n}{\sum_{i=1}^n x_i} = \frac{1}{\overline x}.
+\]
+Como $\ell''(\lambda)=-n/\lambda^2<0$, es máximo. \textbf{El EMV de $\lambda$ es $1/\overline X$} (nótese: $\widehat\lambda$ es sesgado, aunque consistente, ya que $E(1/\overline X)\neq 1/E(\overline X)$ en general).
+\end{example}
+\end{frame}
+
+\begin{frame}{EMV para la distribución normal (deducción completa)}
+\begin{example}
+Sea $X_1,\dots,X_n$ m.a.\ de $X\sim N(\mu,\sigma^2)$, ambos parámetros desconocidos.
+\[
+f(x;\mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right).
+\]
+\[
+L(\mu,\sigma^2) = (2\pi\sigma^2)^{-n/2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i=1}^n (x_i-\mu)^2\right).
+\]
+\[
+\ell(\mu,\sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^n (x_i-\mu)^2.
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{EMV para la normal: resolución del sistema}
+Derivando respecto de $\mu$ e igualando a cero:
+\[
+\frac{\partial \ell}{\partial \mu} = \frac{1}{\sigma^2}\sum_{i=1}^n (x_i-\mu) = 0 \;\Longrightarrow\; \widehat\mu = \frac{1}{n}\sum_{i=1}^n x_i = \overline x.
+\]
+Derivando respecto de $\sigma^2$ (tratándolo como una única variable) e igualando a cero:
+\[
+\frac{\partial \ell}{\partial \sigma^2} = -\frac{n}{2\sigma^2} + \frac{1}{2\sigma^4}\sum_{i=1}^n (x_i-\mu)^2 = 0
+\]
+\[
+\Longrightarrow \; \widehat\sigma^2 = \frac{1}{n}\sum_{i=1}^n (x_i-\widehat\mu)^2 = \frac{1}{n}\sum_{i=1}^n (x_i-\overline x)^2.
+\]
+\begin{alertblock}{Observación importante}
+El EMV de $\sigma^2$ es $\widehat\sigma^2$ (con $n$, \textbf{no} $n-1$): coincide con el estimador \textbf{sesgado} de la Clase 21, no con $S^2$. El EMV no siempre es insesgado.
+\end{alertblock}
+\end{frame}
+
+\section{Propiedades del EMV}
+
+\begin{frame}{Propiedades del estimador de máxima verosimilitud}
+\begin{block}{Propiedad de invarianza}
+Si $\widehat\theta$ es el EMV de $\theta$ y $g$ es una función biunívoca (inyectiva), entonces $g(\widehat\theta)$ es el EMV de $g(\theta)$.
+\end{block}
+\begin{example}
+Como el EMV de $\sigma^2$ es $\widehat\sigma^2 = \frac{1}{n}\sum(x_i-\overline x)^2$, por invarianza el EMV del desvío estándar $\sigma$ es
+\[
+\widehat\sigma = \sqrt{\widehat\sigma^2} = \sqrt{\frac{1}{n}\sum_{i=1}^n (x_i-\overline x)^2}.
+\]
+\end{example}
+
+\begin{block}{Propiedades asintóticas (bajo condiciones de regularidad)}
+\begin{itemize}
+\item \textbf{Consistencia:} $\widehat\theta_{EMV} \xrightarrow{P} \theta$ cuando $n\to\infty$.
+\item \textbf{Eficiencia asintótica:} su varianza se aproxima a la cota de Cramér--Rao para $n$ grande.
+\item \textbf{Normalidad asintótica:} $\widehat\theta_{EMV}$ tiene distribución aproximadamente normal para $n$ grande.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Comparación: mínimos cuadrados vs.\ máxima verosimilitud}
+\begin{block}{Similitudes y diferencias}
+\begin{itemize}
+\item Ambos métodos son \textbf{criterios de optimización}: eligen el parámetro que "mejor explica" los datos, según un objetivo distinto.
+\item MC minimiza distancias al cuadrado; no requiere especificar toda la distribución, solo la forma de la media.
+\item EMV maximiza la probabilidad (o densidad) de observar los datos; requiere conocer la distribución completa.
+\item Para el modelo normal con media constante, ambos métodos coinciden: $\widehat\mu_{MC} = \widehat\mu_{EMV} = \overline X$.
+\end{itemize}
+\end{block}
+\begin{alertblock}{En la práctica}
+El EMV es el método más usado en Estadística por sus buenas propiedades asintóticas (consistencia, eficiencia, normalidad); MC es central en regresión lineal (Unidad 8).
+\end{alertblock}
+\end{frame}
+
+\section{Ejemplo numérico integrador}
+
+\begin{frame}{Ejemplo numérico: EMV con datos concretos}
+\begin{example}
+Se registra el número de llamados que recibe un call center por minuto, durante $n=8$ minutos, asumiendo $X\sim\text{Poisson}(\lambda)$:
+\[
+3,\ 5,\ 2,\ 4,\ 3,\ 6,\ 4,\ 5.
+\]
+Sabemos que el EMV de $\lambda$ en Poisson es $\widehat\lambda = \overline x$. Calculamos:
+\[
+\sum_{i=1}^8 x_i = 3+5+2+4+3+6+4+5 = 32, \qquad \widehat\lambda = \overline x = \frac{32}{8} = 4.
+\]
+\textbf{Estimación de máxima verosimilitud:} $\widehat\lambda = 4$ llamados por minuto.
+
+Si además nos interesara $g(\lambda) = P(X=0) = e^{-\lambda}$ (probabilidad de no recibir llamados en un minuto), por invarianza:
+\[
+\widehat{g} = e^{-\widehat\lambda} = e^{-4} \approx 0.0183.
+\]
+\end{example}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Método de mínimos cuadrados}
+Minimiza $\sum (x_i - g(\theta))^2$. Para el modelo de media constante, coincide con $\overline X$.
+\end{block}
+
+\begin{block}{Método de máxima verosimilitud}
+Maximiza $L(\theta)=\prod f(x_i;\theta)$, o equivalentemente $\ell(\theta)=\ln L(\theta)$.
+\end{block}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Distribución} & \textbf{Parámetro} & \textbf{EMV} \\
+\midrule
+Bernoulli($p$) & $p$ & $\widehat p = \overline X$ \\
+Poisson($\lambda$) & $\lambda$ & $\widehat\lambda = \overline X$ \\
+Exponencial($\lambda$) & $\lambda$ & $\widehat\lambda = 1/\overline X$ \\
+Normal($\mu,\sigma^2$) & $\mu$ & $\widehat\mu = \overline X$ \\
+Normal($\mu,\sigma^2$) & $\sigma^2$ & $\widehat\sigma^2 = \frac{1}{n}\sum(X_i-\overline X)^2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{alertblock}{Próxima clase}
+Usaremos estos estimadores puntuales como base para construir \textbf{intervalos de confianza}: en vez de dar un único valor, daremos un rango de valores plausibles para $\theta$.
+\end{alertblock}
+\end{frame}
+
+\end{document}

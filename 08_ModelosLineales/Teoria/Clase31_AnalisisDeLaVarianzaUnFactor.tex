@@ -1,0 +1,315 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 31: Análisis de la varianza de un factor}
+\subtitle{Unidad 8: Modelos lineales}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Motivación}
+
+\begin{frame}{Comparando más de dos medias}
+En la Unidad 7 aprendimos a comparar las medias de \textbf{dos} poblaciones (prueba $t$ para dos muestras). Muchas situaciones reales exigen comparar \textbf{tres o más}:
+
+\begin{exampleblock}{Ejemplos}
+\begin{itemize}
+\item Rendimiento de un cultivo bajo $k$ fertilizantes distintos.
+\item Resistencia de piezas fabricadas por $k$ máquinas o $k$ proveedores.
+\item Tiempo de reacción de un fármaco a $k$ dosis diferentes.
+\item Puntaje de satisfacción del cliente en $k$ sucursales de una empresa.
+\end{itemize}
+\end{exampleblock}
+
+\begin{alertblock}{¿Por qué no hacer pruebas $t$ de a pares?}
+Si hay $k=5$ grupos, comparar de a pares requiere $\binom{5}{2}=10$ pruebas $t$. Cada una tiene una probabilidad $\alpha$ de error de tipo I; al repetirlas, la probabilidad de cometer \textbf{al menos un} error de tipo I en el conjunto crece muy por encima de $\alpha$. Se necesita un procedimiento que compare las $k$ medias \textbf{simultáneamente}, con un único nivel de significación global: el \textbf{análisis de la varianza (ANOVA)}.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{La idea central del ANOVA}
+Paradójicamente, para comparar \textbf{medias} el procedimiento analiza \textbf{varianzas}: se compara la variabilidad \textbf{entre} los grupos con la variabilidad \textbf{dentro} de cada grupo.
+
+\begin{block}{Intuición}
+\begin{itemize}
+\item Si las medias poblacionales son todas iguales, la variabilidad \emph{entre} las medias muestrales de los grupos debería ser del mismo orden que la variabilidad \emph{dentro} de cada grupo (ambas reflejan solo el azar).
+\item Si las medias poblacionales difieren, la variabilidad \emph{entre} grupos tiende a ser mayor que la variabilidad \emph{dentro} de los grupos.
+\end{itemize}
+\end{block}
+
+El análisis de la varianza formaliza esta comparación mediante un cociente de varianzas (estadístico $F$), que estudiaremos en la Clase 32.
+\end{frame}
+
+\section{Modelo de un factor de efectos fijos (Modelo I)}
+
+\begin{frame}{Planteo del modelo}
+Se tienen $k$ poblaciones (\textbf{niveles} o \textbf{tratamientos}) del factor en estudio, de las cuales se extraen muestras aleatorias independientes de tamaños $n_1,\dots,n_k$, con $N=\sum_{i=1}^k n_i$.
+
+\begin{definition}[Modelo I: efectos fijos]
+La observación $j$-ésima del tratamiento $i$ se modela como
+\[
+Y_{ij} = \mu + \tau_i + \varepsilon_{ij}, \qquad i=1,\dots,k,\ \ j=1,\dots,n_i,
+\]
+donde:
+\begin{itemize}
+\item $\mu$: media general (común a todos los tratamientos).
+\item $\tau_i$: \textbf{efecto del tratamiento} $i$, fijo y desconocido, con $\displaystyle\sum_{i=1}^k n_i\tau_i = 0$ (restricción de identificabilidad).
+\item $\varepsilon_{ij}$: error aleatorio asociado a la observación $(i,j)$.
+\end{itemize}
+\end{definition}
+
+Se dice ``Modelo I'' o de \textbf{efectos fijos} porque los $k$ niveles del factor son los únicos de interés (no una muestra aleatoria de niveles posibles, como en el Modelo II o de efectos aleatorios).
+\end{frame}
+
+\begin{frame}{Media de cada tratamiento}
+Si definimos $\mu_i = \mu + \tau_i$ como la \textbf{media poblacional del tratamiento} $i$, el modelo dice simplemente
+\[
+Y_{ij} = \mu_i + \varepsilon_{ij},
+\]
+es decir, las observaciones del grupo $i$ tienen media $\mu_i$ y fluctúan alrededor de ella por efecto del error aleatorio.
+
+\begin{block}{Hipótesis de interés}
+\[
+H_0: \mu_1=\mu_2=\cdots=\mu_k \qquad \text{vs.} \qquad H_1: \text{al menos dos } \mu_i \text{ son distintas.}
+\]
+Equivalentemente, en términos de los efectos:
+\[
+H_0: \tau_1=\tau_2=\cdots=\tau_k=0.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Supuestos del modelo}
+\begin{block}{Supuestos sobre los errores}
+\begin{enumerate}
+\item $E(\varepsilon_{ij})=0$ para todo $i,j$.
+\item $V(\varepsilon_{ij}) = \sigma^2$, la \textbf{misma} para todos los tratamientos (\textbf{homocedasticidad}).
+\item Los $\varepsilon_{ij}$ son \textbf{independientes} entre sí.
+\item $\varepsilon_{ij} \sim N(0,\sigma^2)$ (normalidad, necesaria para la prueba $F$).
+\end{enumerate}
+\end{block}
+
+\begin{alertblock}{Consecuencia}
+Bajo estos supuestos, $Y_{ij}\sim N(\mu_i,\sigma^2)$, con las $k$ poblaciones teniendo \textbf{la misma varianza} $\sigma^2$ pero posiblemente distinta media $\mu_i$. Estos tres supuestos (normalidad, homocedasticidad, independencia) son análogos a los del modelo de regresión (Clase 29) y se verifican en la práctica con gráficos de residuos y pruebas específicas.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Notación y organización de los datos}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|cccc}
+\toprule
+& Trat. 1 & Trat. 2 & $\cdots$ & Trat. $k$ \\
+\midrule
+& $Y_{11}$ & $Y_{21}$ & $\cdots$ & $Y_{k1}$ \\
+& $Y_{12}$ & $Y_{22}$ & $\cdots$ & $Y_{k2}$ \\
+& $\vdots$ & $\vdots$ & & $\vdots$ \\
+& $Y_{1n_1}$ & $Y_{2n_2}$ & $\cdots$ & $Y_{kn_k}$ \\
+\midrule
+Medias & $\bar Y_{1\cdot}$ & $\bar Y_{2\cdot}$ & $\cdots$ & $\bar Y_{k\cdot}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\[
+\bar Y_{i\cdot} = \frac{1}{n_i}\sum_{j=1}^{n_i} Y_{ij} \quad \text{(media del tratamiento } i\text{)}, \qquad
+\bar Y_{\cdot\cdot} = \frac{1}{N}\sum_{i=1}^k\sum_{j=1}^{n_i} Y_{ij} \quad \text{(media general).}
+\]
+\end{frame}
+
+\section{Descomposición de la variabilidad total}
+
+\begin{frame}{Suma de cuadrados total}
+\begin{definition}
+La \textbf{suma de cuadrados total} mide la dispersión de todas las observaciones respecto de la media general:
+\[
+SCTo = \sum_{i=1}^k \sum_{j=1}^{n_i} \big(Y_{ij} - \bar Y_{\cdot\cdot}\big)^2.
+\]
+\end{definition}
+
+La idea del ANOVA es escribir esta variabilidad total como la suma de dos fuentes: la variabilidad \textbf{entre} tratamientos y la variabilidad \textbf{dentro} de los tratamientos.
+\end{frame}
+
+\begin{frame}{Deducción de la descomposición}
+Sumamos y restamos $\bar Y_{i\cdot}$ dentro de cada término:
+\[
+Y_{ij}-\bar Y_{\cdot\cdot} = \big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big) + \big(Y_{ij}-\bar Y_{i\cdot}\big).
+\]
+
+Elevando al cuadrado y sumando sobre $i,j$:
+\[
+\sum_{i,j}(Y_{ij}-\bar Y_{\cdot\cdot})^2 = \sum_{i,j}\big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big)^2 + \sum_{i,j}\big(Y_{ij}-\bar Y_{i\cdot}\big)^2 + 2\sum_{i,j}\big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big)\big(Y_{ij}-\bar Y_{i\cdot}\big).
+\]
+
+\begin{block}{El término cruzado se anula}
+Para cada $i$ fijo, $\displaystyle\sum_{j=1}^{n_i}\big(Y_{ij}-\bar Y_{i\cdot}\big) = 0$ (los residuos dentro de un grupo suman cero, igual que en regresión). Por lo tanto el término cruzado es idénticamente $0$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Identidad de la descomposición}
+\begin{alertblock}{Descomposición de la variabilidad total}
+\[
+SCTo = SCTr + SCE,
+\]
+donde
+\[
+SCTr = \sum_{i=1}^k n_i\big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big)^2 \quad \text{(suma de cuadrados \textbf{entre} tratamientos)},
+\]
+\[
+SCE = \sum_{i=1}^k \sum_{j=1}^{n_i} \big(Y_{ij}-\bar Y_{i\cdot}\big)^2 \quad \text{(suma de cuadrados \textbf{dentro} de los tratamientos, o del error)}.
+\]
+\end{alertblock}
+
+\begin{block}{Interpretación}
+$SCTr$ mide cuánto difieren las medias muestrales de los grupos entre sí (variabilidad ``explicada'' por el factor); $SCE$ mide la variabilidad natural dentro de cada grupo, atribuible únicamente al azar. Es exactamente la misma lógica de $SCT=SCR+SCE$ vista en regresión (Clase 29), aplicada ahora a $k$ grupos en lugar de una recta.
+\end{block}
+\end{frame}
+
+\section{Grados de libertad}
+
+\begin{frame}{Grados de libertad de cada suma de cuadrados}
+\begin{block}{Conteo de grados de libertad}
+\begin{itemize}
+\item $SCTo$: se calculan $N$ desvíos respecto de $\bar Y_{\cdot\cdot}$, con \textbf{una} restricción ($\sum(Y_{ij}-\bar Y_{\cdot\cdot})=0$) $\Rightarrow$ $N-1$ grados de libertad.
+\item $SCTr$: se calculan $k$ desvíos $\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}$, con \textbf{una} restricción $\Rightarrow$ $k-1$ grados de libertad.
+\item $SCE$: dentro de cada grupo $i$ hay $n_i-1$ grados de libertad (se estima $\mu_i$ con $\bar Y_{i\cdot}$); sumando sobre los $k$ grupos, $\displaystyle\sum_{i=1}^k (n_i-1) = N-k$ grados de libertad.
+\end{itemize}
+\end{block}
+
+\begin{block}{Los grados de libertad también se descomponen}
+\[
+N-1 = (k-1) + (N-k).
+\]
+\end{block}
+\end{frame}
+
+\section{Tabla ANOVA}
+
+\begin{frame}{Cuadrados medios}
+Dividiendo cada suma de cuadrados por sus grados de libertad se obtienen los \textbf{cuadrados medios}:
+\[
+CMTr = \frac{SCTr}{k-1} \quad\text{(cuadrado medio entre tratamientos)},
+\]
+\[
+CME = \frac{SCE}{N-k} \quad\text{(cuadrado medio del error)}.
+\]
+
+\begin{block}{Propiedades (esperanzas de los cuadrados medios)}
+Puede demostrarse que, bajo el Modelo I:
+\[
+E(CME) = \sigma^2 \quad \text{siempre (sin importar si $H_0$ es cierta)},
+\]
+\[
+E(CMTr) = \sigma^2 + \frac{\sum_{i=1}^k n_i \tau_i^2}{k-1} \ \ \geq \sigma^2,
+\]
+con igualdad si y solo si todos los $\tau_i=0$, es decir, bajo $H_0$. Esto sugiere comparar $CMTr$ con $CME$: si son ``parecidos'', apoya $H_0$; si $CMTr$ es notablemente mayor que $CME$, apoya $H_1$. Esta comparación se formaliza con el estadístico $F$ en la Clase 32.
+\end{block}
+\end{frame}
+
+\begin{frame}{Tabla ANOVA de un factor}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente de variación & SC & gl & CM & F \\
+\midrule
+Entre tratamientos & $SCTr$ & $k-1$ & $CMTr=\dfrac{SCTr}{k-1}$ & $\dfrac{CMTr}{CME}$ \\[8pt]
+Dentro de tratamientos (error) & $SCE$ & $N-k$ & $CME=\dfrac{SCE}{N-k}$ & \\[8pt]
+\midrule
+Total & $SCTo$ & $N-1$ & & \\
+\bottomrule
+\end{tabular}
+\caption{Tabla ANOVA de un factor (Modelo I)}
+\end{table}
+
+Esta tabla resume toda la información necesaria para la prueba de hipótesis de igualdad de medias, que desarrollaremos en detalle, con un ejemplo numérico completo, en la próxima clase.
+\end{frame}
+
+\section{Fórmulas de cálculo}
+
+\begin{frame}{Fórmulas prácticas para calcular las sumas de cuadrados}
+En la práctica conviene usar fórmulas ``de cálculo directo'', análogas a las de regresión, para evitar acumular error de redondeo:
+
+\begin{block}{Total, tratamiento por tratamiento}
+Sea $T_i = \sum_j Y_{ij}$ (total del tratamiento $i$) y $T = \sum_i T_i$ (total general). Entonces:
+\[
+SCTo = \sum_{i,j} Y_{ij}^2 - \frac{T^2}{N},
+\]
+\[
+SCTr = \sum_{i=1}^k \frac{T_i^2}{n_i} - \frac{T^2}{N},
+\]
+\[
+SCE = SCTo - SCTr.
+\]
+\end{block}
+
+Estas son las fórmulas que usaremos en el ejemplo numérico de la Clase 32.
+\end{frame}
+
+\section{Verificación de los supuestos}
+
+\begin{frame}{Diagnóstico de los supuestos del Modelo I}
+Al igual que en regresión (Clase 30), los supuestos de \textbf{normalidad}, \textbf{homocedasticidad} e \textbf{independencia} se verifican de manera informal a partir de los residuos $e_{ij}=Y_{ij}-\bar Y_{i\cdot}$.
+
+\begin{block}{Herramientas usuales}
+\begin{itemize}
+\item Gráfico de residuos vs.\ tratamiento (o vs.\ valores predichos $\bar Y_{i\cdot}$): buscar dispersión similar en todos los grupos (homocedasticidad).
+\item Gráfico de caja (\emph{boxplot}) comparativo de las $k$ muestras: permite ver de un vistazo diferencias en posición \emph{y} en dispersión.
+\item Q-Q plot o histograma de los residuos combinados: para evaluar normalidad.
+\item Regla práctica de homocedasticidad: si el mayor desvío estándar muestral no supera $2$ veces al menor, la prueba $F$ es razonablemente robusta a violaciones moderadas del supuesto.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Independencia}
+Se garantiza principalmente por el \textbf{diseño del experimento} (muestreo aleatorio, o aleatorización de las unidades experimentales a los tratamientos), más que por un chequeo posterior sobre los datos.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Diseño equilibrado vs.\ no equilibrado}
+\begin{block}{Diseño equilibrado (\emph{balanced})}
+Cuando $n_1=n_2=\cdots=n_k=n$ (igual número de observaciones por tratamiento), $N=nk$, y las fórmulas y el análisis son algo más simples; además la prueba $F$ resulta más robusta ante apartamientos moderados de la homocedasticidad.
+\end{block}
+
+\begin{block}{Diseño no equilibrado}
+Con $n_i$ distintos, la teoría desarrollada (descomposición $SCTo=SCTr+SCE$, grados de libertad $N-1=(k-1)+(N-k)$, tabla ANOVA) sigue siendo exactamente válida; solo cambian las fórmulas de cálculo, que ya contemplan $n_i$ general.
+\end{block}
+
+En el ejemplo numérico de la Clase 32 usaremos un diseño equilibrado, con $n_i=5$ para los $k=4$ tratamientos.
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item El \textbf{análisis de la varianza} permite comparar simultáneamente $k\geq 2$ medias poblacionales, evitando la inflación del error de tipo I que produciría hacer múltiples pruebas $t$ de a pares.
+\item El \textbf{Modelo I} (efectos fijos) postula $Y_{ij}=\mu+\tau_i+\varepsilon_{ij}$, con $\varepsilon_{ij}\sim N(0,\sigma^2)$ independientes, la misma varianza para todos los tratamientos.
+\item La hipótesis de interés es $H_0:\mu_1=\cdots=\mu_k$ (equivalentemente, $\tau_1=\cdots=\tau_k=0$).
+\item La variabilidad total se descompone: $SCTo = SCTr + SCE$, con grados de libertad $N-1=(k-1)+(N-k)$.
+\item $E(CME)=\sigma^2$ siempre; $E(CMTr)=\sigma^2$ solo bajo $H_0$, y es mayor si las medias difieren: esto motiva comparar $CMTr$ con $CME$.
+\item Próxima clase: el estadístico $F=CMTr/CME$, su distribución bajo $H_0$, un ejemplo numérico completo y comparaciones múltiples.
+\end{itemize}
+\end{frame}
+
+\end{document}

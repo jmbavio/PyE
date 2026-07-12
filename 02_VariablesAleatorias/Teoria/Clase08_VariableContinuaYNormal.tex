@@ -1,0 +1,236 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 8: Variable aleatoria continua y distribución Normal}
+\subtitle{Unidad 2: Variables aleatorias}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Variable aleatoria continua}
+
+\begin{frame}{De lo discreto a lo continuo}
+\begin{block}{Motivación}
+Muchas variables de interés (tiempo, longitud, peso, temperatura) toman \textbf{cualquier valor} en un intervalo real: no tiene sentido hablar de $P(X=x)$ como en el caso discreto, pues ese valor es $0$ para cada $x$.
+\end{block}
+
+\begin{definition}[Variable aleatoria continua]
+$X$ es una v.a. \textbf{continua} si existe una función $f:\mathbb{R}\to[0,\infty)$, llamada \textbf{función de densidad de probabilidad}, tal que
+$$F(x) = P(X\le x) = \int_{-\infty}^x f(t)\,dt \qquad \text{para todo } x\in\mathbb{R}.$$
+\end{definition}
+\end{frame}
+
+\begin{frame}{Propiedades de la densidad}
+\begin{theorem}[Propiedades de $f(x)$]
+\begin{enumerate}
+\item $f(x) \ge 0$ para todo $x$.
+\item $\displaystyle\int_{-\infty}^{\infty} f(x)\,dx = 1$.
+\item Donde $F$ es derivable, $F'(x) = f(x)$.
+\item $\displaystyle P(a\le X\le b) = \int_a^b f(x)\,dx$ (área bajo la curva).
+\end{enumerate}
+\end{theorem}
+
+\begin{alertblock}{Consecuencia importante}
+Si $X$ es continua, $P(X=a) = \int_a^a f(x)\,dx = 0$ para todo $a$. Por eso
+$$P(a\le X\le b) = P(a< X\le b) = P(a\le X< b) = P(a<X<b).$$
+No importa incluir o no los extremos.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Interpretación de $f(x)$}
+\begin{alertblock}{Cuidado: $f(x)$ NO es una probabilidad}
+$f(x)$ puede ser mayor que 1. Lo que integra 1 es el \textbf{área total} bajo la curva, no los valores de $f$. $f(x)$ es una \textbf{densidad}: probabilidad "por unidad de longitud" cerca de $x$.
+\end{alertblock}
+
+\begin{block}{Esperanza y varianza (caso continuo)}
+$$E(X) = \int_{-\infty}^\infty x\,f(x)\,dx, \qquad V(X) = \int_{-\infty}^\infty (x-E(X))^2 f(x)\,dx = E(X^2)-[E(X)]^2.$$
+\end{block}
+
+\begin{example}
+Sea $f(x) = 2x$ para $0\le x\le 1$ (y 0 fuera). Verificamos: $\int_0^1 2x\,dx = [x^2]_0^1=1$. Entonces
+$$P(0.3\le X\le 0.6) = \int_{0.3}^{0.6}2x\,dx = [x^2]_{0.3}^{0.6} = 0.36-0.09=0.27.$$
+\end{example}
+\end{frame}
+
+\begin{frame}{Gráfico: densidad y área como probabilidad}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  xmin=0, xmax=1.1, ymin=0, ymax=2.2,
+  xlabel={$x$}, ylabel={$f(x)$},
+  width=10cm, height=5.5cm,
+  axis lines=middle,
+  domain=0:1, samples=60,
+]
+\addplot[thick,blue] {2*x};
+\addplot[blue!20, domain=0.3:0.6] {2*x} \closedcycle;
+\addplot[dashed] coordinates {(0.3,0)(0.3,0.6)};
+\addplot[dashed] coordinates {(0.6,0)(0.6,1.2)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+El área sombreada entre $x=0.3$ y $x=0.6$ representa $P(0.3\le X\le 0.6)=0.27$.
+\end{frame}
+
+\section{La distribución Normal}
+
+\begin{frame}{La distribución más importante de la estadística}
+\begin{block}{Por qué es tan importante}
+\begin{itemize}
+\item Describe con buena aproximación numerosos fenómenos naturales y sociales (estaturas, errores de medición, pesos, calificaciones).
+\item Es el límite de sumas de muchas variables aleatorias independientes (\textbf{Teorema Central del Límite}, Unidad 3).
+\item Es la base de gran parte de la inferencia estadística (intervalos de confianza, tests de hipótesis).
+\end{itemize}
+\end{block}
+
+\begin{definition}[Distribución Normal]
+$X\sim N(\mu,\sigma^2)$ si su densidad es
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right), \qquad x\in\mathbb{R},$$
+con parámetros $\mu\in\mathbb{R}$ (media) y $\sigma>0$ (desvío estándar).
+\end{definition}
+\end{frame}
+
+\begin{frame}{Propiedades de la campana de Gauss}
+\begin{theorem}
+Si $X\sim N(\mu,\sigma^2)$, entonces $E(X)=\mu$ y $V(X)=\sigma^2$.
+\end{theorem}
+
+\begin{block}{Propiedades geométricas de $f(x)$}
+\begin{itemize}
+\item Simétrica respecto de $x=\mu$ (forma de "campana").
+\item Máximo en $x=\mu$, con $f(\mu) = \dfrac{1}{\sigma\sqrt{2\pi}}$.
+\item Puntos de inflexión en $x=\mu\pm\sigma$.
+\item $\mu$ controla el centro; $\sigma$ controla la dispersión (curva más "achatada" si $\sigma$ grande).
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Regla empírica}
+$P(\mu-\sigma<X<\mu+\sigma)\approx 0.68$; \quad $P(\mu-2\sigma<X<\mu+2\sigma)\approx 0.95$; \quad $P(\mu-3\sigma<X<\mu+3\sigma)\approx 0.997$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Gráfico: efecto de $\mu$ y $\sigma$}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  xmin=-6, xmax=8, ymin=0, ymax=0.85,
+  xlabel={$x$}, ylabel={$f(x)$},
+  width=10.5cm, height=5.5cm,
+  domain=-6:8, samples=100,
+  legend pos=north east, legend style={font=\tiny},
+]
+\addplot[thick,blue] {1/(1*sqrt(2*pi))*exp(-(x-0)^2/(2*1^2))};
+\addplot[thick,red] {1/(1*sqrt(2*pi))*exp(-(x-3)^2/(2*1^2))};
+\addplot[thick,green!60!black] {1/(2*sqrt(2*pi))*exp(-(x-0)^2/(2*2^2))};
+\legend{{$N(0,1)$}, {$N(3,1)$}, {$N(0,4)$}}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+Desplazar $\mu$ traslada la curva; aumentar $\sigma$ la "achata" y ensancha (manteniendo área 1).
+\end{frame}
+
+\section{Estandarización}
+
+\begin{frame}{La distribución Normal estándar}
+\begin{block}{Problema}
+$F(x)=\int_{-\infty}^x f(t)\,dt$ para la Normal \textbf{no tiene primitiva elemental}. Se resuelve numéricamente y se tabula para un único caso: la \textbf{Normal estándar}.
+\end{block}
+
+\begin{definition}[Normal estándar]
+$Z\sim N(0,1)$ tiene densidad
+$$\varphi(z) = \frac{1}{\sqrt{2\pi}}e^{-z^2/2},$$
+y función de distribución $\Phi(z) = P(Z\le z)$, tabulada.
+\end{definition}
+
+\begin{theorem}[Estandarización]
+Si $X\sim N(\mu,\sigma^2)$, entonces
+$$Z = \frac{X-\mu}{\sigma} \sim N(0,1).$$
+\end{theorem}
+Esto permite calcular probabilidades de \textbf{cualquier} Normal usando la tabla de $\Phi$.
+\end{frame}
+
+\begin{frame}{Uso de la tabla y simetría de $\Phi$}
+\begin{block}{Propiedades útiles de $\Phi$}
+\begin{itemize}
+\item $\Phi(0) = 0.5$.
+\item $\Phi(-z) = 1-\Phi(z)$ (simetría de la densidad respecto de 0).
+\item $P(Z>z) = 1-\Phi(z)$.
+\item $P(a<Z<b) = \Phi(b)-\Phi(a)$.
+\end{itemize}
+\end{block}
+
+\begin{example}
+Con tabla estándar: $\Phi(1.96)\approx 0.975$, entonces $P(Z<1.96)=0.975$ y $P(Z>1.96)=0.025$.
+
+Por simetría: $\Phi(-1.96) = 1-0.975 = 0.025$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Normal}
+\begin{example}
+El peso de los paquetes producidos por una máquina se distribuye $N(\mu=500\text{ g}, \sigma=15\text{ g})$. (a) ¿Qué proporción de paquetes pesa menos de 480 g? (b) ¿Entre 490 y 520 g?
+\end{example}
+
+\begin{block}{Resolución}
+\textbf{(a)} $Z = \dfrac{480-500}{15} = -1.33$.
+$$P(X<480) = P(Z<-1.33) = \Phi(-1.33) = 1-\Phi(1.33) \approx 1-0.9082 = 0.0918.$$
+
+\textbf{(b)} $Z_1 = \dfrac{490-500}{15}=-0.67$, \quad $Z_2 = \dfrac{520-500}{15}=1.33$.
+$$P(490<X<520) = \Phi(1.33)-\Phi(-0.67) = 0.9082 - (1-0.7486) = 0.9082-0.2514 = 0.6568.$$
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: percentiles (problema inverso)}
+\begin{example}
+Con los mismos datos ($\mu=500$, $\sigma=15$), ¿cuál es el peso $x_0$ tal que solo el 10\% de los paquetes pesa más que $x_0$?
+\end{example}
+
+\begin{block}{Resolución}
+Buscamos $x_0$ tal que $P(X>x_0)=0.10$, es decir $\Phi(z_0)=0.90$. De la tabla, $z_0\approx 1.28$.
+
+Deshaciendo la estandarización:
+$$z_0 = \frac{x_0-\mu}{\sigma} \;\Rightarrow\; x_0 = \mu + z_0\sigma = 500 + 1.28\times 15 = 519.2 \text{ g}.$$
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{block}{Ideas clave}
+\begin{itemize}
+\item $X$ continua $\Leftrightarrow$ existe densidad $f\ge 0$ con $F(x)=\int_{-\infty}^x f(t)dt$ y $\int_{-\infty}^\infty f=1$.
+\item $P(X=a)=0$ para toda v.a. continua; las probabilidades son áreas bajo $f$.
+\item $X\sim N(\mu,\sigma^2)$: simétrica, campana centrada en $\mu$, dispersión $\sigma$; $E(X)=\mu$, $V(X)=\sigma^2$.
+\item Estandarización $Z=(X-\mu)/\sigma \sim N(0,1)$ permite usar la tabla de $\Phi$ para cualquier Normal.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Próxima clase}
+Estudiaremos las distribuciones Exponencial y Gamma, y cómo hallar la distribución de una función $Y=g(X)$ de una variable aleatoria.
+\end{alertblock}
+\end{frame}
+
+\end{document}

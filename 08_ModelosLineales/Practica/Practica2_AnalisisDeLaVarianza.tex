@@ -1,0 +1,381 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 2: Análisis de la varianza de un factor \\ \large Unidad 8: Modelos lineales}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Una empresa evalúa tres \textbf{proveedores} de materia prima (P1, P2, P3) midiendo la \textbf{resistencia a la tracción} (kg/cm$^2$) de $5$ piezas fabricadas con material de cada proveedor:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|ccccc}
+\toprule
+Proveedor & \multicolumn{5}{c}{Observaciones} \\
+\midrule
+P1 & 48 & 51 & 45 & 50 & 47 \\
+P2 & 55 & 58 & 53 & 57 & 56 \\
+P3 & 46 & 44 & 48 & 45 & 47 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Pruebe, al nivel $\alpha=0.05$, si la resistencia media es la misma para los tres proveedores. Use $F_{2,12;0.05}=3.89$.
+\end{ejercicio}
+
+\begin{solucion}
+Se plantea el modelo $Y_{ij}=\mu+\tau_i+\varepsilon_{ij}$, con $k=3$ tratamientos y $n_i=5$ ($N=15$).
+
+\textbf{Totales y medias por proveedor:}
+\[
+T_{P1}=241,\ \bar Y_{P1\cdot}=48.2; \qquad T_{P2}=279,\ \bar Y_{P2\cdot}=55.8; \qquad T_{P3}=230,\ \bar Y_{P3\cdot}=46.0.
+\]
+Total general $T=750$, $\bar Y_{\cdot\cdot}=750/15=50.0$. Suma de todas las observaciones al cuadrado: $\sum Y_{ij}^2=37812$.
+
+\textbf{Sumas de cuadrados:}
+\[
+SCTo=\sum Y_{ij}^2-\frac{T^2}{N}=37812-\frac{750^2}{15}=37812-37500=312.0.
+\]
+\[
+SCTr=\sum_i\frac{T_i^2}{n_i}-\frac{T^2}{N}=\frac{241^2+279^2+230^2}{5}-37500=\frac{58081+77841+52900}{5}-37500
+\]
+\[
+=37764.4-37500=264.4.
+\]
+\[
+SCE=SCTo-SCTr=312.0-264.4=47.6.
+\]
+
+\textbf{Tabla ANOVA} ($k-1=2$, $N-k=12$):
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Entre proveedores & $264.4$ & $2$ & $132.2$ & $33.33$ \\
+Dentro (error) & $47.6$ & $12$ & $3.967$ & \\
+\midrule
+Total & $312.0$ & $14$ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Como $F_{\text{calc}}\approx33.33 > 3.89=F_{2,12;0.05}$, se \textbf{rechaza} $H_0:\mu_{P1}=\mu_{P2}=\mu_{P3}$. Existe evidencia estadísticamente significativa de que la resistencia media de las piezas difiere según el proveedor de materia prima (a simple vista, P2 presenta la mayor resistencia media).
+\end{solucion}
+
+\begin{ejercicio}
+Se comparan \textbf{cuatro métodos de ensamblaje} (M1, M2, M3, M4) midiendo el \textbf{tiempo de armado} (minutos) en $6$ ensayos por método:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|cccccc}
+\toprule
+Método & \multicolumn{6}{c}{Observaciones (min)} \\
+\midrule
+M1 & 12.3 & 11.8 & 12.5 & 12.0 & 11.9 & 12.2 \\
+M2 & 10.5 & 10.8 & 10.2 & 10.6 & 10.9 & 10.4 \\
+M3 & 13.1 & 12.9 & 13.4 & 13.0 & 13.2 & 13.5 \\
+M4 & 11.0 & 11.3 & 10.8 & 11.2 & 11.1 & 10.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{enumerate}[label=(\alph*)]
+\item Realice el ANOVA y pruebe la igualdad de las cuatro medias al nivel $\alpha=0.05$ (use $F_{3,20;0.05}=3.10$).
+\item A partir de las medias muestrales, ¿qué método parece más rápido? Comente por qué, tras rechazar $H_0$, no alcanza con mirar solo las medias para afirmar cuáles pares difieren de forma significativa.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+$k=4$, $n_i=6$ para todos, $N=24$.
+
+\textbf{Totales y medias:} $T_{M1}=72.7$ ($\bar Y_{M1\cdot}\approx12.117$), $T_{M2}=63.4$ ($\bar Y_{M2\cdot}\approx10.567$), $T_{M3}=79.1$ ($\bar Y_{M3\cdot}\approx13.183$), $T_{M4}=66.3$ ($\bar Y_{M4\cdot}=11.05$). $T=281.5$, $\bar Y_{\cdot\cdot}\approx11.729$. $\sum Y_{ij}^2=3327.35$.
+
+\[
+SCTo=3327.35-\frac{281.5^2}{24}\approx3327.35-3301.760=25.590.
+\]
+\[
+SCTr=\frac{72.7^2+63.4^2+79.1^2+66.3^2}{6}-3301.760\approx3326.225-3301.760=24.465.
+\]
+\[
+SCE=SCTo-SCTr\approx25.590-24.465=1.125.
+\]
+
+\textbf{(a) Tabla ANOVA} ($k-1=3$, $N-k=20$):
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Entre métodos & $24.465$ & $3$ & $8.155$ & $144.98$ \\
+Dentro (error) & $1.125$ & $20$ & $0.05625$ & \\
+\midrule
+Total & $25.590$ & $23$ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Como $F_{\text{calc}}\approx144.98\gg3.10$, se \textbf{rechaza} $H_0$: el tiempo medio de armado no es el mismo para los cuatro métodos.
+
+\textbf{(b)} El método M2 tiene la menor media muestral ($10.567$ min), por lo que parece el más rápido. Sin embargo, rechazar $H_0$ solo indica que \textbf{alguna} de las medias difiere de las demás, no identifica \textbf{cuáles} pares son significativamente distintos: para eso se requiere un procedimiento de \textbf{comparaciones múltiples} (por ejemplo, la prueba de Tukey), que controla el error de tipo I global al comparar todos los pares de medias simultáneamente.
+\end{solucion}
+
+\begin{ejercicio}
+Un informe de control estadístico de procesos reporta el siguiente análisis de la varianza de un factor, con $k=4$ tratamientos y $N=28$ observaciones en total, pero algunos valores se perdieron:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Entre tratamientos & $\ ?\ $ & $\ ?\ $ & $54.0$ & $\ ?\ $ \\
+Dentro (error) & $288.0$ & $\ ?\ $ & $\ ?\ $ & \\
+\midrule
+Total & $450.0$ & $\ ?\ $ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Complete todos los valores faltantes y concluya, al nivel $\alpha=0.05$, usando $F_{3,24;0.05}=3.01$.
+\end{ejercicio}
+
+\begin{solucion}
+Grados de libertad: $k-1=3$, $N-k=28-4=24$, $N-1=27$.
+
+\[
+SCTr = CMTr\times(k-1) = 54.0\times3=162.0.
+\]
+\[
+SCTo=450.0 \ \Rightarrow\ \text{(dato)}, \qquad SCE=SCTo-SCTr=450.0-162.0=288.0 \ \checkmark
+\]
+(consistente con el dato dado de $SCE=288.0$).
+\[
+CME=\frac{SCE}{N-k}=\frac{288.0}{24}=12.0.
+\]
+\[
+F=\frac{CMTr}{CME}=\frac{54.0}{12.0}=4.5.
+\]
+
+\textbf{Tabla completa:}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Entre tratamientos & $162.0$ & $3$ & $54.0$ & $4.5$ \\
+Dentro (error) & $288.0$ & $24$ & $12.0$ & \\
+\midrule
+Total & $450.0$ & $27$ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Como $F_{\text{calc}}=4.5 > 3.01=F_{3,24;0.05}$, se \textbf{rechaza} $H_0$: hay diferencias significativas entre las medias de los cuatro tratamientos al nivel del 5\%.
+\end{solucion}
+
+\begin{ejercicio}
+Se comparan los \textbf{turnos} de una línea de producción (mañana, tarde, noche) según la cantidad de \textbf{unidades defectuosas} detectadas en distintos días de control. El número de días de control no fue el mismo para los tres turnos:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|cccccc}
+\toprule
+Turno & \multicolumn{6}{c}{Unidades defectuosas} \\
+\midrule
+Mañana & 8 & 10 & 7 & 9 & & \\
+Tarde & 12 & 14 & 11 & 13 & 15 & \\
+Noche & 15 & 17 & 16 & 18 & 14 & 16 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Pruebe, al nivel $\alpha=0.05$, si el número medio de unidades defectuosas es el mismo en los tres turnos. Use $F_{2,12;0.05}=3.89$.
+\end{ejercicio}
+
+\begin{solucion}
+Diseño \textbf{no equilibrado}: $n_{\text{Mañana}}=4$, $n_{\text{Tarde}}=5$, $n_{\text{Noche}}=6$, $N=15$, $k=3$.
+
+\textbf{Totales:} $T_{\text{M}}=34$ ($\bar Y_{\text{M}}=8.5$), $T_{\text{T}}=65$ ($\bar Y_{\text{T}}=13.0$), $T_{\text{N}}=96$ ($\bar Y_{\text{N}}=16.0$). $T=195$, $\bar Y_{\cdot\cdot}=195/15=13.0$. $\sum Y_{ij}^2=2695$.
+
+\[
+SCTo=2695-\frac{195^2}{15}=2695-2535=160.0.
+\]
+\[
+SCTr=\frac{34^2}{4}+\frac{65^2}{5}+\frac{96^2}{6}-2535=289+845+1536-2535=2670-2535=135.0.
+\]
+\[
+SCE=SCTo-SCTr=160.0-135.0=25.0.
+\]
+
+\textbf{Tabla ANOVA} ($k-1=2$, $N-k=12$):
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Entre turnos & $135.0$ & $2$ & $67.5$ & $32.4$ \\
+Dentro (error) & $25.0$ & $12$ & $2.083$ & \\
+\midrule
+Total & $160.0$ & $14$ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Como $F_{\text{calc}}=32.4 > 3.89=F_{2,12;0.05}$, se \textbf{rechaza} $H_0$: el número medio de unidades defectuosas difiere significativamente entre turnos (el turno noche presenta, en promedio, el doble de defectuosas que el turno mañana).
+\end{solucion}
+
+\begin{ejercicio}
+Indique si cada afirmación es \textbf{verdadera} o \textbf{falsa}, justificando brevemente.
+\begin{enumerate}[label=(\alph*)]
+\item En el Modelo I de ANOVA, $E(CME)=\sigma^2$ tanto si $H_0$ es verdadera como si es falsa.
+\item Si el estadístico $F$ calculado es menor que $1$, esto constituye evidencia sólida en contra de $H_0$.
+\item Cuantos más tratamientos se comparen simultáneamente con pruebas $t$ de a pares en lugar de un único ANOVA, mayor es la probabilidad de cometer al menos un error de tipo I en el conjunto de comparaciones.
+\item La prueba $F$ del ANOVA es siempre unilateral (a derecha).
+\item Cuando $k=2$, la prueba $F$ del ANOVA de un factor y la prueba $t$ para dos muestras independientes (con varianzas iguales) llevan siempre a la misma conclusión.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a) Verdadero.} $CME=SCE/(N-k)$ estima siempre a $\sigma^2$, independientemente de que las medias poblacionales sean iguales o no, ya que $SCE$ mide la variabilidad \emph{dentro} de cada grupo, no afectada por diferencias entre las medias de los grupos.
+
+\textbf{(b) Falso.} Valores de $F$ menores que $1$ (o cercanos a $0$) no son evidencia en contra de $H_0$; por el contrario, son totalmente compatibles con $H_0$ (incluso ``demasiado'' compatibles). La evidencia en contra de $H_0$ corresponde a valores \textbf{grandes} de $F$.
+
+\textbf{(c) Verdadero.} Cada prueba $t$ individual tiene una probabilidad $\alpha$ de error de tipo I; al realizar múltiples pruebas independientes, la probabilidad de cometer al menos un error de tipo I en el conjunto crece con el número de comparaciones. Esta es precisamente la motivación para usar un único ANOVA en lugar de múltiples pruebas $t$.
+
+\textbf{(d) Verdadero.} Valores grandes de $F$ (mucha variabilidad entre grupos respecto de la variabilidad dentro de los grupos) son la única dirección que aporta evidencia contra $H_0$; por eso la región de rechazo está siempre en la cola derecha de la distribución $F_{k-1,N-k}$.
+
+\textbf{(e) Verdadero.} Para $k=2$ ambos procedimientos son algebraicamente equivalentes: puede demostrarse que $F=T^2$, con los mismos grados de libertad del error ($N-2$), por lo que ambas pruebas rechazan o no rechazan $H_0$ exactamente en los mismos casos.
+\end{solucion}
+
+\begin{ejercicio}
+Se desea verificar, con un ejemplo numérico, la equivalencia entre la prueba $t$ para dos muestras y el ANOVA con $k=2$ tratamientos. Se mide el \textbf{tiempo de armado} (minutos) de una pieza en dos turnos (T1 y T2), $n=6$ observaciones cada uno:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|cccccc}
+\toprule
+Turno & \multicolumn{6}{c}{Observaciones (min)} \\
+\midrule
+T1 & 15.2 & 14.8 & 15.5 & 15.0 & 14.9 & 15.3 \\
+T2 & 16.1 & 15.8 & 16.3 & 16.0 & 15.9 & 16.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{enumerate}[label=(\alph*)]
+\item Realice el ANOVA de un factor y calcule $F$.
+\item Realice la prueba $t$ para dos muestras independientes con varianzas iguales (\emph{pooled}) y calcule $T$.
+\item Verifique numéricamente que $F=T^2$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)} $k=2$, $n_1=n_2=6$, $N=12$. $\bar Y_{T1\cdot}\approx15.117$, $\bar Y_{T2\cdot}=16.05$, $\bar Y_{\cdot\cdot}\approx15.583$.
+
+\[
+SCTo\approx3.137, \qquad SCTr\approx2.613, \qquad SCE\approx0.523.
+\]
+\[
+CMTr=\frac{2.613}{1}=2.613, \qquad CME=\frac{0.523}{10}=0.0523.
+\]
+\[
+F=\frac{2.613}{0.0523}\approx49.94.
+\]
+
+\textbf{(b)} Con $\bar x_1=15.117$, $\bar x_2=16.05$, $s_1^2\approx0.0697$, $s_2^2\approx0.0350$:
+\[
+s_p^2=\frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2}=\frac{5(0.0697)+5(0.0350)}{10}\approx0.0523.
+\]
+\[
+T=\frac{\bar x_1-\bar x_2}{\sqrt{s_p^2(1/n_1+1/n_2)}}=\frac{15.117-16.05}{\sqrt{0.0523(1/6+1/6)}}=\frac{-0.933}{0.1321}\approx-7.067.
+\]
+
+\textbf{(c)} $T^2\approx(-7.067)^2\approx49.94 = F$, confirmando numéricamente la equivalencia $F=T^2$ para $k=2$. Nótese además que $CME=0.0523=s_p^2$: el cuadrado medio del error del ANOVA es exactamente la varianza combinada (\emph{pooled}) de la prueba $t$.
+\end{solucion}
+
+\begin{ejercicio}
+Un ingeniero de calidad compara \textbf{cinco lotes} de una misma pieza, fabricados en distintas corridas de producción, midiendo la \textbf{dureza} (unidades Rockwell) de $4$ piezas por lote:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|cccc}
+\toprule
+Lote & \multicolumn{4}{c}{Observaciones} \\
+\midrule
+L1 & 70 & 72 & 68 & 71 \\
+L2 & 75 & 77 & 74 & 76 \\
+L3 & 69 & 70 & 67 & 68 \\
+L4 & 73 & 74 & 72 & 75 \\
+L5 & 78 & 80 & 77 & 79 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{enumerate}[label=(\alph*)]
+\item Realice el ANOVA completo y pruebe, al nivel $\alpha=0.05$, si la dureza media es la misma en los cinco lotes (use $F_{4,15;0.05}=3.06$).
+\item En caso de rechazar $H_0$, indique qué análisis adicional sería apropiado realizar y qué información aportaría.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+$k=5$, $n_i=4$, $N=20$.
+
+\textbf{Totales y medias:} $T_{L1}=281$ ($\bar Y_{L1}=70.25$), $T_{L2}=302$ ($\bar Y_{L2}=75.5$), $T_{L3}=274$ ($\bar Y_{L3}=68.5$), $T_{L4}=294$ ($\bar Y_{L4}=73.5$), $T_{L5}=314$ ($\bar Y_{L5}=78.5$). $T=1465$, $\bar Y_{\cdot\cdot}=1465/20=73.25$. $\sum Y_{ij}^2=107597$.
+
+\[
+SCTo=107597-\frac{1465^2}{20}=107597-107311.25=285.75.
+\]
+Con $281^2=78961$, $302^2=91204$, $274^2=75076$, $294^2=86436$, $314^2=98596$, cuya suma es $430273$:
+\[
+SCTr=\frac{281^2+302^2+274^2+294^2+314^2}{4}-\frac{T^2}{N} = \frac{430273}{4}-107311.25
+\]
+\[
+= 107568.25-107311.25 = 257.0.
+\]
+\[
+SCE=SCTo-SCTr=285.75-257.0=28.75.
+\]
+
+\textbf{(a) Tabla ANOVA} ($k-1=4$, $N-k=15$):
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Entre lotes & $257.0$ & $4$ & $64.25$ & $33.52$ \\
+Dentro (error) & $28.75$ & $15$ & $1.917$ & \\
+\midrule
+Total & $285.75$ & $19$ & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Como $F_{\text{calc}}\approx33.52 > 3.06=F_{4,15;0.05}$, se \textbf{rechaza} $H_0:\mu_{L1}=\cdots=\mu_{L5}$: la dureza media difiere significativamente entre al menos dos de los cinco lotes.
+
+\textbf{(b)} Correspondería realizar un procedimiento de \textbf{comparaciones múltiples} (por ejemplo, la prueba de Tukey), que compara todos los $\binom{5}{2}=10$ pares de medias controlando el error de tipo I global en $\alpha$. Esto permitiría identificar, por ejemplo, si el lote L5 (el de mayor dureza media) difiere significativamente de todos los demás, o si algunos lotes (como L1 y L3, con medias más cercanas) no muestran diferencias significativas entre sí, información clave para decidir si algún lote debe reprocesarse o investigarse.
+\end{solucion}
+
+\end{document}

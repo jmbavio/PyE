@@ -1,0 +1,170 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 1: Variable aleatoria y función de distribución \\ \large Unidad 2: Variables aleatorias}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Se lanzan dos dados equilibrados. Sea $X$ la suma de los puntajes obtenidos. Hallar la función de probabilidad puntual $p(x)$ de $X$ y graficarla.
+\end{ejercicio}
+\begin{solucion}
+El espacio muestral tiene 36 resultados equiprobables. Contando los pares que dan cada suma:
+\begin{center}
+\begin{tabular}{c*{11}{c}}
+\toprule
+$x$ & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+\midrule
+$p(x)$ & $\frac{1}{36}$ & $\frac{2}{36}$ & $\frac{3}{36}$ & $\frac{4}{36}$ & $\frac{5}{36}$ & $\frac{6}{36}$ & $\frac{5}{36}$ & $\frac{4}{36}$ & $\frac{3}{36}$ & $\frac{2}{36}$ & $\frac{1}{36}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Se verifica que $\sum_x p(x) = 36/36 = 1$. La distribución es simétrica respecto de $x=7$, con máximo en ese valor.
+\end{solucion}
+
+\begin{ejercicio}
+Con la variable $X$ del ejercicio anterior, hallar $F(x)$ para $x=6.5$ y para $x=9$, y calcular $P(4<X\le 9)$.
+\end{ejercicio}
+\begin{solucion}
+$$F(6.5) = P(X\le 6.5) = p(2)+p(3)+p(4)+p(5)+p(6) = \frac{1+2+3+4+5}{36} = \frac{15}{36} = 0.4167.$$
+$$F(9) = p(2)+\cdots+p(9) = \frac{1+2+3+4+5+6+5+4}{36} = \frac{30}{36} = 0.8333.$$
+$$P(4<X\le 9) = F(9)-F(4) = \frac{30}{36} - \frac{1+2+3}{36} = \frac{30-6}{36} = \frac{24}{36} = 0.6667.$$
+\end{solucion}
+
+\begin{ejercicio}
+Un lote contiene 10 artículos, de los cuales 3 son defectuosos. Se extraen 2 artículos sin reposición. Sea $X$ el número de defectuosos extraídos. Hallar $p(x)$ y $F(x)$, y graficar $F$.
+\end{ejercicio}
+\begin{solucion}
+$X$ puede tomar los valores $0,1,2$. Usando la regla de Laplace sobre $\binom{10}{2}=45$ pares posibles:
+$$p(0) = \frac{\binom{3}{0}\binom{7}{2}}{\binom{10}{2}} = \frac{21}{45}, \quad p(1) = \frac{\binom{3}{1}\binom{7}{1}}{\binom{10}{2}} = \frac{21}{45}, \quad p(2) = \frac{\binom{3}{2}\binom{7}{0}}{\binom{10}{2}} = \frac{3}{45}.$$
+Verificación: $21+21+3=45$, entonces $\sum p(x)=1$. La función de distribución es
+$$F(x) = \begin{cases} 0 & x<0 \\ 21/45 & 0\le x<1 \\ 42/45 & 1\le x<2 \\ 1 & x\ge 2\end{cases}$$
+Es una función escalonada, constante entre valores enteros consecutivos, con saltos de tamaño $p(x)$ en cada $x\in\{0,1,2\}$.
+\end{solucion}
+
+\begin{ejercicio}
+Una variable aleatoria continua $X$ tiene función de densidad
+$$f(x) = \begin{cases} c(4-x^2) & -2\le x\le 2 \\ 0 & \text{en otro caso}\end{cases}$$
+(a) Hallar el valor de $c$. (b) Hallar $F(x)$. (c) Calcular $P(-1\le X\le 1)$.
+\end{ejercicio}
+\begin{solucion}
+(a) Debe cumplirse $\int_{-2}^2 c(4-x^2)\,dx = 1$:
+$$\int_{-2}^2 (4-x^2)\,dx = \left[4x-\frac{x^3}{3}\right]_{-2}^2 = \left(8-\frac{8}{3}\right)-\left(-8+\frac{8}{3}\right) = \frac{32}{3}.$$
+Entonces $c\cdot\frac{32}{3}=1 \Rightarrow c = \frac{3}{32}$.
+
+(b) Para $-2\le x\le 2$:
+$$F(x) = \int_{-2}^x \frac{3}{32}(4-t^2)\,dt = \frac{3}{32}\left[4t-\frac{t^3}{3}\right]_{-2}^x = \frac{3}{32}\left(4x-\frac{x^3}{3}+\frac{16}{3}\right).$$
+Con $F(x)=0$ para $x<-2$ y $F(x)=1$ para $x>2$.
+
+(c) $P(-1\le X\le 1) = F(1)-F(-1)$. Por simetría de $f$, más simple: $P(-1\le X\le 1) = \int_{-1}^1 \frac{3}{32}(4-x^2)\,dx = \frac{3}{32}\left[4x-\frac{x^3}{3}\right]_{-1}^1 = \frac{3}{32}\left(\frac{22}{3}\right) = \frac{22}{32} = 0.6875.$
+\end{solucion}
+
+\begin{ejercicio}
+El tiempo de espera (en minutos) de un cliente en una fila tiene función de distribución
+$$F(x) = \begin{cases} 0 & x<0 \\ 1-e^{-x/5} & x\ge 0\end{cases}$$
+(a) Verificar que es una f.d.a. válida. (b) Calcular $P(X>10)$. (c) Hallar la densidad $f(x)$. (d) Calcular la probabilidad de esperar entre 2 y 8 minutos.
+\end{ejercicio}
+\begin{solucion}
+(a) $F$ es continua, $F(0)=0$, $\lim_{x\to\infty}F(x)=1$, y es creciente pues $F'(x) = \frac{1}{5}e^{-x/5}>0$ para $x>0$. Cumple las propiedades de una f.d.a.
+
+(b) $P(X>10) = 1-F(10) = 1-(1-e^{-2}) = e^{-2}\approx 0.1353$.
+
+(c) $f(x) = F'(x) = \frac{1}{5}e^{-x/5}$ para $x\ge 0$ (y $0$ en otro caso).
+
+(d) $P(2<X<8) = F(8)-F(2) = (1-e^{-1.6})-(1-e^{-0.4}) = e^{-0.4}-e^{-1.6} \approx 0.6703-0.2019 = 0.4684$.
+\end{solucion}
+
+\begin{ejercicio}
+Se define $X$ como el número de intentos que hace un estudiante para aprobar un examen (aprueba en el primer, segundo o tercer intento, o abandona si no aprueba en 3 intentos). Su función de probabilidad es
+$$p(1)=0.5, \quad p(2)=0.3, \quad p(3)=0.15, \quad p(4)=0.05$$
+donde $X=4$ representa "abandona sin aprobar". Graficar $F(x)$ y calcular $P(X\ge 3)$.
+\end{ejercicio}
+\begin{solucion}
+$$F(x) = \begin{cases} 0 & x<1 \\ 0.5 & 1\le x<2 \\ 0.8 & 2\le x<3 \\ 0.95 & 3\le x<4 \\ 1 & x\ge 4\end{cases}$$
+$$P(X\ge 3) = 1-P(X<3) = 1-F(2) = 1-0.8 = 0.2,$$
+o directamente $P(X\ge3)=p(3)+p(4)=0.15+0.05=0.2$, coincide.
+\end{solucion}
+
+\begin{ejercicio}
+Sea $X$ una v.a. con f.d.a.
+$$F(x) = \begin{cases} 0 & x<0 \\ x/3 & 0\le x<1 \\ (x+1)/4 & 1\le x<3 \\ 1 & x\ge 3\end{cases}$$
+Determinar si $X$ es discreta, continua o mixta. Calcular $P(X=1)$ y $P(0.5<X<2)$.
+\end{ejercicio}
+\begin{solucion}
+Analizamos continuidad de $F$ en los puntos de empalme:
+\begin{itemize}
+\item En $x=1$: $F(1^-) = 1/3 \approx 0.333$ y $F(1) = (1+1)/4 = 0.5$. Hay un \textbf{salto}, de tamaño $0.5-0.333=0.1667$.
+\item En $x=3$: $F(3^-) = (3+1)/4 = 1$ y $F(3)=1$. No hay salto (es continua ahí).
+\end{itemize}
+Entre los tramos $F$ es continua y estrictamente creciente (parte "suave"), pero tiene un salto en $x=1$: por lo tanto $X$ es una variable \textbf{mixta}.
+
+$$P(X=1) = F(1)-F(1^-) = 0.5 - \frac{1}{3} = \frac{1}{6} \approx 0.1667.$$
+
+$$P(0.5<X<2) = F(2^-)-F(0.5) = \frac{3}{4} - \frac{0.5}{3} = 0.75-0.1667 = 0.5833.$$
+(Notar que $F(2^-)=F(2)=(2+1)/4=0.75$ pues $F$ es continua en $x=2$.)
+\end{solucion}
+
+\begin{ejercicio}
+Una máquina empaquetadora coloca una cantidad aleatoria $X$ (en kg, con $X$ continua) de producto en cada bolsa, con densidad
+$$f(x) = k x, \qquad 0\le x\le 5,$$
+y $0$ en otro caso. (a) Hallar $k$. (b) Calcular la probabilidad de que una bolsa contenga menos de 2 kg. (c) Hallar la mediana de $X$ (el valor $m$ tal que $F(m)=0.5$).
+\end{ejercicio}
+\begin{solucion}
+(a) $\int_0^5 kx\,dx = k\frac{25}{2}=1 \Rightarrow k = \frac{2}{25}$.
+
+(b) $F(x) = \int_0^x \frac{2}{25}t\,dt = \frac{x^2}{25}$. Entonces $P(X<2) = F(2) = \frac{4}{25}=0.16$.
+
+(c) Buscamos $m$ tal que $\frac{m^2}{25}=0.5 \Rightarrow m^2=12.5 \Rightarrow m=\sqrt{12.5}\approx 3.5355$ kg.
+\end{solucion}
+
+\begin{ejercicio}
+En un proceso de control de calidad, se inspeccionan artículos hasta encontrar el primero defectuoso. Sea $X$ el número de artículos inspeccionados, con $P(X=x) = (0.9)^{x-1}(0.1)$ para $x=1,2,3,\dots$ Calcular $P(X\le 3)$ usando la función de distribución, y verificar sumando directamente $p(1)+p(2)+p(3)$.
+\end{ejercicio}
+\begin{solucion}
+Para esta variable (geométrica, que se estudiará en detalle en la Práctica 2), se puede probar que
+$$F(x) = P(X\le x) = 1-(0.9)^x, \qquad x=1,2,3,\dots$$
+pues $P(X>x) = (0.9)^x$ (los primeros $x$ artículos no defectuosos).
+
+Entonces $F(3) = 1-(0.9)^3 = 1-0.729 = 0.271$.
+
+Verificación directa: $p(1)+p(2)+p(3) = 0.1 + (0.9)(0.1) + (0.9)^2(0.1) = 0.1+0.09+0.081 = 0.271$. Coincide.
+\end{solucion}
+
+\begin{ejercicio}
+Sea $X$ una v.a. continua con densidad
+$$f(x) = \begin{cases} \dfrac{1}{2} & 0\le x\le 1 \\[4pt] \dfrac{1}{4} & 2\le x\le 4 \\ 0 & \text{en otro caso}\end{cases}$$
+(a) Verificar que $f$ es una densidad válida. (b) Hallar $F(x)$ para todo $x\in\mathbb{R}$. (c) Calcular $P(0.5\le X\le 3)$.
+\end{ejercicio}
+\begin{solucion}
+(a) $f(x)\ge 0$ en todo punto, y
+$$\int_0^1 \frac{1}{2}\,dx + \int_2^4 \frac{1}{4}\,dx = \frac{1}{2} + \frac{2}{4} = \frac{1}{2}+\frac{1}{2}=1.$$
+
+(b) Integrando por tramos:
+$$F(x) = \begin{cases}
+0 & x<0 \\
+x/2 & 0\le x<1 \\
+1/2 & 1\le x<2 \\
+1/2 + (x-2)/4 & 2\le x<4 \\
+1 & x\ge 4
+\end{cases}$$
+
+(c) $P(0.5\le X\le 3) = F(3)-F(0.5) = \left[\frac{1}{2}+\frac{1}{4}\right] - \frac{0.5}{2} = 0.75-0.25 = 0.5.$
+\end{solucion}
+
+\end{document}

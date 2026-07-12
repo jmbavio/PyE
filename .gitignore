@@ -1,0 +1,15 @@
+# LaTeX auxiliary files (compile artifacts, not tracked)
+*.aux
+*.log
+*.log1
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.pass1.log
+*.pass2.log
+*.buildlog

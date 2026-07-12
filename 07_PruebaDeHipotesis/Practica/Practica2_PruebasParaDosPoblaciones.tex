@@ -1,0 +1,201 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 2: Pruebas de hipótesis para dos poblaciones \\ \large Unidad 7: Prueba de hipótesis}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Dos sucursales de una cadena de farmacias registran el tiempo de atención al cliente (en minutos). Por controles de calidad previos se sabe que las desviaciones estándar poblacionales son $\sigma_1=2.5$ y $\sigma_2=3.0$. Se toman muestras independientes: sucursal 1, $n_1=50$, $\overline{x}=8.2$; sucursal 2, $n_2=45$, $\overline{y}=7.4$. Con $\alpha=0.05$, ¿hay evidencia de que el tiempo medio de atención difiere entre ambas sucursales?
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\mu_1-\mu_2=0$ vs. $H_1:\mu_1-\mu_2\neq0$.
+
+\textbf{Estadístico:} $\displaystyle Z=\frac{(\overline{X}-\overline{Y})-0}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}}\sim N(0,1)$ bajo $H_0$.
+
+\textbf{Región crítica:} $|Z|>z_{0.025}=1.96$.
+
+\textbf{Cálculo:}
+\[
+Z=\frac{(8.2-7.4)-0}{\sqrt{6.25/50+9/45}}=\frac{0.8}{\sqrt{0.125+0.2}}=\frac{0.8}{\sqrt{0.325}}=\frac{0.8}{0.570}=1.40.
+\]
+
+\textbf{Decisión:} $1.40<1.96\Rightarrow$ \textbf{no se rechaza} $H_0$.
+
+\textbf{Conclusión:} al $5\%$ de significación, no hay evidencia suficiente de que el tiempo medio de atención difiera entre las dos sucursales.
+\end{solucion}
+
+\begin{ejercicio}
+Se comparan los rendimientos (en quintales por hectárea) de dos variedades de trigo sembradas en parcelas independientes, suponiendo varianzas poblacionales desconocidas pero iguales. Variedad A: $n_1=14$, $\overline{x}=42.5$, $s_1^2=12.4$. Variedad B: $n_2=16$, $\overline{y}=39.8$, $s_2^2=15.1$. Con $\alpha=0.05$, ¿hay evidencia de que la variedad A rinde más que la B?
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\mu_1-\mu_2\le0$ vs. $H_1:\mu_1-\mu_2>0$.
+
+\textbf{Varianza combinada:}
+\[
+S_p^2=\frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2}=\frac{13(12.4)+15(15.1)}{28}=\frac{161.2+226.5}{28}=\frac{387.7}{28}=13.85,
+\]
+$S_p=3.722$.
+
+\textbf{Estadístico:} $\displaystyle T=\frac{(\overline{X}-\overline{Y})-0}{S_p\sqrt{1/n_1+1/n_2}}\sim t_{28}$ bajo $H_0$.
+
+\textbf{Región crítica:} $T>t_{28,\,0.05}=1.701$.
+
+\textbf{Cálculo:}
+\[
+t=\frac{(42.5-39.8)-0}{3.722\sqrt{1/14+1/16}}=\frac{2.7}{3.722\times0.3665}=\frac{2.7}{1.364}=1.98.
+\]
+
+\textbf{Decisión:} $1.98>1.701\Rightarrow$ se \textbf{rechaza} $H_0$.
+
+\textbf{Conclusión:} al $5\%$ de significación, hay evidencia de que la variedad A tiene un rendimiento medio superior a la variedad B.
+\end{solucion}
+
+\begin{ejercicio}
+Un fabricante de neumáticos evalúa dos compuestos de goma para determinar cuál produce menor desgaste. Se instalan neumáticos de ambos compuestos, uno de cada uno, en $10$ vehículos distintos (mismo vehículo, diseño apareado) y se mide el desgaste (en mm) tras $10\,000$ km:
+\begin{center}
+\begin{tabular}{@{}lcccccccccc@{}}
+\toprule
+Vehículo & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+\midrule
+Compuesto A & 4.2 & 3.8 & 4.5 & 4.0 & 3.9 & 4.3 & 4.1 & 3.7 & 4.4 & 4.0 \\
+Compuesto B & 4.6 & 4.0 & 4.9 & 4.3 & 4.2 & 4.5 & 4.4 & 3.9 & 4.7 & 4.3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Con $\alpha=0.05$, ¿hay evidencia de que el compuesto A produce, en promedio, menor desgaste que el B?
+\end{ejercicio}
+
+\begin{solucion}
+Se calculan las diferencias $d_i=A_i-B_i$:
+\[
+-0.4,\ -0.2,\ -0.4,\ -0.3,\ -0.3,\ -0.2,\ -0.3,\ -0.2,\ -0.3,\ -0.3.
+\]
+\[
+\overline{d}=\frac{-2.9}{10}=-0.29, \qquad s_D=0.0738 \ (\text{aprox.}).
+\]
+
+\textbf{Hipótesis:} $H_0:\mu_D\ge0$ vs. $H_1:\mu_D<0$ (con $D=A-B$; se espera $\mu_D<0$ si A desgasta menos).
+
+\textbf{Estadístico:} $\displaystyle T=\frac{\overline{D}-0}{S_D/\sqrt{10}}\sim t_{9}$ bajo $H_0$.
+
+\textbf{Región crítica:} $T<-t_{9,\,0.05}=-1.833$.
+
+\textbf{Cálculo:}
+\[
+t=\frac{-0.29-0}{0.0738/\sqrt{10}}=\frac{-0.29}{0.02334}=-12.42.
+\]
+
+\textbf{Decisión:} $-12.42<-1.833\Rightarrow$ se \textbf{rechaza} $H_0$.
+
+\textbf{Conclusión:} al $5\%$ de significación, hay fuerte evidencia de que el compuesto A produce, en promedio, menor desgaste que el compuesto B.
+\end{solucion}
+
+\begin{ejercicio}
+Un laboratorio clínico compara dos métodos de medición de glucosa en sangre, aplicados sobre las mismas $12$ muestras de sangre (diseño apareado). Se registran las diferencias $d_i=$ Método1$-$Método2 (en mg/dL) para las $12$ muestras, obteniéndose $\overline{d}=1.8$ y $s_D=3.2$. Con $\alpha=0.05$, ¿hay evidencia de que los dos métodos arrojan resultados medios distintos?
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\mu_D=0$ vs. $H_1:\mu_D\neq0$.
+
+\textbf{Estadístico:} $\displaystyle T=\frac{\overline{D}-0}{S_D/\sqrt{12}}\sim t_{11}$ bajo $H_0$.
+
+\textbf{Región crítica:} $|T|>t_{11,\,0.025}=2.201$.
+
+\textbf{Cálculo:}
+\[
+t=\frac{1.8-0}{3.2/\sqrt{12}}=\frac{1.8}{0.9238}=1.95.
+\]
+
+\textbf{Decisión:} $1.95<2.201\Rightarrow$ \textbf{no se rechaza} $H_0$.
+
+\textbf{Conclusión:} al $5\%$ de significación, no hay evidencia suficiente de que los dos métodos de medición difieran en su valor medio.
+\end{solucion}
+
+\begin{ejercicio}
+Dos líneas de ensamblaje producen el mismo componente electrónico. Se sospecha que la línea 2 es más variable que la línea 1. Se toman muestras independientes: línea 1, $n_1=16$, $s_1^2=4.2$; línea 2, $n_2=13$, $s_2^2=9.8$. Suponiendo poblaciones normales, pruebe con $\alpha=0.05$ si hay evidencia de que la línea 2 tiene mayor variabilidad que la línea 1.
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\sigma_2^2\le\sigma_1^2$ vs. $H_1:\sigma_2^2>\sigma_1^2$, equivalente a $H_0:\sigma_1^2\ge\sigma_2^2$ vs. $H_1:\sigma_1^2<\sigma_2^2$. Conviene reescribir con el estadístico $F=S_2^2/S_1^2$ para que la región crítica quede en la cola derecha.
+
+\textbf{Estadístico:} $\displaystyle F=\frac{S_2^2}{S_1^2}\sim F_{12,\,15}$ bajo $H_0$.
+
+\textbf{Región crítica:} $F>F_{12,\,15,\,0.05}=2.48$.
+
+\textbf{Cálculo:}
+\[
+F=\frac{9.8}{4.2}=2.33.
+\]
+
+\textbf{Decisión:} $2.33<2.48\Rightarrow$ \textbf{no se rechaza} $H_0$.
+
+\textbf{Conclusión:} al $5\%$ de significación, no hay evidencia estadísticamente suficiente de que la línea 2 sea más variable que la línea 1, aunque el valor está próximo al límite crítico.
+\end{solucion}
+
+\begin{ejercicio}
+Se desea comparar la variabilidad del rendimiento académico (medido por el desvío del puntaje en un examen estandarizado) entre dos cohortes de estudiantes que cursaron bajo distintas modalidades (presencial y virtual), con el objetivo de decidir más adelante qué prueba de medias utilizar. Cohorte presencial: $n_1=21$, $s_1^2=58$. Cohorte virtual: $n_2=18$, $s_2^2=101$. Con $\alpha=0.10$, pruebe si las varianzas poblacionales de ambas cohortes son iguales.
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Hipótesis:} $H_0:\sigma_1^2=\sigma_2^2$ vs. $H_1:\sigma_1^2\neq\sigma_2^2$.
+
+\textbf{Estadístico} (numerador = mayor varianza muestral): $\displaystyle F=\frac{S_2^2}{S_1^2}\sim F_{17,\,20}$ bajo $H_0$.
+
+\textbf{Región crítica} (bilateral, se compara con el valor crítico superior): $F>F_{17,\,20,\,0.05}=2.17$.
+
+\textbf{Cálculo:}
+\[
+F=\frac{101}{58}=1.74.
+\]
+
+\textbf{Decisión:} $1.74<2.17\Rightarrow$ \textbf{no se rechaza} $H_0$.
+
+\textbf{Conclusión:} al $10\%$ de significación, no hay evidencia de que las varianzas de ambas cohortes difieran; en consecuencia, sería razonable utilizar la prueba $t$ agrupada (\emph{pooled}) para comparar las medias de ambos grupos.
+\end{solucion}
+
+\begin{ejercicio}
+Una empresa evalúa dos proveedores de baterías midiendo su duración (en horas) bajo uso continuo, con muestras independientes de tamaño moderado y varianzas poblacionales desconocidas que, por un análisis previo, pueden suponerse iguales. Proveedor X: $n_1=11$, $\overline{x}=48.3$, $s_1^2=6.2$. Proveedor Y: $n_2=13$, $\overline{y}=45.1$, $s_2^2=7.5$.
+\begin{enumerate}[label=(\alph*)]
+\item Pruebe con $\alpha=0.05$ si existe diferencia entre las duraciones medias de ambos proveedores.
+\item Construya el intervalo de confianza del $95\%$ para $\mu_X-\mu_Y$ y verifique la coherencia con el resultado de (a).
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{(a)} $H_0:\mu_X-\mu_Y=0$ vs. $H_1:\mu_X-\mu_Y\neq0$.
+
+Varianza combinada: $\displaystyle S_p^2=\frac{10(6.2)+12(7.5)}{22}=\frac{62+90}{22}=\frac{152}{22}=6.909$, $S_p=2.629$.
+
+Estadístico: $\displaystyle T=\frac{(\overline{X}-\overline{Y})-0}{S_p\sqrt{1/11+1/13}}\sim t_{22}$. Región crítica: $|T|>t_{22,\,0.025}=2.074$.
+
+\[
+t=\frac{(48.3-45.1)-0}{2.629\sqrt{1/11+1/13}}=\frac{3.2}{2.629\times0.4097}=\frac{3.2}{1.077}=2.97.
+\]
+
+Como $2.97>2.074$, se \textbf{rechaza} $H_0$: hay evidencia de diferencia significativa entre las duraciones medias.
+
+\textbf{(b)} $\displaystyle IC_{95\%}(\mu_X-\mu_Y)=3.2\pm2.074\times1.077=3.2\pm2.234=(0.97;\,5.43)$.
+
+Como el intervalo no contiene al $0$, es coherente con el rechazo de $H_0$ en (a).
+\end{solucion}
+
+\end{document}

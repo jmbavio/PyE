@@ -1,0 +1,168 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 2: Intervalos de Confianza para la Media \\ \large Unidad 6: Estimación de parámetros}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+El contenido de una línea de envasado de aceite tiene un desvío estándar poblacional conocido $\sigma=15$ ml, según especificaciones del fabricante de la máquina. Se toma una muestra de $n=49$ botellas y se obtiene un contenido medio $\overline x = 995$ ml. Construir un intervalo de confianza del $95\%$ para el contenido medio poblacional $\mu$.
+\end{ejercicio}
+
+\begin{solucion}
+Como $\sigma$ es conocida, usamos el pivote normal: $z_{\alpha/2}=z_{0.025}=1.96$.
+\[
+E = z_{\alpha/2}\frac{\sigma}{\sqrt n} = 1.96\cdot\frac{15}{\sqrt{49}} = 1.96\cdot\frac{15}{7} = 1.96\cdot 2.1429 \approx 4.2
+\]
+\[
+IC(\mu;0.95) = (995-4.2,\ 995+4.2) = (990.8,\ 999.2) \text{ ml}.
+\]
+Con un $95\%$ de confianza, el contenido medio poblacional de las botellas está entre $990.8$ y $999.2$ ml.
+\end{solucion}
+
+\begin{ejercicio}
+Retomando el ejercicio anterior, ¿qué tamaño de muestra $n$ sería necesario para que el margen de error del IC del $95\%$ no supere los $2$ ml, manteniendo $\sigma=15$ ml?
+\end{ejercicio}
+
+\begin{solucion}
+\[
+n \ge \left(\frac{z_{\alpha/2}\,\sigma}{E}\right)^2 = \left(\frac{1.96\cdot 15}{2}\right)^2 = \left(\frac{29.4}{2}\right)^2 = (14.7)^2 = 216.09.
+\]
+Redondeando hacia arriba: $n=217$ botellas.
+\end{solucion}
+
+\begin{ejercicio}
+Una empresa de logística mide el tiempo de entrega (en horas) de $n=16$ envíos, obteniendo una muestra con $\overline x = 28.4$ horas y $s=3.6$ horas. Se supone que el tiempo de entrega se distribuye aproximadamente normal, con varianza poblacional desconocida. Construir un IC del $95\%$ para $\mu$.
+\end{ejercicio}
+
+\begin{solucion}
+Como $\sigma$ es desconocida y $n$ es chico, usamos la distribución $t$ con $n-1=15$ grados de libertad: $t_{15,0.025}=2.131$.
+\[
+E = t_{15,0.025}\cdot\frac{s}{\sqrt n} = 2.131\cdot\frac{3.6}{\sqrt{16}} = 2.131\cdot\frac{3.6}{4} = 2.131\cdot 0.9 \approx 1.918.
+\]
+\[
+IC(\mu;0.95) = (28.4-1.918,\ 28.4+1.918) = (26.48,\ 30.32) \text{ horas}.
+\]
+Con un $95\%$ de confianza, el tiempo medio de entrega está entre $26.48$ y $30.32$ horas.
+\end{solucion}
+
+\begin{ejercicio}
+Un laboratorio analiza el pH de $n=25$ muestras de agua de un río, obteniendo $\overline x=7.15$ y $s=0.24$ (varianza poblacional desconocida, población aproximadamente normal). Construir un IC del $99\%$ para el pH medio $\mu$.
+\end{ejercicio}
+
+\begin{solucion}
+$g.l.=24$. De tabla $t$: $t_{24,0.005}=2.797$.
+\[
+E = 2.797\cdot\frac{0.24}{\sqrt{25}} = 2.797\cdot\frac{0.24}{5} = 2.797\cdot 0.048 \approx 0.1343.
+\]
+\[
+IC(\mu;0.99) = (7.15-0.134,\ 7.15+0.134) = (7.016,\ 7.284).
+\]
+Con un $99\%$ de confianza, el pH medio del río está entre $7.016$ y $7.284$.
+\end{solucion}
+
+\begin{ejercicio}
+En una encuesta electoral a $n=800$ votantes, $352$ manifiestan intención de votar al candidato A. Construir un IC del $95\%$ para la proporción real $p$ de votantes que apoyan al candidato A, y verificar que se cumplan las condiciones para usar la aproximación normal.
+\end{ejercicio}
+
+\begin{solucion}
+$\widehat p = 352/800 = 0.44$. Verificación: $n\widehat p = 352\ge 5$; $n(1-\widehat p)=448\ge 5$. La aproximación normal es válida.
+
+$z_{0.025}=1.96$.
+\[
+\sqrt{\frac{\widehat p(1-\widehat p)}{n}} = \sqrt{\frac{0.44\cdot 0.56}{800}} = \sqrt{\frac{0.2464}{800}} = \sqrt{0.000308} \approx 0.01755.
+\]
+\[
+E = 1.96\cdot 0.01755 \approx 0.0344.
+\]
+\[
+IC(p;0.95) = (0.44-0.034,\ 0.44+0.034) = (0.406,\ 0.474).
+\]
+Con un $95\%$ de confianza, entre el $40.6\%$ y el $47.4\%$ del electorado apoya al candidato A.
+\end{solucion}
+
+\begin{ejercicio}
+Una fábrica de artículos electrónicos quiere estimar la proporción $p$ de unidades defectuosas con un margen de error de a lo sumo $E=0.03$, con $90\%$ de confianza. Un estudio piloto previo sugirió $\widehat p\approx 0.08$. Determinar el tamaño de muestra necesario. ¿Cómo cambia si no se dispusiera de información previa sobre $p$?
+\end{ejercicio}
+
+\begin{solucion}
+Con información previa ($\widehat p=0.08$), $z_{0.05}=1.645$:
+\[
+n = \left(\frac{z_{\alpha/2}}{E}\right)^2\widehat p(1-\widehat p) = \left(\frac{1.645}{0.03}\right)^2(0.08)(0.92) = (54.83)^2(0.0736) \approx 3006.2(0.0736)\approx 221.3.
+\]
+Redondeando: $n=222$.
+
+Sin información previa se usa el caso más conservador $\widehat p=0.5$:
+\[
+n = \left(\frac{1.645}{0.03}\right)^2(0.5)(0.5) = 3006.2 \times 0.25 \approx 751.6 \;\Rightarrow\; n=752.
+\]
+Se observa que desconocer $p$ obliga a tomar una muestra mucho más grande (más del triple).
+\end{solucion}
+
+\begin{ejercicio}
+Se midió el nivel de glucosa en sangre (mg/dl) de $n=10$ pacientes en ayunas:
+\[
+92,\ 88,\ 95,\ 101,\ 87,\ 90,\ 94,\ 99,\ 85,\ 93.
+\]
+Suponiendo que la población es aproximadamente normal con varianza desconocida, calcular $\overline x$, $s$ y construir un IC del $90\%$ para $\mu$.
+\end{ejercicio}
+
+\begin{solucion}
+\[
+\overline x = \frac{92+88+95+101+87+90+94+99+85+93}{10} = \frac{924}{10} = 92.4.
+\]
+Desviaciones al cuadrado respecto de $92.4$: $0.16,\ 19.36,\ 6.76,\ 73.96,\ 29.16,\ 5.76,\ 2.56,\ 43.56,\ 54.76,\ 0.36$. Suma $=236.4$.
+\[
+s^2 = \frac{236.4}{9} \approx 26.267, \qquad s \approx 5.125.
+\]
+$g.l.=9$: $t_{9,0.05}=1.833$.
+\[
+E = 1.833\cdot\frac{5.125}{\sqrt{10}} = 1.833\cdot\frac{5.125}{3.1623} = 1.833\cdot 1.621 \approx 2.971.
+\]
+\[
+IC(\mu;0.90) = (92.4-2.97,\ 92.4+2.97) = (89.43,\ 95.37) \text{ mg/dl}.
+\]
+\end{solucion}
+
+\begin{ejercicio}
+Interpretar correctamente la siguiente afirmación y señalar el error conceptual: \emph{"Como el IC del $95\%$ para $\mu$ obtenido es $(48.2,\ 51.8)$, la probabilidad de que $\mu$ esté en ese intervalo es $0.95$."}
+\end{ejercicio}
+
+\begin{solucion}
+La afirmación es \textbf{incorrecta} en sentido estricto. Una vez que la muestra fue observada y el intervalo $(48.2,\ 51.8)$ quedó fijo (con extremos numéricos concretos), el parámetro $\mu$ —que es una constante desconocida, no una variable aleatoria— o pertenece a ese intervalo o no pertenece; no tiene sentido asignarle una "probabilidad" de $0.95$ a un evento que ya está determinado.
+
+La interpretación correcta es en términos del \textbf{procedimiento}: si repitiéramos el proceso de muestreo muchas veces y construyéramos un IC del $95\%$ en cada caso, aproximadamente el $95\%$ de esos intervalos (aleatorios, antes de observar los datos) contendrían al verdadero $\mu$. Se dice, por convención, que "tenemos un $95\%$ de \textbf{confianza}" de que $\mu\in(48.2,51.8)$, para diferenciarlo de una afirmación probabilística sobre $\mu$.
+\end{solucion}
+
+\begin{ejercicio}
+Un fabricante de baterías afirma que la duración media de sus baterías es de $500$ horas. Se toma una muestra de $n=40$ baterías, obteniéndose $\overline x=485$ horas y $s=48$ horas (varianza poblacional desconocida). Construir un IC del $95\%$ para $\mu$ y discutir si es compatible con la afirmación del fabricante.
+\end{ejercicio}
+
+\begin{solucion}
+Como $n=40>30$, aproximamos $t_{39,0.025}\approx 2.023$ (valor de tabla $t$ para $39$ g.l.; también podría aproximarse con $z_{0.025}=1.96$ dado el tamaño muestral grande).
+\[
+E = 2.023\cdot\frac{48}{\sqrt{40}} = 2.023\cdot\frac{48}{6.3246} = 2.023\cdot 7.590 \approx 15.36.
+\]
+\[
+IC(\mu;0.95) = (485-15.36,\ 485+15.36) = (469.64,\ 500.36) \text{ horas}.
+\]
+Como el valor $500$ horas (afirmado por el fabricante) está \textbf{dentro} del intervalo (apenas por debajo del extremo superior), los datos no aportan evidencia fuerte para \emph{rechazar} la afirmación del fabricante al $95\%$ de confianza, aunque el valor está cerca del límite superior del intervalo.
+\end{solucion}
+
+\end{document}

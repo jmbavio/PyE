@@ -1,0 +1,189 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{\vspace{-1.5cm}Práctica 1: Espacio muestral, sucesos y axiomas de probabilidad \\[0.3em] \large Unidad 1: Espacios de probabilidad}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Se lanza una moneda tres veces consecutivas y se registra la secuencia de caras (C) y sellos (S) obtenida.
+\begin{enumerate}[label=(\alph*)]
+\item Describir el espacio muestral $\Omega$.
+\item Escribir por extensión el suceso $A$: ``se obtienen exactamente dos caras''.
+\item Escribir por extensión el suceso $B$: ``la primera tirada es cara''.
+\item Calcular $A\cap B$, $A\cup B$ y $B^c$.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item El espacio muestral tiene $2^3=8$ resultados posibles:
+\[
+\Omega = \{CCC,\,CCS,\,CSC,\,SCC,\,CSS,\,SCS,\,SSC,\,SSS\}.
+\]
+\item $A=\{CCS,\,CSC,\,SCC\}$ (exactamente dos caras entre las tres tiradas).
+\item $B=\{CCC,\,CCS,\,CSC,\,CSS\}$ (todos los resultados que comienzan con C).
+\item $A\cap B = \{CCS,\,CSC\}$ (dos caras y además empieza con cara).
+\newline $A\cup B = \{CCC,\,CCS,\,CSC,\,SCC,\,CSS\}$.
+\newline $B^c = \{SCC,\,SCS,\,SSC,\,SSS\}$ (la primera tirada es sello).
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Se selecciona al azar un artículo de una línea de producción y se clasifica según dos criterios: si tiene o no un defecto \textbf{estético} (E) y si tiene o no un defecto \textbf{funcional} (F).
+\begin{enumerate}[label=(\alph*)]
+\item Describir el espacio muestral en términos de los sucesos $E$ y $F$ (defecto estético / defecto funcional presentes o no).
+\item Expresar en notación conjuntista el suceso ``el artículo tiene exactamente un tipo de defecto''.
+\item Expresar el suceso ``el artículo no tiene ningún defecto''.
+\item Expresar el suceso ``el artículo tiene al menos un defecto''.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+Sea $E$ el suceso ``tiene defecto estético'' y $F$ ``tiene defecto funcional'', ambos subconjuntos del espacio muestral $\Omega$ de todos los artículos.
+\begin{enumerate}[label=(\alph*)]
+\item $\Omega$ se particiona en cuatro categorías posibles: $E\cap F$ (ambos defectos), $E\cap F^c$ (solo estético), $E^c\cap F$ (solo funcional), $E^c\cap F^c$ (sin defectos).
+\item ``Exactamente un tipo de defecto'' $=(E\cap F^c)\cup(E^c\cap F)$ (la llamada diferencia simétrica $E \triangle F$).
+\item ``Ningún defecto'' $= E^c\cap F^c = (E\cup F)^c$ (por De Morgan).
+\item ``Al menos un defecto'' $= E\cup F$.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Sean $A$, $B$ y $C$ tres sucesos de un mismo espacio muestral $\Omega$. Expresar mediante operaciones de conjuntos ($\cup$, $\cap$, complemento):
+\begin{enumerate}[label=(\alph*)]
+\item Ocurre únicamente $A$ (ni $B$ ni $C$).
+\item Ocurren exactamente dos de los tres sucesos.
+\item Ocurren los tres sucesos simultáneamente.
+\item No ocurre ninguno de los tres.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item $A\cap B^c\cap C^c$.
+\item $(A\cap B\cap C^c)\cup(A\cap B^c\cap C)\cup(A^c\cap B\cap C)$.
+\item $A\cap B\cap C$.
+\item $A^c\cap B^c\cap C^c = (A\cup B\cup C)^c$ (por De Morgan generalizado).
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+En un lote de 100 piezas metálicas, se detectó que 30 tienen un defecto de \textbf{dimensión} (D), 25 tienen un defecto de \textbf{acabado superficial} (S), y 10 tienen ambos defectos simultáneamente. Se elige una pieza al azar.
+\begin{enumerate}[label=(\alph*)]
+\item Calcular la probabilidad de que la pieza tenga al menos uno de los dos defectos.
+\item Calcular la probabilidad de que la pieza no tenga ningún defecto.
+\item Calcular la probabilidad de que tenga defecto de dimensión pero no de acabado.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+Trabajamos con la regla de Laplace: $P(D) = 30/100=0{,}30$, $P(S)=25/100=0{,}25$, $P(D\cap S)=10/100=0{,}10$.
+\begin{enumerate}[label=(\alph*)]
+\item Por la regla de la suma:
+\[
+P(D\cup S) = P(D)+P(S)-P(D\cap S) = 0{,}30+0{,}25-0{,}10=0{,}45.
+\]
+\item Por complemento: $P\big((D\cup S)^c\big) = 1-0{,}45 = 0{,}55$.
+\item Por diferencia: $P(D\setminus S) = P(D)-P(D\cap S) = 0{,}30-0{,}10=0{,}20$.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Demostrar, a partir de los axiomas de Kolmogorov y de las propiedades ya conocidas, que para dos sucesos $A,B\in\mathcal{A}$ cualesquiera:
+\[
+P(A\cap B) \geq P(A)+P(B)-1.
+\]
+(Esta desigualdad se conoce como \emph{cota de Bonferroni}.)
+\end{ejercicio}
+\begin{solucion}
+Partimos de la regla de la suma, ya demostrada en la teoría:
+\[
+P(A\cup B) = P(A)+P(B)-P(A\cap B).
+\]
+Como $A\cup B \subseteq \Omega$, por el corolario de monotonía sabemos que $P(A\cup B)\leq 1$. Sustituyendo:
+\[
+P(A)+P(B)-P(A\cap B) \leq 1.
+\]
+Despejando $P(A\cap B)$ (cambiando el signo de la desigualdad al pasar de miembro):
+\[
+P(A\cap B) \geq P(A)+P(B)-1,
+\]
+como queríamos demostrar. Notar que si $P(A)+P(B)>1$, la cota es no trivial (obliga a que $A$ y $B$ se intersequen).
+\end{solucion}
+
+\begin{ejercicio}
+En una empresa, el $70\%$ de los empleados usa el sistema de gestión A, el $55\%$ usa el sistema B, y se sabe que el $20\%$ no usa ninguno de los dos sistemas. Se elige un empleado al azar.
+\begin{enumerate}[label=(\alph*)]
+\item Calcular la probabilidad de que use ambos sistemas.
+\item Calcular la probabilidad de que use exactamente uno de los dos sistemas.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+Sean $A$: ``usa el sistema A'', $B$: ``usa el sistema B''. Datos: $P(A)=0{,}70$, $P(B)=0{,}55$, $P\big((A\cup B)^c\big)=0{,}20$, luego $P(A\cup B) = 1-0{,}20=0{,}80$.
+\begin{enumerate}[label=(\alph*)]
+\item De $P(A\cup B)=P(A)+P(B)-P(A\cap B)$:
+\[
+P(A\cap B) = P(A)+P(B)-P(A\cup B) = 0{,}70+0{,}55-0{,}80 = 0{,}45.
+\]
+\item ``Exactamente uno'' $=(A\cup B)\setminus(A\cap B)$, y como $A\cap B\subseteq A\cup B$, por monotonía:
+\[
+P\big((A\cup B)\setminus (A\cap B)\big) = P(A\cup B)-P(A\cap B) = 0{,}80-0{,}45=0{,}35.
+\]
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Un espacio muestral $\Omega$ se particiona en cuatro sucesos mutuamente excluyentes $B_1, B_2, B_3, B_4$ (un sistema completo), con probabilidades $P(B_1)=0{,}10$, $P(B_2)=0{,}20$, $P(B_3)=x$ y $P(B_4)=2x$.
+\begin{enumerate}[label=(\alph*)]
+\item Hallar el valor de $x$.
+\item Calcular $P(B_1\cup B_3)$ y $P\big((B_2\cup B_4)^c\big)$.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Como $\{B_1,B_2,B_3,B_4\}$ es un sistema completo, $\sum_{i=1}^4 P(B_i)=1$:
+\[
+0{,}10+0{,}20+x+2x = 1 \;\Longrightarrow\; 3x = 0{,}70 \;\Longrightarrow\; x=0{,}2\overline{3}.
+\]
+Entonces $P(B_3)=0{,}2\overline{3}\approx 0{,}2333$ y $P(B_4)=0{,}4\overline{6}\approx0{,}4667$.
+\item Como los $B_i$ son mutuamente excluyentes entre sí, por aditividad finita:
+\[
+P(B_1\cup B_3) = P(B_1)+P(B_3) = 0{,}10+0{,}2333=0{,}3333.
+\]
+\[
+P(B_2\cup B_4)=P(B_2)+P(B_4)=0{,}20+0{,}4667=0{,}6667 \;\Longrightarrow\; P\big((B_2\cup B_4)^c\big)=1-0{,}6667=0{,}3333.
+\]
+(Coincide con el resultado anterior, ya que $(B_2\cup B_4)^c = B_1\cup B_3$ por ser $\{B_i\}$ una partición de $\Omega$.)
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Se lanza un dado equilibrado de 6 caras. Consideremos los sucesos $A=\{1,2,3\}$, $B=\{2,4,6\}$ y $C=\{1,3,5\}$.
+\begin{enumerate}[label=(\alph*)]
+\item Verificar si $A$ y $B$ son mutuamente excluyentes.
+\item Verificar si $B$ y $C$ son mutuamente excluyentes.
+\item ¿Forman $B$ y $C$ un sistema completo de sucesos para $\Omega=\{1,\dots,6\}$? Justificar.
+\end{enumerate}
+\end{ejercicio}
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item $A\cap B = \{1,2,3\}\cap\{2,4,6\} = \{2\} \neq \varnothing$. No son mutuamente excluyentes.
+\item $B\cap C = \{2,4,6\}\cap\{1,3,5\}=\varnothing$. Sí son mutuamente excluyentes.
+\item Además de ser disjuntos, $B\cup C = \{1,2,3,4,5,6\} = \Omega$, y ambos tienen probabilidad positiva ($P(B)=P(C)=1/2$). Por lo tanto $\{B,C\}$ sí es un sistema completo de sucesos: son exhaustivos y mutuamente excluyentes.
+\end{enumerate}
+\end{solucion}
+
+\end{document}

@@ -1,0 +1,270 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 5: Definición de variable aleatoria y función de distribución}
+\subtitle{Unidad 2: Variables aleatorias}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Motivación}
+
+\begin{frame}{¿Por qué necesitamos variables aleatorias?}
+\begin{block}{El problema}
+Hasta ahora trabajamos con espacios muestrales $\Omega$ y eventos $A \subseteq \Omega$ arbitrarios (caras, colores, defectuoso/no defectuoso, etc.). Muchas veces nos interesa un \textbf{valor numérico} asociado al resultado del experimento.
+\end{block}
+
+\begin{example}
+\begin{itemize}
+\item Tirar tres monedas: interesa el \emph{número de caras}, no la secuencia exacta.
+\item Inspeccionar un lote: interesa la \emph{cantidad de artículos defectuosos}.
+\item Medir el tiempo de vida de una lámpara: interesa el \emph{número de horas} hasta que se quema.
+\end{itemize}
+\end{example}
+
+\begin{alertblock}{Idea clave}
+Una \textbf{variable aleatoria} es una función que asigna un número real a cada resultado del experimento aleatorio.
+\end{alertblock}
+\end{frame}
+
+\section{Definición formal}
+
+\begin{frame}{Variable aleatoria: definición}
+\begin{definition}[Variable aleatoria]
+Sea $(\Omega, \mathcal{A}, P)$ un espacio de probabilidad. Una \textbf{variable aleatoria} (v.a.) es una función
+$$X : \Omega \longrightarrow \mathbb{R}$$
+tal que para todo $x \in \mathbb{R}$, el conjunto
+$$\{\omega \in \Omega : X(\omega) \le x\}$$
+es un evento (pertenece a $\mathcal{A}$), es decir, es \textbf{medible}.
+\end{definition}
+
+\begin{alertblock}{Notación}
+Escribimos $X$ para la variable aleatoria (la función) y $x$ para un valor particular que puede tomar. El evento $\{\omega : X(\omega) \le x\}$ se abrevia $\{X \le x\}$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo introductorio}
+\begin{example}
+Se lanzan tres monedas equilibradas. $\Omega = \{CCC, CCX, CXC, XCC, CXX, XCX, XXC, XXX\}$, cada resultado con probabilidad $1/8$.
+
+Definimos $X(\omega) = $ número de caras en $\omega$.
+
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+$\omega$ & $XXX$ & $CXX,XCX,XXC$ & $CCX,CXC,XCC$ & $CCC$ \\
+\midrule
+$X(\omega)$ & 0 & 1 & 2 & 3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Así, $X$ toma valores en $\{0,1,2,3\}$ y por ejemplo
+$$P(X=2) = P(\{CCX,CXC,XCC\}) = \frac{3}{8}.$$
+\end{example}
+\end{frame}
+
+\section{Función de distribución acumulada}
+
+\begin{frame}{Definición de $F(x)$}
+\begin{definition}[Función de distribución acumulada]
+La \textbf{función de distribución acumulada} (f.d.a.) de una variable aleatoria $X$ es la función $F : \mathbb{R} \to [0,1]$ dada por
+$$F(x) = P(X \le x), \qquad x \in \mathbb{R}.$$
+\end{definition}
+
+\begin{block}{Interpretación}
+$F(x)$ es la probabilidad acumulada de que $X$ tome un valor menor o igual a $x$. Contiene \emph{toda} la información probabilística de $X$.
+\end{block}
+
+\begin{example}
+Para el ejemplo de las tres monedas:
+$$F(1.5) = P(X \le 1.5) = P(X=0) + P(X=1) = \frac{1}{8} + \frac{3}{8} = \frac{4}{8} = \frac{1}{2}.$$
+\end{example}
+\end{frame}
+
+\begin{frame}{Propiedades de $F(x)$}
+\begin{theorem}[Propiedades de la función de distribución]
+Toda f.d.a. $F$ satisface:
+\begin{enumerate}
+\item $F$ es \textbf{monótona no decreciente}: si $x_1 < x_2$ entonces $F(x_1) \le F(x_2)$.
+\item $\displaystyle\lim_{x \to -\infty} F(x) = 0$ \quad y \quad $\displaystyle\lim_{x \to +\infty} F(x) = 1$.
+\item $F$ es \textbf{continua a derecha}: $\displaystyle\lim_{h \to 0^+} F(x+h) = F(x)$ para todo $x$.
+\item $0 \le F(x) \le 1$ para todo $x \in \mathbb{R}$.
+\end{enumerate}
+\end{theorem}
+
+\begin{alertblock}{Recíproco}
+Cualquier función que cumpla (1)--(3) es la f.d.a. de alguna variable aleatoria. Estas propiedades \textbf{caracterizan} a las funciones de distribución.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Demostración (monotonía)}
+\begin{proof}[Demostración de la monotonía]
+Sean $x_1 < x_2$. Entonces
+$$\{X \le x_1\} \subseteq \{X \le x_2\},$$
+pues si $X(\omega) \le x_1$ y $x_1 < x_2$, entonces $X(\omega) \le x_2$.
+
+Por la monotonía de la probabilidad (si $A \subseteq B$ entonces $P(A) \le P(B)$):
+$$F(x_1) = P(X \le x_1) \le P(X \le x_2) = F(x_2). \qedhere$$
+\end{proof}
+
+\begin{block}{Idea de la continuidad a derecha}
+Se debe a que trabajamos con $\{X \le x\}$ (desigualdad no estricta). Si tomamos $h_n \downarrow 0$, los eventos $\{X \le x + h_n\}$ decrecen hacia $\{X \le x\}$, y por continuidad de la probabilidad, $F(x+h_n) \to F(x)$.
+\end{block}
+\end{frame}
+
+\section{Cálculo de probabilidades con \texorpdfstring{$F$}{F}}
+
+\begin{frame}{Probabilidades a partir de $F(x)$}
+Usando la f.d.a. podemos calcular la probabilidad de cualquier intervalo:
+\begin{block}{Fórmulas básicas}
+\begin{align*}
+P(X > x) &= 1 - F(x) \\
+P(a < X \le b) &= F(b) - F(a), \qquad a<b \\
+P(X < x) &= F(x^-) = \lim_{h \to 0^+} F(x-h) \\
+P(X = x) &= F(x) - F(x^-) \quad \text{(salto de $F$ en $x$)}
+\end{align*}
+\end{block}
+
+\begin{alertblock}{Cuidado con los extremos}
+$P(a \le X \le b) = F(b) - F(a^-) = F(b) - F(a) + P(X=a)$. Si $X$ es continua, $P(X=a)=0$ y no importa si los intervalos son abiertos o cerrados.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Deducción de $P(a<X\le b) = F(b)-F(a)$}
+\begin{proof}
+Para $a<b$, escribimos el evento $\{X \le b\}$ como unión disjunta:
+$$\{X \le b\} = \{X \le a\} \cup \{a < X \le b\}.$$
+Por aditividad de $P$ sobre eventos disjuntos:
+$$F(b) = P(X\le b) = P(X \le a) + P(a<X\le b) = F(a) + P(a<X\le b).$$
+Despejando: $P(a<X\le b) = F(b) - F(a)$. \qedhere
+\end{proof}
+\end{frame}
+
+\section{Clasificación de variables aleatorias}
+
+\begin{frame}{Discretas, continuas y mixtas}
+\begin{definition}[Variable aleatoria discreta]
+$X$ es \textbf{discreta} si toma valores en un conjunto finito o infinito numerable $\{x_1, x_2, \dots\}$. Su f.d.a. $F$ es una función \textbf{escalonada} (constante por tramos, con saltos en los $x_i$).
+\end{definition}
+
+\begin{definition}[Variable aleatoria continua]
+$X$ es \textbf{continua} si su f.d.a. $F$ es una función \textbf{continua} en todo $\mathbb{R}$ (no tiene saltos), y además existe una función $f \ge 0$ tal que $F(x) = \int_{-\infty}^x f(t)\,dt$.
+\end{definition}
+
+\begin{block}{Variables mixtas}
+Existen variables \textbf{mixtas}, cuya f.d.a. tiene tramos continuos y también saltos (por ejemplo, tiempos de espera con posibilidad de espera nula). No las estudiaremos en profundidad en este curso.
+\end{block}
+\end{frame}
+
+\begin{frame}{Gráfico de $F(x)$ para una v.a. discreta}
+\begin{example}
+Retomando $X=$ número de caras en 3 monedas, con $P(X=0)=1/8$, $P(X=1)=3/8$, $P(X=2)=3/8$, $P(X=3)=1/8$:
+\end{example}
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+\begin{axis}[
+  xmin=-1, xmax=4, ymin=-0.05, ymax=1.15,
+  xlabel={$x$}, ylabel={$F(x)$},
+  width=9cm, height=5.5cm,
+  xtick={0,1,2,3}, ytick={0,0.125,0.5,0.875,1},
+  yticklabels={0,1/8,4/8,7/8,1},
+  axis lines=middle,
+]
+\addplot[thick, blue] coordinates {(-1,0) (0,0)};
+\addplot[thick, blue] coordinates {(0,0.125) (1,0.125)};
+\addplot[thick, blue] coordinates {(1,0.5) (2,0.5)};
+\addplot[thick, blue] coordinates {(2,0.875) (3,0.875)};
+\addplot[thick, blue] coordinates {(3,1) (4,1)};
+\addplot[only marks, mark=*, blue] coordinates {(0,0.125)(1,0.5)(2,0.875)(3,1)};
+\addplot[only marks, mark=o, blue] coordinates {(0,0)(1,0.125)(2,0.5)(3,0.875)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\begin{alertblock}{Nota}
+El punto lleno indica que $F$ incluye el valor (continuidad a derecha); el punto vacío indica el límite por izquierda.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Gráfico de $F(x)$ para una v.a. continua}
+\begin{example}
+Si $X$ tiene f.d.a. $F(x) = 1-e^{-x}$ para $x\ge 0$ y $F(x)=0$ para $x<0$ (veremos que es la distribución \emph{exponencial}):
+\end{example}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  xmin=-1, xmax=5, ymin=-0.05, ymax=1.15,
+  xlabel={$x$}, ylabel={$F(x)$},
+  width=9cm, height=5.5cm,
+  axis lines=middle,
+  domain=-1:5, samples=100,
+]
+\addplot[thick, red] coordinates {(-1,0)(0,0)};
+\addplot[thick, red, domain=0:5] {1-exp(-x)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+Es una función continua y creciente, sin saltos: no hay valores puntuales con probabilidad positiva.
+\end{frame}
+
+\section{Ejemplo integrador}
+
+\begin{frame}{Ejemplo resuelto}
+\begin{example}
+Sea $X$ una v.a. con f.d.a.
+$$F(x) = \begin{cases} 0 & x<0 \\ x^2/4 & 0\le x <2 \\ 1 & x\ge 2\end{cases}$$
+Calcular: (a) $P(X\le 1)$, (b) $P(0.5 < X \le 1.5)$, (c) $P(X>1)$.
+\end{example}
+
+\begin{block}{Resolución}
+\begin{itemize}
+\item[(a)] $P(X\le 1) = F(1) = 1^2/4 = 0.25$.
+\item[(b)] $P(0.5<X\le 1.5) = F(1.5)-F(0.5) = \dfrac{1.5^2}{4} - \dfrac{0.5^2}{4} = \dfrac{2.25-0.25}{4} = \dfrac{2}{4}=0.5$.
+\item[(c)] $P(X>1) = 1-F(1) = 1-0.25 = 0.75$.
+\end{itemize}
+Como $F$ es continua (no tiene saltos), $X$ es una variable aleatoria \textbf{continua}.
+\end{block}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{block}{Ideas clave}
+\begin{itemize}
+\item Una variable aleatoria $X:\Omega\to\mathbb{R}$ traduce resultados de un experimento en números.
+\item La función de distribución $F(x)=P(X\le x)$ concentra toda la información probabilística de $X$.
+\item Propiedades de $F$: no decreciente, continua a derecha, $F(-\infty)=0$, $F(+\infty)=1$.
+\item $P(a<X\le b)=F(b)-F(a)$; $P(X>x)=1-F(x)$; $P(X=x)=F(x)-F(x^-)$.
+\item $X$ discreta $\Leftrightarrow$ $F$ escalonada; $X$ continua $\Leftrightarrow$ $F$ continua (existe densidad $f$).
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Próxima clase}
+Estudiaremos en detalle las distribuciones discretas más importantes: Bernoulli, Binomial, Pascal e Hipergeométrica.
+\end{alertblock}
+\end{frame}
+
+\end{document}

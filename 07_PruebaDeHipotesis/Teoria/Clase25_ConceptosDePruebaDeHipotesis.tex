@@ -1,0 +1,318 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 25: Conceptos de prueba de hipótesis}
+\subtitle{Unidad 7: Prueba de hipótesis}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Introducción}
+
+\begin{frame}{De la estimación a la prueba de hipótesis}
+En la Unidad 6 estudiamos cómo \textbf{estimar} un parámetro poblacional desconocido $\theta$ (puntual o por intervalo de confianza) a partir de una muestra aleatoria.
+
+\begin{block}{Un problema distinto}
+Muchas veces el objetivo no es estimar $\theta$, sino \textbf{decidir}, con la evidencia muestral disponible, si una afirmación (conjetura) sobre $\theta$ es sostenible o debe ser rechazada.
+\end{block}
+
+\begin{exampleblock}{Ejemplos de preguntas}
+\begin{itemize}
+\item ¿El contenido medio de las bolsas de un producto es realmente $500$ g, como indica el rótulo?
+\item ¿Un nuevo proceso de fabricación reduce la proporción de piezas defectuosas?
+\item ¿La variabilidad de un instrumento de medición supera la tolerancia admitida?
+\item ¿El rendimiento académico es independiente del turno de cursada?
+\end{itemize}
+\end{exampleblock}
+
+Estas preguntas se responden mediante una \textbf{prueba (o contraste) de hipótesis}, un procedimiento formal de decisión estadística.
+\end{frame}
+
+\section{Hipótesis estadísticas}
+
+\begin{frame}{Hipótesis nula y alternativa}
+\begin{definition}
+Una \textbf{hipótesis estadística} es una afirmación (conjetura) acerca del valor de uno o más parámetros de una o varias poblaciones.
+\end{definition}
+
+\begin{block}{Hipótesis nula $H_0$}
+Es la afirmación que se somete a prueba. Representa la situación de referencia, el status quo, o la ausencia de efecto/diferencia. Se formula siempre con una igualdad:
+\[
+H_0: \theta = \theta_0.
+\]
+\end{block}
+
+\begin{block}{Hipótesis alternativa $H_1$ (o $H_a$)}
+Es la afirmación contraria a $H_0$, la que se acepta como razonable si la evidencia muestral contradice a $H_0$. Puede ser:
+\[
+H_1: \theta \neq \theta_0 \quad \text{(bilateral)}, \qquad H_1:\theta>\theta_0 \ \text{ o } \ H_1:\theta<\theta_0 \quad \text{(unilateral)}.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Cómo se formulan $H_0$ y $H_1$}
+\begin{alertblock}{Principio general}
+$H_0$ y $H_1$ deben ser mutuamente excluyentes y, en la práctica usual de esta materia, exhaustivas respecto del parámetro. La afirmación que se quiere \emph{probar con evidencia} (aquello que el investigador sospecha o desea demostrar) suele plantearse como $H_1$, mientras que $H_0$ representa lo contrario o el criterio conservador.
+\end{alertblock}
+
+\begin{example}
+Una fábrica afirma que el diámetro medio de sus rodamientos es $\mu_0 = 10$ mm. Un control de calidad sospecha que el proceso se desvió. Se plantea:
+\[
+H_0: \mu = 10 \quad \text{vs.} \quad H_1: \mu \neq 10.
+\]
+\end{example}
+
+\begin{example}
+Un nuevo fertilizante se prueba para ver si \textbf{aumenta} el rendimiento medio $\mu$ respecto del valor histórico $\mu_0=40$ qq/ha:
+\[
+H_0: \mu \le 40 \quad \text{vs.} \quad H_1: \mu > 40.
+\]
+En la práctica, para el cálculo se trabaja con $H_0:\mu=40$, el punto frontera más desfavorable.
+\end{example}
+\end{frame}
+
+\section{Tipos de error}
+
+\begin{frame}{La decisión y sus errores posibles}
+Una prueba de hipótesis conduce a una de dos decisiones: \textbf{rechazar} $H_0$ o \textbf{no rechazar} $H_0$. Como la decisión se basa en una muestra, siempre existe la posibilidad de equivocarse.
+
+\begin{table}[]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & $H_0$ verdadera & $H_0$ falsa \\
+\midrule
+\textbf{No rechazar $H_0$} & Decisión correcta ($1-\alpha$) & Error tipo II ($\beta$) \\
+\textbf{Rechazar $H_0$} & Error tipo I ($\alpha$) & Decisión correcta ($1-\beta$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{block}{Error de tipo I}
+Rechazar $H_0$ cuando en realidad es verdadera. Su probabilidad se llama \textbf{nivel de significación}:
+\[
+\alpha = P(\text{Rechazar } H_0 \mid H_0 \text{ verdadera}).
+\]
+\end{block}
+
+\begin{block}{Error de tipo II}
+No rechazar $H_0$ cuando en realidad es falsa. Su probabilidad se denota:
+\[
+\beta = P(\text{No rechazar } H_0 \mid H_0 \text{ falsa}).
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Relación entre $\alpha$ y $\beta$}
+\begin{itemize}
+\item $\alpha$ se fija de antemano por el investigador (valores usuales: $0.10$, $0.05$, $0.01$). Es la probabilidad máxima que se está dispuesto a tolerar de rechazar erróneamente una $H_0$ verdadera.
+\item Para un tamaño de muestra $n$ fijo, $\alpha$ y $\beta$ están inversamente relacionados: si se achica la región de rechazo para disminuir $\alpha$, aumenta $\beta$, y viceversa.
+\item La \textbf{única} forma de disminuir simultáneamente $\alpha$ y $\beta$ es aumentar el tamaño muestral $n$.
+\end{itemize}
+
+\begin{alertblock}{¿Por qué se prioriza $\alpha$?}
+$H_0$ suele representar la afirmación "conservadora" o la que produce consecuencias más costosas si se rechaza equivocadamente (por ejemplo, retirar un lote en buen estado, acusar de fraude a un proceso correcto). Por eso se controla directamente $\alpha$, y $\beta$ se analiza mediante la potencia.
+\end{alertblock}
+\end{frame}
+
+\section{Potencia de la prueba}
+
+\begin{frame}{Potencia de una prueba}
+\begin{definition}
+La \textbf{potencia} de una prueba de hipótesis es la probabilidad de rechazar $H_0$ cuando efectivamente es falsa:
+\[
+\text{Potencia} = 1-\beta = P(\text{Rechazar } H_0 \mid H_0 \text{ falsa}).
+\]
+\end{definition}
+
+\begin{block}{Interpretación}
+La potencia mide la capacidad de la prueba para \textbf{detectar} que $H_0$ es falsa cuando el verdadero parámetro $\theta$ se aparta de $\theta_0$ en una magnitud dada. Es función del valor real del parámetro, del tamaño muestral $n$ y del nivel $\alpha$ elegido.
+\end{block}
+
+\begin{itemize}
+\item Cuanto más se aleja el valor real de $\theta_0$, mayor es la potencia (es "más fácil" detectar diferencias grandes).
+\item A mayor $n$, mayor potencia para una misma diferencia a detectar.
+\item A mayor $\alpha$ (región de rechazo más amplia), mayor potencia, pero también mayor riesgo de error tipo I.
+\end{itemize}
+
+\begin{alertblock}{Una prueba ``buena''}
+Entre pruebas con el mismo $\alpha$, se prefiere la de mayor potencia (menor $\beta$) para detectar el efecto de interés.
+\end{alertblock}
+\end{frame}
+
+\section{Estadístico de prueba y región crítica}
+
+\begin{frame}{Estadístico de prueba}
+\begin{definition}
+El \textbf{estadístico de prueba} (o de contraste) es una función de la muestra aleatoria, $T=T(X_1,\dots,X_n)$, cuya distribución de probabilidad \textbf{bajo el supuesto de que $H_0$ es verdadera} es conocida.
+\end{definition}
+
+\begin{block}{Rol del estadístico}
+Resume la información muestral relevante para el parámetro en cuestión y permite comparar lo observado con lo que se esperaría si $H_0$ fuera cierta. Valores del estadístico ``poco compatibles'' con $H_0$ llevan a rechazarla.
+\end{block}
+
+\begin{example}
+Para probar $H_0:\mu=\mu_0$ con varianza poblacional conocida $\sigma^2$, el estadístico de prueba es
+\[
+Z = \frac{\overline{X}-\mu_0}{\sigma/\sqrt{n}} \ \sim\ N(0,1) \quad \text{bajo } H_0.
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{Región crítica y región de aceptación}
+\begin{definition}
+El espacio de todos los valores posibles del estadístico de prueba se divide en dos subconjuntos:
+\begin{itemize}
+\item \textbf{Región crítica o de rechazo} $RR$: valores del estadístico que llevan a rechazar $H_0$.
+\item \textbf{Región de aceptación (no rechazo)} $RA$: el complemento, valores compatibles con $H_0$.
+\end{itemize}
+\end{definition}
+
+\begin{block}{Construcción de la región crítica}
+Se determina de modo que, bajo $H_0$, la probabilidad de que el estadístico caiga en $RR$ sea exactamente $\alpha$ (el nivel de significación fijado). La forma de $RR$ (una o dos colas) depende de $H_1$.
+\end{block}
+
+\begin{itemize}
+\item $H_1:\theta\neq\theta_0$ (bilateral) $\Rightarrow$ $RR$ en \textbf{ambas colas} de la distribución.
+\item $H_1:\theta>\theta_0$ $\Rightarrow$ $RR$ en la \textbf{cola derecha}.
+\item $H_1:\theta<\theta_0$ $\Rightarrow$ $RR$ en la \textbf{cola izquierda}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ilustración: prueba bilateral vs. unilateral}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\begin{axis}[
+  width=6.2cm, height=3.6cm,
+  axis lines=left, ytick=\empty,
+  xtick={-1.96,0,1.96}, xticklabels={$-z_{\alpha/2}$,$0$,$z_{\alpha/2}$},
+  title={\footnotesize Bilateral: $H_1:\mu\neq\mu_0$},
+  ymin=0, ymax=0.45,
+]
+\addplot[domain=-3.5:3.5, samples=100, thick, blue] {exp(-x^2/2)/sqrt(2*pi)};
+\addplot[domain=-3.5:-1.96, samples=40, fill=red!40, draw=none] {exp(-x^2/2)/sqrt(2*pi)} \closedcycle;
+\addplot[domain=1.96:3.5, samples=40, fill=red!40, draw=none] {exp(-x^2/2)/sqrt(2*pi)} \closedcycle;
+\end{axis}
+\end{tikzpicture}
+\hspace{0.3cm}
+\begin{tikzpicture}[scale=0.85]
+\begin{axis}[
+  width=6.2cm, height=3.6cm,
+  axis lines=left, ytick=\empty,
+  xtick={0,1.645}, xticklabels={$0$,$z_{\alpha}$},
+  title={\footnotesize Unilateral: $H_1:\mu>\mu_0$},
+  ymin=0, ymax=0.45,
+]
+\addplot[domain=-3.5:3.5, samples=100, thick, blue] {exp(-x^2/2)/sqrt(2*pi)};
+\addplot[domain=1.645:3.5, samples=40, fill=red!40, draw=none] {exp(-x^2/2)/sqrt(2*pi)} \closedcycle;
+\end{axis}
+\end{tikzpicture}
+
+\vspace{0.3cm}
+Las regiones sombreadas (rojas) son las regiones críticas, de área total $\alpha$.
+\end{frame}
+
+\section{Valor p}
+
+\begin{frame}{El valor p (p-value)}
+\begin{definition}
+El \textbf{valor p} es la probabilidad, calculada bajo el supuesto de que $H_0$ es verdadera, de obtener un valor del estadístico de prueba tan extremo o más extremo (en el sentido indicado por $H_1$) que el efectivamente observado en la muestra.
+\end{definition}
+
+\begin{block}{Regla de decisión con el valor p}
+\[
+\text{Si } p\text{-valor} \le \alpha \ \Rightarrow \ \text{se rechaza } H_0.
+\]
+\[
+\text{Si } p\text{-valor} > \alpha \ \Rightarrow \ \text{no se rechaza } H_0.
+\]
+\end{block}
+
+\begin{alertblock}{Interpretación}
+El valor p \textbf{no} es la probabilidad de que $H_0$ sea verdadera. Es una medida de cuán compatible es la evidencia muestral con $H_0$: cuanto menor el valor p, mayor la evidencia \emph{en contra} de $H_0$.
+\end{alertblock}
+
+Es equivalente decidir comparando el estadístico con el valor crítico o comparando el valor p con $\alpha$: ambos métodos siempre coinciden.
+\end{frame}
+
+\section{Pasos para realizar una prueba}
+
+\begin{frame}{Procedimiento general de una prueba de hipótesis}
+\begin{enumerate}
+\item Formular $H_0$ y $H_1$ en términos del parámetro poblacional de interés.
+\item Fijar el nivel de significación $\alpha$.
+\item Elegir el estadístico de prueba adecuado y establecer su distribución bajo $H_0$.
+\item Determinar la región crítica (valor(es) crítico(s)) de acuerdo con $\alpha$ y con la forma de $H_1$ (bilateral o unilateral), \emph{o} calcular el valor p.
+\item Calcular el valor del estadístico de prueba a partir de los datos muestrales.
+\item \textbf{Decidir}: rechazar $H_0$ si el estadístico cae en la región crítica (o si el valor p $\le \alpha$); no rechazar $H_0$ en caso contrario.
+\item \textbf{Concluir} en el contexto del problema, con lenguaje no técnico.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Observaciones importantes}
+\begin{itemize}
+\item ``No rechazar $H_0$'' \textbf{no equivale} a ``aceptar $H_0$ como verdadera''. Significa que la evidencia muestral no es suficiente para rechazarla al nivel $\alpha$ elegido.
+\item El nivel $\alpha$ se elige \textbf{antes} de observar los datos, nunca después.
+\item Cambiar $\alpha$, $n$ o la forma de $H_1$ \emph{después} de ver los resultados invalida el procedimiento.
+\item Estos mismos principios (estadístico, distribución bajo $H_0$, región crítica, decisión) se aplican a todas las pruebas específicas que veremos en las próximas clases: para medias, varianzas, proporciones, bondad de ajuste, independencia y homogeneidad.
+\end{itemize}
+\end{frame}
+
+\section{Relación con los intervalos de confianza}
+
+\begin{frame}{Prueba de hipótesis vs. intervalo de confianza}
+\begin{block}{Dualidad fundamental}
+Para una prueba bilateral $H_0:\theta=\theta_0$ vs. $H_1:\theta\neq\theta_0$ con nivel $\alpha$, y un intervalo de confianza para $\theta$ con nivel de confianza $1-\alpha$ construido con el mismo estadístico:
+\[
+\text{Se rechaza } H_0 \text{ al nivel } \alpha \quad \Longleftrightarrow \quad \theta_0 \notin IC_{1-\alpha}(\theta).
+\]
+\end{block}
+
+\begin{example}
+Si un intervalo de confianza del $95\%$ para $\mu$ resulta $IC = (48.3;\,51.7)$ y se desea probar $H_0:\mu=50$ vs. $H_1:\mu\neq50$ con $\alpha=0.05$: como $50 \in (48.3;51.7)$, \textbf{no se rechaza} $H_0$.
+\end{example}
+
+\begin{alertblock}{Utilidad práctica}
+Un único intervalo de confianza permite decidir simultáneamente sobre \emph{cualquier} valor hipotético $\theta_0$ bilateral, mientras que cada prueba de hipótesis evalúa un único valor $\theta_0$ a la vez. Esta equivalencia es válida para pruebas bilaterales; para unilaterales se usa la correspondencia con intervalos de confianza de una cola.
+\end{alertblock}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item Una \textbf{prueba de hipótesis} decide, con evidencia muestral, entre $H_0$ (hipótesis nula) y $H_1$ (alternativa).
+\item \textbf{Error tipo I} ($\alpha$): rechazar $H_0$ siendo verdadera. \textbf{Error tipo II} ($\beta$): no rechazar $H_0$ siendo falsa.
+\item La \textbf{potencia} $1-\beta$ mide la capacidad de detectar que $H_0$ es falsa.
+\item El \textbf{estadístico de prueba} tiene distribución conocida bajo $H_0$; su valor se compara con la \textbf{región crítica}, determinada por $\alpha$ y la forma de $H_1$.
+\item El \textbf{valor p} resume la evidencia contra $H_0$: se rechaza si $p\text{-valor}\le\alpha$.
+\item Procedimiento: formular hipótesis $\to$ fijar $\alpha$ $\to$ estadístico y su distribución $\to$ región crítica $\to$ calcular $\to$ decidir $\to$ concluir.
+\item Existe una \textbf{dualidad} entre pruebas bilaterales e intervalos de confianza.
+\item Próximas clases: pruebas específicas para medias y varianzas de una y dos poblaciones, y pruebas basadas en $\chi^2$.
+\end{itemize}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,288 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 9: Distribuciones Exponencial y Gamma. Función de una variable aleatoria}
+\subtitle{Unidad 2: Variables aleatorias}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Distribución Exponencial}
+
+\begin{frame}{Planteo: tiempo entre eventos de Poisson}
+\begin{block}{Contexto}
+Recordemos el proceso de Poisson de tasa $\lambda$ (Clase 7): cuenta el número de eventos en un intervalo. Ahora nos preguntamos: ¿cuánto \textbf{tiempo} transcurre hasta el próximo evento?
+\end{block}
+
+\begin{definition}[Distribución Exponencial]
+$X\sim\text{Exp}(\lambda)$ si su densidad es
+$$f(x) = \lambda e^{-\lambda x}, \qquad x\ge 0 \qquad (\lambda>0),$$
+y $f(x)=0$ para $x<0$.
+\end{definition}
+
+\begin{block}{Función de distribución}
+$$F(x) = \int_0^x \lambda e^{-\lambda t}\,dt = 1-e^{-\lambda x}, \qquad x\ge 0.$$
+\end{block}
+\end{frame}
+
+\begin{frame}{Deducción a partir del proceso de Poisson}
+\begin{block}{Relación exponencial-Poisson}
+Sea $T$ el tiempo hasta el primer evento de un proceso de Poisson de tasa $\lambda$. El evento $\{T>t\}$ ocurre si y solo si no hubo ningún evento en $[0,t]$:
+$$P(T>t) = P(\text{Po}(\lambda t)=0) = e^{-\lambda t}.$$
+\end{block}
+Por lo tanto,
+$$F_T(t) = P(T\le t) = 1-e^{-\lambda t}, \qquad t\ge 0,$$
+que es exactamente la f.d.a. de $\text{Exp}(\lambda)$. Así, el \textbf{tiempo entre eventos consecutivos} de un proceso de Poisson de tasa $\lambda$ es exponencial de parámetro $\lambda$.
+\end{frame}
+
+\begin{frame}{Esperanza y varianza}
+\begin{theorem}
+Si $X\sim\text{Exp}(\lambda)$:
+$$E(X) = \frac{1}{\lambda}, \qquad V(X) = \frac{1}{\lambda^2}.$$
+\end{theorem}
+
+\begin{proof}[Cálculo de $E(X)$ (integración por partes)]
+$$E(X) = \int_0^\infty x\lambda e^{-\lambda x}\,dx = \Big[-xe^{-\lambda x}\Big]_0^\infty + \int_0^\infty e^{-\lambda x}\,dx = 0 + \frac{1}{\lambda} = \frac{1}{\lambda}. \qedhere$$
+\end{proof}
+
+\begin{alertblock}{Analogía con la Geométrica}
+Así como la Geométrica es el "tiempo discreto hasta el primer éxito", la Exponencial es su análogo continuo: el "tiempo continuo hasta el primer evento".
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Falta de memoria (versión continua)}
+\begin{theorem}[Falta de memoria]
+Si $X\sim\text{Exp}(\lambda)$, para todo $s,t\ge 0$:
+$$P(X>s+t \mid X>s) = P(X>t).$$
+\end{theorem}
+
+\begin{proof}
+$P(X>x) = 1-F(x) = e^{-\lambda x}$. Entonces
+$$P(X>s+t\mid X>s) = \frac{P(X>s+t)}{P(X>s)} = \frac{e^{-\lambda(s+t)}}{e^{-\lambda s}} = e^{-\lambda t} = P(X>t). \qedhere$$
+\end{proof}
+
+\begin{alertblock}{Interpretación}
+Si un componente "no envejece" (su vida útil restante no depende de cuánto tiempo lleva funcionando), su tiempo de vida es exponencial. Es la \textbf{única} distribución continua con esta propiedad.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Exponencial}
+\begin{example}
+El tiempo de vida de un componente electrónico sigue $\text{Exp}(\lambda)$ con vida media $E(X)=1000$ horas. (a) Hallar $P(X>1500)$. (b) Si el componente ya funcionó 1000 horas, ¿cuál es la probabilidad de que dure al menos 1500 horas más?
+\end{example}
+
+\begin{block}{Resolución}
+$\lambda = 1/1000 = 0.001$.
+
+(a) $P(X>1500) = e^{-0.001\times 1500} = e^{-1.5} \approx 0.2231$.
+
+(b) Por falta de memoria: $P(X>1000+1500\mid X>1000) = P(X>1500) \approx 0.2231$ (¡el "desgaste" previo no importa!).
+\end{block}
+\end{frame}
+
+\section{Distribución Gamma}
+
+\begin{frame}{La función Gamma}
+\begin{definition}[Función Gamma]
+Para $\alpha>0$:
+$$\Gamma(\alpha) = \int_0^\infty x^{\alpha-1}e^{-x}\,dx.$$
+\end{definition}
+
+\begin{block}{Propiedades}
+\begin{itemize}
+\item $\Gamma(\alpha) = (\alpha-1)\Gamma(\alpha-1)$ (fórmula de recurrencia, por partes).
+\item Si $n\in\mathbb{N}$: $\Gamma(n) = (n-1)!$.
+\item $\Gamma(1/2) = \sqrt{\pi}$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Distribución Gamma}
+\begin{definition}[Distribución Gamma]
+$X\sim\text{Gamma}(\alpha,\lambda)$ ($\alpha>0$ parámetro de \textbf{forma}, $\lambda>0$ parámetro de \textbf{escala/tasa}) si
+$$f(x) = \frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}, \qquad x> 0.$$
+\end{definition}
+
+\begin{block}{Interpretación: suma de tiempos exponenciales}
+Si $T_1,\dots,T_\alpha$ son los tiempos entre eventos consecutivos de un proceso de Poisson de tasa $\lambda$ (independientes, cada uno $\text{Exp}(\lambda)$), el tiempo hasta el $\alpha$-ésimo evento es
+$$X = T_1+T_2+\cdots+T_\alpha \sim \text{Gamma}(\alpha,\lambda) \quad (\alpha \in \mathbb{N}).$$
+\end{block}
+\end{frame}
+
+\begin{frame}{Esperanza, varianza y casos particulares}
+\begin{theorem}
+Si $X\sim\text{Gamma}(\alpha,\lambda)$:
+$$E(X) = \frac{\alpha}{\lambda}, \qquad V(X) = \frac{\alpha}{\lambda^2}.$$
+\end{theorem}
+
+\begin{alertblock}{Casos particulares importantes}
+\begin{itemize}
+\item $\alpha=1$: $\text{Gamma}(1,\lambda) = \text{Exp}(\lambda)$.
+\item $\alpha=k\in\mathbb{N}$ entero: se llama distribución de \textbf{Erlang}, y es la suma de $k$ exponenciales independientes de parámetro $\lambda$ (análogo continuo de Pascal).
+\end{itemize}
+\end{alertblock}
+
+\begin{block}{Consistencia con la esperanza de Exp}
+Con $\alpha=1$: $E(X) = 1/\lambda$, coincide con lo visto para la Exponencial.
+\end{block}
+\end{frame}
+
+\begin{frame}{Gráfico: densidades Gamma}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  xmin=0, xmax=12, ymin=0, ymax=0.6,
+  xlabel={$x$}, ylabel={$f(x)$},
+  width=10.5cm, height=5.5cm,
+  domain=0.01:12, samples=100,
+  legend pos=north east, legend style={font=\tiny},
+]
+\addplot[thick,blue] {1*exp(-1*x)};
+\addplot[thick,red] {1^2/1 * x * exp(-1*x)};
+\addplot[thick,green!60!black] {1^3/2 * x^2 * exp(-1*x)};
+\legend{$\alpha=1$ (Exp), $\alpha=2$, $\alpha=3$}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+Con $\lambda=1$ fijo: a mayor $\alpha$, la densidad se desplaza a la derecha y se vuelve más simétrica.
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Gamma}
+\begin{example}
+A un taller llegan pedidos de reparación según un proceso de Poisson con tasa $\lambda=2$ por día. ¿Cuál es el tiempo esperado hasta que lleguen 5 pedidos, y cuál es la varianza de ese tiempo?
+\end{example}
+
+\begin{block}{Resolución}
+El tiempo $X$ hasta el 5.º pedido es $X\sim\text{Gamma}(\alpha=5,\lambda=2)$ (suma de 5 tiempos exponenciales independientes).
+$$E(X) = \frac{\alpha}{\lambda} = \frac{5}{2} = 2.5 \text{ días}, \qquad V(X) = \frac{\alpha}{\lambda^2} = \frac{5}{4} = 1.25 \text{ días}^2.$$
+\end{block}
+\end{frame}
+
+\section{Función de una variable aleatoria}
+
+\begin{frame}{El problema}
+\begin{block}{Planteo}
+Dada una v.a. $X$ con distribución conocida, y una función $Y=g(X)$, queremos hallar la distribución de $Y$.
+\end{block}
+\begin{example}
+Si $X$ es la temperatura en grados Celsius con cierta distribución, y $Y=1.8X+32$ es la temperatura en Fahrenheit, ¿cuál es la distribución de $Y$?
+\end{example}
+
+\begin{alertblock}{Dos métodos}
+\begin{enumerate}
+\item \textbf{Método de la función de distribución}: se calcula directamente $F_Y(y)=P(Y\le y)$ despejando en términos de $X$.
+\item \textbf{Método del jacobiano (cambio de variable)}: fórmula directa para $f_Y(y)$ cuando $g$ es monótona y derivable.
+\end{enumerate}
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Método de la función de distribución}
+\begin{block}{Procedimiento}
+\begin{enumerate}
+\item Escribir $F_Y(y) = P(Y\le y) = P(g(X)\le y)$.
+\item Despejar la desigualdad para expresarla en términos de $X$ (usando que $g$ es invertible, si corresponde).
+\item Expresar el resultado con $F_X$, la f.d.a. de $X$.
+\item Derivar $F_Y(y)$ para obtener $f_Y(y)$, si se requiere la densidad.
+\end{enumerate}
+\end{block}
+
+\begin{example}
+Sea $X\sim\text{Exp}(\lambda)$ y $Y=2X$. Hallar $f_Y(y)$.
+$$F_Y(y) = P(2X\le y) = P\left(X\le \frac{y}{2}\right) = F_X\left(\frac{y}{2}\right) = 1-e^{-\lambda y/2}, \quad y\ge0.$$
+Derivando: $f_Y(y) = \dfrac{\lambda}{2}e^{-\lambda y/2}$, es decir $Y\sim\text{Exp}(\lambda/2)$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Método del jacobiano (cambio de variable)}
+\begin{theorem}[Cambio de variable, caso monótono]
+Sea $X$ continua con densidad $f_X$, y $Y=g(X)$ con $g$ \textbf{estrictamente monótona y derivable}, con inversa $x=g^{-1}(y)=h(y)$. Entonces
+$$f_Y(y) = f_X\big(h(y)\big)\,\left|h'(y)\right|.$$
+\end{theorem}
+
+\begin{block}{Idea de la deducción (caso $g$ creciente)}
+$F_Y(y)=P(X\le h(y)) = F_X(h(y))$. Derivando con la regla de la cadena: $f_Y(y)=f_X(h(y))h'(y)$. Si $g$ es decreciente aparece un signo menos, de ahí el valor absoluto.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: transformación lineal}
+\begin{example}
+Sea $X\sim N(\mu,\sigma^2)$ y $Y = aX+b$ con $a\ne 0$. Hallar la distribución de $Y$ usando el jacobiano.
+\end{example}
+
+\begin{block}{Resolución}
+$g(x)=ax+b \Rightarrow h(y) = \dfrac{y-b}{a}$, con $h'(y) = 1/a$.
+
+$$f_Y(y) = f_X\!\left(\frac{y-b}{a}\right)\left|\frac{1}{a}\right| = \frac{1}{|a|\sigma\sqrt{2\pi}}\exp\left(-\frac{\left(\frac{y-b}{a}-\mu\right)^2}{2\sigma^2}\right) = \frac{1}{|a|\sigma\sqrt{2\pi}}\exp\left(-\frac{(y-(a\mu+b))^2}{2(a\sigma)^2}\right).$$
+
+Se reconoce la densidad Normal: $Y\sim N(a\mu+b,\, a^2\sigma^2)$. En particular, la estandarización $Z=(X-\mu)/\sigma$ de la clase anterior es un caso de esta transformación.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: transformación no lineal}
+\begin{example}
+Sea $X$ con densidad $f_X(x)=2x$ para $0\le x\le 1$. Hallar la densidad de $Y=X^2$.
+\end{example}
+
+\begin{block}{Resolución con método de la f.d.a. (más simple si $g$ no es lineal)}
+Para $0\le y\le 1$, como $g(x)=x^2$ es creciente en $[0,1]$:
+$$F_Y(y) = P(X^2\le y) = P(X\le \sqrt{y}) = F_X(\sqrt{y}) = \int_0^{\sqrt{y}} 2x\,dx = y.$$
+Derivando: $f_Y(y) = 1$ para $0\le y\le 1$. Es decir, $Y\sim \text{Uniforme}(0,1)$.
+\end{block}
+
+\begin{alertblock}{Verificación con el jacobiano}
+$h(y)=\sqrt{y}$, $h'(y) = \frac{1}{2\sqrt{y}}$; $f_Y(y) = f_X(\sqrt{y})|h'(y)| = 2\sqrt{y}\cdot\frac{1}{2\sqrt{y}} = 1$. Coincide.
+\end{alertblock}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Distribución} & \textbf{$f(x)$} & \textbf{$E(X)$} & \textbf{$V(X)$} \\
+\midrule
+Exponencial$(\lambda)$ & $\lambda e^{-\lambda x}$, $x\ge0$ & $1/\lambda$ & $1/\lambda^2$ \\
+Gamma$(\alpha,\lambda)$ & $\frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}$, $x>0$ & $\alpha/\lambda$ & $\alpha/\lambda^2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{block}{Ideas clave}
+\begin{itemize}
+\item La Exponencial modela el tiempo entre eventos de Poisson; tiene falta de memoria.
+\item La Gamma generaliza a la Exponencial: suma de $\alpha$ tiempos exponenciales ($\alpha=1$ da la Exponencial).
+\item Para hallar la distribución de $Y=g(X)$: método de la f.d.a. (directo, sirve siempre) o método del jacobiano $f_Y(y)=f_X(h(y))|h'(y)|$ (rápido si $g$ es monótona derivable).
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Cierre de la Unidad 2}
+Con esto completamos el estudio de variables aleatorias discretas y continuas. En la Unidad 3 extenderemos estas ideas a vectores aleatorios (dos o más variables).
+\end{alertblock}
+\end{frame}
+
+\end{document}

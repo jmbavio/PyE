@@ -1,0 +1,295 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 21: Estimación Puntual}
+\subtitle{Unidad 6: Estimación de parámetros}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Introducción a la estimación}
+
+\begin{frame}{De la probabilidad a la inferencia}
+\begin{block}{Problema general de la Estadística Inferencial}
+Tenemos una población descripta por una variable aleatoria $X$ cuya distribución depende de uno o más \textbf{parámetros desconocidos} $\theta$ (por ejemplo, $\mu$, $\sigma^2$, $p$, $\lambda$). A partir de una \textbf{muestra aleatoria} $X_1, X_2, \dots, X_n$ extraída de esa población, queremos decir algo razonable acerca de $\theta$.
+\end{block}
+
+\begin{alertblock}{Idea central}
+Un \textbf{estimador} es una función de la muestra —es decir, un \textbf{estadístico}— que usamos para aproximar el valor del parámetro desconocido.
+\end{alertblock}
+
+\begin{itemize}
+\item Ya vimos (Unidad 5) qué es una muestra aleatoria y algunos estadísticos: $\overline{X}$, $S^2$, etc.
+\item Ahora estudiamos: \emph{¿qué hace bueno a un estimador?} y \emph{¿cómo construirlo?}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Definiciones básicas}
+\begin{definition}[Estimador puntual]
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población con distribución que depende de un parámetro $\theta \in \Theta$. Un \textbf{estimador puntual} de $\theta$ es un estadístico
+\[
+\widehat{\theta} = \widehat{\theta}(X_1,\dots,X_n)
+\]
+es decir, una función de la muestra que no depende de $\theta$.
+\end{definition}
+
+\begin{definition}[Estimación]
+Si $x_1,\dots,x_n$ son los valores observados (los datos concretos), el número $\widehat{\theta}(x_1,\dots,x_n)$ se llama \textbf{estimación} puntual de $\theta$.
+\end{definition}
+
+\begin{block}{Observación clave}
+$\widehat{\theta}$ es una variable aleatoria (depende de la muestra, que es aleatoria); por lo tanto tiene su propia distribución, llamada \textbf{distribución muestral del estimador}, con su media, varianza, etc.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplos de estimadores usuales}
+Sea $X_1,\dots,X_n$ m.a. de una población con media $\mu$ y varianza $\sigma^2$.
+
+\begin{itemize}
+\item Estimadores de $\mu$: la media muestral $\overline{X} = \dfrac{1}{n}\sum_{i=1}^n X_i$, o la mediana muestral $\widetilde{X}$.
+\item Estimadores de $\sigma^2$: la cuasivarianza muestral $S^2 = \dfrac{1}{n-1}\sum_{i=1}^n (X_i - \overline{X})^2$, o la varianza muestral $\widehat{\sigma}^2 = \dfrac{1}{n}\sum_{i=1}^n (X_i - \overline{X})^2$.
+\item Estimador de una proporción $p$: $\widehat{p} = \dfrac{Y}{n}$, donde $Y\sim \text{Bi}(n,p)$ cuenta \emph{éxitos}.
+\end{itemize}
+
+\begin{alertblock}{Pregunta natural}
+Para un mismo parámetro hay \emph{varios} estimadores posibles ($\overline{X}$ vs.\ $\widetilde{X}$; $S^2$ vs.\ $\widehat\sigma^2$). ¿Cuál conviene usar? Necesitamos \textbf{criterios de comparación}.
+\end{alertblock}
+\end{frame}
+
+\section{Insesgadez}
+
+\begin{frame}{Insesgadez}
+\begin{definition}[Estimador insesgado]
+$\widehat{\theta}$ es un \textbf{estimador insesgado} (o \emph{centrado}) de $\theta$ si
+\[
+E(\widehat{\theta}) = \theta \qquad \text{para todo } \theta \in \Theta.
+\]
+El \textbf{sesgo} de $\widehat\theta$ se define como
+\[
+B(\widehat\theta) = E(\widehat\theta) - \theta.
+\]
+Si $B(\widehat\theta) \neq 0$, el estimador es \textbf{sesgado}.
+\end{definition}
+
+\begin{block}{Interpretación}
+En promedio, sobre infinitas repeticiones del muestreo, un estimador insesgado no sobreestima ni subestima sistemáticamente al parámetro.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: $\overline{X}$ es insesgado para $\mu$}
+\begin{example}
+Sea $X_1,\dots,X_n$ m.a. de una población con $E(X_i)=\mu$. Entonces
+\[
+E(\overline{X}) = E\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n}\sum_{i=1}^n E(X_i) = \frac{1}{n}\cdot n\mu = \mu.
+\]
+Por lo tanto $\overline{X}$ es un estimador insesgado de $\mu$, para \textbf{cualquier} distribución poblacional con media finita.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo clave: por qué se divide por $n-1$}
+\begin{example}
+Se puede probar que, si $X_1,\dots,X_n$ es m.a.\ de una población con varianza $\sigma^2$,
+\[
+E\left[\sum_{i=1}^n (X_i-\overline X)^2\right] = (n-1)\sigma^2 .
+\]
+En consecuencia:
+\[
+E(S^2) = E\left(\frac{1}{n-1}\sum_{i=1}^n (X_i-\overline X)^2\right) = \sigma^2 \quad \Rightarrow\quad S^2 \text{ es insesgado.}
+\]
+En cambio, el estimador "intuitivo" $\widehat\sigma^2 = \dfrac{1}{n}\sum_{i=1}^n (X_i-\overline X)^2$ cumple
+\[
+E(\widehat\sigma^2) = \frac{n-1}{n}\sigma^2 \neq \sigma^2,
+\]
+es decir, $\widehat\sigma^2$ es \textbf{sesgado} (subestima a $\sigma^2$), con sesgo $B(\widehat\sigma^2) = -\dfrac{\sigma^2}{n}$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Deducción del sesgo de $\widehat\sigma^2$}
+\begin{proof}[Idea de la deducción]
+Partimos de la identidad
+\[
+\sum_{i=1}^n (X_i-\mu)^2 = \sum_{i=1}^n (X_i - \overline X)^2 + n(\overline X - \mu)^2.
+\]
+Tomando esperanza en ambos lados:
+\[
+n\sigma^2 = E\left[\sum_{i=1}^n (X_i-\overline X)^2\right] + n\,\mathrm{Var}(\overline X) = E\left[\sum (X_i-\overline X)^2\right] + n\cdot\frac{\sigma^2}{n}.
+\]
+Despejando:
+\[
+E\left[\sum_{i=1}^n (X_i-\overline X)^2\right] = n\sigma^2 - \sigma^2 = (n-1)\sigma^2. \qedhere
+\]
+\end{proof}
+\begin{block}{Conclusión práctica}
+Este es el motivo estadístico por el cual la \textbf{cuasivarianza muestral} $S^2$ (con $n-1$ en el denominador) es la que se usa habitualmente como estimador de $\sigma^2$.
+\end{block}
+\end{frame}
+
+\section{Error cuadrático medio}
+
+\begin{frame}{Error cuadrático medio (ECM)}
+\begin{definition}[ECM]
+El \textbf{error cuadrático medio} de un estimador $\widehat\theta$ de $\theta$ es
+\[
+\mathrm{ECM}(\widehat\theta) = E\left[(\widehat\theta - \theta)^2\right].
+\]
+\end{definition}
+
+\begin{theorem}[Descomposición del ECM]
+\[
+\mathrm{ECM}(\widehat\theta) = \mathrm{Var}(\widehat\theta) + \left[B(\widehat\theta)\right]^2,
+\]
+donde $B(\widehat\theta) = E(\widehat\theta)-\theta$ es el sesgo.
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+E[(\widehat\theta-\theta)^2] &= E\left[\left(\widehat\theta - E(\widehat\theta) + E(\widehat\theta) - \theta\right)^2\right] \\
+&= E\left[(\widehat\theta-E(\widehat\theta))^2\right] + 2\underbrace{E[\widehat\theta - E(\widehat\theta)]}_{=0}\cdot B(\widehat\theta) + B(\widehat\theta)^2 \\
+&= \mathrm{Var}(\widehat\theta) + B(\widehat\theta)^2. \qedhere
+\end{align*}
+\end{proof}
+\end{frame}
+
+\begin{frame}{Por qué importa el ECM}
+\begin{block}{El ECM combina precisión y exactitud}
+\begin{itemize}
+\item Si $\widehat\theta$ es insesgado, $\mathrm{ECM}(\widehat\theta) = \mathrm{Var}(\widehat\theta)$: comparar estimadores insesgados equivale a comparar varianzas.
+\item Un estimador \textbf{sesgado} puede tener menor ECM que uno insesgado, si a cambio tiene mucha menor varianza. El ECM permite comparar estimadores aunque no todos sean insesgados.
+\end{itemize}
+\end{block}
+
+\begin{example}
+Comparemos $\widehat\sigma^2 = \frac{1}{n}\sum(X_i-\overline X)^2$ (sesgado) con $S^2$ (insesgado) para estimar $\sigma^2$ en una población normal. Se puede probar que
+\[
+\mathrm{Var}(S^2) = \frac{2\sigma^4}{n-1}, \qquad \mathrm{ECM}(\widehat\sigma^2) = \frac{2n-1}{n^2}\sigma^4 < \frac{2\sigma^4}{n-1} = \mathrm{ECM}(S^2).
+\]
+Sorprendentemente, ¡el estimador sesgado $\widehat\sigma^2$ tiene menor ECM! Aun así, en la práctica se prefiere $S^2$ por su insesgadez y por simplicidad interpretativa.
+\end{example}
+\end{frame}
+
+\section{Eficiencia}
+
+\begin{frame}{Eficiencia relativa y estimador de mínima varianza}
+\begin{definition}[Eficiencia relativa]
+Dados dos estimadores insesgados $\widehat\theta_1$, $\widehat\theta_2$ de $\theta$, la \textbf{eficiencia relativa} de $\widehat\theta_1$ respecto de $\widehat\theta_2$ es
+\[
+\mathrm{ER}(\widehat\theta_1,\widehat\theta_2) = \frac{\mathrm{Var}(\widehat\theta_2)}{\mathrm{Var}(\widehat\theta_1)}.
+\]
+Si $\mathrm{ER} > 1$, $\widehat\theta_1$ es \textbf{más eficiente} (tiene menor varianza).
+\end{definition}
+
+\begin{definition}[Estimador insesgado de mínima varianza, EIMV/UMVUE]
+$\widehat\theta^*$ es \textbf{EIMV} de $\theta$ si es insesgado y $\mathrm{Var}(\widehat\theta^*) \le \mathrm{Var}(\widehat\theta)$ para \textbf{todo} otro estimador insesgado $\widehat\theta$ de $\theta$.
+\end{definition}
+
+\begin{alertblock}{Cota de Cramér--Rao (mención)}
+Bajo condiciones de regularidad, toda varianza de un estimador insesgado satisface
+$\mathrm{Var}(\widehat\theta) \ge \dfrac{1}{n\, I(\theta)}$, donde $I(\theta)$ es la información de Fisher. Un estimador que alcanza esta cota es EIMV.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: $\overline{X}$ vs.\ mediana muestral}
+\begin{example}
+Sea $X_1,\dots,X_n$ m.a.\ de una población $N(\mu,\sigma^2)$, $n$ impar. Se puede probar (resultado avanzado) que la mediana muestral $\widetilde X$ es también insesgada para $\mu$, con
+\[
+\mathrm{Var}(\overline X) = \frac{\sigma^2}{n}, \qquad \mathrm{Var}(\widetilde X) \approx \frac{\pi}{2}\cdot\frac{\sigma^2}{n} \approx 1.57\cdot \frac{\sigma^2}{n}.
+\]
+Como $\mathrm{Var}(\overline X) < \mathrm{Var}(\widetilde X)$, la eficiencia relativa de $\overline X$ respecto de $\widetilde X$ es
+\[
+\mathrm{ER}(\overline X, \widetilde X) = \frac{\mathrm{Var}(\widetilde X)}{\mathrm{Var}(\overline X)} \approx 1.57 > 1.
+\]
+\textbf{Conclusión:} en poblaciones normales, $\overline X$ es más eficiente que $\widetilde X$ para estimar $\mu$ (aproximadamente un $57\%$ más eficiente).
+\end{example}
+\end{frame}
+
+\section{Consistencia}
+
+\begin{frame}{Consistencia}
+\begin{definition}[Estimador consistente]
+Una sucesión de estimadores $\widehat\theta_n$ (uno para cada tamaño muestral $n$) es \textbf{consistente} para $\theta$ si converge en probabilidad a $\theta$:
+\[
+\widehat\theta_n \xrightarrow{P} \theta, \qquad \text{es decir,} \qquad \lim_{n\to\infty} P\left(|\widehat\theta_n - \theta| > \varepsilon\right) = 0 \quad \forall \varepsilon>0.
+\]
+\end{definition}
+
+\begin{theorem}[Criterio suficiente de consistencia]
+Si $\lim_{n\to\infty} \mathrm{ECM}(\widehat\theta_n) = 0$, entonces $\widehat\theta_n$ es consistente. En particular, si $\widehat\theta_n$ es insesgado y $\lim_{n\to\infty}\mathrm{Var}(\widehat\theta_n)=0$, entonces es consistente.
+\end{theorem}
+
+\begin{proof}[Idea (desigualdad de Chebyshev)]
+\[
+P(|\widehat\theta_n-\theta|>\varepsilon) \le \frac{E[(\widehat\theta_n-\theta)^2]}{\varepsilon^2} = \frac{\mathrm{ECM}(\widehat\theta_n)}{\varepsilon^2} \xrightarrow[n\to\infty]{} 0. \qedhere
+\]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Ejemplo: consistencia de $\overline X$ y $S^2$}
+\begin{example}
+Sea $X_1,\dots,X_n$ m.a.\ con $E(X_i)=\mu$, $\mathrm{Var}(X_i)=\sigma^2<\infty$.
+\begin{itemize}
+\item $\overline X$ es insesgado y $\mathrm{Var}(\overline X) = \sigma^2/n \to 0$ cuando $n\to\infty$. Luego $\overline X$ es consistente para $\mu$ (esto también es consecuencia directa de la Ley de los Grandes Números).
+\item $S^2$ es insesgado y se puede probar que $\mathrm{Var}(S^2)\to 0$ cuando $n\to\infty$ (bajo momentos finitos adecuados). Luego $S^2$ es consistente para $\sigma^2$.
+\end{itemize}
+\end{example}
+
+\begin{alertblock}{Importante}
+Insesgadez y consistencia son propiedades \textbf{distintas}: un estimador puede ser sesgado para todo $n$ finito pero consistente (el sesgo desaparece asintóticamente). Ejemplo: $\widehat\sigma^2 = \frac{n-1}{n}S^2$ es sesgado pero consistente, pues $\frac{n-1}{n}\to 1$.
+\end{alertblock}
+\end{frame}
+
+\section{Ejemplo integrador}
+
+\begin{frame}{Ejemplo integrador numérico}
+\begin{example}
+Un ingeniero mide el diámetro (en mm) de $n=5$ piezas: $10.2,\ 9.8,\ 10.1,\ 9.9,\ 10.0$.
+\begin{align*}
+\overline x &= \frac{10.2+9.8+10.1+9.9+10.0}{5} = \frac{50.0}{5} = 10.0 \\
+\widetilde x &= 10.0 \quad \text{(mediana: valor central al ordenar los datos)}\\
+s^2 &= \frac{1}{4}\left[(0.2)^2+(-0.2)^2+(0.1)^2+(-0.1)^2+0^2\right] = \frac{0.10}{4} = 0.025 \\
+\widehat\sigma^2 &= \frac{4}{5}s^2 = \frac{4}{5}(0.025) = 0.02
+\end{align*}
+Aquí $\overline x = \widetilde x = 10.0$ mm son las estimaciones puntuales de $\mu$; $s^2=0.025$ mm$^2$ es la estimación insesgada de $\sigma^2$.
+\end{example}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen}
+\begin{block}{Propiedades deseables de un estimador $\widehat\theta$}
+\begin{itemize}
+\item \textbf{Insesgadez:} $E(\widehat\theta)=\theta$ (sesgo nulo).
+\item \textbf{ECM:} $\mathrm{ECM}(\widehat\theta)=\mathrm{Var}(\widehat\theta)+B(\widehat\theta)^2$; mide error total (precisión + exactitud).
+\item \textbf{Eficiencia:} entre estimadores insesgados, preferimos el de menor varianza (EIMV = mínima varianza posible).
+\item \textbf{Consistencia:} $\widehat\theta_n \xrightarrow{P} \theta$ cuando $n\to\infty$; garantiza que, con muestras grandes, el estimador se acerca al parámetro.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Próxima clase}
+¿Cómo \textbf{construir} estimadores con buenas propiedades? Método de mínimos cuadrados y método de máxima verosimilitud.
+\end{alertblock}
+\end{frame}
+
+\end{document}

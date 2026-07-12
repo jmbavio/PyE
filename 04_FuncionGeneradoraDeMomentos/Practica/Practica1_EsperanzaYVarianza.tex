@@ -1,0 +1,162 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 1: Esperanza y varianza \\ \large Unidad 4: Función generadora de momentos}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Una empresa vende un seguro contra robo de bicicletas. Sea $X$ la variable que indica la ganancia anual de la empresa por póliza (en miles de pesos), con distribución:
+\[
+\begin{array}{c|cccc}
+x & -50 & -10 & 5 & 8 \\ \hline
+P(X=x) & 0.02 & 0.08 & 0.30 & 0.60
+\end{array}
+\]
+(el valor $-50$ corresponde a que ocurra un robo grave, $-10$ a un robo menor, y los positivos a que no haya siniestro, con distintos costos administrativos). Calcular $E(X)$ e interpretar el resultado.
+\end{ejercicio}
+
+\begin{solucion}
+\[
+E(X) = (-50)(0.02) + (-10)(0.08) + 5(0.30) + 8(0.60)
+\]
+\[
+= -1 - 0.8 + 1.5 + 4.8 = 4.5.
+\]
+La ganancia esperada por póliza es de \$4500. Esto no significa que en cada póliza individual la empresa gane exactamente esa cifra, sino que, en promedio (a largo plazo, vendiendo muchas pólizas), la ganancia por póliza tiende a $\$4500$.
+\end{solucion}
+
+\begin{ejercicio}
+Sea $X$ una variable aleatoria continua con función de densidad
+\[
+f(x) = \begin{cases} 3x^2, & 0 \leq x \leq 1 \\ 0, & \text{en otro caso} \end{cases}
+\]
+Calcular $E(X)$ y $E(X^2)$.
+\end{ejercicio}
+
+\begin{solucion}
+\[
+E(X) = \int_0^1 x \cdot 3x^2\, dx = \int_0^1 3x^3\, dx = \left[\frac{3x^4}{4}\right]_0^1 = \frac{3}{4}.
+\]
+\[
+E(X^2) = \int_0^1 x^2\cdot 3x^2\, dx = \int_0^1 3x^4\, dx = \left[\frac{3x^5}{5}\right]_0^1 = \frac{3}{5}.
+\]
+Estos valores se usarán en el Ejercicio 4 para calcular la varianza.
+\end{solucion}
+
+\begin{ejercicio}
+El número de defectos $X$ en un metro cuadrado de tela producida por una fábrica tiene distribución Poisson con $\lambda = 2$. El costo de reparación de la tela (en pesos) es $C = 100 + 50X^2$ (el costo crece cuadráticamente porque los defectos múltiples requieren procesos más complejos). Calcular el costo esperado $E(C)$.
+\end{ejercicio}
+
+\begin{solucion}
+Usamos la ley del estadístico inconsciente: $E(C) = E(100+50X^2) = 100 + 50\,E(X^2)$.
+
+\medskip
+Para $X\sim\text{Poisson}(\lambda)$ sabemos $E(X)=\lambda$ y $\text{Var}(X)=\lambda$ (resultado que se demuestra en el Ejercicio 5). Usando $\text{Var}(X) = E(X^2)-[E(X)]^2$:
+\[
+E(X^2) = \text{Var}(X) + [E(X)]^2 = \lambda + \lambda^2 = 2 + 4 = 6.
+\]
+Por lo tanto,
+\[
+E(C) = 100 + 50(6) = 100+300 = 400.
+\]
+El costo esperado de reparación es de \$400 por metro cuadrado.
+\end{solucion}
+
+\begin{ejercicio}
+Usando los resultados del Ejercicio 2, calcular $\text{Var}(X)$ y la desviación estándar $\sigma_X$ para la variable con densidad $f(x)=3x^2$ en $[0,1]$.
+\end{ejercicio}
+
+\begin{solucion}
+Usamos la fórmula de cálculo $\text{Var}(X) = E(X^2) - [E(X)]^2$:
+\[
+\text{Var}(X) = \frac{3}{5} - \left(\frac{3}{4}\right)^2 = \frac{3}{5} - \frac{9}{16}.
+\]
+Llevando a común denominador ($80$):
+\[
+\text{Var}(X) = \frac{48}{80} - \frac{45}{80} = \frac{3}{80} = 0.0375.
+\]
+\[
+\sigma_X = \sqrt{0.0375} \approx 0.1936.
+\]
+\end{solucion}
+
+\begin{ejercicio}
+Demostrar que si $X\sim\text{Poisson}(\lambda)$, entonces $\text{Var}(X) = \lambda$.
+\end{ejercicio}
+
+\begin{solucion}
+Ya sabemos $E(X)=\lambda$ (visto en Clase 14). Calculemos $E(X(X-1))$, que suele ser más simple que $E(X^2)$ directamente:
+\[
+E(X(X-1)) = \sum_{k=0}^{\infty} k(k-1)\frac{e^{-\lambda}\lambda^k}{k!} = \sum_{k=2}^{\infty} \frac{e^{-\lambda}\lambda^k}{(k-2)!}.
+\]
+Sustituyendo $j=k-2$:
+\[
+= \lambda^2 e^{-\lambda}\sum_{j=0}^{\infty}\frac{\lambda^j}{j!} = \lambda^2 e^{-\lambda} e^{\lambda} = \lambda^2.
+\]
+Como $E(X(X-1)) = E(X^2) - E(X) = E(X^2)-\lambda$, tenemos $E(X^2) = \lambda^2+\lambda$. Finalmente:
+\[
+\text{Var}(X) = E(X^2)-[E(X)]^2 = (\lambda^2+\lambda) - \lambda^2 = \lambda. \qquad \blacksquare
+\]
+\end{solucion}
+
+\begin{ejercicio}
+El peso de los paquetes procesados por una empresa de correo tiene media $\mu=8$ kg y desviación estándar $\sigma=1.5$ kg (distribución desconocida). Usando la desigualdad de Chebyshev, acotar la probabilidad de que un paquete elegido al azar pese menos de $5$ kg o más de $11$ kg.
+\end{ejercicio}
+
+\begin{solucion}
+El evento ``pesa menos de $5$ kg o más de $11$ kg'' es $\{|X-8|\geq 3\}$, pues $8-3=5$ y $8+3=11$. Aplicamos Chebyshev con $k=3$:
+\[
+P(|X-8|\geq 3) \leq \frac{\sigma^2}{k^2} = \frac{(1.5)^2}{3^2} = \frac{2.25}{9} = 0.25.
+\]
+La probabilidad de que un paquete pese menos de $5$ kg o más de $11$ kg es a lo sumo $25\%$.
+\end{solucion}
+
+\begin{ejercicio}
+Sea $X$ una variable aleatoria con $E(X)=20$ y $\text{Var}(X)=16$. Usando Chebyshev, hallar un valor de $k$ tal que $P(12 < X < 28) \geq 0.9$.
+\end{ejercicio}
+
+\begin{solucion}
+Notamos que $12 = 20-8$ y $28=20+8$, así que el evento es $\{|X-20|<8\}$, con $k=8$. Por Chebyshev,
+\[
+P(|X-20|<8) \geq 1 - \frac{\sigma^2}{k^2} = 1-\frac{16}{64} = 1-0.25 = 0.75.
+\]
+Esto solo garantiza $P(12<X<28)\geq 0.75$, que \textbf{no} alcanza el $0.9$ pedido. Busquemos en cambio, de manera general, qué $k$ garantiza $1-16/k^2 \geq 0.9$:
+\[
+1 - \frac{16}{k^2} \geq 0.9 \iff \frac{16}{k^2}\leq 0.1 \iff k^2 \geq 160 \iff k \geq \sqrt{160}\approx 12.65.
+\]
+Es decir, Chebyshev garantiza $P(20-12.65 < X < 20+12.65) = P(7.35<X<32.65) \geq 0.9$. El intervalo $(12,28)$ del enunciado (con $k=8$) es demasiado angosto para garantizar el $90\%$ usando solo Chebyshev; se necesitaría más información sobre la distribución de $X$ para una cota más ajustada (ver aproximación normal, Clase 18).
+\end{solucion}
+
+\begin{ejercicio}
+Un examen tiene $20$ preguntas de verdadero/falso. Un estudiante responde al azar (adivinando), por lo que el número de respuestas correctas $X\sim\text{Bin}(20,\,0.5)$. Calcular $E(X)$, $\text{Var}(X)$, y usar Chebyshev para acotar la probabilidad de aprobar (es decir, de responder correctamente al menos $16$ preguntas, con $|X-10|\geq 6$).
+\end{ejercicio}
+
+\begin{solucion}
+Para $X\sim\text{Bin}(n,p)$: $E(X)=np=20(0.5)=10$, $\text{Var}(X)=np(1-p)=20(0.5)(0.5)=5$.
+
+\medskip
+El evento ``al menos $16$ correctas'' está contenido en $\{|X-10|\geq 6\}$ (ya que si $X\geq16$, entonces $X-10\geq6$). Por Chebyshev con $k=6$:
+\[
+P(X\geq 16) \leq P(|X-10|\geq 6) \leq \frac{5}{36} \approx 0.1389.
+\]
+La probabilidad de aprobar adivinando es a lo sumo $13.9\%$ (cota conservadora; el valor exacto, calculado con la fórmula binomial, es bastante menor, aproximadamente $0.0577$).
+\end{solucion}
+
+\end{document}

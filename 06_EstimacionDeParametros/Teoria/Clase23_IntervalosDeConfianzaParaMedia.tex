@@ -1,0 +1,303 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 23: Intervalos de Confianza para la Media}
+\subtitle{Unidad 6: Estimación de parámetros}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Estimación por intervalos}
+
+\begin{frame}{De la estimación puntual a la estimación por intervalos}
+\begin{block}{Limitación de la estimación puntual}
+Una estimación puntual $\widehat\theta$ (por ejemplo $\overline x = 24.3$) no nos dice \textbf{qué tan confiable} es esa aproximación. Dos muestras distintas dan, en general, dos valores distintos de $\overline x$.
+\end{block}
+
+\begin{definition}[Intervalo de confianza]
+Un \textbf{intervalo de confianza (IC)} de nivel $1-\alpha$ para un parámetro $\theta$ es un intervalo aleatorio $(L_1, L_2)$, construido a partir de la muestra, tal que
+\[
+P(L_1 < \theta < L_2) = 1-\alpha.
+\]
+A $1-\alpha$ se lo llama \textbf{nivel (o coeficiente) de confianza}, típicamente $90\%$, $95\%$ o $99\%$.
+\end{definition}
+\end{frame}
+
+\begin{frame}{Interpretación correcta del intervalo de confianza}
+\begin{alertblock}{¡Cuidado con la interpretación!}
+Antes de observar la muestra, $(L_1,L_2)$ es aleatorio y $\theta$ es fijo (aunque desconocido). La afirmación correcta es:
+
+\emph{"Si repitiéramos el proceso de muestreo un gran número de veces y construyéramos el IC en cada caso, aproximadamente el $(1-\alpha)\cdot 100\%$ de esos intervalos contendría al verdadero valor de $\theta$."}
+\end{alertblock}
+
+\begin{block}{Una vez calculado el intervalo con datos concretos}
+Ya no tiene sentido hablar de "probabilidad" de que $\theta$ esté en un intervalo numérico fijo, como $(23.1,\,25.5)$: $\theta$ o está o no está, no es aleatorio. Se dice: \emph{"tenemos un $95\%$ de confianza de que $\theta$ está en $(23.1, 25.5)$"}, refiriéndonos al procedimiento, no al intervalo particular.
+\end{block}
+\end{frame}
+
+\begin{frame}{Esquema general de construcción}
+\begin{block}{Método del pivote}
+Se busca una \textbf{cantidad pivotal} $Q(\widehat\theta,\theta)$: una función del estimador y del parámetro cuya distribución \textbf{no dependa} de $\theta$. A partir de
+\[
+P(-z_{\alpha/2} < Q < z_{\alpha/2}) = 1-\alpha
+\]
+se despeja $\theta$ para obtener el intervalo.
+\end{block}
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+\draw[->] (-4.5,0) -- (4.5,0) node[right] {$z$};
+\draw[domain=-4:4,smooth,variable=\x,blue,thick] plot ({\x},{2.2*exp(-\x*\x/2)});
+\fill[blue!20] (-4,0) -- plot[domain=-4:-1.96] (\x,{2.2*exp(-\x*\x/2)}) -- (-1.96,0) -- cycle;
+\fill[blue!20] (4,0) -- plot[domain=1.96:4] (\x,{2.2*exp(-\x*\x/2)}) -- (1.96,0) -- cycle;
+\draw[dashed] (-1.96,0) -- (-1.96,1.9) node[above] {$-z_{\alpha/2}$};
+\draw[dashed] (1.96,0) -- (1.96,1.9) node[above] {$z_{\alpha/2}$};
+\node at (0,1.0) {$1-\alpha$};
+\node at (-3,0.4) {$\alpha/2$};
+\node at (3,0.4) {$\alpha/2$};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\section{IC para la media, varianza conocida}
+
+\begin{frame}{IC para $\mu$ con $\sigma^2$ conocida}
+\begin{block}{Supuestos}
+$X_1,\dots,X_n$ m.a.\ de una población $N(\mu,\sigma^2)$ con $\sigma^2$ \textbf{conocida} (o $n$ grande, usando el Teorema Central del Límite).
+\end{block}
+
+\begin{block}{Cantidad pivotal}
+\[
+Z = \frac{\overline X - \mu}{\sigma/\sqrt n} \sim N(0,1).
+\]
+\end{block}
+
+\begin{proof}[Deducción]
+Partiendo de $P(-z_{\alpha/2} < Z < z_{\alpha/2}) = 1-\alpha$:
+\[
+P\left(-z_{\alpha/2} < \frac{\overline X-\mu}{\sigma/\sqrt n} < z_{\alpha/2}\right) = 1-\alpha
+\]
+\[
+\Longleftrightarrow P\left(\overline X - z_{\alpha/2}\frac{\sigma}{\sqrt n} < \mu < \overline X + z_{\alpha/2}\frac{\sigma}{\sqrt n}\right) = 1-\alpha. \qedhere
+\]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Fórmula e interpretación}
+\begin{alertblock}{Intervalo de confianza de nivel $1-\alpha$ para $\mu$ ($\sigma^2$ conocida)}
+\[
+IC(\mu; 1-\alpha) = \left(\overline x - z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \ \overline x + z_{\alpha/2}\frac{\sigma}{\sqrt n}\right)
+\]
+\end{alertblock}
+
+\begin{itemize}
+\item El \textbf{margen de error} es $E = z_{\alpha/2}\dfrac{\sigma}{\sqrt n}$.
+\item El intervalo es simétrico alrededor de $\overline x$.
+\item A mayor $n$, menor el margen de error (intervalo más angosto).
+\item A mayor nivel de confianza $1-\alpha$, mayor $z_{\alpha/2}$, luego intervalo más ancho: hay un compromiso entre confianza y precisión.
+\end{itemize}
+
+\begin{block}{Valores usuales de $z_{\alpha/2}$}
+$1-\alpha=0.90 \Rightarrow z_{\alpha/2}=1.645$; \quad $1-\alpha=0.95 \Rightarrow z_{\alpha/2}=1.96$; \quad $1-\alpha=0.99 \Rightarrow z_{\alpha/2}=2.576$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo numérico}
+\begin{example}
+El tiempo de secado (en minutos) de una pintura tiene desvío estándar poblacional conocido $\sigma = 2.5$ min (por estudios previos). Se toma una muestra de $n=36$ piezas pintadas y se obtiene $\overline x = 45.2$ min. Hallar un IC del $95\%$ para $\mu$.
+
+\textbf{Solución.} $z_{\alpha/2}=z_{0.025}=1.96$.
+\[
+E = z_{\alpha/2}\frac{\sigma}{\sqrt n} = 1.96\cdot\frac{2.5}{\sqrt{36}} = 1.96\cdot\frac{2.5}{6} = 1.96\cdot 0.4167 \approx 0.8167.
+\]
+\[
+IC(\mu;0.95) = (45.2 - 0.82,\ 45.2+0.82) = (44.38,\ 46.02)\ \text{minutos}.
+\]
+\textbf{Interpretación:} con un $95\%$ de confianza, el tiempo medio de secado poblacional está entre $44.38$ y $46.02$ minutos.
+\end{example}
+\end{frame}
+
+\section{IC para la media, varianza desconocida}
+
+\begin{frame}{IC para $\mu$ con $\sigma^2$ desconocida: distribución $t$ de Student}
+\begin{block}{El problema}
+En la práctica, $\sigma^2$ casi nunca se conoce. La idea natural es reemplazarla por $S^2$ (cuasivarianza muestral), pero esto cambia la distribución del pivote.
+\end{block}
+
+\begin{theorem}
+Si $X_1,\dots,X_n$ es m.a.\ de $N(\mu,\sigma^2)$, entonces
+\[
+T = \frac{\overline X - \mu}{S/\sqrt n} \sim t_{n-1} \qquad \text{(t de Student con $n-1$ grados de libertad)}.
+\]
+\end{theorem}
+
+\begin{block}{Idea de por qué cambia la distribución}
+$T = \dfrac{Z}{\sqrt{W/(n-1)}}$, cociente entre $Z=\frac{\overline X-\mu}{\sigma/\sqrt n}\sim N(0,1)$ y $W = \frac{(n-1)S^2}{\sigma^2}\sim \chi^2_{n-1}$ (independientes), que es precisamente la definición de la distribución $t_{n-1}$ (tema visto en la Unidad 5).
+\end{block}
+\end{frame}
+
+\begin{frame}{Fórmula del IC con $t$ de Student}
+\begin{alertblock}{Intervalo de confianza de nivel $1-\alpha$ para $\mu$ ($\sigma^2$ desconocida)}
+\[
+IC(\mu; 1-\alpha) = \left(\overline x - t_{n-1,\,\alpha/2}\frac{s}{\sqrt n},\ \ \overline x + t_{n-1,\,\alpha/2}\frac{s}{\sqrt n}\right)
+\]
+donde $t_{n-1,\alpha/2}$ es el valor tal que $P(T>t_{n-1,\alpha/2})=\alpha/2$ con $T\sim t_{n-1}$.
+\end{alertblock}
+
+\begin{block}{Observación}
+Para $n$ grande (por ejemplo $n>30$), $t_{n-1,\alpha/2} \approx z_{\alpha/2}$, así que en la práctica muchos textos usan $z$ como aproximación cuando la muestra es grande, aun con $\sigma$ desconocida. Para $n$ chico es indispensable usar $t$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo numérico con $t$ de Student}
+\begin{example}
+Se mide el contenido de nicotina (en mg) de $n=10$ cigarrillos de una marca, obteniéndose $\overline x = 1.85$ mg y $s=0.24$ mg. Construir un IC del $95\%$ para $\mu$, suponiendo la población aproximadamente normal.
+
+\textbf{Solución.} Grados de libertad: $n-1=9$. De tabla $t$: $t_{9,\,0.025} = 2.262$.
+\[
+E = t_{9,0.025}\cdot\frac{s}{\sqrt n} = 2.262\cdot\frac{0.24}{\sqrt{10}} = 2.262\cdot 0.0759 \approx 0.1717.
+\]
+\[
+IC(\mu;0.95) = (1.85-0.172,\ 1.85+0.172) = (1.678,\ 2.022)\ \text{mg}.
+\]
+\textbf{Interpretación:} con un $95\%$ de confianza, el contenido medio de nicotina está entre $1.678$ y $2.022$ mg.
+\end{example}
+\end{frame}
+
+\begin{frame}{Efecto del nivel de confianza y del tamaño muestral}
+\begin{block}{Dos formas de "achicar" el intervalo}
+\begin{itemize}
+\item Aumentar $n$: el margen de error $E=z_{\alpha/2}\sigma/\sqrt n$ decrece con $\sqrt n$ en el denominador.
+\item Bajar el nivel de confianza $1-\alpha$: disminuye $z_{\alpha/2}$, pero se paga con \textbf{menos} confianza en el procedimiento.
+\end{itemize}
+\end{block}
+\begin{example}
+Con $\sigma=2.5$, $\overline x=45.2$, comparar el ancho del IC para $n=36$ con $90\%$, $95\%$ y $99\%$ de confianza.
+\[
+90\%:\ E=1.645\cdot\tfrac{2.5}{6}\approx 0.685; \quad
+95\%:\ E=1.96\cdot\tfrac{2.5}{6}\approx 0.817; \quad
+99\%:\ E=2.576\cdot\tfrac{2.5}{6}\approx 1.073.
+\]
+A mayor confianza exigida, el intervalo es necesariamente más ancho, a igual $n$.
+\end{example}
+\end{frame}
+
+\section{IC para una proporción}
+
+\begin{frame}{IC para una proporción poblacional $p$}
+\begin{block}{Contexto}
+Sea $Y$ el número de "éxitos" en $n$ ensayos Bernoulli independientes, $Y\sim \text{Bi}(n,p)$. El estimador puntual es $\widehat p = Y/n$.
+\end{block}
+
+\begin{block}{Aproximación normal}
+Para $n$ suficientemente grande (regla práctica: $n\widehat p \ge 5$ y $n(1-\widehat p)\ge 5$), por el TCL,
+\[
+Z = \frac{\widehat p - p}{\sqrt{p(1-p)/n}} \overset{aprox}{\sim} N(0,1).
+\]
+Reemplazando $p(1-p)$ por $\widehat p(1-\widehat p)$ en el denominador (aproximación adicional usual):
+\end{block}
+
+\begin{alertblock}{Intervalo de confianza de nivel $1-\alpha$ para $p$}
+\[
+IC(p;1-\alpha) = \left(\widehat p - z_{\alpha/2}\sqrt{\frac{\widehat p(1-\widehat p)}{n}},\ \ \widehat p + z_{\alpha/2}\sqrt{\frac{\widehat p(1-\widehat p)}{n}}\right)
+\]
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo numérico: proporción}
+\begin{example}
+En una encuesta a $n=400$ personas de una ciudad, $136$ declaran estar a favor de una nueva ordenanza municipal. Construir un IC del $90\%$ para la verdadera proporción $p$ de la población a favor.
+
+\textbf{Solución.} $\widehat p = 136/400 = 0.34$. Verificamos: $n\widehat p = 136 \ge 5$, $n(1-\widehat p)=264\ge 5$: aproximación válida.
+
+$z_{\alpha/2}=z_{0.05}=1.645$.
+\[
+\sqrt{\frac{\widehat p(1-\widehat p)}{n}} = \sqrt{\frac{0.34\cdot 0.66}{400}} = \sqrt{\frac{0.2244}{400}} = \sqrt{0.000561} \approx 0.02368.
+\]
+\[
+E = 1.645\cdot 0.02368 \approx 0.0390.
+\]
+\[
+IC(p;0.90) = (0.34-0.039,\ 0.34+0.039) = (0.301,\ 0.379).
+\]
+\textbf{Interpretación:} con $90\%$ de confianza, entre el $30.1\%$ y el $37.9\%$ de la población está a favor de la ordenanza.
+\end{example}
+\end{frame}
+
+\section{Tamaño de muestra}
+
+\begin{frame}{Determinación del tamaño de muestra}
+\begin{block}{Idea}
+Dado un margen de error deseado $E$ y un nivel de confianza $1-\alpha$, podemos despejar $n$ de la fórmula del margen de error.
+\end{block}
+
+\textbf{Para la media (con $\sigma$ conocida o estimada):}
+\[
+E = z_{\alpha/2}\frac{\sigma}{\sqrt n} \;\Longrightarrow\; n = \left(\frac{z_{\alpha/2}\,\sigma}{E}\right)^2 \quad \text{(redondeando hacia arriba)}.
+\]
+
+\textbf{Para una proporción:}
+\[
+n = \left(\frac{z_{\alpha/2}}{E}\right)^2 \widehat p(1-\widehat p), \qquad \text{o, sin información previa, } \widehat p=0.5 \text{ (caso más conservador)}.
+\]
+
+\begin{example}
+¿Qué $n$ se necesita para estimar $\mu$ con $\sigma=2.5$ y margen de error $E=0.5$ min, al $95\%$?
+\[
+n = \left(\frac{1.96\cdot 2.5}{0.5}\right)^2 = (9.8)^2 = 96.04 \;\Longrightarrow\; n=97.
+\]
+\end{example}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen: intervalos de confianza vistos hoy}
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Parámetro} & \textbf{Condición} & \textbf{Intervalo de confianza} \\
+\midrule
+$\mu$ & $\sigma^2$ conocida & $\overline x \pm z_{\alpha/2}\dfrac{\sigma}{\sqrt n}$ \\[1.2ex]
+$\mu$ & $\sigma^2$ desconocida & $\overline x \pm t_{n-1,\alpha/2}\dfrac{s}{\sqrt n}$ \\[1.2ex]
+$p$ & $n$ grande & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\widehat p)}{n}}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{block}{Ideas clave para recordar}
+\begin{itemize}
+\item Todo IC tiene la forma \emph{estimador puntual $\pm$ margen de error}.
+\item El nivel de confianza es una propiedad del \textbf{procedimiento}, no de un intervalo particular ya calculado.
+\item A mayor $n$, menor margen de error; a mayor confianza, mayor margen de error.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Próxima clase}
+IC para la varianza (chi-cuadrado) y para comparar dos poblaciones: diferencia de medias y cociente de varianzas.
+\end{alertblock}
+\end{frame}
+
+\end{document}

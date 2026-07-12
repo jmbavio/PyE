@@ -1,0 +1,157 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 2: Distribuciones del muestreo \\ \large Unidad 5: Muestras aleatorias y distribuciones}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+El contenido de una gaseosa envasada en botellas de 2 litros se distribuye $N(2000, 100)$ mL (es decir, $\mu=2000$ mL, $\sigma^2=100$ mL$^2$, $\sigma=10$ mL). Se toma una muestra aleatoria de $n=25$ botellas.
+\begin{enumerate}[label=(\alph*)]
+\item Indicar la distribución exacta de $\bar X$, justificando por qué es exacta y no aproximada.
+\item Calcular $P(1997 < \bar X < 2003)$.
+\item Calcular $P(\bar X < 1995)$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Como la población es normal y $\bar X$ es combinación lineal de v.a. normales independientes (la familia normal es cerrada bajo combinaciones lineales), la distribución de $\bar X$ es \textbf{exacta} para cualquier $n$:
+$$\bar X \sim N\left(2000, \frac{100}{25}\right) = N(2000, 4), \qquad \sigma_{\bar X}=2 \text{ mL}.$$
+\item
+$$P(1997<\bar X<2003) = P\left(\frac{1997-2000}{2}<Z<\frac{2003-2000}{2}\right) = P(-1.5<Z<1.5)$$
+$$= \Phi(1.5)-\Phi(-1.5) = 0.9332-0.0668 = 0.8664.$$
+\item
+$$P(\bar X<1995) = P\left(Z<\frac{1995-2000}{2}\right) = P(Z<-2.5) = 1-\Phi(2.5) = 1-0.9938 = 0.0062.$$
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+El tiempo de vida de cierto componente electrónico tiene distribución (no normal, marcadamente asimétrica) con $\mu=800$ horas y $\sigma=120$ horas. Se toma una muestra aleatoria de $n=100$ componentes.
+\begin{enumerate}[label=(\alph*)]
+\item Justificar por qué puede aplicarse el Teorema Central del Límite en este caso.
+\item Aproximar $P(\bar X > 820)$.
+\item Aproximar $P(770 < \bar X < 830)$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Aunque la población no es normal, el tamaño de muestra $n=100$ es suficientemente grande (regla práctica $n\geq 30$) y $\sigma^2$ es finita, por lo que el TCL garantiza que $\bar X$ se distribuye aproximadamente $N(\mu,\sigma^2/n)$.
+\item $\bar X \ \dot\sim\ N\left(800,\dfrac{120^2}{100}\right) = N(800,144)$, con $\sigma_{\bar X}=12$.
+$$P(\bar X>820) \approx P\left(Z>\frac{820-800}{12}\right) = P(Z>1.667) = 1-\Phi(1.667) \approx 1-0.9522 = 0.0478.$$
+\item
+$$P(770<\bar X<830) \approx P\left(\frac{770-800}{12}<Z<\frac{830-800}{12}\right) = P(-2.5<Z<2.5)$$
+$$=\Phi(2.5)-\Phi(-2.5) = 0.9938-0.0062 = 0.9876.$$
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Una máquina llena bolsas de azúcar con un peso que se distribuye $N(\mu, \sigma^2=9)$ gramos$^2$ ($\sigma=3$ g). Se toma una muestra aleatoria de $n=15$ bolsas y se calcula la varianza muestral $S^2$.
+\begin{enumerate}[label=(\alph*)]
+\item Indicar la distribución exacta de $\dfrac{(n-1)S^2}{\sigma^2}$ y sus grados de libertad.
+\item Si en la muestra se obtuvo $s^2=15.3$ g$^2$, calcular el valor observado de $\dfrac{(n-1)S^2}{\sigma^2}$.
+\item Usando tabla de $\chi^2_{14}$ (valores tabulados: $\chi^2_{14,0.05}=23.68$, $\chi^2_{14,0.025}=26.12$), estimar $P(S^2 \geq 15.3)$ bajo el supuesto $\sigma^2=9$. Interpretar el resultado.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Como la población es normal, $\dfrac{(n-1)S^2}{\sigma^2} \sim \chi^2_{n-1} = \chi^2_{14}$ (14 grados de libertad).
+\item
+$$\frac{(n-1)s^2}{\sigma^2} = \frac{14\cdot 15.3}{9} = \frac{214.2}{9} = 23.8\overline{6}.$$
+\item Comparando con los valores tabulados de $\chi^2_{14}$: $23.87$ está apenas por encima de $\chi^2_{14,0.05}=23.68$, por lo que
+$$P(\chi^2_{14}\geq 23.87) \ \text{es ligeramente menor que } 0.05.$$
+Es decir, $P(S^2\geq 15.3) \approx 0.048$ (aproximadamente). Obtener una varianza muestral tan grande como $15.3$ g$^2$ si realmente $\sigma^2=9$ g$^2$ es un evento \textbf{poco probable} (menos del 5\%), lo cual sugeriría sospechar que la verdadera varianza poblacional podría ser mayor que 9 (idea que se formalizará como prueba de hipótesis en la Unidad 7).
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Demostrar, usando que $\dfrac{(n-1)S^2}{\sigma^2}\sim \chi^2_{n-1}$ y las propiedades $E(\chi^2_k)=k$, $\text{Var}(\chi^2_k)=2k$, que:
+\begin{enumerate}[label=(\alph*)]
+\item $E(S^2) = \sigma^2$ (es decir, $S^2$ es insesgado para $\sigma^2$).
+\item $\text{Var}(S^2) = \dfrac{2\sigma^4}{n-1}$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+Sea $W = \dfrac{(n-1)S^2}{\sigma^2} \sim \chi^2_{n-1}$, de modo que $S^2 = \dfrac{\sigma^2}{n-1}W$.
+\begin{enumerate}[label=(\alph*)]
+\item
+$$E(S^2) = \frac{\sigma^2}{n-1}E(W) = \frac{\sigma^2}{n-1}(n-1) = \sigma^2.$$
+\item
+$$\text{Var}(S^2) = \left(\frac{\sigma^2}{n-1}\right)^2 \text{Var}(W) = \frac{\sigma^4}{(n-1)^2}\cdot 2(n-1) = \frac{2\sigma^4}{n-1}.$$
+\end{enumerate}
+Nota: a medida que $n\to\infty$, $\text{Var}(S^2)\to 0$: $S^2$ se concentra cada vez más en torno a $\sigma^2$, consistente con la idea de que estimadores basados en muestras más grandes son más precisos.
+\end{solucion}
+
+\begin{ejercicio}
+El contenido de humedad de un lote de madera se distribuye $N(\mu,\sigma^2)$, con $\sigma$ \textbf{desconocido}. Se toma una muestra aleatoria de $n=20$ tablas, obteniéndose $\bar x=12.4\%$ y $s=1.6\%$. Se quiere evaluar si es plausible que $\mu=12\%$.
+\begin{enumerate}[label=(\alph*)]
+\item Justificar por qué debe usarse la distribución $t$ de Student y no la normal estándar.
+\item Calcular el valor observado del estadístico $T=\dfrac{\bar X-\mu}{S/\sqrt n}$ bajo el supuesto $\mu=12$.
+\item Usando tabla de $t_{19}$ (valores tabulados: $t_{19,0.20}=0.861$, $t_{19,0.15}\approx 1.066$), aproximar $P(T\geq t_{obs})$ e interpretar.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Como $\sigma$ es desconocido y debe estimarse mediante $S$ (calculado de la misma muestra), el estadístico $\dfrac{\bar X-\mu}{S/\sqrt n}$ ya \textbf{no} tiene distribución exactamente normal: tiene una variabilidad adicional por estimar $\sigma$, capturada por la distribución $t_{n-1}$ (con colas más pesadas que la normal). Usar $N(0,1)$ en este caso subestimaría la incertidumbre.
+\item
+$$t_{obs} = \frac{\bar x - \mu}{s/\sqrt n} = \frac{12.4-12}{1.6/\sqrt{20}} = \frac{0.4}{0.3578} \approx 1.118.$$
+\item Con 19 grados de libertad, $t_{obs}\approx 1.118$ está entre $t_{19,0.15}\approx 1.066$ y algo menor a $t_{19,0.10}=1.328$ (valor tabulado usual), por lo que
+$$P(T_{19}\geq 1.118) \approx 0.14 \text{ (aproximadamente, entre 0.10 y 0.15)}.$$
+Esta probabilidad no es extremadamente pequeña: el valor observado $\bar x=12.4\%$ es razonablemente compatible con $\mu=12\%$, no hay evidencia fuerte en contra de ese supuesto.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Sea $X_1,\dots,X_8$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Se sabe que $\bar X$ y $S^2$ son \textbf{independientes} para poblaciones normales.
+\begin{enumerate}[label=(\alph*)]
+\item Explicar por qué esta independencia es necesaria para deducir que $T=\dfrac{\bar X-\mu}{S/\sqrt n}\sim t_{n-1}$.
+\item ¿Sigue siendo válida la distribución $t_{n-1}$ exacta si la población \textbf{no} es normal? Justificar brevemente.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item La distribución $t$ de Student se define como el cociente $T=Z/\sqrt{W/k}$ donde $Z\sim N(0,1)$ y $W\sim\chi^2_k$ son \textbf{independientes}. Aquí $Z=\dfrac{\bar X-\mu}{\sigma/\sqrt n}$ y $W=\dfrac{(n-1)S^2}{\sigma^2}$. Si $\bar X$ y $S^2$ no fueran independientes, $Z$ y $W$ tampoco lo serían, y el cociente $T=\dfrac{\bar X-\mu}{S/\sqrt n}$ no tendría, en general, distribución $t_{n-1}$ exacta (la fórmula de la densidad de $T$ se deduce asumiendo esa independencia).
+\item No en general. La independencia exacta de $\bar X$ y $S^2$, y por lo tanto la distribución $t_{n-1}$ \textbf{exacta}, es una propiedad especial de la población normal. Si la población no es normal, $T=\dfrac{\bar X-\mu}{S/\sqrt n}$ solo tiene distribución aproximadamente $t_{n-1}$ (o incluso aproximadamente $N(0,1)$, por el TCL, ya que $S\to\sigma$) para $n$ grande, pero no es exacta para $n$ chico.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Una fábrica de rodamientos produce piezas cuyo diámetro se distribuye $N(\mu,\sigma^2)$, con $\sigma=0.02$ mm conocido por especificaciones de la máquina. Se toma una muestra de $n=9$ piezas.
+\begin{enumerate}[label=(\alph*)]
+\item Calcular $P(|\bar X - \mu| < 0.01)$, es decir, la probabilidad de que la media muestral no se aleje más de $0.01$ mm del verdadero diámetro medio.
+\item ¿Cuál debería ser el tamaño de muestra $n$ para que $P(|\bar X-\mu|<0.01) \geq 0.95$? (Usar que para $N(0,1)$, $P(|Z|<1.96)=0.95$.)
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Con $n=9$: $\sigma_{\bar X} = 0.02/\sqrt9 = 0.02/3 \approx 0.00667$.
+$$P(|\bar X-\mu|<0.01) = P\left(|Z| < \frac{0.01}{0.00667}\right) = P(|Z|<1.5) = \Phi(1.5)-\Phi(-1.5) = 0.9332-0.0668=0.8664.$$
+\item Necesitamos $\dfrac{0.01}{\sigma/\sqrt n} \geq 1.96$, es decir
+$$\sqrt n \geq \frac{1.96\,\sigma}{0.01} = \frac{1.96\cdot 0.02}{0.01} = 3.92 \ \Rightarrow \ n \geq 3.92^2 = 15.37.$$
+Como $n$ debe ser entero, se necesita $n=16$ piezas como mínimo.
+\end{enumerate}
+\end{solucion}
+
+\end{document}

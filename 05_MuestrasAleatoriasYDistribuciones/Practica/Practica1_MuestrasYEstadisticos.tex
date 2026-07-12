@@ -1,0 +1,179 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcounter{ejnum}
+\newenvironment{ejercicio}{\refstepcounter{ejnum}\par\medskip\noindent\textbf{Ejercicio \theejnum.}~}{\par}
+\newenvironment{solucion}{\par\noindent\textit{Solución.}~}{\par\vspace{1em}}
+
+\title{Práctica 1: Muestras aleatorias y estadísticos muestrales \\ \large Unidad 5: Muestras aleatorias y distribuciones}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Un laboratorio de control de calidad mide el contenido de principio activo (en mg) de comprimidos producidos por una línea de fabricación. Se sabe que el contenido poblacional $X$ tiene $\mu=250$ mg y $\sigma=5$ mg (desconocidos en la práctica, pero fijados aquí para el enunciado). Se seleccionan al azar y de forma independiente 12 comprimidos: $X_1,\dots,X_{12}$.
+\begin{enumerate}[label=(\alph*)]
+\item Indicar cuáles de las siguientes cantidades son \emph{parámetros} y cuáles son \emph{estadísticos}: $\mu$, $\bar X$, $\sigma$, $S^2$, $X_7$.
+\item ¿Por qué $X_1,\dots,X_{12}$ se consideran independientes si se extraen de un lote finito?
+\item Escribir la expresión de $\bar X$ y de $S^2$ para esta muestra.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item $\mu$ y $\sigma$ son \textbf{parámetros}: números fijos que describen a la población, generalmente desconocidos. $\bar X$ y $S^2$ son \textbf{estadísticos}: funciones de la muestra, calculables a partir de los datos, y son variables aleatorias (cambian si se repite el muestreo). $X_7$ también es una variable aleatoria (una observación individual de la muestra), pero no es un ``resumen'' de toda la muestra; suele llamarse simplemente una observación, no un estadístico en el sentido usual de resumen muestral.
+\item Se consideran independientes porque el lote de producción es muy grande frente a $n=12$ (extraer un comprimido no altera de forma apreciable la composición del resto del lote), de modo que el muestreo sin reposición se aproxima bien por un muestreo con reposición, que sí garantiza independencia exacta.
+\item
+$$\bar X = \frac{1}{12}\sum_{i=1}^{12} X_i, \qquad S^2 = \frac{1}{11}\sum_{i=1}^{12} (X_i-\bar X)^2.$$
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Se registran los tiempos (en minutos) que tardan 8 operarios en ensamblar una pieza:
+$$12.3,\ 11.8,\ 13.1,\ 12.9,\ 12.0,\ 13.5,\ 11.5,\ 12.7$$
+Calcular la media muestral $\bar x$ y la varianza muestral $s^2$ (con divisor $n-1$).
+\end{ejercicio}
+
+\begin{solucion}
+Suma de los datos:
+$$\sum x_i = 12.3+11.8+13.1+12.9+12.0+13.5+11.5+12.7 = 99.8$$
+$$\bar x = \frac{99.8}{8} = 12.475 \text{ min}.$$
+
+Desvíos y cuadrados $(x_i-\bar x)^2$:
+\begin{center}
+\begin{tabular}{lcccccccc}
+\toprule
+$x_i$ & 12.3 & 11.8 & 13.1 & 12.9 & 12.0 & 13.5 & 11.5 & 12.7 \\
+$x_i-\bar x$ & $-0.175$ & $-0.675$ & $0.625$ & $0.425$ & $-0.475$ & $1.025$ & $-0.975$ & $0.225$ \\
+$(x_i-\bar x)^2$ & 0.0306 & 0.4556 & 0.3906 & 0.1806 & 0.2256 & 1.0506 & 0.9506 & 0.0506 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+$$\sum (x_i-\bar x)^2 \approx 3.3350$$
+$$s^2 = \frac{3.3350}{7} \approx 0.4764 \text{ min}^2, \qquad s\approx 0.690 \text{ min}.$$
+\end{solucion}
+
+\begin{ejercicio}
+El peso de las bolsas de cemento producidas por una planta es una variable aleatoria $X$ con $\mu=50$ kg y $\sigma^2=1.44$ kg$^2$. Se toma una muestra aleatoria de $n=36$ bolsas.
+\begin{enumerate}[label=(\alph*)]
+\item Calcular $E(\bar X)$ y $\text{Var}(\bar X)$.
+\item Calcular el error estándar $\sigma_{\bar X}$.
+\item ¿Qué le pasa a $\sigma_{\bar X}$ si se cuadruplica el tamaño de muestra a $n=144$? Interpretar.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item Por los resultados generales (válidos para cualquier población con media y varianza finitas):
+$$E(\bar X) = \mu = 50 \text{ kg}, \qquad \text{Var}(\bar X) = \frac{\sigma^2}{n} = \frac{1.44}{36} = 0.04 \text{ kg}^2.$$
+\item $$\sigma_{\bar X} = \sqrt{0.04} = 0.2 \text{ kg}.$$
+\item Con $n=144$: $\text{Var}(\bar X) = 1.44/144 = 0.01$, $\sigma_{\bar X}=0.1$ kg. Al \textbf{cuadruplicar} $n$, el error estándar se \textbf{reduce a la mitad} (porque $\sigma_{\bar X}\propto 1/\sqrt n$). Esto ilustra la ley de rendimientos decrecientes: para reducir el error estándar a la mitad hace falta cuadruplicar el tamaño de muestra, no solo duplicarlo.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Deducir, a partir de la definición $\bar X = \frac{1}{n}\sum_{i=1}^n X_i$ con $X_1,\dots,X_n$ i.i.d. y $E(X_i)=\mu$, $\text{Var}(X_i)=\sigma^2$, que $E(\bar X)=\mu$ y $\text{Var}(\bar X)=\sigma^2/n$. Indicar explícitamente en qué paso se usa la independencia y en cuál no.
+\end{ejercicio}
+
+\begin{solucion}
+\textbf{Esperanza} (no requiere independencia, solo linealidad):
+$$E(\bar X) = E\left(\frac1n\sum_{i=1}^n X_i\right) = \frac1n \sum_{i=1}^n E(X_i) = \frac1n \cdot n\mu = \mu.$$
+
+\textbf{Varianza} (aquí sí se usa la independencia):
+$$\text{Var}(\bar X) = \text{Var}\left(\frac1n\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\text{Var}\left(\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\left[\sum_{i=1}^n \text{Var}(X_i) + 2\sum_{i<j}\text{Cov}(X_i,X_j)\right].$$
+Por independencia, $\text{Cov}(X_i,X_j)=0$ para $i\ne j$, así que el segundo término se anula:
+$$\text{Var}(\bar X) = \frac{1}{n^2}\sum_{i=1}^n \text{Var}(X_i) = \frac{1}{n^2}\cdot n\sigma^2 = \frac{\sigma^2}{n}.$$
+Sin independencia, quedarían los términos de covarianza y la fórmula sería más compleja (y en general mayor, si las covarianzas son positivas).
+\end{solucion}
+
+\begin{ejercicio}
+De un lote muy grande de artículos, el $8\%$ son defectuosos ($p=0.08$). Se inspecciona una muestra aleatoria de $n=100$ artículos, y se define $X_i=1$ si el artículo $i$ es defectuoso y $X_i=0$ si no. Sea $\hat p = \bar X$ la proporción muestral de defectuosos.
+\begin{enumerate}[label=(\alph*)]
+\item Identificar la distribución de cada $X_i$ y sus parámetros.
+\item Calcular $E(\hat p)$ y $\text{Var}(\hat p)$.
+\item Si en la muestra se observaron 11 artículos defectuosos, calcular el valor observado $\hat p$ y compararlo con $E(\hat p)$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item $X_i \sim \text{Bernoulli}(p=0.08)$, con $E(X_i)=p=0.08$ y $\text{Var}(X_i)=p(1-p)=0.08\cdot0.92=0.0736$.
+\item Como $\hat p=\bar X$ con los $X_i$ i.i.d. Bernoulli$(p)$:
+$$E(\hat p) = p = 0.08, \qquad \text{Var}(\hat p) = \frac{p(1-p)}{n} = \frac{0.0736}{100} = 0.000736.$$
+$$\sigma_{\hat p} = \sqrt{0.000736} \approx 0.0271.$$
+\item $\hat p = 11/100 = 0.11$. Es mayor que $E(\hat p)=0.08$, pero la diferencia ($0.03$) es de aproximadamente $0.03/0.0271\approx 1.1$ desvíos estándar: una desviación razonable, no alarmante, atribuible a la variabilidad muestral.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Una población está formada por los valores $\{1,3,5\}$, cada uno con probabilidad $1/3$ (por ejemplo, resultado de un dado especial). Se extrae una muestra aleatoria de tamaño $n=2$, \textbf{con reposición}.
+\begin{enumerate}[label=(\alph*)]
+\item Calcular $\mu$ y $\sigma^2$ de la población.
+\item Listar las 9 muestras posibles (equiprobables) y calcular $\bar x$ para cada una.
+\item Construir la distribución muestral de $\bar X$ (valores posibles y sus probabilidades).
+\item Verificar numéricamente que $E(\bar X)=\mu$ y $\text{Var}(\bar X)=\sigma^2/2$.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item $\mu = \frac{1+3+5}{3} = 3$. \quad $E(X^2)=\frac{1+9+25}{3}=\frac{35}{3}$, así que $\sigma^2 = E(X^2)-\mu^2 = \frac{35}{3}-9 = \frac{8}{3}\approx 2.667$.
+\item Las 9 muestras (cada una con probabilidad $1/9$) y su media:
+\begin{center}
+\begin{tabular}{ccccccccc}
+\toprule
+(1,1)&(1,3)&(1,5)&(3,1)&(3,3)&(3,5)&(5,1)&(5,3)&(5,5)\\
+\midrule
+1&2&3&2&3&4&3&4&5\\
+\bottomrule
+\end{tabular}
+\end{center}
+\item Contando repeticiones:
+$$P(\bar X=1)=\tfrac19,\quad P(\bar X=2)=\tfrac29,\quad P(\bar X=3)=\tfrac39,\quad P(\bar X=4)=\tfrac29,\quad P(\bar X=5)=\tfrac19.$$
+\item
+$$E(\bar X) = 1\cdot\tfrac19+2\cdot\tfrac29+3\cdot\tfrac39+4\cdot\tfrac29+5\cdot\tfrac19 = \frac{1+4+9+8+5}{9}=\frac{27}{9}=3=\mu. \checkmark$$
+$$E(\bar X^2) = 1\cdot\tfrac19+4\cdot\tfrac29+9\cdot\tfrac39+16\cdot\tfrac29+25\cdot\tfrac19 = \frac{1+8+27+32+25}{9}=\frac{93}{9}=\frac{31}{3}.$$
+$$\text{Var}(\bar X) = \frac{31}{3}-9 = \frac{4}{3} \approx 1.333, \qquad \frac{\sigma^2}{2} = \frac{8/3}{2}=\frac43. \checkmark$$
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+El tiempo de vida útil (en años) de un componente electrónico tiene $\mu=6$ años y $\sigma=1.5$ años. Se instalan $n=49$ componentes de forma independiente, formando una muestra aleatoria $X_1,\dots,X_{49}$.
+\begin{enumerate}[label=(\alph*)]
+\item Sin suponer nada sobre la forma de la distribución de $X$, dar $E(\bar X)$ y $\text{Var}(\bar X)$.
+\item Un ingeniero afirma que ``con esta muestra, la probabilidad de que $\bar X$ se aleje de $\mu$ en más de $0.5$ años es exactamente calculable sin más información''. ¿Es correcta esta afirmación? Justificar.
+\end{enumerate}
+\end{ejercicio}
+
+\begin{solucion}
+\begin{enumerate}[label=(\alph*)]
+\item $$E(\bar X) = 6 \text{ años}, \qquad \text{Var}(\bar X) = \frac{1.5^2}{49} = \frac{2.25}{49} \approx 0.0459 \text{ años}^2, \qquad \sigma_{\bar X}\approx 0.214 \text{ años}.$$
+\item \textbf{No es correcta en general.} Con solo $\mu$ y $\sigma$ conocidos, podemos calcular $E(\bar X)$ y $\text{Var}(\bar X)$ exactamente para cualquier población, pero \textbf{no} la probabilidad $P(|\bar X-\mu|>0.5)$: para eso necesitamos conocer (o aproximar) la \textbf{forma} de la distribución de $\bar X$. Si supiéramos que $X$ es normal, $\bar X$ sería exactamente normal y podríamos calcularla con tablas; si no, recién con $n$ suficientemente grande (aquí $n=49$ podría alcanzar, dependiendo de cuán asimétrica sea $X$) se podría usar el Teorema Central del Límite como aproximación. Esto se estudiará en la Práctica 2.
+\end{enumerate}
+\end{solucion}
+
+\begin{ejercicio}
+Explicar con sus palabras, usando un ejemplo propio, la diferencia entre: (i) la media de un conjunto fijo de $n$ números (estadística descriptiva), y (ii) la media muestral $\bar X$ como variable aleatoria con una distribución muestral (estadística inferencial). ¿Por qué es necesario este segundo concepto para hacer inferencia sobre $\mu$?
+\end{ejercicio}
+
+\begin{solucion}
+Si tenemos, por ejemplo, las estaturas de los 5 alumnos presentes hoy en una comisión de práctica, $160, 172, 168, 175, 165$ cm, su media aritmética $\bar x = 168$ cm es \textbf{un solo número fijo}: no cambia, es una descripción de esos 5 datos concretos (estadística descriptiva).
+
+En cambio, si pensamos en $\bar X$ como el resultado de elegir al azar 5 alumnos de \emph{toda} la universidad y promediar sus estaturas, entonces $\bar X$ es una \textbf{variable aleatoria}: si repitiéramos la selección, obtendríamos otro grupo de 5 alumnos y otro valor de $\bar x$. La distribución muestral de $\bar X$ describe cómo varía ese promedio de selección en selección.
+
+Este segundo concepto es imprescindible para la inferencia porque necesitamos cuantificar \emph{cuán confiable} es un único valor observado de $\bar x$ como estimación de $\mu$: solo conociendo cuánto varía $\bar X$ de muestra a muestra (su distribución muestral, su error estándar) podemos construir intervalos de confianza o evaluar la plausibilidad de hipótesis sobre $\mu$, algo imposible con el concepto puramente descriptivo de "la media de estos datos".
+\end{solucion}
+
+\end{document}
