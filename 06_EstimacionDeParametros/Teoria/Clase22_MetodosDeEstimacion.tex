@@ -104,6 +104,30 @@ que en general es mucho más fácil de derivar (transforma productos en sumas).
 \end{alertblock}
 \end{frame}
 
+\begin{frame}{Interpretación gráfica de la verosimilitud}
+\begin{block}{¿Qué significa "maximizar" $L(\theta)$?}
+Para cada valor posible de $\theta$, $L(\theta)$ mide qué tan "compatible" es ese valor con los datos observados. El EMV es el punto más alto de esa curva.
+\end{block}
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+\begin{axis}[
+  width=8cm, height=4.5cm,
+  xlabel={$\theta$}, ylabel={$\ell(\theta)$},
+  ymin=-8, ymax=0.5,
+  xtick=\empty, ytick=\empty,
+  axis lines=middle,
+]
+\addplot[domain=0.05:5,samples=80,thick,blue] {-(x-2)^2/2 - 0.3};
+\draw[dashed] (axis cs:2,-8) -- (axis cs:2,-0.3);
+\node[below] at (axis cs:2,-8) {$\widehat\theta_{EMV}$};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\begin{alertblock}{Condición de máximo}
+En el máximo, $\ell'(\widehat\theta)=0$ y $\ell''(\widehat\theta)<0$ (concavidad hacia abajo).
+\end{alertblock}
+\end{frame}
+
 \section{EMV en distribuciones discretas}
 
 \begin{frame}{EMV para la distribución Bernoulli}
@@ -210,6 +234,20 @@ Como el EMV de $\sigma^2$ es $\widehat\sigma^2 = \frac{1}{n}\sum(x_i-\overline x
 \item \textbf{Normalidad asintótica:} $\widehat\theta_{EMV}$ tiene distribución aproximadamente normal para $n$ grande.
 \end{itemize}
 \end{block}
+\end{frame}
+
+\begin{frame}{Comparación: mínimos cuadrados vs.\ máxima verosimilitud}
+\begin{block}{Similitudes y diferencias}
+\begin{itemize}
+\item Ambos métodos son \textbf{criterios de optimización}: eligen el parámetro que "mejor explica" los datos, según un objetivo distinto.
+\item MC minimiza distancias al cuadrado; no requiere especificar toda la distribución, solo la forma de la media.
+\item EMV maximiza la probabilidad (o densidad) de observar los datos; requiere conocer la distribución completa.
+\item Para el modelo normal con media constante, ambos métodos coinciden: $\widehat\mu_{MC} = \widehat\mu_{EMV} = \overline X$.
+\end{itemize}
+\end{block}
+\begin{alertblock}{En la práctica}
+El EMV es el método más usado en Estadística por sus buenas propiedades asintóticas (consistencia, eficiencia, normalidad); MC es central en regresión lineal (Unidad 8).
+\end{alertblock}
 \end{frame}
 
 \section{Ejemplo numérico integrador}

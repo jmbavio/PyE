@@ -186,6 +186,24 @@ IC(\mu;0.95) = (1.85-0.172,\ 1.85+0.172) = (1.678,\ 2.022)\ \text{mg}.
 \end{example}
 \end{frame}
 
+\begin{frame}{Efecto del nivel de confianza y del tamaño muestral}
+\begin{block}{Dos formas de "achicar" el intervalo}
+\begin{itemize}
+\item Aumentar $n$: el margen de error $E=z_{\alpha/2}\sigma/\sqrt n$ decrece con $\sqrt n$ en el denominador.
+\item Bajar el nivel de confianza $1-\alpha$: disminuye $z_{\alpha/2}$, pero se paga con \textbf{menos} confianza en el procedimiento.
+\end{itemize}
+\end{block}
+\begin{example}
+Con $\sigma=2.5$, $\overline x=45.2$, comparar el ancho del IC para $n=36$ con $90\%$, $95\%$ y $99\%$ de confianza.
+\[
+90\%:\ E=1.645\cdot\tfrac{2.5}{6}\approx 0.685; \quad
+95\%:\ E=1.96\cdot\tfrac{2.5}{6}\approx 0.817; \quad
+99\%:\ E=2.576\cdot\tfrac{2.5}{6}\approx 1.073.
+\]
+A mayor confianza exigida, el intervalo es necesariamente más ancho, a igual $n$.
+\end{example}
+\end{frame}
+
 \section{IC para una proporción}
 
 \begin{frame}{IC para una proporción poblacional $p$}

@@ -91,6 +91,27 @@ IC(\sigma^2;0.95) = \left(\frac{14\cdot 4.2}{26.119},\ \frac{14\cdot 4.2}{5.629}
 \end{example}
 \end{frame}
 
+\begin{frame}{Asimetría de la distribución $\chi^2$}
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+\begin{axis}[
+  width=8.5cm, height=4.3cm,
+  xlabel={$w$}, ylabel={densidad},
+  xmin=0, xmax=30, ymin=0,
+  ytick=\empty,
+  axis lines=middle,
+]
+\addplot[domain=0.1:30,samples=100,thick,blue] {(x^(6) * exp(-x/2))/3000};
+\draw[dashed,red] (axis cs:5.629,0) -- (axis cs:5.629,0.09) node[above] {$\chi^2_{14,0.975}$};
+\draw[dashed,red] (axis cs:26.119,0) -- (axis cs:26.119,0.02) node[above] {$\chi^2_{14,0.025}$};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\begin{block}{Por qué se necesitan dos valores críticos distintos}
+Como la $\chi^2_{n-1}$ no es simétrica, el valor que deja $\alpha/2$ a la izquierda \textbf{no} coincide (ni en magnitud, ni con signo opuesto) con el que deja $\alpha/2$ a la derecha; por eso siempre se consultan \emph{ambos} valores en la tabla.
+\end{block}
+\end{frame}
+
 \section{IC para diferencia de medias: varianzas conocidas}
 
 \begin{frame}{Comparación de dos poblaciones}

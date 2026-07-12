@@ -50,6 +50,26 @@ donde $O_i$ son las frecuencias \textbf{observadas} y $E_i$ las frecuencias \tex
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Región crítica de las pruebas $\chi^2$}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=9.5cm, height=5cm,
+  axis lines=left, ytick=\empty,
+  xlabel={$\chi^2$}, ylabel={densidad},
+  xmin=0, xmax=25, ymin=0,
+]
+\addplot[domain=0.1:25, samples=150, thick, blue, name path=curve] {x^(1.5)*exp(-x/2)};
+\addplot[domain=11.07:25, samples=60, fill=red!40, draw=none] {x^(1.5)*exp(-x/2)} \closedcycle;
+\draw[dashed] (axis cs:11.07,0) -- (axis cs:11.07,0.85);
+\node at (axis cs:11.07,-0.15) {\footnotesize $\chi^2_{k-1,\alpha}$};
+\end{axis}
+\end{tikzpicture}
+\vspace{0.2cm}
+
+En las tres pruebas de esta clase, la región crítica está \textbf{siempre en la cola derecha}: valores grandes de $\chi^2$ (mucha discrepancia entre lo observado y lo esperado) llevan a rechazar $H_0$.
+\end{frame}
+
 \section{Bondad de ajuste}
 
 \begin{frame}{Prueba de bondad de ajuste}
@@ -269,6 +289,25 @@ Con $\alpha=0.01$, ¿los tres proveedores son homogéneos respecto de la calidad
 
 \textbf{7. Conclusión:} al $1\%$ de significación, hay evidencia de que los tres proveedores no son homogéneos en la calidad de las piezas entregadas (el proveedor C presenta peor calidad relativa).
 \end{example}
+\end{frame}
+
+\begin{frame}{Bondad de ajuste, independencia y homogeneidad: comparación}
+\begin{table}[]
+\centering
+\scriptsize
+\begin{tabular}{@{}p{2.3cm}p{3.4cm}p{3.5cm}@{}}
+\toprule
+Prueba & Diseño de muestreo & Pregunta que responde \\
+\midrule
+Bondad de ajuste & una muestra, una variable categórica & ¿la variable sigue una distribución teórica dada? \\[0.6em]
+Independencia & una muestra, dos variables categóricas & ¿las dos variables están relacionadas? \\[0.6em]
+Homogeneidad & varias muestras (una por población), una variable categórica & ¿las poblaciones tienen la misma distribución? \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{alertblock}{Punto en común}
+Pese a responder preguntas distintas, las tres pruebas de independencia y homogeneidad comparten \textbf{exactamente} el mismo cálculo: $E_{ij}=O_{i\bullet}O_{\bullet j}/n$, $\chi^2=\sum(O_{ij}-E_{ij})^2/E_{ij}$, con $(r-1)(c-1)$ grados de libertad.
+\end{alertblock}
 \end{frame}
 
 \section{Condiciones de aplicación generales}

@@ -215,6 +215,58 @@ El valor exacto (calculado con la fórmula de Poisson, sumando $P(X=61)+P(X=62)+
 \end{block}
 \end{frame}
 
+\section{Visualización y alcance del teorema}
+
+\begin{frame}{Visualización: la binomial se aproxima a la normal}
+\begin{block}{Idea gráfica}
+A medida que $n$ crece, el histograma de la distribución binomial (barras) se asemeja cada vez más a la curva de densidad normal continua. El siguiente gráfico esquematiza esta aproximación para $\text{Bin}(n,0.5)$ estandarizada.
+\end{block}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+\begin{axis}[
+  width=10cm, height=5cm,
+  xlabel={valor estandarizado}, ylabel={densidad / probabilidad},
+  xmin=-4, xmax=4, ymin=0, ymax=0.45,
+  legend pos=north east, legend style={font=\tiny},
+  ticks=none
+]
+\addplot[domain=-4:4, samples=100, thick, blue] {1/sqrt(2*pi)*exp(-x^2/2)};
+\addplot[ycomb, thick, red, mark=*, mark size=1.2pt] coordinates {
+(-3,0.011) (-2.5,0.020) (-2,0.054) (-1.5,0.099) (-1,0.157) (-0.5,0.198)
+(0,0.219) (0.5,0.198) (1,0.157) (1.5,0.099) (2,0.054) (2.5,0.020) (3,0.011)
+};
+\legend{$N(0,1)$, $\text{Bin}(n,0.5)$ estand.}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Ejemplo adicional: aproximación normal a la binomial}
+\begin{example}
+En una línea de producción, la probabilidad de que un artículo pase el control de calidad es $p=0.85$. Se inspeccionan $n=120$ artículos independientes. Aproximar $P(X < 95)$, donde $X$ es el número de artículos que pasan el control.
+\end{example}
+
+\medskip
+$np=120(0.85)=102 \geq 5$, $n(1-p)=120(0.15)=18\geq5$: se puede aproximar. $\mu=102$, $\sigma^2=120(0.85)(0.15)=15.3$, $\sigma\approx3.912$.
+
+Con corrección por continuidad, $P(X<95) = P(X\leq 94) \approx P(Y\leq 94.5)$:
+\[
+P(X<95) \approx \Phi\left(\frac{94.5-102}{3.912}\right) = \Phi(-1.917) \approx 0.0276.
+\]
+\textbf{Hay aproximadamente $2.76\%$ de probabilidad} de que menos de $95$ artículos pasen el control.
+\end{frame}
+
+\begin{frame}{Alcance del TCL: por qué es tan importante}
+\begin{alertblock}{Universalidad}
+El TCL explica por qué la distribución normal aparece con tanta frecuencia en la naturaleza y en las ciencias sociales: cualquier magnitud que resulte de \textbf{sumar o promediar} muchos efectos pequeños e independientes (errores de medición, alturas influidas por muchos genes y factores ambientales, promedios de calificaciones, etc.) tiende a distribuirse aproximadamente normal, sin importar la distribución de cada efecto individual.
+\end{alertblock}
+
+\begin{block}{Conexión con unidades futuras}
+El TCL es la base teórica de la \textbf{inferencia estadística} (estimación de parámetros, intervalos de confianza, pruebas de hipótesis), que se estudiará en unidades posteriores de la materia: permite aproximar la distribución de estadísticos muestrales (como $\overline X_n$ o proporciones muestrales) por una normal, aun cuando la población de origen no lo sea.
+\end{block}
+\end{frame}
+
 \section{Resumen}
 
 \begin{frame}{Resumen}

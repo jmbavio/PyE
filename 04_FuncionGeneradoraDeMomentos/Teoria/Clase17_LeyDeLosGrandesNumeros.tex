@@ -194,6 +194,55 @@ Es decir, hay a lo sumo un $9.8\%$ de probabilidad de que la proporción muestra
 \end{example}
 \end{frame}
 
+\section{Visualización e implicancias}
+
+\begin{frame}{Visualización: la varianza del promedio se contrae}
+\begin{block}{Idea gráfica}
+A medida que $n$ crece, la distribución de $\overline{X}_n$ se concentra cada vez más alrededor de $\mu$, porque $\text{Var}(\overline{X}_n) = \sigma^2/n \to 0$. El siguiente gráfico esquematiza cómo se ``achica'' la dispersión de $\overline X_n$ (en el eje vertical, una densidad esquemática) a medida que aumenta $n$.
+\end{block}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+\begin{axis}[
+  width=10cm, height=5cm,
+  xlabel={valores de $\overline{X}_n$}, ylabel={densidad (esquemática)},
+  xmin=-4, xmax=4, ymin=0, ymax=1.6,
+  legend pos=north east, legend style={font=\tiny},
+  ticks=none
+]
+\addplot[domain=-4:4, samples=100, thick, blue] {1/sqrt(2*pi*1.2)*exp(-x^2/(2*1.2))};
+\addplot[domain=-4:4, samples=100, thick, red] {1/sqrt(2*pi*0.4)*exp(-x^2/(2*0.4))};
+\addplot[domain=-4:4, samples=100, thick, green!60!black] {1/sqrt(2*pi*0.1)*exp(-x^2/(2*0.1))};
+\legend{$n$ chico, $n$ mediano, $n$ grande}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Ejemplo: promedio de calificaciones}
+\begin{example}
+Las calificaciones de un examen (escala $0$ a $100$) tienen $\mu=68$ y $\sigma=15$ (distribución desconocida). Se promedian los exámenes de $n=225$ estudiantes elegidos al azar e independientes entre sí. Acotar, con Chebyshev, la probabilidad de que el promedio muestral difiera de $68$ en más de $3$ puntos.
+\end{example}
+
+\medskip
+$\text{Var}(\overline X_{225}) = \dfrac{15^2}{225} = \dfrac{225}{225} = 1$. Por Chebyshev con $k=3$:
+\[
+P(|\overline X_{225}-68|\geq 3) \leq \frac{1}{3^2} = \frac{1}{9} \approx 0.111.
+\]
+Con $225$ exámenes, la probabilidad de que el promedio se aparte más de $3$ puntos de la media poblacional es a lo sumo $11.1\%$: el promedio muestral es un estimador cada vez más preciso de $\mu$ a medida que $n$ crece.
+\end{frame}
+
+\begin{frame}{Alcance y limitaciones de la ley débil}
+\begin{alertblock}{¿Qué garantiza y qué no?}
+\begin{itemize}
+\item Garantiza que, para $n$ grande, es \textbf{muy probable} que $\overline X_n$ esté cerca de $\mu$.
+\item No garantiza nada sobre una realización \emph{particular}: en una muestra concreta, $\overline X_n$ puede alejarse de $\mu$ (solo se vuelve cada vez menos probable).
+\item Requiere que $\text{Var}(X_i)$ sea finita; existen versiones más generales (fuera del alcance de este curso) que solo requieren $E(|X_i|)<\infty$.
+\item Es la base teórica de: simulación de Monte Carlo, estimación de probabilidades mediante frecuencias relativas, y de gran parte de la inferencia estadística que se estudiará en unidades posteriores.
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
 \section{Resumen}
 
 \begin{frame}{Resumen}
