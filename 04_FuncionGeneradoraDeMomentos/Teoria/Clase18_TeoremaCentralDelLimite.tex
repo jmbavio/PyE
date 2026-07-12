@@ -232,11 +232,12 @@ A medida que $n$ crece, el histograma de la distribución binomial (barras) se a
   ticks=none
 ]
 \addplot[domain=-4:4, samples=100, thick, blue] {1/sqrt(2*pi)*exp(-x^2/2)};
+\addlegendentry{$N(0,1)$}
 \addplot[ycomb, thick, red, mark=*, mark size=1.2pt] coordinates {
 (-3,0.011) (-2.5,0.020) (-2,0.054) (-1.5,0.099) (-1,0.157) (-0.5,0.198)
 (0,0.219) (0.5,0.198) (1,0.157) (1.5,0.099) (2,0.054) (2.5,0.020) (3,0.011)
 };
-\legend{$N(0,1)$, $\text{Bin}(n,0.5)$ estand.}
+\addlegendentry{$\text{Bin}(n,0.5)$ estand.}
 \end{axis}
 \end{tikzpicture}
 \end{center}
@@ -265,6 +266,19 @@ El TCL explica por qué la distribución normal aparece con tanta frecuencia en 
 \begin{block}{Conexión con unidades futuras}
 El TCL es la base teórica de la \textbf{inferencia estadística} (estimación de parámetros, intervalos de confianza, pruebas de hipótesis), que se estudiará en unidades posteriores de la materia: permite aproximar la distribución de estadísticos muestrales (como $\overline X_n$ o proporciones muestrales) por una normal, aun cuando la población de origen no lo sea.
 \end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo final: margen de error de una encuesta}
+\begin{example}
+Retomando la encuesta de la Clase 17 ($n=1500$, $p=0.48$ real), aproximar (en vez de acotar con Chebyshev) la probabilidad de que $\hat p$ se aparte de $0.48$ en más de $0.03$, usando el TCL.
+\end{example}
+
+\medskip
+$\sigma_{\hat p} = \sqrt{0.0001664}\approx 0.01290$. Por el TCL, $\hat p \ \dot\sim\ N(0.48,\ 0.0001664)$:
+\[
+P(|\hat p-0.48|\geq 0.03) \approx 2\left[1-\Phi\left(\frac{0.03}{0.01290}\right)\right] = 2[1-\Phi(2.326)] \approx 2(1-0.9900) = 0.0200.
+\]
+\textbf{La probabilidad aproximada es solo $2\%$}, mucho más ajustada que el $18.5\%$ que daba Chebyshev en la Clase 17: al conocer que $\hat p$ es (aproximadamente) normal, la estimación de probabilidades es mucho más precisa que la cota universal de Chebyshev.
 \end{frame}
 
 \section{Resumen}

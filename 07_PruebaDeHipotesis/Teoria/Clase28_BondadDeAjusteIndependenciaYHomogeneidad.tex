@@ -59,7 +59,7 @@ donde $O_i$ son las frecuencias \textbf{observadas} y $E_i$ las frecuencias \tex
   xlabel={$\chi^2$}, ylabel={densidad},
   xmin=0, xmax=25, ymin=0,
 ]
-\addplot[domain=0.1:25, samples=150, thick, blue, name path=curve] {x^(1.5)*exp(-x/2)};
+\addplot[domain=0.1:25, samples=150, thick, blue] {x^(1.5)*exp(-x/2)};
 \addplot[domain=11.07:25, samples=60, fill=red!40, draw=none] {x^(1.5)*exp(-x/2)} \closedcycle;
 \draw[dashed] (axis cs:11.07,0) -- (axis cs:11.07,0.85);
 \node at (axis cs:11.07,-0.15) {\footnotesize $\chi^2_{k-1,\alpha}$};

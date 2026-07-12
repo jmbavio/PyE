@@ -198,6 +198,19 @@ IC=(15.4-14.6)\pm 1.725(0.5112) = 0.8\pm 0.882 = (-0.082,\ 1.682)\ \text{km/l}.
 \end{example}
 \end{frame}
 
+\begin{frame}{¿Cuándo usar cada caso de diferencia de medias?}
+\begin{block}{Guía de decisión}
+\begin{itemize}
+\item ¿Las dos muestras están \textbf{relacionadas} (mismos sujetos/unidades medidos dos veces)? Si sí $\Rightarrow$ \textbf{muestras apareadas}.
+\item Si son independientes: ¿se conocen $\sigma_1^2,\sigma_2^2$? Si sí $\Rightarrow$ usar $Z$.
+\item Si son independientes y $\sigma_1^2,\sigma_2^2$ desconocidas: ¿es razonable suponer $\sigma_1^2=\sigma_2^2$? Si sí $\Rightarrow$ $t$ con varianza \emph{pooled}. (Si no, existen versiones con grados de libertad de Welch, fuera del alcance de este curso.)
+\end{itemize}
+\end{block}
+\begin{alertblock}{Importancia práctica}
+Elegir mal el procedimiento (por ejemplo, tratar datos apareados como independientes) produce intervalos de confianza incorrectos, típicamente demasiado anchos.
+\end{alertblock}
+\end{frame}
+
 \section{Muestras apareadas}
 
 \begin{frame}{Muestras apareadas (datos pareados)}

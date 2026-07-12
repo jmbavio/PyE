@@ -225,6 +225,25 @@ El intervalo de \textbf{predicción} (b) es siempre más ancho que el de \textbf
 \end{alertblock}
 \end{frame}
 
+\section{Verificación de los supuestos}
+
+\begin{frame}{Diagnóstico mediante el análisis de residuos}
+Toda la inferencia desarrollada (pruebas $t$, $F$, intervalos) depende de los supuestos de normalidad, homocedasticidad e independencia de los errores. En la práctica se verifican de manera \textbf{informal} mediante gráficos de los residuos $e_i = y_i-\hat y_i$.
+
+\begin{block}{Qué mirar en un gráfico de residuos vs.\ $\hat y_i$ (o vs.\ $x_i$)}
+\begin{itemize}
+\item \textbf{Nube sin patrón}, dispersa aleatoriamente alrededor de $0$: apoya los supuestos del modelo.
+\item \textbf{Forma de embudo} (residuos que crecen o decrecen en magnitud): indica \textbf{heterocedasticidad} (viola $V(\varepsilon)=\sigma^2$ constante).
+\item \textbf{Patrón curvo} (no aleatorio): sugiere que la relación no es lineal, o falta algún término en el modelo.
+\item Puntos muy alejados del resto: posibles \textbf{valores atípicos} (outliers), a investigar.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Observación}
+Un histograma o gráfico de probabilidad normal (Q-Q plot) de los residuos permite además evaluar informalmente el supuesto de normalidad.
+\end{alertblock}
+\end{frame}
+
 \section{Ejemplo numérico completo}
 
 \begin{frame}{Ejemplo: retomando la soldadura}
@@ -288,6 +307,26 @@ Como el intervalo no contiene al $0$, se confirma (por otra vía) el rechazo de 
 IC del 95\%: $50.518\pm2.447(0.366) \approx (49.62,\ 51.41)$ kg.
 
 Para el valor \textbf{individual} futuro, $\widehat{ee}\approx1.016$, y el intervalo de \textbf{predicción} del 95\% es $(48.03,\ 53.00)$ kg, claramente más ancho.
+\end{frame}
+
+\begin{frame}{Ejemplo: síntesis de los resultados}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lc}
+\toprule
+Cantidad & Valor \\
+\midrule
+$\hat\beta_1$ (pendiente) & $3.893$ \\
+IC 95\% para $\beta_1$ & $(3.535,\ 4.251)$ \\
+$\hat\beta_0$ (ordenada) & $25.214$ \\
+$CME$ & $0.899$ \\
+$F$ (significancia global) & $708.1$ \\
+$R^2$ & $0.9916$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Conclusión general del ejemplo}: existe una relación lineal fuerte, positiva y altamente significativa entre el tiempo de soldadura y la resistencia a la tracción; el modelo ajustado explica más del $99\%$ de la variabilidad observada y permite predecir con buena precisión la resistencia media para tiempos dentro del rango estudiado.
 \end{frame}
 
 \section{Resumen}

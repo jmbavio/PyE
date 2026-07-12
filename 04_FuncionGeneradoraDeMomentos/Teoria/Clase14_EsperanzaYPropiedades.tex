@@ -266,6 +266,23 @@ Si $X, Y$ son independientes, se puede demostrar que $E(XY) = E(X)\,E(Y)$. En ge
 \end{example}
 \end{frame}
 
+\begin{frame}{Ejemplo integrador}
+\begin{example}
+Un juego consiste en tirar dos dados equilibrados independientes $X_1, X_2$ y pagar (o cobrar) $G = 2(X_1+X_2) - 15$ pesos, donde valores positivos de $G$ son ganancia del jugador. Calculemos $E(G)$.
+
+\medskip
+Por linealidad de la esperanza y aditividad:
+\[
+E(G) = E(2(X_1+X_2)-15) = 2\,E(X_1+X_2) - 15 = 2\big(E(X_1)+E(X_2)\big) - 15.
+\]
+Como $E(X_1)=E(X_2)=3.5$ (dado equilibrado, visto antes):
+\[
+E(G) = 2(3.5+3.5) - 15 = 2(7) - 15 = 14-15 = -1.
+\]
+En promedio, el jugador pierde \$1 por partida: el juego no es favorable para el jugador. Observar que no hizo falta calcular la distribución de $X_1+X_2$, solo usar linealidad y aditividad de la esperanza.
+\end{example}
+\end{frame}
+
 \section{Resumen}
 
 \begin{frame}{Resumen}

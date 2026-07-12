@@ -243,6 +243,19 @@ Con $225$ exámenes, la probabilidad de que el promedio se aparte más de $3$ pu
 \end{alertblock}
 \end{frame}
 
+\begin{frame}{Ejemplo: encuesta de intención de voto}
+\begin{example}
+En un sondeo, se consulta a $n=1500$ votantes independientes si apoyan a un candidato. Supongamos que la proporción real de apoyo es $p=0.48$ (desconocida para quien realiza la encuesta). Acotar, con Chebyshev, la probabilidad de que la proporción muestral $\hat p$ se aparte de $0.48$ en más de $0.03$ (tres puntos porcentuales).
+\end{example}
+
+\medskip
+$\text{Var}(\hat p) = \dfrac{p(1-p)}{n} = \dfrac{0.48(0.52)}{1500} = \dfrac{0.2496}{1500} \approx 0.0001664$.
+\[
+P(|\hat p - 0.48|\geq 0.03) \leq \frac{0.0001664}{0.03^2} = \frac{0.0001664}{0.0009} \approx 0.1849.
+\]
+La cota de Chebyshev da a lo sumo $18.5\%$ de probabilidad de error mayor a $3$ puntos porcentuales. Este tipo de cálculo es la base del llamado ``margen de error'' que se reporta en las encuestas (con el TCL, Clase 18, se obtienen cotas bastante más ajustadas que esta).
+\end{frame}
+
 \section{Resumen}
 
 \begin{frame}{Resumen}

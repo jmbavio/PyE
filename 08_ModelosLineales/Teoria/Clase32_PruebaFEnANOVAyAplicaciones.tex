@@ -194,6 +194,32 @@ Existe evidencia estadísticamente significativa (al 5\%) de que el diámetro me
 \end{block}
 \end{frame}
 
+\begin{frame}{Ejemplo: diagrama de caja comparativo}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=9cm,height=5.5cm,
+  xlabel={Máquina}, ylabel={diámetro},
+  xtick={1,2,3,4}, xticklabels={A,B,C,D},
+  ymin=17,ymax=32, tick label style={font=\scriptsize}, label style={font=\small},
+  boxplot/draw direction=y]
+\addplot+[boxplot, fill=blue!25] table[row sep=\\,y index=0]{
+data\\ 23\\ 25\\ 21\\ 24\\ 22\\
+};
+\addplot+[boxplot, fill=blue!25] table[row sep=\\,y index=0]{
+data\\ 27\\ 29\\ 26\\ 28\\ 30\\
+};
+\addplot+[boxplot, fill=blue!25] table[row sep=\\,y index=0]{
+data\\ 22\\ 20\\ 23\\ 21\\ 19\\
+};
+\addplot+[boxplot, fill=blue!25] table[row sep=\\,y index=0]{
+data\\ 25\\ 24\\ 27\\ 26\\ 23\\
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+El gráfico de cajas confirma lo que sugiere la tabla ANOVA: las dispersiones dentro de cada máquina son comparables (homocedasticidad razonable), mientras que las posiciones (medianas) difieren notoriamente entre máquinas, en particular B se separa claramente del resto.
+\end{frame}
+
 \section{Comparaciones múltiples}
 
 \begin{frame}{¿Y ahora qué? Comparaciones múltiples}

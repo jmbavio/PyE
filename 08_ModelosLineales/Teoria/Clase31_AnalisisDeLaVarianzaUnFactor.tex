@@ -266,6 +266,37 @@ SCE = SCTo - SCTr.
 Estas son las fórmulas que usaremos en el ejemplo numérico de la Clase 32.
 \end{frame}
 
+\section{Verificación de los supuestos}
+
+\begin{frame}{Diagnóstico de los supuestos del Modelo I}
+Al igual que en regresión (Clase 30), los supuestos de \textbf{normalidad}, \textbf{homocedasticidad} e \textbf{independencia} se verifican de manera informal a partir de los residuos $e_{ij}=Y_{ij}-\bar Y_{i\cdot}$.
+
+\begin{block}{Herramientas usuales}
+\begin{itemize}
+\item Gráfico de residuos vs.\ tratamiento (o vs.\ valores predichos $\bar Y_{i\cdot}$): buscar dispersión similar en todos los grupos (homocedasticidad).
+\item Gráfico de caja (\emph{boxplot}) comparativo de las $k$ muestras: permite ver de un vistazo diferencias en posición \emph{y} en dispersión.
+\item Q-Q plot o histograma de los residuos combinados: para evaluar normalidad.
+\item Regla práctica de homocedasticidad: si el mayor desvío estándar muestral no supera $2$ veces al menor, la prueba $F$ es razonablemente robusta a violaciones moderadas del supuesto.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Independencia}
+Se garantiza principalmente por el \textbf{diseño del experimento} (muestreo aleatorio, o aleatorización de las unidades experimentales a los tratamientos), más que por un chequeo posterior sobre los datos.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Diseño equilibrado vs.\ no equilibrado}
+\begin{block}{Diseño equilibrado (\emph{balanced})}
+Cuando $n_1=n_2=\cdots=n_k=n$ (igual número de observaciones por tratamiento), $N=nk$, y las fórmulas y el análisis son algo más simples; además la prueba $F$ resulta más robusta ante apartamientos moderados de la homocedasticidad.
+\end{block}
+
+\begin{block}{Diseño no equilibrado}
+Con $n_i$ distintos, la teoría desarrollada (descomposición $SCTo=SCTr+SCE$, grados de libertad $N-1=(k-1)+(N-k)$, tabla ANOVA) sigue siendo exactamente válida; solo cambian las fórmulas de cálculo, que ya contemplan $n_i$ general.
+\end{block}
+
+En el ejemplo numérico de la Clase 32 usaremos un diseño equilibrado, con $n_i=5$ para los $k=4$ tratamientos.
+\end{frame}
+
 \section{Resumen}
 
 \begin{frame}{Resumen de la clase}
