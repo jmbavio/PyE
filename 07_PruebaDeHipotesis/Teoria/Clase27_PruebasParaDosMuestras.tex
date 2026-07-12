@@ -110,6 +110,24 @@ Z=\frac{(252-249)-0}{\sqrt{25/40+16/35}}=\frac{3}{\sqrt{0.625+0.457}}=\frac{3}{\
 \end{example}
 \end{frame}
 
+\begin{frame}{El ejemplo anterior con valor p}
+\begin{example}
+Con $z=2.88$ (prueba bilateral), el valor p es
+\[
+p=2\cdot P(Z>2.88)=2\times0.0020=0.0040.
+\]
+Como $p=0.0040<\alpha=0.05$ (y también $<0.01$), la evidencia en contra de $H_0$ es muy fuerte: la diferencia observada entre las dos máquinas difícilmente se debe al azar si realmente $\mu_1=\mu_2$.
+\end{example}
+
+\begin{block}{Intervalo de confianza asociado}
+Un IC del $95\%$ para $\mu_1-\mu_2$ es
+\[
+(\overline{x}-\overline{y}) \pm z_{0.025}\sqrt{\tfrac{\sigma_1^2}{n_1}+\tfrac{\sigma_2^2}{n_2}} = 3 \pm 1.96\times1.040 = 3\pm2.04 = (0.96;\,5.04),
+\]
+que no contiene al $0$, consistente con el rechazo de $H_0:\mu_1-\mu_2=0$.
+\end{block}
+\end{frame}
+
 \section{Diferencia de medias: varianzas desconocidas e iguales}
 
 \begin{frame}{Prueba $t$ agrupada (\emph{pooled})}
@@ -152,6 +170,15 @@ t=\frac{(436-428)-0}{10.17\sqrt{\tfrac{1}{12}+\tfrac{1}{10}}}=\frac{8}{10.17\tim
 
 \textbf{6. Conclusión:} con un $5\%$ de significación, hay evidencia de que el proveedor A entrega cables con mayor resistencia media.
 \end{example}
+\end{frame}
+
+\begin{frame}{Observación: varianzas desconocidas y distintas}
+\begin{alertblock}{Cuando no puede suponerse $\sigma_1^2=\sigma_2^2$}
+Si las varianzas poblacionales son desconocidas y \textbf{no} puede suponerse que sean iguales, el estadístico $t$ agrupado no es válido. Existe una extensión (aproximación de Welch–Satterthwaite) que utiliza un estadístico $t$ con grados de libertad ajustados, distinta de la fórmula vista. Su desarrollo excede el alcance de esta materia; aquí siempre trabajaremos bajo el supuesto de \textbf{varianzas iguales} cuando estas son desconocidas.
+\end{alertblock}
+\begin{block}{Cómo decidir si es razonable suponer $\sigma_1^2=\sigma_2^2$}
+Este supuesto puede evaluarse formalmente con la prueba $F$ de igualdad de varianzas, que se presenta más adelante en esta misma clase.
+\end{block}
 \end{frame}
 
 \section{Muestras apareadas}
@@ -229,6 +256,45 @@ $\sigma_1^2>\sigma_2^2$ & $F>F_{n_1-1,n_2-1,\,\alpha}$ \\
 \begin{alertblock}{Convención práctica}
 Para el caso bilateral es usual colocar en el numerador la muestra con mayor $s^2$, de modo que $F\ge1$, y comparar solo con el valor crítico superior $F_{n_1-1,n_2-1,\alpha/2}$.
 \end{alertblock}
+\end{frame}
+
+\begin{frame}{Forma de la distribución $F$}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=9.5cm, height=5cm,
+  axis lines=left, ytick=\empty,
+  xlabel={$F$}, ylabel={densidad},
+  xmin=0, xmax=5, ymin=0,
+  legend pos=north east, legend style={font=\footnotesize},
+]
+\addplot[domain=0.05:5, samples=150, thick, blue] {(x^1)/((1+2*x)^3)};
+\addlegendentry{$F_{4,10}$}
+\addplot[domain=0.05:5, samples=150, thick, red, dashed] {(x^5)/((1+1.2*x)^8)*3};
+\addlegendentry{$F_{12,20}$ (más concentrada en $1$)}
+\end{axis}
+\end{tikzpicture}
+\vspace{0.2cm}
+
+Al igual que $\chi^2$, la distribución $F$ toma solo valores positivos y es asimétrica; su forma depende de \textbf{dos} grados de libertad (numerador y denominador).
+\end{frame}
+
+\begin{frame}{Ejemplo: comparación unilateral de variabilidad}
+\begin{example}
+Un nuevo instrumento de medición se propone como más preciso (menor variabilidad) que el instrumento estándar. Instrumento estándar: $n_1=16$, $s_1^2=2.8$. Instrumento nuevo: $n_2=13$, $s_2^2=1.1$. Con $\alpha=0.05$, ¿hay evidencia de que el nuevo instrumento es más preciso?
+
+\textbf{1. Hipótesis:} $H_0:\sigma_1^2\le\sigma_2^2$ vs. $H_1:\sigma_1^2>\sigma_2^2$ (equivalente a $H_0:\sigma_1^2=\sigma_2^2$).
+
+\textbf{2. Estadístico:} $\displaystyle F=\frac{S_1^2}{S_2^2}\sim F_{15,\,12}$ bajo $H_0$.
+
+\textbf{3. Región crítica:} $F>F_{15,\,12,\,0.05}=2.62$.
+
+\textbf{4. Cálculo:} $\displaystyle F=\frac{2.8}{1.1}=2.55$.
+
+\textbf{5. Decisión:} $2.55<2.62\Rightarrow$ \textbf{no se rechaza} $H_0$.
+
+\textbf{6. Conclusión:} al $5\%$, no hay evidencia estadísticamente suficiente de que el nuevo instrumento sea más preciso, aunque el resultado es sugestivo y amerita ampliar la muestra.
+\end{example}
 \end{frame}
 
 \begin{frame}{Ejemplo: comparación de variabilidad de dos procesos}
