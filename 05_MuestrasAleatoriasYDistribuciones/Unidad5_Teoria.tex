@@ -1,0 +1,746 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{propiedad}[teorema]{Propiedad}
+\newtheorem{corolario}[teorema]{Corolario}
+\newtheorem{lema}[teorema]{Lema}
+\theoremstyle{definition}
+\newtheorem{definicion}[teorema]{Definición}
+\newtheorem{ejemplo}[teorema]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{observacion}[teorema]{Observación}
+
+\renewcommand{\proofname}{Demostración}
+
+\title{Unidad 5: Muestras aleatorias y distribuciones \\ \large Apunte de teoría}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Muestras aleatorias y estadísticos muestrales}
+
+\subsection{De la probabilidad a la inferencia estadística}
+
+En las Unidades 1 a 4 el punto de partida siempre fue el mismo: se \emph{supone conocido} un modelo probabilístico completo (una función de probabilidad puntual, una densidad, o una distribución conjunta) y, a partir de él, se calculan probabilidades, esperanzas, varianzas, covarianzas y distribuciones de transformaciones de variables aleatorias. Ese es el objeto de estudio de la \textbf{teoría de la probabilidad}: dado el modelo, describir su comportamiento.
+
+En la práctica, sin embargo, el problema casi siempre se presenta al revés. Un ingeniero que controla la calidad de una línea de envasado no conoce el peso medio $\mu$ ni la varianza $\sigma^2$ de los paquetes que produce su máquina; un biólogo no conoce la proporción real $p$ de individuos de una especie que portan cierto gen; un economista no conoce la distribución exacta de los ingresos de una población. Lo único que tienen a disposición es un conjunto finito de \textbf{datos}: mediciones obtenidas de un número limitado de unidades experimentales. A partir de esos datos se busca decir algo razonable —y cuantificablemente confiable— acerca de los parámetros desconocidos de la población completa. Esta tarea es el objeto de la \textbf{estadística inferencial}, y constituye el contenido de las Unidades 6 (estimación de parámetros), 7 (pruebas de hipótesis) y 8 (modelos lineales).
+
+La Unidad 5 es la bisagra entre ambos mundos. Su contenido no es, en sí mismo, ni pura probabilidad ni pura inferencia: consiste en tomar las herramientas probabilísticas ya desarrolladas (esperanza, varianza, independencia, funciones generatrices de momentos, el teorema central del límite, las distribuciones $\chi^2$ y $t$ de Student de la Unidad 3) y aplicarlas para describir el comportamiento aleatorio de las cantidades que se calculan a partir de una muestra. Sin este puente, cualquier afirmación de tipo ``estimamos que $\mu$ está entre tales valores, con tal nivel de confianza'' carecería de fundamento matemático.
+
+Conviene distinguir, de entrada, dos actividades que suelen confundirse:
+
+\begin{itemize}
+\item La \textbf{estadística descriptiva} organiza, resume y presenta datos: tablas de frecuencias, histogramas, la media y la varianza calculadas directamente sobre un conjunto fijo de números, sin ningún supuesto probabilístico sobre cómo se generaron esos números.
+\item La \textbf{estadística inferencial} usa los datos de una muestra para sacar conclusiones sobre la población de la cual provienen, cuantificando el margen de error o el nivel de confianza mediante un modelo probabilístico explícito.
+\end{itemize}
+
+La clave que permite pasar de la primera a la segunda es reconocer que los datos observados son la \emph{realización} de variables aleatorias, y que por lo tanto las cantidades que calculamos con ellos (medias, varianzas, proporciones) son también variables aleatorias, con su propia distribución de probabilidad. Estudiar esa distribución —la \textbf{distribución muestral}— es exactamente el contenido de esta unidad.
+
+\subsection{Población y modelo probabilístico subyacente}
+
+\begin{definicion}[Población]
+La \textbf{población} es el conjunto de todos los individuos, objetos o mediciones de interés para un estudio. Puede ser finita y concreta (los $5000$ artículos producidos hoy por una máquina) o conceptualmente infinita (todos los artículos que la máquina \emph{podría} producir, indefinidamente, bajo las mismas condiciones de funcionamiento).
+\end{definicion}
+
+A cada población le asociamos una variable aleatoria $X$ que describe numéricamente la característica de interés: el peso de un paquete, el tiempo de vida de un componente, si una pieza es o no defectuosa, el ingreso de un hogar, etc. La distribución de $X$ —su función de probabilidad puntual o su densidad, según sea discreta o continua— \emph{es} el modelo probabilístico de la población. Los números que describen esa distribución (la media $\mu = E(X)$, la varianza $\sigma^2 = \mathrm{Var}(X)$, una proporción $p$, un parámetro de forma $\lambda$, etc.) se llaman \textbf{parámetros poblacionales}: son cantidades fijas, no aleatorias, pero típicamente \textbf{desconocidas}. Todo el aparato de esta unidad y de las siguientes gira en torno a esa palabra: desconocidas.
+
+\begin{ejemplo}
+Algunos pares (población, parámetro desconocido) típicos:
+\begin{itemize}
+\item $X=$ peso en gramos de un paquete producido por una envasadora. Se admite $X\sim N(\mu,\sigma^2)$, con $\mu$ y $\sigma^2$ desconocidos.
+\item $X=1$ si una pieza tomada al azar de un lote es defectuosa y $X=0$ en caso contrario. Entonces $X\sim \text{Bernoulli}(p)$, con $p$ desconocido: la proporción de piezas defectuosas en el lote.
+\item $X=$ tiempo, en horas, hasta que falla un componente electrónico. Podría modelarse $X\sim \text{Exponencial}(\lambda)$, con $\lambda$ desconocido.
+\end{itemize}
+En los tres casos el \emph{tipo} de distribución puede suponerse conocido (por experiencia previa, por argumentos físicos, o simplemente como una aproximación razonable), pero el valor numérico de sus parámetros no.
+\end{ejemplo}
+
+\begin{observacion}
+No siempre se supone conocida la familia de distribuciones. Existen métodos de inferencia \textbf{no paramétricos} que evitan ese supuesto, pero quedan fuera del alcance de este curso. Aquí trabajaremos siempre bajo el supuesto de que se conoce (o se puede suponer razonablemente) la forma de la distribución poblacional, y lo que se desconoce son sus parámetros.
+\end{observacion}
+
+\subsection{Muestra aleatoria: definición formal}
+
+No es posible, ni conveniente, medir a toda la población. En su lugar se selecciona un subconjunto de $n$ individuos —la \textbf{muestra}— y se usa la información que aporta para inferir sobre la población completa. Para que ese procedimiento tenga sentido matemático es necesario precisar de qué manera se seleccionan las observaciones.
+
+\begin{definicion}[Muestra aleatoria]
+Sea $X$ una variable aleatoria que representa la característica de interés de una población, con función de distribución $F_X$. Una \textbf{muestra aleatoria} de tamaño $n$ (también llamada \emph{muestra aleatoria simple}) es una colección de variables aleatorias
+$$X_1, X_2, \dots, X_n$$
+que son \textbf{independientes} entre sí y \textbf{idénticamente distribuidas} (i.i.d.), cada una con la misma función de distribución $F_X$ que la población.
+\end{definicion}
+
+Es fundamental distinguir dos niveles de descripción de la muestra:
+
+\begin{itemize}
+\item \textbf{Antes} de realizar el experimento (antes de observar los datos), $X_1,\dots,X_n$ son variables aleatorias: no sabemos qué valores tomarán, solo conocemos su distribución conjunta (producto de $n$ copias de $F_X$, por independencia). Se escriben con mayúsculas.
+\item \textbf{Después} de realizar el experimento, se obtienen valores numéricos concretos $x_1,\dots,x_n$: la \textbf{realización} de la muestra, es decir, los datos efectivamente observados. Se escriben con minúsculas.
+\end{itemize}
+
+Esta distinción, que puede parecer un simple formalismo notacional, es en realidad la idea más importante de toda la unidad: todo estadístico calculado a partir de $X_1,\dots,X_n$ (antes de observar los datos) es una variable aleatoria, mientras que el mismo estadístico calculado a partir de $x_1,\dots,x_n$ (después de observar los datos) es un único número.
+
+\begin{ejemplo}
+Se seleccionan al azar, y con reposición, $10$ paquetes de una línea de producción y se pesa cada uno. Antes de pesarlos, el modelo es $X_1,\dots,X_{10}$ i.i.d.\ con la distribución del peso poblacional. Después de pesarlos, se obtiene, por ejemplo, $x_1=249.8,\ x_2=251.3,\ x_3=248.6,\dots$: diez números concretos, la realización de esa muestra aleatoria.
+\end{ejemplo}
+
+\subsection{Independencia e idéntica distribución: alcance y limitaciones}
+
+Conviene detenerse en por qué se exigen, precisamente, estas dos condiciones.
+
+\textbf{Idénticamente distribuidas.} Cada $X_i$ debe representar a la misma población, con la misma $F_X$, la misma media $\mu$ y la misma varianza $\sigma^2$. Si, sin darnos cuenta, mezclamos dos poblaciones distintas —por ejemplo, piezas producidas por dos máquinas con ajustes diferentes, o pacientes tratados con dos protocolos distintos— la muestra deja de ser una muestra aleatoria simple de una única población, y las conclusiones que se obtengan pueden ser completamente erróneas. Este es, en la práctica, uno de los errores metodológicos más frecuentes en el diseño de estudios estadísticos.
+
+\textbf{Independientes.} El resultado de una observación no debe influir en la probabilidad de los resultados de las demás. Cuando el muestreo se realiza \emph{con reposición} de una población (finita o infinita), la independencia es exacta: cada extracción se hace en las mismas condiciones, sin alterar la composición de la población para la extracción siguiente. Cuando el muestreo se realiza \emph{sin reposición} de una población finita de tamaño $N$, las observaciones sucesivas ya no son estrictamente independientes, porque extraer un individuo cambia la composición de lo que queda por extraer.
+
+\begin{ejemplo}
+Un lote contiene $N=50$ artículos, de los cuales $5$ son defectuosos. Si se extraen dos artículos \emph{sin} reposición, la probabilidad de que el segundo sea defectuoso depende de si el primero lo fue o no: $P(X_2=1\mid X_1=1)=4/49$ mientras que $P(X_2=1\mid X_1=0)=5/49$. Las dos extracciones no son independientes.
+\end{ejemplo}
+
+Sin embargo, si la población es mucho más grande que la muestra ($N \gg n$; una regla práctica habitual es exigir $n/N < 0.05$), extraer unas pocas unidades altera tan poco la composición de lo que queda que la dependencia entre observaciones es despreciable a efectos prácticos, y se puede tratar el muestreo sin reposición como si fuera, aproximadamente, una muestra aleatoria simple. En la Sección \ref{subsec:correccion} retomaremos esta cuestión de manera cuantitativa, mostrando exactamente cuánto se corrige la varianza de la media muestral cuando el muestreo es sin reposición y la población es finita.
+
+\begin{observacion}
+La razón técnica por la cual insistimos tanto en la hipótesis de independencia es que gran parte de la teoría desarrollada en la Unidad 4 —la varianza de una suma de variables aleatorias, y sobre todo las funciones generatrices de momentos de sumas de variables independientes— se aplica de manera directa y sin complicaciones a los estadísticos que estudiaremos, siempre y cuando $X_1,\dots,X_n$ sean independientes. Sin esa hipótesis, prácticamente ninguna de las fórmulas que siguen sería válida en su forma simple.
+\end{observacion}
+
+\subsection{Estadístico muestral: definición y notación}
+
+\begin{definicion}[Estadístico]
+Un \textbf{estadístico} es cualquier función $T = h(X_1,\dots,X_n)$ de una muestra aleatoria que no depende de ningún parámetro poblacional desconocido (es decir, se puede calcular efectivamente a partir de los datos, sin necesitar conocer $\mu$, $\sigma^2$, $p$, etc.). Como $T$ es una función de variables aleatorias, $T$ es en sí misma una variable aleatoria, con su propia distribución de probabilidad, su propia esperanza y su propia varianza.
+\end{definicion}
+
+Es importante remarcar la diferencia conceptual entre un \textbf{parámetro} y un \textbf{estadístico}, resumida en la Tabla \ref{tab:param-estad}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+ & \textbf{Parámetro} & \textbf{Estadístico} \\
+\midrule
+¿Qué es? & Número fijo de la población & Función de la muestra \\
+¿Se conoce? & Generalmente no & Se calcula a partir de los datos \\
+¿Es aleatorio? & No, es una constante & Sí, es una variable aleatoria \\
+Ejemplos & $\mu,\ \sigma^2,\ p,\ \lambda$ & $\bar X,\ S^2,\ \hat p,\ \tilde X$ \\
+\bottomrule
+\end{tabular}
+\caption{Diferencia conceptual entre parámetro poblacional y estadístico muestral.}
+\label{tab:param-estad}
+\end{table}
+
+Un error conceptual muy frecuente al empezar a estudiar inferencia es confundir estos dos objetos y tratar a un estadístico como si fuera un número fijo. Ninguno de los resultados de esta unidad tendría sentido si $\bar X$ fuera un número: la pregunta ``¿cuál es la distribución de $\bar X$?'' presupone, precisamente, que $\bar X$ es aleatoria.
+
+\subsection{Principales estadísticos muestrales}
+
+Dada una muestra aleatoria $X_1,\dots,X_n$, se definen a continuación los estadísticos que usaremos con mayor frecuencia a lo largo de la materia.
+
+\begin{definicion}[Media muestral]
+$$\bar X = \frac{1}{n}\sum_{i=1}^{n} X_i.$$
+\end{definicion}
+
+\begin{definicion}[Varianza muestral]
+$$S^2 = \frac{1}{n-1}\sum_{i=1}^{n} (X_i - \bar X)^2.$$
+El desvío estándar muestral es $S=\sqrt{S^2}$.
+\end{definicion}
+
+\begin{observacion}[¿Por qué dividir por $n-1$ y no por $n$?]
+A primera vista, si $S^2$ pretende ser un ``promedio'' de las distancias cuadráticas $(X_i-\bar X)^2$ a la media, lo natural sería dividir por $n$. La razón para dividir por $n-1$ es que los $n$ términos $(X_i-\bar X)$ no son ``libres'': siempre satisfacen la restricción lineal
+$$\sum_{i=1}^n (X_i-\bar X) = \sum_{i=1}^n X_i - n\bar X = n\bar X - n \bar X = 0.$$
+Conocidos $n-1$ de esos términos, el restante queda determinado. Se dice que $\sum (X_i-\bar X)^2$ tiene $n-1$ \textbf{grados de libertad}. Dividir por $n-1$, en lugar de por $n$, es precisamente lo que hace que $S^2$ sea un estimador \textbf{insesgado} de $\sigma^2$, en el sentido de que $E(S^2)=\sigma^2$. Este hecho se demostrará con rigor en la Sección \ref{sec:distribucion-s2}, como consecuencia de la distribución exacta de $S^2$ bajo normalidad, y se retomará de manera general (para cualquier población) en la Unidad 6.
+\end{observacion}
+
+\begin{definicion}[Proporción muestral]
+Si $X_i \in \{0,1\}$ (indicadora de éxito/fracaso, con $X_i\sim\text{Bernoulli}(p)$), la \textbf{proporción muestral} de éxitos es
+$$\hat p = \bar X = \frac{1}{n}\sum_{i=1}^n X_i,$$
+es decir, la fracción de observaciones en la muestra que resultaron ``éxito''.
+\end{definicion}
+
+\begin{definicion}[Mediana muestral y rango muestral]
+Sean $X_{(1)}\leq X_{(2)}\leq \dots \leq X_{(n)}$ las \emph{estadísticas de orden}, es decir, la muestra ordenada de menor a mayor. La \textbf{mediana muestral} es
+$$\tilde X = \begin{cases} X_{((n+1)/2)} & \text{si } n \text{ es impar} \\[4pt] \dfrac{X_{(n/2)}+X_{(n/2+1)}}{2} & \text{si } n \text{ es par}, \end{cases}$$
+y el \textbf{rango muestral} es $R = X_{(n)} - X_{(1)}$, la diferencia entre el máximo y el mínimo de la muestra.
+\end{definicion}
+
+\begin{observacion}
+La mediana y el rango muestrales son, igual que $\bar X$ y $S^2$, funciones de $X_1,\dots,X_n$ y por lo tanto variables aleatorias con su propia distribución muestral. Sin embargo, a diferencia de $\bar X$, no se expresan como una suma de las $X_i$, sino como funciones de las estadísticas de orden, y su distribución exacta es en general bastante más difícil de obtener (requiere la teoría de estadísticas de orden, que excede el alcance de este curso). Esta es una de las razones por las que $\bar X$ y $S^2$ —que sí admiten un tratamiento cerrado y relativamente simple— son los estadísticos centrales de la inferencia clásica sobre la media y la varianza, mientras que la mediana y el rango se usan sobre todo con fines descriptivos o en contextos de estadística robusta.
+\end{observacion}
+
+\subsection{Ejemplo: cálculo de estadísticos sobre datos concretos}
+
+\begin{ejemplo}
+Se pesan, en gramos, seis paquetes producidos por una envasadora: $248,\ 251,\ 253,\ 247,\ 250,\ 252$. Calculemos las realizaciones $\bar x$, $s^2$, $\tilde x$ y $r$.
+
+\emph{Media muestral:}
+$$\bar x = \frac{248+251+253+247+250+252}{6} = \frac{1501}{6} \approx 250.17 \text{ g}.$$
+
+\emph{Varianza muestral.} Las desviaciones respecto de $\bar x$ son, aproximadamente, $-2.17,\ 0.83,\ 2.83,\ -3.17,\ -0.17,\ 1.83$, y sus cuadrados suman
+$$\sum_{i=1}^{6}(x_i-\bar x)^2 \approx 4.71+0.69+8.01+10.05+0.03+3.35 = 26.84,$$
+de donde
+$$s^2 = \frac{26.84}{5} \approx 5.37 \ \text{g}^2, \qquad s = \sqrt{5.37}\approx 2.32 \ \text{g}.$$
+
+\emph{Mediana muestral.} Ordenando la muestra: $247, 248, 250, 251, 252, 253$. Con $n=6$ par, $\tilde x = \dfrac{250+251}{2}=250.5$ g.
+
+\emph{Rango muestral.} $r = 253 - 247 = 6$ g.
+\end{ejemplo}
+
+\begin{observacion}[Distinción clave]
+Los números $\bar x = 250.17$, $s^2\approx 5.37$, $\tilde x = 250.5$ y $r=6$ son \emph{realizaciones}: valores concretos obtenidos a partir de \emph{esta} muestra particular. Si otro operario pesara otros seis paquetes distintos, obtendría, en general, valores diferentes. Es precisamente esta variabilidad de un conjunto de datos a otro la que motiva el concepto central de la unidad: la distribución muestral.
+\end{observacion}
+
+\subsection{El concepto de distribución muestral}
+\label{subsec:distribucion-muestral}
+
+Llegamos a la idea más importante de toda la unidad.
+
+\begin{definicion}[Distribución muestral]
+La \textbf{distribución muestral} de un estadístico $T=h(X_1,\dots,X_n)$ es la distribución de probabilidad de $T$, considerada como variable aleatoria, sobre el conjunto de todas las posibles muestras de tamaño $n$ que podrían extraerse de la población.
+\end{definicion}
+
+Para entender por qué esto importa, es útil imaginar el siguiente experimento conceptual (una idealización de lo que hoy se llama, en la práctica computacional, una simulación de \emph{remuestreo}). Supongamos que fuera posible repetir, una y otra vez, el procedimiento de tomar una muestra de tamaño $n$ de la población y calcular su media muestral $\bar x$. La primera muestra da $\bar x_1$; la segunda, un valor distinto $\bar x_2$; la tercera, otro valor $\bar x_3$; y así sucesivamente. Si hiciéramos esto un número muy grande de veces y graficáramos un histograma de todos los valores $\bar x_1, \bar x_2, \bar x_3, \dots$ obtenidos, ese histograma se aproximaría cada vez más a la distribución muestral \emph{exacta} de $\bar X$: una curva (o una distribución discreta) con su propia forma, su propio centro y su propia dispersión, en general muy distinta de la distribución de una observación individual $X_i$.
+
+\begin{ejemplo}[Ilustración conceptual con una población pequeña]
+\label{ej:poblacion-chica}
+Consideremos la población $\{2,4,6\}$, con cada valor equiprobable (por ejemplo, tres tipos de piezas en proporciones iguales), de modo que $\mu = E(X) = 4$ y $\sigma^2 = \mathrm{Var}(X) = \frac{(2-4)^2+(4-4)^2+(6-4)^2}{3} = \frac{8}{3}$.
+
+Tomemos muestras de tamaño $n=2$, \emph{con reposición}. Hay $3^2=9$ muestras posibles, todas igualmente probables (probabilidad $1/9$ cada una). La Tabla \ref{tab:muestras-chicas} lista las nueve muestras y su media.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccccccccc}
+\toprule
+$(2,2)$&$(2,4)$&$(2,6)$&$(4,2)$&$(4,4)$&$(4,6)$&$(6,2)$&$(6,4)$&$(6,6)$\\
+\midrule
+$2$&$3$&$4$&$3$&$4$&$5$&$4$&$5$&$6$\\
+\bottomrule
+\end{tabular}
+\caption{Las nueve muestras posibles de tamaño $2$ (con reposición) de la población $\{2,4,6\}$, y su media muestral.}
+\label{tab:muestras-chicas}
+\end{table}
+
+Agrupando los valores repetidos de $\bar x$ se obtiene la distribución muestral \emph{exacta} de $\bar X$:
+$$P(\bar X=2)=\tfrac19,\quad P(\bar X=3)=\tfrac29,\quad P(\bar X=4)=\tfrac39,\quad P(\bar X=5)=\tfrac29,\quad P(\bar X=6)=\tfrac19.$$
+
+Nótese, primero, que esta distribución es distinta de la distribución de una única observación $X_i$ (que solo toma los valores $2,4,6$, cada uno con probabilidad $1/3$): $\bar X$ concentra más probabilidad alrededor del centro ($P(\bar X = 4)=1/3$, el valor más probable) y tiene menos probabilidad en los extremos. Segundo, se puede verificar directamente que
+$$E(\bar X) = 2\cdot\tfrac19+3\cdot\tfrac29+4\cdot\tfrac39+5\cdot\tfrac29+6\cdot\tfrac19 = \frac{2+6+12+10+6}{9}=\frac{36}{9}=4=\mu,$$
+y que
+$$\mathrm{Var}(\bar X) = E(\bar X^2)-\mu^2 = \frac{4+18+48+50+36}{9} - 16 = \frac{156}{9}-16 = \frac{4}{3},$$
+que coincide exactamente con $\sigma^2/n = \frac{8/3}{2}=\frac{4}{3}$, anticipando el resultado general que demostraremos en la próxima sección.
+\end{ejemplo}
+
+\begin{observacion}[Qué pasaría con muestras más grandes]
+Si en el Ejemplo \ref{ej:poblacion-chica} tomáramos muestras de tamaño $n=3$ en lugar de $n=2$, habría $3^3=27$ muestras posibles, y la distribución muestral de $\bar X$ resultante tendría todavía menos dispersión alrededor de $\mu=4$ (su varianza sería $\sigma^2/3 = 8/9 < 4/3$), y una forma visiblemente más concentrada y más ``acampanada''. Este fenómeno —la distribución muestral de $\bar X$ se concentra cada vez más alrededor de $\mu$, y se acerca cada vez más a una forma de campana, a medida que crece $n$— es la manifestación conjunta de la Ley de los Grandes Números y del Teorema Central del Límite, que retomaremos formalmente en la Sección \ref{sec:tcl}.
+\end{observacion}
+
+¿Por qué es esto tan relevante para la inferencia? Porque las preguntas que interesan responder en la práctica tienen, típicamente, esta forma: ``si $\mu$ fuera realmente igual a cierto valor $\mu_0$, ¿qué tan probable es observar un valor de $\bar x$ tan alejado de $\mu_0$ como el que efectivamente obtuvimos en nuestros datos?''. Responder esa pregunta —que es, en esencia, el fundamento de toda prueba de hipótesis y de todo intervalo de confianza— exige conocer, con precisión, la distribución de probabilidad completa de $\bar X$, no solo su valor puntual en una muestra particular.
+
+\subsection{Esperanza de la media muestral}
+
+Habiendo visto, en un ejemplo concreto, que $E(\bar X)$ coincide con $\mu$, demostramos ahora que esto es un hecho general, válido para cualquier población con media finita.
+
+\begin{teorema}[Esperanza de la media muestral]
+\label{teo:esperanza-xbarra}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población con $E(X_i)=\mu$ (finita) para todo $i$. Entonces
+$$E(\bar X) = \mu.$$
+\end{teorema}
+
+\begin{proof}
+Por definición de $\bar X$ y por linealidad de la esperanza (que no requiere ningún supuesto de independencia, sino únicamente que las esperanzas individuales existan):
+$$E(\bar X) = E\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n}\sum_{i=1}^n E(X_i) = \frac{1}{n}\sum_{i=1}^n \mu = \frac{1}{n}\cdot n\mu = \mu. \qedhere$$
+\end{proof}
+
+\begin{observacion}
+Vale la pena remarcar que este resultado \emph{no usa la independencia} de las $X_i$; solo usa que están idénticamente distribuidas (con media común $\mu$) y la linealidad de la esperanza. Bastaría, de hecho, con que todas tuvieran la misma esperanza $\mu$, aunque no tuvieran exactamente la misma distribución.
+\end{observacion}
+
+La interpretación de este teorema es central para todo lo que sigue en la materia: en promedio, considerando \emph{todas} las posibles muestras que se podrían extraer, la media muestral ``acierta'': ni sobreestima ni subestima sistemáticamente al parámetro poblacional $\mu$. Esta propiedad —que la esperanza del estimador coincide con el parámetro que se quiere estimar— se llama \textbf{insesgadez}, y $\bar X$ es, por este teorema, un \textbf{estimador insesgado} de $\mu$. Volveremos sobre esta noción, de manera sistemática, en la Unidad 6.
+
+\subsection{Varianza de la media muestral}
+
+Saber que $\bar X$ está ``centrada'' en $\mu$ no es suficiente: también queremos saber cuánto se dispersa $\bar X$ alrededor de $\mu$, de una muestra a otra. Aquí sí es imprescindible la hipótesis de independencia.
+
+\begin{teorema}[Varianza de la media muestral]
+\label{teo:varianza-xbarra}
+Sea $X_1,\dots,X_n$ una muestra aleatoria (es decir, independientes e idénticamente distribuidas) de una población con $\mathrm{Var}(X_i)=\sigma^2$ (finita) para todo $i$. Entonces
+$$\mathrm{Var}(\bar X) = \frac{\sigma^2}{n}.$$
+\end{teorema}
+
+\begin{proof}
+Recordemos la propiedad general de la varianza de una suma de variables aleatorias cualesquiera $Y_1,\dots,Y_n$:
+$$\mathrm{Var}\left(\sum_{i=1}^n Y_i\right) = \sum_{i=1}^n \mathrm{Var}(Y_i) + 2\sum_{i<j}\mathrm{Cov}(Y_i,Y_j).$$
+Cuando las $Y_i$ son independientes, todas las covarianzas cruzadas se anulan ($\mathrm{Cov}(Y_i,Y_j)=0$ para $i\neq j$), y la fórmula se reduce a la suma de las varianzas individuales. Aplicando esto a $X_1,\dots,X_n$ (independientes por ser muestra aleatoria):
+$$\mathrm{Var}\left(\sum_{i=1}^n X_i\right) = \sum_{i=1}^n \mathrm{Var}(X_i) = n\sigma^2.$$
+Y usando la propiedad $\mathrm{Var}(cY) = c^2\mathrm{Var}(Y)$ para $c$ constante:
+$$\mathrm{Var}(\bar X) = \mathrm{Var}\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\mathrm{Var}\left(\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\cdot n\sigma^2 = \frac{\sigma^2}{n}. \qedhere$$
+\end{proof}
+
+\begin{observacion}[¿Dónde se usó exactamente la independencia?]
+Si las $X_i$ no fueran independientes, tendríamos en general
+$$\mathrm{Var}(\bar X) = \frac{1}{n^2}\left(n\sigma^2 + 2\sum_{i<j}\mathrm{Cov}(X_i,X_j)\right),$$
+que no se simplifica a $\sigma^2/n$ salvo que las covarianzas sean nulas. Por ejemplo, si todas las $X_i$ estuvieran perfectamente correlacionadas (correlación $1$) sería $\bar X = X_1$ y $\mathrm{Var}(\bar X)=\sigma^2$, sin ninguna reducción al aumentar $n$: promediar observaciones correlacionadas positivamente reduce mucho menos la varianza que promediar observaciones independientes. Esta es la razón matemática profunda por la cual el diseño de un muestreo que garantice independencia (o casi-independencia) es tan importante en la práctica.
+\end{observacion}
+
+\subsection{Error estándar y comportamiento asintótico}
+
+\begin{definicion}[Error estándar]
+El desvío estándar de $\bar X$,
+$$\sigma_{\bar X} = \sqrt{\mathrm{Var}(\bar X)} = \frac{\sigma}{\sqrt n},$$
+se denomina \textbf{error estándar} de la media muestral.
+\end{definicion}
+
+A diferencia de $\sigma$ —fijo, una característica de la población— el error estándar $\sigma_{\bar X}$ depende del tamaño de muestra $n$ y \textbf{disminuye} a medida que $n$ crece, aunque no en forma proporcional a $n$ sino a $\sqrt n$: para reducir el error estándar a la mitad hace falta \emph{cuadruplicar} el tamaño de muestra, no simplemente duplicarlo.
+
+\begin{ejemplo}
+El desvío estándar poblacional del peso de los paquetes es $\sigma=4$ g. Con una muestra de $n=25$ paquetes, el error estándar de $\bar X$ es $\sigma_{\bar X}=4/\sqrt{25}=0.8$ g. Si se quisiera reducir el error estándar a $0.4$ g (la mitad), no bastaría con duplicar la muestra a $n=50$ (eso daría $\sigma_{\bar X}=4/\sqrt{50}\approx 0.566$ g); haría falta $n=100$, ya que $4/\sqrt{100}=0.4$ g exactamente.
+\end{ejemplo}
+
+\begin{observacion}[Relación con la Ley de los Grandes Números]
+Como $\mathrm{Var}(\bar X)=\sigma^2/n \to 0$ cuando $n\to\infty$, y $E(\bar X)=\mu$ para todo $n$, la distribución muestral de $\bar X$ se concentra cada vez más, alrededor de $\mu$, a medida que crece el tamaño de la muestra. Formalmente, esto es exactamente lo que garantiza la desigualdad de Chebyshev aplicada a $\bar X$: para todo $\varepsilon>0$,
+$$P(|\bar X - \mu| \geq \varepsilon) \leq \frac{\mathrm{Var}(\bar X)}{\varepsilon^2} = \frac{\sigma^2}{n\varepsilon^2} \xrightarrow[n\to\infty]{} 0,$$
+que es precisamente el enunciado de la Ley (débil) de los Grandes Números aplicada a $\bar X$: la media muestral \textbf{converge en probabilidad} a $\mu$. Este resultado, ya estudiado en la Unidad 4 para sumas de variables independientes, es la justificación teórica de que ``cuantas más observaciones promediamos, más confiable es la media muestral como estimación de $\mu$''.
+\end{observacion}
+
+\subsection{Corrección por población finita (muestreo sin reposición)}
+\label{subsec:correccion}
+
+El Teorema \ref{teo:varianza-xbarra} se demostró bajo la hipótesis de independencia, que se cumple exactamente cuando el muestreo es con reposición (o cuando la población es, a efectos prácticos, infinita). ¿Qué ocurre si se muestrea \emph{sin} reposición de una población finita de tamaño $N$?
+
+En ese caso, las observaciones $X_1,\dots,X_n$ ya no son independientes (como se vio en el ejemplo del lote con artículos defectuosos), aunque siguen siendo idénticamente distribuidas (cada $X_i$, marginalmente, tiene la misma distribución que la población, por simetría del muestreo aleatorio). Puede demostrarse —usando las covarianzas $\mathrm{Cov}(X_i,X_j)$ que resultan, por simetría, todas iguales entre sí para $i\neq j$— que
+
+\begin{propiedad}[Varianza de $\bar X$ bajo muestreo sin reposición]
+Si $X_1,\dots,X_n$ se obtienen mediante muestreo aleatorio \textbf{sin reposición} de una población finita de tamaño $N$ con varianza $\sigma^2$, entonces
+$$\mathrm{Var}(\bar X) = \frac{\sigma^2}{n}\cdot\frac{N-n}{N-1}.$$
+\end{propiedad}
+
+El factor $\frac{N-n}{N-1}$ se llama \textbf{factor de corrección por población finita}. Nótese que:
+\begin{itemize}
+\item Si $n=N$ (se muestrea toda la población), el factor vale $0$: no hay incertidumbre alguna, porque $\bar X$ coincide exactamente con la media poblacional $\mu$, sin ninguna aleatoriedad.
+\item Si $N\to\infty$ con $n$ fijo, el factor $\frac{N-n}{N-1}\to 1$, y se recupera la fórmula $\sigma^2/n$ del muestreo con reposición (Teorema \ref{teo:varianza-xbarra}).
+\item Para $N\gg n$ (por ejemplo $n/N<0.05$), el factor está muy cerca de $1$ y la corrección es despreciable en la práctica, lo cual justifica formalmente la aproximación mencionada en la Sección anterior: tratar un muestreo sin reposición de una población muy grande como si fuera, aproximadamente, una muestra aleatoria simple.
+\end{itemize}
+
+\begin{ejemplo}
+De un lote de $N=200$ piezas con $\sigma^2=9\ \text{mm}^2$ se extrae, sin reposición, una muestra de $n=20$. La varianza exacta de $\bar X$ es
+$$\mathrm{Var}(\bar X) = \frac{9}{20}\cdot\frac{200-20}{200-1} = 0.45 \cdot \frac{180}{199} \approx 0.45\cdot 0.905 \approx 0.407,$$
+frente al valor $9/20=0.45$ que se obtendría ignorando la corrección: una diferencia de aproximadamente el $9.5\%$, no del todo despreciable dado que $n/N=0.10$.
+\end{ejemplo}
+
+De aquí en adelante, salvo que se indique explícitamente lo contrario, trabajaremos siempre bajo el supuesto de muestreo aleatorio simple (con reposición, o sin reposición de una población suficientemente grande), que es el marco en el que se demuestran todos los resultados de distribución exacta de la Sección \ref{sec:distribucion-exacta}.
+
+\subsection{Caso particular: la proporción muestral}
+
+Un caso especialmente importante, tanto en la práctica como en las próximas unidades, es aquel en que la población es dicotómica: $X_i \sim \text{Bernoulli}(p)$, indicando éxito ($X_i=1$) o fracaso ($X_i=0$). Recordemos de la Unidad 2 que, para una Bernoulli$(p)$,
+$$E(X_i) = p, \qquad \mathrm{Var}(X_i) = p(1-p).$$
+
+En este caso, la media muestral $\bar X$ recibe el nombre especial de \textbf{proporción muestral}, y se denota $\hat p$. Los Teoremas \ref{teo:esperanza-xbarra} y \ref{teo:varianza-xbarra}, aplicados directamente con $\mu=p$ y $\sigma^2=p(1-p)$, dan de inmediato:
+
+\begin{corolario}
+Si $X_1,\dots,X_n$ es una muestra aleatoria de una población Bernoulli$(p)$, y $\hat p = \bar X$, entonces
+$$E(\hat p) = p, \qquad \mathrm{Var}(\hat p) = \frac{p(1-p)}{n}.$$
+\end{corolario}
+
+\begin{ejemplo}
+En un proceso de fabricación, la proporción real (desconocida, pero supongamos por un momento que vale) $p=0.05$ de las piezas resulta defectuosa. Para una muestra de $n=200$ piezas:
+$$E(\hat p) = 0.05, \qquad \mathrm{Var}(\hat p) = \frac{0.05\cdot 0.95}{200} = 0.0002375, \qquad \sigma_{\hat p} = \sqrt{0.0002375}\approx 0.0154.$$
+Es decir, si el proceso se repitiera muchas veces con muestras de $200$ piezas, la proporción muestral de defectuosas variaría, típicamente, en un rango de aproximadamente $\pm 0.015$ alrededor de $0.05$.
+\end{ejemplo}
+
+\subsection{Síntesis de la Sección 1}
+
+Hasta aquí hemos establecido que, para \textbf{cualquier} población con media y varianza finitas (sin ningún supuesto sobre la forma de su distribución), la media muestral satisface
+$$E(\bar X) = \mu, \qquad \mathrm{Var}(\bar X) = \frac{\sigma^2}{n}.$$
+
+Esto es información valiosa —nos dice dónde está centrada $\bar X$ y cuán dispersa está— pero deliberadamente \textbf{no} nos dice nada sobre la \emph{forma} de la distribución de $\bar X$: ¿es simétrica?, ¿es acampanada?, ¿qué probabilidad tiene $\bar X$ de superar un cierto valor? Para responder preguntas de ese tipo, que son exactamente las que se necesitan para construir intervalos de confianza o pruebas de hipótesis, hace falta ir más allá de la esperanza y la varianza, y determinar la distribución de probabilidad completa de $\bar X$ (y también de $S^2$). Ese es el contenido de la Sección \ref{sec:distribucion-exacta}.
+
+\newpage
+\section{Distribución de la media y la varianza muestral}
+\label{sec:distribucion-exacta}
+
+\subsection{Planteo del problema}
+
+En la sección anterior determinamos la esperanza y la varianza de $\bar X$ sin necesidad de conocer la forma exacta de la distribución poblacional. Ahora damos un paso más ambicioso: queremos conocer la distribución \emph{completa} de $\bar X$, y también la de $S^2$, bajo hipótesis adicionales sobre la población. Concretamente, en esta sección respondemos cuatro preguntas:
+
+\begin{enumerate}
+\item ¿Qué distribución tiene exactamente $\bar X$, si la población de partida es normal?
+\item ¿Qué distribución tiene $\bar X$, aproximadamente, si la población \emph{no} es normal?
+\item ¿Qué distribución tiene $S^2$, bajo normalidad de la población, y cómo se relaciona con $\bar X$?
+\item ¿Cómo se combinan $\bar X$ y $S$ quando $\sigma$ es desconocido, y qué distribución resulta?
+\end{enumerate}
+
+\subsection{Distribución exacta de $\bar X$ bajo normalidad}
+
+\begin{teorema}[Distribución de $\bar X$ para población normal]
+\label{teo:xbarra-normal}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Entonces
+$$\bar X \sim N\!\left(\mu, \frac{\sigma^2}{n}\right).$$
+\end{teorema}
+
+\begin{proof}
+Recordemos, de la Unidad 4, que la función generatriz de momentos (f.g.m.) de una variable $N(\mu,\sigma^2)$ es
+$$M_{X_i}(t) = \exp\left(\mu t + \frac{\sigma^2 t^2}{2}\right), \qquad t\in\mathbb{R}.$$
+Como $X_1,\dots,X_n$ son independientes, la f.g.m.\ de una suma de variables independientes es el producto de las f.g.m.\ individuales, y la f.g.m.\ de $cY$ (con $c$ constante) es $M_Y(ct)$. Aplicando esto a $\bar X = \frac{1}{n}\sum_i X_i$:
+$$M_{\bar X}(t) = M_{\sum_i X_i}\!\left(\frac{t}{n}\right) = \prod_{i=1}^n M_{X_i}\!\left(\frac{t}{n}\right) = \left[\exp\left(\mu \frac{t}{n} + \frac{\sigma^2}{2}\frac{t^2}{n^2}\right)\right]^n.$$
+Elevando a la $n$ (es decir, multiplicando el exponente por $n$):
+$$M_{\bar X}(t) = \exp\left(n\left[\mu\frac{t}{n}+\frac{\sigma^2 t^2}{2n^2}\right]\right) = \exp\left(\mu t + \frac{\sigma^2/n}{2}t^2\right).$$
+Esta es, exactamente, la f.g.m.\ de una distribución $N(\mu,\sigma^2/n)$. Por el teorema de unicidad de la f.g.m.\ (Unidad 4: dos variables aleatorias con la misma f.g.m., definida en un entorno de $0$, tienen la misma distribución), concluimos $\bar X\sim N(\mu,\sigma^2/n)$. \qedhere
+\end{proof}
+
+\begin{observacion}[Resultado exacto, no asintótico]
+A diferencia de otros resultados que veremos más adelante (el Teorema Central del Límite), este teorema es \textbf{exacto para cualquier $n\geq 1$}, incluso para $n=1$ o $n=2$: no hace falta que $n$ sea grande. Esto es consecuencia de una propiedad especial de la familia normal, que la hace particularmente cómoda de trabajar: es \textbf{cerrada bajo combinaciones lineales} de variables independientes. Es decir, si $X_1,\dots,X_n$ son normales independientes (no necesariamente con la misma media o varianza), entonces cualquier combinación lineal $a_1X_1+\dots+a_nX_n+b$ es también normal. En particular, la media muestral —que es una combinación lineal particular, con todos los coeficientes iguales a $1/n$— hereda automáticamente la normalidad.
+\end{observacion}
+
+\begin{propiedad}[Tipificación]
+Como siempre con la distribución normal, se puede estandarizar $\bar X$ restando su media y dividiendo por su desvío estándar:
+$$Z = \frac{\bar X - \mu}{\sigma/\sqrt n} \sim N(0,1).$$
+Esto permite calcular cualquier probabilidad sobre $\bar X$ usando la tabla de la normal estándar, exactamente igual que se hacía en la Unidad 2 con una única observación $X$, pero ahora con el desvío estándar de $\bar X$ (el error estándar $\sigma/\sqrt n$) en lugar del desvío estándar poblacional $\sigma$.
+\end{propiedad}
+
+\subsection{Ejemplos resueltos: distribución normal exacta}
+
+\begin{ejemplo}
+El contenido de los frascos producidos por una envasadora se distribuye $N(500,16)$ mL (es decir, $\mu=500$, $\sigma^2=16$, $\sigma=4$). Se toma una muestra aleatoria de $n=16$ frascos. Calculemos $P(498<\bar X<502)$.
+
+Por el Teorema \ref{teo:xbarra-normal}, $\bar X\sim N\left(500,\dfrac{16}{16}\right)=N(500,1)$, con $\sigma_{\bar X}=1$. Tipificando:
+$$P(498<\bar X<502) = P\left(\frac{498-500}{1}<Z<\frac{502-500}{1}\right)=P(-2<Z<2) = \Phi(2)-\Phi(-2) = 0.9772-0.0228=0.9544.$$
+
+Para comparar, la misma pregunta sobre una \emph{única} observación (n=1) daría $P(498<X_1<502)=P(-0.5<Z<0.5)=\Phi(0.5)-\Phi(-0.5)=0.6915-0.3085=0.3829$, mucho menor: promediar $16$ observaciones reduce considerablemente la dispersión, y por lo tanto concentra mucha más probabilidad cerca de la media poblacional.
+\end{ejemplo}
+
+\begin{ejemplo}
+Continuando con el ejemplo anterior, calculemos ahora qué tan improbable sería observar una media muestral $\bar x$ que difiera de $\mu=500$ en más de $3$ mL, con la misma muestra de $n=16$ frascos.
+
+$$P(|\bar X - 500| > 3) = P(\bar X<497) + P(\bar X>503) = 2\,P\!\left(Z>\frac{3}{1}\right) = 2(1-\Phi(3)) = 2(1-0.99865)=0.0027.$$
+
+Es decir, bajo el supuesto de que el proceso está funcionando correctamente ($\mu=500$), es sumamente improbable (menos del $0.3\%$ de las veces) observar una media muestral tan alejada de $500$ en una muestra de $16$ frascos. Si en la práctica se observara un valor así, sería una fuerte señal de que algo cambió en el proceso —esta es, precisamente, la lógica que sustenta las pruebas de hipótesis de la Unidad 7.
+\end{ejemplo}
+
+\subsection{Teorema Central del Límite aplicado a $\bar X$}
+\label{sec:tcl}
+
+El Teorema \ref{teo:xbarra-normal} es extremadamente útil, pero depende de un supuesto fuerte: que la población de partida sea exactamente normal. En la enorme mayoría de las aplicaciones no se sabe que esto sea así, o se sabe explícitamente que no lo es: tiempos de vida (típicamente asimétricos, con cola derecha larga), ingresos (muy asimétricos), conteos de eventos raros, mediciones acotadas en un intervalo, etc. ¿Podemos decir algo, en esos casos, sobre la distribución de $\bar X$?
+
+La respuesta es afirmativa, y es uno de los resultados más importantes de toda la probabilidad y la estadística: el \textbf{Teorema Central del Límite} (TCL), ya estudiado en la Unidad 4 para la suma $\sum_i X_i$, se puede reescribir de manera inmediata para la media $\bar X = \frac1n\sum_i X_i$.
+
+\begin{teorema}[Teorema Central del Límite para $\bar X$]
+Sea $X_1,\dots,X_n$ una muestra aleatoria de \textbf{cualquier} población con $E(X_i)=\mu$ y $\mathrm{Var}(X_i)=\sigma^2<\infty$ (sin ningún supuesto de normalidad). Entonces, cuando $n\to\infty$,
+$$Z_n = \frac{\bar X-\mu}{\sigma/\sqrt n} \xrightarrow{\ d\ } N(0,1),$$
+es decir, la función de distribución de $Z_n$ converge, en todo punto de continuidad, a la función de distribución de la normal estándar.
+\end{teorema}
+
+\begin{observacion}[Idea de por qué funciona]
+Como $\bar X = \frac1n\sum_i X_i$, el numerador $\bar X - \mu = \frac1n\sum_i (X_i-\mu) = \frac1n\sum_i Y_i$ es, salvo el factor $1/n$, una suma de $n$ variables i.i.d.\ $Y_i = X_i - \mu$ con media $0$ y varianza $\sigma^2$. El TCL de la Unidad 4, aplicado a esa suma, garantiza que $\frac{\sum_i Y_i}{\sigma\sqrt n}$ se aproxima a una $N(0,1)$ cuando $n$ es grande, sea cual sea la distribución (razonable) de los $Y_i$ —esta es la razón intuitiva de por qué tantos fenómenos que resultan de promediar muchas fuentes de variación pequeñas e independientes tienden a comportarse aproximadamente como una normal, aunque las fuentes individuales no lo sean.
+\end{observacion}
+
+\begin{propiedad}[Uso práctico del TCL]
+En la práctica, para $n$ razonablemente grande, se aproxima
+$$\bar X \ \dot\sim\ N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
+\textbf{aunque la población no sea normal}. Una regla práctica muy difundida (aunque solo orientativa) es exigir $n\geq 30$; sin embargo, cuánto se necesita en cada caso concreto depende fuertemente de cuán alejada esté la población de la normalidad: cuanto más asimétrica sea la distribución poblacional, o cuanto más pesadas sean sus colas, mayor será el $n$ necesario para que la aproximación normal sea razonablemente buena. Para poblaciones ya simétricas y de colas livianas, la aproximación puede ser excelente incluso con $n$ tan chico como $10$ o $15$; para poblaciones muy asimétricas puede hacer falta $n$ del orden de cientos.
+\end{propiedad}
+
+\begin{observacion}[La normal como caso límite perfecto]
+Si la población ya es exactamente normal, entonces —por el Teorema \ref{teo:xbarra-normal}— la distribución de $\bar X$ es exacta para \emph{todo} $n$, incluso $n=1$: no es una aproximación asintótica, sino el caso ``ideal'' en el que el TCL se cumple con igualdad exacta desde el principio.
+\end{observacion}
+
+\begin{ejemplo}
+El tiempo de atención en una caja de supermercado tiene media $\mu=4$ minutos y desvío estándar $\sigma=2$ minutos; se sabe, por estudios previos, que su distribución es marcadamente asimétrica (no normal). Se observa una muestra de $n=64$ clientes. Calculemos, aproximadamente, $P(\bar X>4.5)$.
+
+Como $n=64$ es razonablemente grande, por el TCL $\bar X\ \dot\sim\ N\left(4,\dfrac{4}{64}\right)=N(4,0.0625)$, con $\sigma_{\bar X}=0.25$.
+$$P(\bar X>4.5) \approx P\left(Z>\frac{4.5-4}{0.25}\right) = P(Z>2) = 1-\Phi(2)=1-0.9772=0.0228.$$
+
+Sin el TCL, sería imposible calcular esta probabilidad sin conocer la forma exacta (desconocida) de la distribución del tiempo de atención de un cliente individual.
+\end{ejemplo}
+
+\begin{ejemplo}[Ilustración con una Bernoulli, TCL para $\hat p$]
+El TCL se aplica, en particular, al caso de la proporción muestral $\hat p$ (que no es más que $\bar X$ para una población Bernoulli$(p)$, marcadamente no normal si $p$ está lejos de $0.5$). Si $p=0.05$ y $n=200$ (como en el ejemplo de la Sección 1), por TCL
+$$\hat p\ \dot\sim\ N\!\left(0.05,\ \frac{0.05\cdot 0.95}{200}\right) = N(0.05,\ 0.0002375),$$
+con lo cual, por ejemplo,
+$$P(\hat p > 0.08) \approx P\left(Z > \frac{0.08-0.05}{0.0154}\right) = P(Z>1.95) \approx 1-0.9744 = 0.0256.$$
+Esta aproximación normal de la proporción muestral es la base de los intervalos de confianza y pruebas de hipótesis para proporciones que se estudiarán en las Unidades 6 y 7.
+\end{ejemplo}
+
+\subsection{Hacia la distribución de la varianza muestral}
+\label{sec:distribucion-s2}
+
+Al igual que $\bar X$, la varianza muestral $S^2=\frac{1}{n-1}\sum_i(X_i-\bar X)^2$ es una variable aleatoria: su valor cambia de una muestra a otra. Para hacer inferencia sobre $\sigma^2$ (Unidad 6) —y, como veremos, también para construir el estadístico $t$ de Student que permite hacer inferencia sobre $\mu$ cuando $\sigma$ es desconocido— es imprescindible conocer la distribución de $S^2$, al menos bajo el supuesto de que la población es normal.
+
+Recordemos, de la Unidad 3, la definición de la distribución chi-cuadrado:
+
+\begin{definicion}[Distribución chi-cuadrado]
+Si $Z_1,\dots,Z_k$ son variables aleatorias $N(0,1)$ independientes, la variable
+$$W = \sum_{i=1}^k Z_i^2$$
+se distribuye \textbf{chi-cuadrado con $k$ grados de libertad}, y se escribe $W\sim\chi^2_k$. Se tiene $E(W)=k$ y $\mathrm{Var}(W)=2k$.
+\end{definicion}
+
+Si conociéramos $\mu$ (en lugar de tener que estimarla con $\bar X$), sería inmediato verificar que
+$$\sum_{i=1}^n \left(\frac{X_i-\mu}{\sigma}\right)^2 \sim \chi^2_n,$$
+porque es, literalmente, una suma de $n$ cuadrados de variables $N(0,1)$ independientes (cada $(X_i-\mu)/\sigma\sim N(0,1)$ por normalidad de $X_i$, y son independientes por ser $X_1,\dots,X_n$ independientes). El problema es que, en la definición de $S^2$, $\mu$ se reemplaza por su estimación $\bar X$, y esto introduce una dependencia entre los términos $(X_i-\bar X)$ que rompe, en apariencia, la estructura simple de suma de cuadrados independientes. El resultado notable —y nada evidente a priori— es que, a pesar de esa dependencia, la suma $\sum_i (X_i-\bar X)^2$ sigue teniendo, tras normalizar adecuadamente, una distribución chi-cuadrado exacta, aunque con un grado de libertad menos.
+
+\subsection{Herramienta técnica: transformaciones ortogonales de vectores normales}
+
+Para demostrar con rigor la distribución de $S^2$ —y, de paso, la independencia entre $\bar X$ y $S^2$, que se necesita más adelante para deducir la distribución $t$ de Student— conviene introducir una herramienta algo más avanzada que las usadas hasta ahora, pero que es una extensión natural de las técnicas de función generatriz de momentos ya empleadas en esta unidad. Esta construcción es, en esencia, el caso particular más simple del célebre \textbf{teorema de Cochran}, uno de los resultados clásicos de la estadística matemática sobre formas cuadráticas de vectores normales.
+
+\begin{lema}[Invarianza rotacional de un vector normal estándar]
+\label{lema:rotacion}
+Sea $Z=(Z_1,\dots,Z_n)$ un vector de variables aleatorias $N(0,1)$ independientes, y sea $H$ una matriz $n\times n$ \textbf{ortogonal} (es decir, $H^\top H = H H^\top = I$). Entonces el vector transformado $Y = HZ$ también tiene componentes $Y_1,\dots,Y_n$ que son $N(0,1)$ \textbf{independientes}.
+\end{lema}
+
+\begin{proof}
+La función generatriz de momentos conjunta de $Z$, evaluada en $s=(s_1,\dots,s_n)\in\mathbb{R}^n$, es, por independencia de las $Z_i$,
+$$M_Z(s) = E\left(e^{s^\top Z}\right) = E\left(e^{\sum_i s_i Z_i}\right) = \prod_{i=1}^n E\left(e^{s_i Z_i}\right) = \prod_{i=1}^n \exp\left(\frac{s_i^2}{2}\right) = \exp\left(\frac{\|s\|^2}{2}\right),$$
+donde $\|s\|^2=s_1^2+\dots+s_n^2$. Para el vector transformado $Y=HZ$, y cualquier $s\in\mathbb{R}^n$:
+$$M_Y(s) = E\left(e^{s^\top Y}\right) = E\left(e^{s^\top H Z}\right) = E\left(e^{(H^\top s)^\top Z}\right) = M_Z(H^\top s) = \exp\left(\frac{\|H^\top s\|^2}{2}\right).$$
+Como $H$ es ortogonal, preserva la norma euclídea: $\|H^\top s\|^2 = (H^\top s)^\top(H^\top s) = s^\top H H^\top s = s^\top I s = \|s\|^2$. Por lo tanto,
+$$M_Y(s) = \exp\left(\frac{\|s\|^2}{2}\right) = \prod_{i=1}^n \exp\left(\frac{s_i^2}{2}\right),$$
+que es exactamente el producto de las f.g.m.\ individuales de $n$ variables $N(0,1)$ independientes. Por el teorema de unicidad de la f.g.m.\ (aplicado aquí en su versión conjunta o multivariada, una extensión directa del caso univariado ya usado en la Unidad 4), esto implica que $Y_1,\dots,Y_n$ son efectivamente $N(0,1)$ independientes. \qedhere
+\end{proof}
+
+\begin{observacion}
+Este lema formaliza una idea geométrica intuitiva: la distribución conjunta de $n$ variables $N(0,1)$ independientes es \textbf{invariante frente a rotaciones y reflexiones} del espacio $\mathbb{R}^n$ (que es, precisamente, lo que hace una matriz ortogonal). Esto es una propiedad muy especial de la distribución normal estándar multivariada: su densidad conjunta, $\frac{1}{(2\pi)^{n/2}}\exp(-\|z\|^2/2)$, depende de $z$ únicamente a través de $\|z\|^2$, la distancia al origen, que es justamente la cantidad que las transformaciones ortogonales dejan invariante.
+\end{observacion}
+
+Necesitamos, además, un hecho puramente algebraico:
+
+\begin{lema}[Existencia de una matriz ortogonal con primera fila constante]
+\label{lema:helmert}
+Para todo $n\geq 2$ existe una matriz ortogonal $H$ de tamaño $n\times n$ cuya primera fila es
+$$h_1 = \left(\frac{1}{\sqrt n},\frac{1}{\sqrt n},\dots,\frac{1}{\sqrt n}\right).$$
+\end{lema}
+
+Este hecho es estándar en álgebra lineal: el vector $h_1$ tiene norma $1$ (ya que $n\cdot(1/\sqrt n)^2=1$), y siempre se puede completar a una base ortonormal de $\mathbb{R}^n$ mediante el proceso de Gram-Schmidt, obteniendo así $n-1$ filas adicionales $h_2,\dots,h_n$, mutuamente ortogonales, ortogonales a $h_1$, y de norma $1$. Una construcción explícita y clásica de esta matriz se conoce como \textbf{transformación de Helmert}.
+
+\subsection{Demostración: $(n-1)S^2/\sigma^2 \sim \chi^2_{n-1}$}
+
+Con estas dos herramientas, podemos ahora demostrar, con todo rigor, tanto la distribución de $S^2$ como —en la sección siguiente— la independencia entre $\bar X$ y $S^2$, en un único argumento unificado.
+
+\begin{teorema}[Distribución de la varianza muestral]
+\label{teo:chi2}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Entonces
+$$\frac{(n-1)S^2}{\sigma^2} = \sum_{i=1}^n\left(\frac{X_i-\bar X}{\sigma}\right)^2 \sim \chi^2_{n-1}.$$
+\end{teorema}
+
+\begin{proof}
+Definamos las variables tipificadas $Z_i = \dfrac{X_i-\mu}{\sigma}$, $i=1,\dots,n$, que son $N(0,1)$ independientes (por normalidad e independencia de las $X_i$). Sea $H$ la matriz ortogonal del Lema \ref{lema:helmert}, con primera fila $h_1=(1/\sqrt n,\dots,1/\sqrt n)$, y definamos el vector transformado $Y=HZ$, es decir $Y_j = \sum_{i=1}^n H_{ji}Z_i$ para $j=1,\dots,n$. Por el Lema \ref{lema:rotacion}, $Y_1,\dots,Y_n$ son $N(0,1)$ \textbf{independientes}.
+
+\emph{Paso 1: identificar $Y_1$.} Por construcción de $H$,
+$$Y_1 = \sum_{i=1}^n \frac{1}{\sqrt n} Z_i = \sqrt n\, \bar Z = \sqrt n \cdot \frac{\bar X - \mu}{\sigma}.$$
+
+\emph{Paso 2: la norma se preserva.} Como $H$ es ortogonal, $\|Y\|^2 = Y^\top Y = Z^\top H^\top H Z = Z^\top Z = \|Z\|^2$, es decir,
+$$\sum_{i=1}^n Y_i^2 = \sum_{i=1}^n Z_i^2.$$
+
+\emph{Paso 3: descomponer la suma de cuadrados centrada.} Usando la identidad algebraica estándar $\sum_i (Z_i-\bar Z)^2 = \sum_i Z_i^2 - n\bar Z^2$, y que $n\bar Z^2 = Y_1^2$ (por el Paso 1):
+$$\sum_{i=1}^n (Z_i-\bar Z)^2 = \sum_{i=1}^n Z_i^2 - Y_1^2 \overset{\text{Paso 2}}{=} \sum_{i=1}^n Y_i^2 - Y_1^2 = \sum_{i=2}^n Y_i^2.$$
+
+\emph{Paso 4: volver a la escala original.} Como $Z_i = (X_i-\mu)/\sigma$ y $\bar Z = (\bar X-\mu)/\sigma$, se tiene $Z_i - \bar Z = (X_i-\bar X)/\sigma$, y por lo tanto
+$$\frac{(n-1)S^2}{\sigma^2} = \sum_{i=1}^n \left(\frac{X_i-\bar X}{\sigma}\right)^2 = \sum_{i=1}^n (Z_i-\bar Z)^2 = \sum_{i=2}^n Y_i^2.$$
+
+Pero $Y_2,\dots,Y_n$ son, por el Lema \ref{lema:rotacion}, $n-1$ variables $N(0,1)$ independientes, de modo que $\sum_{i=2}^n Y_i^2$ es, por definición, una $\chi^2_{n-1}$. Esto concluye la demostración. \qedhere
+\end{proof}
+
+\begin{observacion}[Relectura del argumento]
+El punto clave del argumento es que, al pasar del vector original $Z=(Z_1,\dots,Zn)$ al vector rotado $Y=(Y_1,\dots,Y_n)$ mediante una matriz ortogonal bien elegida, toda la información sobre \emph{el promedio} $\bar Z$ queda ``concentrada'' en la primera coordenada $Y_1$, mientras que la información sobre \emph{la dispersión alrededor del promedio} queda ``repartida'' entre las $n-1$ coordenadas restantes $Y_2,\dots,Y_n$. Como estas $n$ coordenadas son mutuamente independientes (por el Lema \ref{lema:rotacion}), la suma de cuadrados $\sum_i(Z_i-\bar Z)^2$, que solo depende de $Y_2,\dots,Y_n$, resulta ser una suma de $n-1$ (y no $n$) cuadrados de normales estándar independientes: de ahí que se ``pierda'' exactamente un grado de libertad, el mismo fenómeno que ya habíamos anticipado, de manera puramente algebraica, al notar que los residuos $X_i-\bar X$ satisfacen la restricción lineal $\sum_i(X_i-\bar X)=0$.
+\end{observacion}
+
+\subsection{Verificación en el caso $n=2$}
+
+Resulta instructivo verificar el Teorema \ref{teo:chi2} en el caso más simple posible, $n=2$, donde todos los cálculos se pueden hacer de manera completamente explícita, sin apelar a la matriz $H$ general.
+
+\begin{ejemplo}
+Sean $X_1,X_2$ i.i.d.\ $N(\mu,\sigma^2)$. Entonces $\bar X = \dfrac{X_1+X_2}{2}$, y
+$$\sum_{i=1}^2 (X_i-\bar X)^2 = \left(X_1-\frac{X_1+X_2}{2}\right)^2+\left(X_2-\frac{X_1+X_2}{2}\right)^2 = \left(\frac{X_1-X_2}{2}\right)^2+\left(\frac{X_2-X_1}{2}\right)^2 = \frac{(X_1-X_2)^2}{2}.$$
+
+Como $X_1$ y $X_2$ son normales independientes, $X_1-X_2 \sim N(0,2\sigma^2)$ (la varianza de una diferencia de independientes es la suma de las varianzas). Tipificando,
+$$\frac{X_1-X_2}{\sigma\sqrt2} \sim N(0,1) \quad\Longrightarrow\quad \left(\frac{X_1-X_2}{\sigma\sqrt2}\right)^2 \sim \chi^2_1$$
+(el cuadrado de una única $N(0,1)$ es, por definición, una $\chi^2$ con $1$ grado de libertad). Pero
+$$\left(\frac{X_1-X_2}{\sigma\sqrt2}\right)^2 = \frac{(X_1-X_2)^2}{2\sigma^2} = \frac{\sum_i(X_i-\bar X)^2}{\sigma^2} = \frac{(n-1)S^2}{\sigma^2}\bigg|_{n=2},$$
+confirmando el teorema para $n=2$: $1=n-1$ grado de libertad, exactamente como predice la fórmula general.
+\end{ejemplo}
+
+\subsection{Consecuencias: insesgadez y varianza de $S^2$}
+
+El Teorema \ref{teo:chi2} tiene dos consecuencias inmediatas, y particularmente importantes, usando la esperanza y la varianza conocidas de la distribución $\chi^2_{n-1}$: $E(\chi^2_{n-1})=n-1$ y $\mathrm{Var}(\chi^2_{n-1})=2(n-1)$.
+
+\begin{corolario}[Insesgadez de $S^2$]
+$$E(S^2) = \sigma^2.$$
+\end{corolario}
+
+\begin{proof}
+De $E\left(\dfrac{(n-1)S^2}{\sigma^2}\right) = n-1$ se despeja directamente
+$$\frac{n-1}{\sigma^2}E(S^2) = n-1 \quad\Longrightarrow\quad E(S^2)=\sigma^2. \qedhere$$
+\end{proof}
+
+Este corolario confirma, con una demostración completa, lo que se había anunciado (sin probar) en la Sección 1: dividir por $n-1$ —y no por $n$— es exactamente lo que hace que $S^2$ sea un estimador insesgado de $\sigma^2$.
+
+\begin{observacion}[¿Qué pasaría si dividiéramos por $n$?]
+Si en cambio se definiera $\tilde S^2 = \dfrac{1}{n}\sum_i (X_i-\bar X)^2 = \dfrac{n-1}{n}S^2$, tendríamos
+$$E(\tilde S^2) = \frac{n-1}{n}E(S^2) = \frac{n-1}{n}\sigma^2 \neq \sigma^2,$$
+un estimador \textbf{sesgado}, que subestima sistemáticamente a $\sigma^2$ (en promedio, arroja un valor menor que el verdadero $\sigma^2$), aunque el sesgo relativo $\frac{1}{n}$ se hace cada vez más pequeño a medida que $n$ crece. Este es precisamente el motivo estadístico —y no una convención arbitraria— por el cual la definición estándar de varianza muestral usa $n-1$ en el denominador.
+\end{observacion}
+
+\begin{corolario}[Varianza de $S^2$, bajo normalidad]
+$$\mathrm{Var}(S^2) = \frac{2\sigma^4}{n-1}.$$
+\end{corolario}
+
+\begin{proof}
+De $\mathrm{Var}\left(\dfrac{(n-1)S^2}{\sigma^2}\right)=2(n-1)$, y usando $\mathrm{Var}(cY)=c^2\mathrm{Var}(Y)$:
+$$\left(\frac{n-1}{\sigma^2}\right)^2 \mathrm{Var}(S^2) = 2(n-1) \quad\Longrightarrow\quad \mathrm{Var}(S^2) = \frac{2(n-1)\sigma^4}{(n-1)^2} = \frac{2\sigma^4}{n-1}. \qedhere$$
+\end{proof}
+
+Nótese que, al igual que $\mathrm{Var}(\bar X)=\sigma^2/n$, también $\mathrm{Var}(S^2)\to 0$ cuando $n\to\infty$: la varianza muestral se vuelve cada vez más precisa, como estimador de $\sigma^2$, a medida que aumenta el tamaño de la muestra.
+
+\begin{ejemplo}
+El diámetro de piezas producidas por un torno se distribuye $N(\mu,\sigma^2)$ con $\sigma^2=0.04\ \text{mm}^2$. Se toma una muestra de $n=10$ piezas y se obtiene $s^2=0.07\ \text{mm}^2$. Calculemos $P(S^2\geq 0.07)$, suponiendo que efectivamente $\sigma^2=0.04$.
+
+Por el Teorema \ref{teo:chi2}, $\dfrac{(n-1)S^2}{\sigma^2}=\dfrac{9S^2}{0.04}\sim \chi^2_9$. El valor observado corresponde a
+$$\frac{9\cdot 0.07}{0.04} = 15.75.$$
+De la tabla de $\chi^2_9$: $P(\chi^2_9\geq 15.75)\approx 0.073$ (entre los valores tabulados $\chi^2_{9;0.10}=14.68$ y $\chi^2_{9;0.05}=16.92$). Es decir, obtener una varianza muestral tan grande o mayor no es demasiado improbable, incluso si $\sigma^2$ realmente vale $0.04$: no hay evidencia fuerte, con esta única muestra, de que la varianza del proceso haya aumentado.
+\end{ejemplo}
+
+\subsection{Independencia de $\bar X$ y $S^2$}
+
+\begin{teorema}[Independencia de $\bar X$ y $S^2$, población normal]
+\label{teo:independencia}
+Si $X_1,\dots,X_n$ es una muestra aleatoria de una población $N(\mu,\sigma^2)$, entonces $\bar X$ y $S^2$ son variables aleatorias \textbf{independientes}.
+\end{teorema}
+
+\begin{proof}
+Retomamos exactamente la construcción usada en la demostración del Teorema \ref{teo:chi2}. Con la misma notación, $Y_1 = \sqrt n\,(\bar X-\mu)/\sigma$, de donde
+$$\bar X = \mu + \frac{\sigma}{\sqrt n}\, Y_1,$$
+es decir, $\bar X$ es una función exclusivamente de $Y_1$. Por otro lado, del Paso 3 de esa demostración,
+$$S^2 = \frac{\sigma^2}{n-1}\sum_{i=2}^n Y_i^2,$$
+es decir, $S^2$ es una función exclusivamente de $(Y_2,\dots,Y_n)$. Por el Lema \ref{lema:rotacion}, $Y_1,\dots,Y_n$ son variables \textbf{mutuamente independientes}; en particular, $Y_1$ es independiente del vector $(Y_2,\dots,Y_n)$. Como $\bar X$ es función únicamente de $Y_1$, y $S^2$ es función únicamente de $(Y_2,\dots,Y_n)$, se concluye que $\bar X$ y $S^2$ son independientes. \qedhere
+\end{proof}
+
+\begin{observacion}[¿Por qué es un resultado no trivial?]
+A primera vista, este teorema resulta sorprendente: la fórmula de $S^2=\frac{1}{n-1}\sum_i(X_i-\bar X)^2$ usa explícitamente a $\bar X$ en su definición, así que sería natural esperar algún tipo de dependencia entre ambos. Sin embargo, para la distribución normal —y, de hecho, \emph{solamente} para la distribución normal, entre las familias de distribuciones ``razonables''— ocurre que ``dónde está centrada la muestra'' ($\bar X$) resulta ser independiente de ``cuánto se dispersan los datos alrededor de su propio centro'' ($S^2$). Esta es una propiedad estructural muy especial y bastante profunda de la normal, estrechamente relacionada con la invarianza rotacional del Lema \ref{lema:rotacion}: la dirección $(1,1,\dots,1)/\sqrt n$ (la que determina a $\bar X$) es, en cierto sentido, ``perpendicular'' a las direcciones que determinan $S^2$, y para vectores gaussianos, componentes no correlacionadas en direcciones ortogonales resultan automáticamente independientes —algo que no es cierto, en general, para otras distribuciones. De hecho, existe un resultado (debido a Geary y Lukacs) que muestra que la independencia de $\bar X$ y $S^2$ para toda $n$, dentro de una familia razonable de distribuciones con varianza finita, \textbf{caracteriza} a la distribución normal: ninguna otra familia de distribuciones tiene esta propiedad para todo tamaño de muestra.
+\end{observacion}
+
+\begin{observacion}[Relación con el teorema de Cochran]
+El argumento presentado en las dos subsecciones anteriores —descomponer un vector de normales independientes en componentes ortogonales, cada una de las cuales resulta ser, después de elevarla al cuadrado y sumar, una $\chi^2$ con tantos grados de libertad como componentes, y todas ellas mutuamente independientes— es exactamente el caso particular más simple del \textbf{teorema de Cochran}, un resultado general sobre formas cuadráticas de vectores normales que es central en la teoría del análisis de varianza (ANOVA) y en los modelos lineales, temas que se retoman en la Unidad 8. Aquí solo necesitamos la versión más elemental: la descomposición en exactamente dos partes ($\bar X$, de $1$ grado de libertad, y $S^2$, de $n-1$ grados de libertad), pero la misma idea —descomponer ortogonalmente y contar grados de libertad— se generaliza a descomposiciones en muchas más partes.
+\end{observacion}
+
+\subsection{El estadístico $t$ de Student: motivación}
+
+Recordemos que, si $\sigma^2$ es \textbf{conocido} y la población es normal, el Teorema \ref{teo:xbarra-normal} da directamente
+$$Z = \frac{\bar X-\mu}{\sigma/\sqrt n} \sim N(0,1).$$
+
+En la inmensa mayoría de las aplicaciones, sin embargo, $\sigma$ es tan desconocido como $\mu$: no tiene sentido suponer que se conoce la dispersión poblacional exacta si ni siquiera se conoce su centro. Lo natural, entonces, es reemplazar $\sigma$ por su estimador natural $S$ (el desvío estándar muestral), y considerar
+$$T = \frac{\bar X-\mu}{S/\sqrt n}.$$
+
+La pregunta es: ¿qué distribución tiene $T$? Ya \emph{no} es exactamente $N(0,1)$, porque ahora el denominador $S/\sqrt n$ es también una variable aleatoria (varía de muestra a muestra), y no una constante como lo era $\sigma/\sqrt n$. Intuitivamente, esta fuente adicional de variabilidad —la incertidumbre de no conocer $\sigma$ y tener que estimarlo— debería hacer que $T$ tenga una distribución algo más dispersa que la normal estándar. Esta intuición es exactamente correcta, y se formaliza con la distribución $t$ de Student, ya introducida en la Unidad 3.
+
+\subsection{Deducción de la distribución de $T$}
+
+\begin{definicion}[Distribución $t$ de Student, repaso de la Unidad 3]
+Si $Z\sim N(0,1)$ y $W\sim\chi^2_k$ son variables aleatorias \textbf{independientes}, la variable
+$$T = \frac{Z}{\sqrt{W/k}}$$
+se distribuye \textbf{$t$ de Student con $k$ grados de libertad}, y se escribe $T\sim t_k$.
+\end{definicion}
+
+\begin{teorema}
+\label{teo:t-student}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Entonces
+$$T = \frac{\bar X-\mu}{S/\sqrt n} \sim t_{n-1}.$$
+\end{teorema}
+
+\begin{proof}
+Escribimos $T$ de manera que quede expresado exactamente en la forma de la definición anterior. Sean
+$$Z = \frac{\bar X-\mu}{\sigma/\sqrt n} \sim N(0,1) \qquad \text{(Teorema \ref{teo:xbarra-normal})}, \qquad W = \frac{(n-1)S^2}{\sigma^2} \sim \chi^2_{n-1} \qquad \text{(Teorema \ref{teo:chi2})}.$$
+Por el Teorema \ref{teo:independencia}, $\bar X$ y $S^2$ son independientes; como $Z$ es función solo de $\bar X$ y $W$ es función solo de $S^2$, se sigue que $Z$ y $W$ son también independientes. Ahora bien,
+$$\frac{Z}{\sqrt{W/(n-1)}} = \frac{\dfrac{\bar X-\mu}{\sigma/\sqrt n}}{\sqrt{\dfrac{(n-1)S^2/\sigma^2}{n-1}}} = \frac{\dfrac{\bar X-\mu}{\sigma/\sqrt n}}{S/\sigma} = \frac{(\bar X-\mu)}{\sigma/\sqrt n}\cdot \frac{\sigma}{S} = \frac{\bar X-\mu}{S/\sqrt n} = T.$$
+Como $Z\sim N(0,1)$, $W\sim\chi^2_{n-1}$, y $Z$ y $W$ son independientes, por definición $T = \dfrac{Z}{\sqrt{W/(n-1)}} \sim t_{n-1}$. \qedhere
+\end{proof}
+
+\begin{observacion}
+Vale la pena notar, en retrospectiva, todo el camino recorrido para llegar a este resultado: hizo falta (i) la distribución exacta de $\bar X$ bajo normalidad (f.g.m.), (ii) la distribución exacta de $S^2$ bajo normalidad (transformación ortogonal), y (iii) la independencia entre $\bar X$ y $S^2$ (la misma transformación ortogonal). Ninguno de esos tres ingredientes es prescindible: sin (i) no sabríamos que $Z\sim N(0,1)$; sin (ii) no sabríamos que $W\sim\chi^2_{n-1}$; y sin (iii) no podríamos aplicar la definición de la $t$ de Student, que exige explícitamente que $Z$ y $W$ sean independientes. La distribución $t$ de Student aparece, entonces, como la consecuencia natural de combinar estos tres resultados, todos ellos consecuencia, a su vez, de la normalidad de la población.
+\end{observacion}
+
+\subsection{Propiedades de la $t$ de Student y comparación con $Z$}
+
+\begin{propiedad}
+La distribución $t_k$ tiene las siguientes propiedades:
+\begin{itemize}
+\item Es simétrica alrededor de $0$, con forma de campana, similar a la normal estándar, pero con \textbf{colas más pesadas} (más dispersión): esto refleja, precisamente, la incertidumbre adicional de tener que estimar $\sigma$ mediante $S$, en lugar de conocerlo con exactitud.
+\item Tiene un único parámetro, los \textbf{grados de libertad} $k$ (en nuestro caso, $k=n-1$).
+\item A medida que $k\to\infty$ (equivalentemente, $n\to\infty$), se cumple $t_k \to N(0,1)$: cuando la muestra es grande, $S$ estima a $\sigma$ con tanta precisión que la incertidumbre extra se vuelve despreciable, y $T$ se comporta prácticamente como $Z$.
+\item Se tabula de forma análoga a la normal, pero la tabla depende también de $k$ (generalmente se tabulan solo algunos cuantiles usuales para cada $k$, a diferencia de la tabla completa de la normal estándar).
+\end{itemize}
+\end{propiedad}
+
+La Tabla \ref{tab:comparacion} resume, de manera comparativa, los cuatro resultados centrales de esta sección.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Cantidad} & \textbf{Distribución} & \textbf{Condición} \\
+\midrule
+$\dfrac{\bar X-\mu}{\sigma/\sqrt n}$ & $N(0,1)$, exacta & Población normal, $\sigma$ conocido \\[1em]
+$\dfrac{\bar X-\mu}{\sigma/\sqrt n}$ & $N(0,1)$, aproximada & $n$ grande (TCL), cualquier población, $\sigma$ conocido \\[1em]
+$\dfrac{(n-1)S^2}{\sigma^2}$ & $\chi^2_{n-1}$, exacta & Población normal \\[1em]
+$\dfrac{\bar X-\mu}{S/\sqrt n}$ & $t_{n-1}$, exacta & Población normal, $\sigma$ desconocido \\
+\bottomrule
+\end{tabular}
+\caption{Las cuatro distribuciones muestrales centrales de esta unidad.}
+\label{tab:comparacion}
+\end{table}
+
+\begin{observacion}[¿Y si $\sigma$ es desconocido pero $n$ es grande?]
+Cuando la población no es normal, pero $n$ es grande, y además $\sigma$ es desconocido, se combinan los dos tipos de aproximación: por el TCL, $\dfrac{\bar X-\mu}{\sigma/\sqrt n}\ \dot\sim\ N(0,1)$; y, adicionalmente, para $n$ grande $S$ se aproxima muy bien a $\sigma$ (por la Ley de los Grandes Números aplicada, en cierto sentido, a $S^2$, cuya varianza $2\sigma^4/(n-1)\to 0$), de modo que reemplazar $\sigma$ por $S$ introduce un error adicional despreciable. En consecuencia, para $n$ grande —normal o no la población, conocido o no $\sigma$— resulta razonable aproximar $\dfrac{\bar X-\mu}{S/\sqrt n}\ \dot\sim\ N(0,1)$, y de hecho $t_{n-1}\to N(0,1)$ hace que, en la práctica, para $n$ grande sea casi indistinto usar la tabla $t$ o la tabla normal.
+\end{observacion}
+
+\subsection{Ejemplo resuelto: distribución $t$ de Student}
+
+\begin{ejemplo}
+El tiempo de secado de una pintura se supone $N(\mu,\sigma^2)$, con $\sigma$ desconocido. En una muestra de $n=15$ probetas se midió $\bar x=20.4$ h y $s=1.8$ h. Si realmente $\mu=20$ h, calculemos $P(\bar X\geq 20.4)$, usando la distribución adecuada.
+
+Como $\sigma$ es desconocido y fue estimado por $s$, corresponde usar $t_{n-1}=t_{14}$ (Teorema \ref{teo:t-student}), en lugar de la normal estándar:
+$$t_{obs} = \frac{\bar x-\mu}{s/\sqrt n} = \frac{20.4-20}{1.8/\sqrt{15}} = \frac{0.4}{0.4648} \approx 0.861.$$
+De la tabla de $t_{14}$: $P(T_{14}\geq 0.861)$ se encuentra entre $0.20$ y $0.25$ (el valor tabulado $t_{14;0.20}=0.868$ está muy próximo a $0.861$), de modo que
+$$P(\bar X\geq 20.4)\approx 0.20.$$
+Es decir, obtener una media muestral de al menos $20.4$ h resulta bastante plausible incluso si el tiempo medio de secado real fuera exactamente $20$ h: no hay evidencia fuerte, con esta muestra, de que el tiempo medio de secado difiera de $20$ h.
+
+Como comparación pedagógica, si (incorrectamente) hubiéramos tratado a $s=1.8$ como si fuera el verdadero $\sigma$ y hubiésemos usado la tabla normal en lugar de la $t_{14}$, habríamos obtenido $P(Z\geq 0.861)\approx 1-0.8051=0.1949$, un valor parecido en este caso pero no idéntico —y la diferencia entre ambos enfoques puede ser mucho más marcada para tamaños de muestra chicos, donde la $t$ de Student tiene colas sensiblemente más pesadas que la normal estándar.
+\end{ejemplo}
+
+\subsection{Cuadro de síntesis de la Sección 2}
+
+En esta sección demostramos que, para una población normal, cuatro cantidades derivadas de la muestra tienen distribuciones exactas y perfectamente conocidas (resumidas en la Tabla \ref{tab:comparacion}), y que, además, cuando la población no es normal, el Teorema Central del Límite provee una aproximación asintóticamente válida para la primera de ellas (y, en consecuencia, también para la última, cuando $n$ es grande). Estos cuatro resultados —junto con el TCL— constituyen, en conjunto, el arsenal técnico completo que permite construir, en las próximas dos unidades, intervalos de confianza y pruebas de hipótesis tanto para la media como para la varianza poblacional, sea $\sigma$ conocido o desconocido.
+
+\section{Observaciones adicionales: esta unidad como fundamento de la inferencia}
+
+Cerramos el apunte con una reflexión sobre el lugar que ocupa esta unidad dentro de la estructura general de la materia, y sobre por qué el esfuerzo invertido en las demostraciones anteriores —en particular, las de la Sección 2— no es un ejercicio meramente formal, sino la base técnica indispensable de todo lo que sigue.
+
+\begin{observacion}[De la distribución muestral al intervalo de confianza]
+En la Unidad 6 se construyen \textbf{intervalos de confianza} para $\mu$, $\sigma^2$ y $p$. La construcción, en todos los casos, sigue el mismo patrón lógico: se parte de un estadístico cuya distribución muestral es conocida (por ejemplo, $Z=(\bar X-\mu)/(\sigma/\sqrt n)\sim N(0,1)$, o $T=(\bar X-\mu)/(S/\sqrt n)\sim t_{n-1}$), se determina un intervalo de valores donde ese estadístico cae con una probabilidad prefijada (por ejemplo, el $95\%$), y luego se ``despeja'' $\mu$ (el parámetro desconocido) de esa desigualdad probabilística para obtener un intervalo aleatorio que contiene a $\mu$ con esa misma probabilidad. Sin conocer la distribución exacta de $\bar X$ (Teorema \ref{teo:xbarra-normal}), sin conocer la de $S^2$ (Teorema \ref{teo:chi2}), y sin la independencia entre ambos (Teorema \ref{teo:independencia}), sería directamente imposible construir el estadístico $T$ y, por lo tanto, imposible construir un intervalo de confianza para $\mu$ cuando $\sigma$ es desconocido, que es, por lejos, el caso más frecuente en la práctica.
+\end{observacion}
+
+\begin{observacion}[De la distribución muestral a la prueba de hipótesis]
+De manera completamente análoga, en la Unidad 7 se estudian \textbf{pruebas de hipótesis}: se postula un valor hipotético $\mu_0$ para el parámetro, y se evalúa qué tan compatible es el valor observado $\bar x$ con esa hipótesis, calculando la probabilidad de observar un estadístico tan extremo (o más) que el obtenido, \emph{si la hipótesis fuera cierta}. Esa probabilidad —el conocido ``p-valor''— es, ni más ni menos, una probabilidad calculada usando exactamente las distribuciones muestrales desarrolladas en esta unidad: la normal para $\bar X$ (con $\sigma$ conocido, o vía TCL), la $t$ de Student para $\bar X$ (con $\sigma$ desconocido), y la $\chi^2$ para $S^2$. Cada uno de los ejemplos resueltos de la Sección 2 de este apunte —calcular $P(\bar X\geq 20.4)$, o $P(S^2\geq 0.07)$— es, en realidad, un cálculo de p-valor disfrazado de ejercicio de probabilidad: la única diferencia con la Unidad 7 es que allí el valor de $\mu$ o $\sigma^2$ bajo estudio se llamará ``hipótesis nula'' en lugar de simplemente ``el valor supuesto''.
+\end{observacion}
+
+\begin{observacion}[Por qué la insesgadez y la eficiencia importan]
+La demostración de que $E(\bar X)=\mu$ y $E(S^2)=\sigma^2$ no es un detalle técnico secundario: es la justificación de por qué, entre todas las fórmulas posibles que se podrían usar para ``estimar'' un parámetro poblacional, se elige precisamente $\bar X$ para $\mu$ y $S^2$ (con $n-1$ en el denominador) para $\sigma^2$. La Unidad 6 retoma esta idea de manera sistemática, bajo el nombre de \textbf{propiedades de los estimadores} (insesgadez, eficiencia, consistencia), generalizando a otros parámetros y a otros estimadores posibles lo que aquí verificamos únicamente para $\bar X$ y $S^2$.
+\end{observacion}
+
+\begin{observacion}[El rol especial de la normalidad, y qué pasa sin ella]
+Es importante ser conscientes de que buena parte de los resultados \emph{exactos} de la Sección 2 (Teoremas \ref{teo:xbarra-normal}, \ref{teo:chi2}, \ref{teo:independencia} y \ref{teo:t-student}) dependen crucialmente de que la población de partida sea normal. Cuando no lo es, se dispone igualmente de dos salidas: (a) apoyarse en el Teorema Central del Límite, que garantiza que $\bar X$ es aproximadamente normal para $n$ grande, sea cual sea la población, lo cual justifica usar los mismos procedimientos de inferencia de manera aproximada; o (b) usar métodos específicamente diseñados para poblaciones no normales (estadística no paramétrica, bootstrap, etc.), que exceden el alcance de este curso. En la práctica, gran parte de la inferencia clásica que se estudiará en las Unidades 6 y 7 se apoya, en última instancia, en el TCL: por eso este resultado —ya visto en la Unidad 4, y repasado aquí en su versión aplicada a $\bar X$— es, posiblemente, el teorema individual más utilizado de toda la estadística aplicada.
+\end{observacion}
+
+\begin{observacion}[Síntesis final]
+En definitiva, esta unidad no introduce, en sentido estricto, ningún concepto probabilístico nuevo: reutiliza la esperanza y la varianza de sumas de independientes, las funciones generatrices de momentos, la distribución normal, y las distribuciones $\chi^2$ y $t$ de Student, todas ellas desarrolladas en unidades anteriores. Lo que aporta de nuevo es la \textbf{perspectiva}: mirar a $\bar X$, $S^2$ y sus combinaciones no como cantidades fijas calculadas sobre un conjunto de datos, sino como variables aleatorias cuya distribución exacta (o aproximada) se puede determinar y usar para cuantificar, de manera rigurosa, la incertidumbre de cualquier conclusión que se extraiga de una muestra. Esa perspectiva —el puente entre ``conocer el modelo y calcular probabilidades'' y ``tener datos y estimar el modelo''— es, precisamente, lo que hace de esta unidad el fundamento técnico indispensable de toda la inferencia estadística que sigue en las Unidades 6, 7 y 8.
+\end{observacion}
+
+\end{document}

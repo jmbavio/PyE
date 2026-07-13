@@ -1,0 +1,1326 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{propiedad}[teorema]{Propiedad}
+\newtheorem{corolario}[teorema]{Corolario}
+\newtheorem{lema}[teorema]{Lema}
+\theoremstyle{definition}
+\newtheorem{definicion}[teorema]{Definición}
+\newtheorem{ejemplo}[teorema]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{observacion}[teorema]{Observación}
+\renewcommand{\proofname}{Demostración}
+
+\title{Unidad 2: Variables aleatorias \\ \large Apunte de teoría}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Variable aleatoria y función de distribución}
+
+\subsection{La necesidad de cuantificar resultados aleatorios}
+
+En la Unidad 1 trabajamos con espacios de probabilidad $(\Omega,\mathcal{A},P)$ donde los resultados elementales $\omega\in\Omega$ podían ser objetos de naturaleza muy diversa: caras de una moneda, colores de bolillas, artículos defectuosos, secuencias de símbolos, etc. La teoría de la probabilidad que desarrollamos es completamente general en ese sentido, pero en la práctica rara vez nos interesa el resultado \emph{completo} de un experimento: casi siempre queremos resumir ese resultado en uno o varios \textbf{números}.
+
+Por ejemplo, si lanzamos tres monedas, el espacio muestral tiene $8$ elementos (todas las secuencias de caras y cruces), pero en la mayoría de los problemas lo que realmente importa es \emph{cuántas} caras salieron, es decir, un número entre $0$ y $3$. Si inspeccionamos un lote de artículos, no nos interesa la identificación individual de cada pieza defectuosa sino \emph{cuántas} piezas defectuosas hay. Si medimos el tiempo de vida de una lámpara, el resultado del experimento es directamente un número real positivo.
+
+Esta necesidad de "traducir" resultados de un experimento aleatorio a números —y de hacerlo preservando toda la estructura probabilística disponible— es exactamente lo que formaliza el concepto de \textbf{variable aleatoria}. Es, junto con el de probabilidad condicional, uno de los dos pilares sobre los que se construye el resto del curso: prácticamente toda la Estadística inferencial (Unidades 5 a 8) se apoya en el estudio de variables aleatorias y sus distribuciones.
+
+\subsection{Variable aleatoria como función medible}
+
+La idea intuitiva de variable aleatoria es sencilla: una regla que asigna un número real a cada resultado posible del experimento. Formalmente:
+
+\begin{definicion}[Variable aleatoria]
+Sea $(\Omega,\mathcal{A},P)$ un espacio de probabilidad. Una \textbf{variable aleatoria} (v.a.) es una función
+$$X:\Omega\longrightarrow\mathbb{R}$$
+tal que, para todo $x\in\mathbb{R}$, el conjunto
+$$\{\omega\in\Omega: X(\omega)\le x\}$$
+pertenece a $\mathcal{A}$, es decir, es un evento (se dice que $X$ es \textbf{medible} respecto de $\mathcal{A}$).
+\end{definicion}
+
+La condición de medibilidad no es un tecnicismo vacío: es exactamente lo que garantiza que preguntas del tipo "¿cuál es la probabilidad de que $X$ tome un valor menor o igual que $x$?" tengan sentido, ya que $P$ solamente está definida sobre elementos de $\mathcal{A}$. Si $X$ no fuera medible, existiría algún $x$ para el cual el conjunto $\{X\le x\}$ no sería un evento, y por lo tanto no podríamos calcular $P(X\le x)$.
+
+En la práctica de este curso, salvo que se indique lo contrario, todos los subconjuntos de interés (uniones, intersecciones, complementos numerables de intervalos) resultan medibles automáticamente cuando $\mathcal{A}$ contiene a los intervalos, así que la medibilidad rara vez es una restricción efectiva; alcanza con recordar que \emph{está garantizada por construcción} para las variables aleatorias que manejaremos, y que es la propiedad que legitima escribir expresiones como $P(X\le x)$, $P(a<X\le b)$, $P(X\in B)$, etc.
+
+Adoptamos la convención notacional usual: $X$ (mayúscula) denota la variable aleatoria —la función—, mientras que $x$ (minúscula) denota un valor numérico particular que la variable puede tomar. El evento $\{\omega\in\Omega: X(\omega)\le x\}$ se abrevia $\{X\le x\}$, y de manera análoga se escriben $\{X=x\}$, $\{X<x\}$, $\{a<X\le b\}$, etc., entendiendo siempre que son subconjuntos de $\Omega$ obtenidos como preimagen por $X$ de un subconjunto de $\mathbb{R}$.
+
+\begin{ejemplo}
+Se lanzan tres monedas equilibradas e independientes. El espacio muestral es
+$$\Omega=\{CCC,CCX,CXC,XCC,CXX,XCX,XXC,XXX\},$$
+con $P(\{\omega\})=1/8$ para cada $\omega$. Definimos $X(\omega)=$ número de caras en $\omega$. Entonces
+$$X(XXX)=0,\quad X(CXX)=X(XCX)=X(XXC)=1,\quad X(CCX)=X(CXC)=X(XCC)=2,\quad X(CCC)=3.$$
+Así, $X$ toma valores en el conjunto $\{0,1,2,3\}\subset\mathbb{R}$, y por ejemplo
+$$P(X=2)=P(\{CCX,CXC,XCC\})=\frac{3}{8}.$$
+Nótese que $X$ traduce un espacio muestral "cualitativo" (secuencias de caras y cruces) en uno numérico, sin perder información probabilística relevante para las preguntas que nos interesan.
+\end{ejemplo}
+
+Una misma variable aleatoria puede tomar el mismo valor para distintos resultados elementales (en el ejemplo, tres secuencias distintas dan $X=1$); eso es precisamente lo que permite \emph{resumir} información. La distribución de probabilidad "inducida" por $X$ sobre $\mathbb{R}$ es justamente el objeto que estudiaremos en el resto de esta unidad.
+
+\subsection{Función de distribución acumulada}
+
+Toda la información probabilística relevante sobre una variable aleatoria $X$ puede condensarse en una única función real, la función de distribución acumulada.
+
+\begin{definicion}[Función de distribución acumulada]
+La \textbf{función de distribución acumulada} (f.d.a.) de una variable aleatoria $X$ es la función $F:\mathbb{R}\to[0,1]$ dada por
+$$F(x)=P(X\le x),\qquad x\in\mathbb{R}.$$
+\end{definicion}
+
+Intuitivamente, $F(x)$ es la probabilidad acumulada de que $X$ tome un valor menor o igual que $x$. Como veremos, $F$ determina por completo el comportamiento probabilístico de $X$: a partir de $F$ pueden calcularse las probabilidades de cualquier evento razonable relacionado con $X$ (intervalos, semirrectas, puntos, uniones de estos). Esta es la razón por la cual, cuando decimos "conocer la distribución de $X$", en la práctica queremos decir "conocer su función $F$" (o, equivalentemente, su función de probabilidad puntual en el caso discreto, o su densidad en el caso continuo, como veremos más adelante).
+
+\begin{ejemplo}
+Retomando el ejemplo de las tres monedas, con $P(X=0)=1/8$, $P(X=1)=3/8$, $P(X=2)=3/8$, $P(X=3)=1/8$:
+$$F(1.5)=P(X\le 1.5)=P(X=0)+P(X=1)=\frac{1}{8}+\frac{3}{8}=\frac{4}{8}=\frac{1}{2}.$$
+Obsérvese que evaluamos $F$ en un punto, $1.5$, que $X$ nunca toma: esto es perfectamente válido, ya que $F$ está definida para \emph{todo} $x\in\mathbb{R}$, no solamente para los valores posibles de $X$.
+\end{ejemplo}
+
+\subsection{Propiedades de \texorpdfstring{$F$}{F} y sus demostraciones}
+
+La función de distribución no es una función arbitraria: satisface siempre las mismas cuatro propiedades estructurales, independientemente de la naturaleza de $X$. Estas propiedades son tan importantes que, de hecho, la caracterizan completamente.
+
+\begin{teorema}[Propiedades de la función de distribución]\label{thm:propF}
+Toda f.d.a. $F$ de una variable aleatoria $X$ satisface:
+\begin{enumerate}[label=(\arabic*)]
+\item \textbf{Monotonía no decreciente}: si $x_1<x_2$, entonces $F(x_1)\le F(x_2)$.
+\item \textbf{Límites en el infinito}: $\displaystyle\lim_{x\to-\infty}F(x)=0$ y $\displaystyle\lim_{x\to+\infty}F(x)=1$.
+\item \textbf{Continuidad a derecha}: para todo $x\in\mathbb{R}$, $\displaystyle\lim_{h\to 0^+}F(x+h)=F(x)$.
+\item $0\le F(x)\le 1$ para todo $x\in\mathbb{R}$ (consecuencia inmediata de ser $F(x)$ una probabilidad).
+\end{enumerate}
+\end{teorema}
+
+\begin{proof}
+\textbf{(1) Monotonía.} Sean $x_1<x_2$. Si $\omega$ es tal que $X(\omega)\le x_1$, entonces, como $x_1<x_2$, también $X(\omega)\le x_2$. Esto prueba la inclusión de eventos
+$$\{X\le x_1\}\subseteq\{X\le x_2\}.$$
+Por la propiedad de monotonía de toda medida de probabilidad (si $A\subseteq B$ entonces $P(A)\le P(B)$, consecuencia de que $P(B)=P(A)+P(B\setminus A)\ge P(A)$), se obtiene
+$$F(x_1)=P(X\le x_1)\le P(X\le x_2)=F(x_2).$$
+
+\textbf{(2) Límites en el infinito.} Consideremos una sucesión $x_n\to-\infty$ estrictamente decreciente (por ejemplo $x_n=-n$). Los eventos $A_n=\{X\le x_n\}$ forman una sucesión decreciente: $A_1\supseteq A_2\supseteq A_3\supseteq\cdots$, y además $\bigcap_{n=1}^\infty A_n=\emptyset$ (ningún resultado puede ser menor o igual que $-n$ para todo $n$, pues $X(\omega)$ es un número real fijo). Por la propiedad de continuidad de $P$ para sucesiones decrecientes de eventos,
+$$\lim_{n\to\infty}F(x_n)=\lim_{n\to\infty}P(A_n)=P\left(\bigcap_{n=1}^\infty A_n\right)=P(\emptyset)=0.$$
+Como esto vale para toda sucesión $x_n\to-\infty$, y $F$ es monótona (por (1)), se concluye $\lim_{x\to-\infty}F(x)=0$.
+
+De manera análoga, tomando $x_n=n\to+\infty$, los eventos $B_n=\{X\le x_n\}$ forman una sucesión creciente $B_1\subseteq B_2\subseteq\cdots$ con $\bigcup_{n=1}^\infty B_n=\Omega$ (todo resultado $\omega$ satisface $X(\omega)\le n$ para $n$ suficientemente grande). Por continuidad de $P$ para sucesiones crecientes,
+$$\lim_{n\to\infty}F(x_n)=P\left(\bigcup_{n=1}^\infty B_n\right)=P(\Omega)=1,$$
+y por monotonía de $F$ esto implica $\lim_{x\to+\infty}F(x)=1$.
+
+\textbf{(3) Continuidad a derecha.} Sea $x\in\mathbb{R}$ fijo y sea $h_n\downarrow 0$ una sucesión decreciente de números positivos que tiende a $0$. Los eventos $C_n=\{X\le x+h_n\}$ forman una sucesión decreciente, $C_1\supseteq C_2\supseteq\cdots$, y
+$$\bigcap_{n=1}^\infty C_n=\{X\le x\},$$
+ya que $X(\omega)\le x+h_n$ para todo $n$ si y solo si $X(\omega)\le x$ (si $X(\omega)>x$, existe $n$ suficientemente grande tal que $h_n<X(\omega)-x$, y entonces $\omega\notin C_n$). Nuevamente por continuidad de $P$ para sucesiones decrecientes de eventos,
+$$\lim_{n\to\infty}F(x+h_n)=P\left(\bigcap_{n=1}^\infty C_n\right)=P(X\le x)=F(x).$$
+Como la sucesión $h_n\downarrow 0$ era arbitraria, esto prueba $\lim_{h\to 0^+}F(x+h)=F(x)$.
+
+\textbf{(4)} Es inmediato porque $F(x)=P(X\le x)$ es la probabilidad de un evento, y toda probabilidad toma valores en $[0,1]$.
+\end{proof}
+
+\begin{observacion}[Por qué $F$ no es continua a izquierda en general]
+Es fundamental notar la asimetría entre (3) y lo que \emph{no} se cumple en general: la continuidad a \emph{izquierda}. Si tomamos $h_n\downarrow 0$ y consideramos $\{X\le x-h_n\}$, el límite de esta sucesión creciente de eventos es $\{X<x\}$ (estricto), no $\{X\le x\}$. Por lo tanto
+$$\lim_{h\to 0^+}F(x-h)=P(X<x),$$
+que en general es \emph{distinto} de $F(x)=P(X\le x)$: la diferencia es exactamente $P(X=x)$. Esta asimetría —producto de haber definido $F$ con una desigualdad no estricta— es la que da lugar a los "saltos" de $F$ en el caso discreto, como veremos.
+\end{observacion}
+
+\begin{observacion}[Recíproco: caracterización de las funciones de distribución]
+Un resultado notable (que no demostraremos en este curso, pero que es importante conocer) es el recíproco del Teorema \ref{thm:propF}: \emph{toda} función $F:\mathbb{R}\to[0,1]$ que satisface las propiedades (1), (2) y (3) es la función de distribución de alguna variable aleatoria. Es decir, estas tres propiedades \textbf{caracterizan} completamente a las funciones de distribución: no hace falta partir de un espacio de probabilidad concreto para "inventar" una distribución, alcanza con proponer una función con esas tres propiedades.
+\end{observacion}
+
+\subsection{Cálculo de probabilidades a partir de \texorpdfstring{$F$}{F}}
+
+Una de las razones por las que $F$ es tan útil es que permite calcular la probabilidad de cualquier intervalo (o punto) sin necesidad de volver al espacio muestral original.
+
+\begin{propiedad}[Fórmulas básicas]\label{prop:formulas}
+Para toda variable aleatoria $X$ con f.d.a. $F$, y para $a<b$ reales:
+\begin{align}
+P(X>x)&=1-F(x), \label{eq:complemento}\\
+P(a<X\le b)&=F(b)-F(a), \label{eq:intervalo}\\
+P(X<x)&=F(x^-):=\lim_{h\to 0^+}F(x-h), \label{eq:menorestricto}\\
+P(X=x)&=F(x)-F(x^-). \label{eq:puntual}
+\end{align}
+\end{propiedad}
+
+\begin{proof}
+\textbf{\eqref{eq:complemento}.} Los eventos $\{X\le x\}$ y $\{X>x\}$ son complementarios, por lo que $P(X>x)=1-P(X\le x)=1-F(x)$.
+
+\textbf{\eqref{eq:intervalo}.} Para $a<b$, el evento $\{X\le b\}$ se descompone como unión disjunta
+$$\{X\le b\}=\{X\le a\}\,\cup\,\{a<X\le b\}.$$
+En efecto, todo $\omega$ con $X(\omega)\le b$ cumple exactamente una de las dos alternativas $X(\omega)\le a$ o $a<X(\omega)\le b$, y estas son mutuamente excluyentes. Por aditividad finita de $P$ sobre eventos disjuntos,
+$$F(b)=P(X\le b)=P(X\le a)+P(a<X\le b)=F(a)+P(a<X\le b),$$
+de donde $P(a<X\le b)=F(b)-F(a)$.
+
+\textbf{\eqref{eq:menorestricto}.} Es la definición de $F(x^-)$ como límite lateral por izquierda, ya justificada en la observación anterior mediante continuidad de $P$ sobre la sucesión creciente de eventos $\{X\le x-h_n\}$ cuya unión es $\{X<x\}$.
+
+\textbf{\eqref{eq:puntual}.} El evento $\{X\le x\}$ se descompone como unión disjunta $\{X<x\}\cup\{X=x\}$, de donde $F(x)=P(X<x)+P(X=x)=F(x^-)+P(X=x)$, y despejando se obtiene el resultado.
+\end{proof}
+
+\begin{observacion}[Cuidado con los extremos de los intervalos]
+Como $F$ está definida con desigualdad no estricta, hay que prestar atención a si los extremos de un intervalo están incluidos o no. Por ejemplo,
+$$P(a\le X\le b)=F(b)-F(a^-)=F(b)-F(a)+P(X=a).$$
+Si $X$ es una variable \textbf{continua} (Sección \ref{sec:continuas}), entonces $P(X=a)=0$ para todo $a$, y en ese caso \emph{no importa} si los extremos del intervalo están incluidos o no: $P(a<X<b)=P(a\le X<b)=P(a<X\le b)=P(a\le X\le b)$. En cambio, para variables discretas esta distinción sí es relevante y hay que manejarla con cuidado.
+\end{observacion}
+
+\subsection{Clasificación: discretas, continuas y mixtas}\label{sec:continuas}
+
+De acuerdo con la forma de $F$, distinguimos tres grandes categorías de variables aleatorias.
+
+\begin{definicion}[Variable aleatoria discreta]
+Una v.a. $X$ es \textbf{discreta} si existe un conjunto finito o infinito numerable $\{x_1,x_2,x_3,\dots\}\subset\mathbb{R}$ tal que
+$$P(X\in\{x_1,x_2,x_3,\dots\})=1,$$
+es decir, $X$ concentra toda su probabilidad en (a lo sumo) numerables valores puntuales. En este caso $F$ es una función \textbf{escalonada}: constante entre los $x_i$ consecutivos, con un salto de tamaño $p(x_i)=P(X=x_i)$ en cada $x_i$.
+\end{definicion}
+
+\begin{definicion}[Variable aleatoria continua]
+Una v.a. $X$ es \textbf{continua} si su f.d.a. $F$ es una función continua en todo $\mathbb{R}$ (sin saltos) y, además, existe una función $f\ge0$, llamada \textbf{densidad}, tal que
+$$F(x)=\int_{-\infty}^x f(t)\,dt \qquad \text{para todo } x\in\mathbb{R}.$$
+\end{definicion}
+
+En una v.a. discreta, por la fórmula \eqref{eq:puntual}, $P(X=x_i)=F(x_i)-F(x_i^-)>0$ exactamente en los puntos $x_i$ donde $F$ salta, y $P(X=x)=0$ en cualquier otro punto (donde $F$ es continua). En una v.a. continua, como $F$ es continua en todo punto, $F(x)=F(x^-)$ siempre, y por \eqref{eq:puntual} resulta $P(X=x)=0$ para \emph{todo} $x\in\mathbb{R}$: aunque $X$ efectivamente toma algún valor al realizar el experimento, la probabilidad de que tome exactamente un valor prefijado de antemano es nula. Esto no es contradictorio: significa que la probabilidad se "reparte" de manera continua sobre un conjunto no numerable de valores posibles, y solo tiene sentido hablar de la probabilidad de \emph{intervalos}, no de puntos aislados.
+
+\begin{observacion}[Variables mixtas]
+No toda variable aleatoria de interés práctico es puramente discreta o puramente continua. Existen \textbf{variables mixtas}, cuya f.d.a. combina tramos continuos con saltos puntuales: son relativamente comunes quando el fenómeno modelado tiene una probabilidad positiva de un valor particular (por ejemplo, "no ocurre nada"), pero condicionalmente a que "algo ocurra", la magnitud es una v.a. continua.
+\end{observacion}
+
+\subsubsection{Un ejemplo de variable aleatoria mixta}
+
+Desarrollemos en detalle un ejemplo típico, tomado del contexto de seguros, que ilustra por qué las variables mixtas son relevantes y cómo se maneja su función de distribución.
+
+\begin{ejemplo}[Monto de un reclamo de seguro]
+Una compañía de seguros vende una póliza de responsabilidad civil. Con probabilidad $p_0=0.7$ no ocurre ningún siniestro en el año, en cuyo caso el monto pagado por la aseguradora es $X=0$. Con probabilidad $1-p_0=0.3$ ocurre un siniestro, y en ese caso el monto pagado (en miles de pesos) es una variable aleatoria continua con densidad exponencial de parámetro $\lambda=1/50$ (véase la Sección \ref{sec:exponencial}), es decir, condicionalmente al siniestro, el monto tiene función de distribución $1-e^{-x/50}$ para $x>0$.
+
+La función de distribución de $X$ resulta
+$$F(x)=\begin{cases}
+0, & x<0,\\[2pt]
+p_0+(1-p_0)\left(1-e^{-x/50}\right), & x\ge 0.
+\end{cases}$$
+Verifiquemos que $F$ cumple las propiedades del Teorema \ref{thm:propF}: es no decreciente (suma de una constante y de una función creciente de $x$ para $x\ge0$), tiende a $0$ cuando $x\to-\infty$ y a $p_0+(1-p_0)(1)=1$ cuando $x\to+\infty$, y es continua a derecha en todo punto, incluido $x=0$, donde $F(0)=p_0+(1-p_0)(1-e^0)=p_0=0.7$, que coincide con $\lim_{x\to0^+}F(x)$.
+
+Sin embargo, $F$ \textbf{no es continua a izquierda} en $x=0$: $F(0^-)=\lim_{x\to 0^-}F(x)=0$, mientras que $F(0)=0.7$. Por la fórmula \eqref{eq:puntual},
+$$P(X=0)=F(0)-F(0^-)=0.7-0=0.7=p_0,$$
+que es exactamente la probabilidad de "no siniestro", como debía ser. Para $x>0$, $F$ es continua y estrictamente creciente, coherente con que, condicionalmente a que hay siniestro, el monto es una v.a. continua. Esta $F$ combina entonces un salto puntual en $x=0$ (masa de probabilidad discreta) con un tramo continuo en $(0,\infty)$: es el prototipo de una \textbf{variable aleatoria mixta}.
+\end{ejemplo}
+
+Este tipo de modelos son frecuentes en la práctica actuarial y en la ingeniería de confiabilidad (tiempos de espera con posibilidad de espera nula, montos de reclamos con posibilidad de reclamo nulo, etc.). En este curso no profundizaremos en el cálculo formal de esperanzas para variables mixtas (se retoma parcialmente en la Unidad 4), pero es importante que el alumno reconozca su existencia y sepa identificar los saltos de $F$ como masa discreta y los tramos continuos como masa continua.
+
+\subsection{Ejemplo integrador}
+
+\begin{ejemplo}
+Sea $X$ una variable aleatoria con función de distribución
+$$F(x)=\begin{cases}0 & x<0\\ x^2/4 & 0\le x<2\\ 1 & x\ge 2\end{cases}$$
+Calculemos: (a) $P(X\le 1)$; (b) $P(0.5<X\le 1.5)$; (c) $P(X>1)$; y determinemos si $X$ es discreta, continua o mixta.
+
+\textbf{(a)} $P(X\le1)=F(1)=1^2/4=0.25$.
+
+\textbf{(b)} Usando \eqref{eq:intervalo}: $P(0.5<X\le1.5)=F(1.5)-F(0.5)=\dfrac{1.5^2}{4}-\dfrac{0.5^2}{4}=\dfrac{2.25-0.25}{4}=\dfrac{2}{4}=0.5$.
+
+\textbf{(c)} Usando \eqref{eq:complemento}: $P(X>1)=1-F(1)=1-0.25=0.75$.
+
+Como $F$ no presenta saltos (es continua en $x=0$ y en $x=2$, los puntos donde cambia de expresión: $F(0)=0$ coincide con el límite por izquierda, y $F(2)=1$ también), $X$ es una variable aleatoria \textbf{continua}. Su densidad se obtiene derivando: $f(x)=F'(x)=x/2$ para $0<x<2$ y $f(x)=0$ fuera de ese intervalo.
+\end{ejemplo}
+
+A continuación se muestra la gráfica de $F$ para el ejemplo introductorio de las tres monedas (caso discreto) y para una v.a. continua típica (la exponencial, que estudiaremos en la Sección \ref{sec:exponencial}), para contrastar visualmente ambos comportamientos.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+\begin{axis}[
+  xmin=-1, xmax=4, ymin=-0.05, ymax=1.15,
+  xlabel={$x$}, ylabel={$F(x)$},
+  width=7cm, height=5cm,
+  xtick={0,1,2,3}, ytick={0,0.125,0.5,0.875,1},
+  yticklabels={0,1/8,4/8,7/8,1},
+  axis lines=middle,
+  title={Caso discreto},
+]
+\addplot[thick, blue] coordinates {(-1,0) (0,0)};
+\addplot[thick, blue] coordinates {(0,0.125) (1,0.125)};
+\addplot[thick, blue] coordinates {(1,0.5) (2,0.5)};
+\addplot[thick, blue] coordinates {(2,0.875) (3,0.875)};
+\addplot[thick, blue] coordinates {(3,1) (4,1)};
+\addplot[only marks, mark=*, blue] coordinates {(0,0.125)(1,0.5)(2,0.875)(3,1)};
+\addplot[only marks, mark=o, blue] coordinates {(0,0)(1,0.125)(2,0.5)(3,0.875)};
+\end{axis}
+\end{tikzpicture}
+\hspace{0.5cm}
+\begin{tikzpicture}[scale=0.85]
+\begin{axis}[
+  xmin=-1, xmax=5, ymin=-0.05, ymax=1.15,
+  xlabel={$x$}, ylabel={$F(x)$},
+  width=7cm, height=5cm,
+  axis lines=middle,
+  domain=-1:5, samples=100,
+  title={Caso continuo},
+]
+\addplot[thick, red] coordinates {(-1,0)(0,0)};
+\addplot[thick, red, domain=0:5] {1-exp(-x)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+En el gráfico izquierdo, los puntos llenos indican el valor que efectivamente toma $F$ en el salto (continuidad a derecha) y los puntos vacíos el límite lateral por izquierda; la diferencia de altura entre ambos es $P(X=x_i)$. En el gráfico derecho no hay saltos: la curva sube de manera continua y suave, reflejando que ningún valor puntual concentra probabilidad positiva.
+
+\newpage
+\section{Distribuciones discretas fundamentales}
+
+En esta sección desarrollamos con detalle las distribuciones discretas más importantes del curso: Bernoulli, Binomial, Pascal (o binomial negativa) e Hipergeométrica. Todas ellas surgen, de una manera u otra, de repetir ensayos con dos resultados posibles (éxito/fracaso), variando la pregunta que se formula sobre esos ensayos.
+
+\subsection{Función de probabilidad puntual}
+
+\begin{definicion}[Función de probabilidad puntual]
+Si $X$ es una v.a. discreta que toma valores $x_1,x_2,x_3,\dots$, la \textbf{función de probabilidad puntual} (f.p.p.), también llamada función de masa, es
+$$p(x)=P(X=x).$$
+\end{definicion}
+
+\begin{propiedad}
+La f.p.p. de una variable discreta satisface:
+\begin{enumerate}[label=(\roman*)]
+\item $p(x_i)\ge0$ para todo $i$ (es una probabilidad).
+\item $\displaystyle\sum_i p(x_i)=1$ (los valores $x_i$ agotan la probabilidad total, ya que $P(X\in\{x_1,x_2,\dots\})=1$).
+\item $\displaystyle F(x)=\sum_{x_i\le x}p(x_i)$ (la f.d.a. se reconstruye acumulando la masa puntual).
+\end{enumerate}
+\end{propiedad}
+
+La esperanza y la varianza de una variable discreta, conceptos que se estudiarán con mayor generalidad en la Unidad 4, se calculan como
+$$E(X)=\sum_i x_i\,p(x_i), \qquad V(X)=\sum_i\big(x_i-E(X)\big)^2\,p(x_i)=E(X^2)-[E(X)]^2,$$
+siempre que las series involucradas converjan (absolutamente, en el caso de $E(X)$). Utilizaremos estas fórmulas a lo largo de esta sección para caracterizar cada distribución, adelantando resultados que se generalizarán formalmente en la Unidad 4.
+
+\subsection{Distribución de Bernoulli}
+
+\begin{definicion}[Ensayo y variable de Bernoulli]
+Un \textbf{ensayo de Bernoulli} es un experimento con exactamente dos resultados posibles, que llamamos convencionalmente \emph{éxito} y \emph{fracaso}, con $P(\text{éxito})=p$ y $P(\text{fracaso})=q=1-p$, donde $0<p<1$. La variable aleatoria
+$$X=\begin{cases}1 & \text{si ocurre éxito}\\ 0 & \text{si ocurre fracaso}\end{cases}$$
+se dice que tiene \textbf{distribución de Bernoulli} de parámetro $p$, y se escribe $X\sim\text{Be}(p)$. Su función de probabilidad puntual es
+$$p(x)=p^xq^{1-x},\qquad x=0,1.$$
+\end{definicion}
+
+Es inmediato verificar que $p(0)=q$ y $p(1)=p$, coincidiendo con la definición, y que $p(0)+p(1)=q+p=1$.
+
+\begin{propiedad}[Momentos de la Bernoulli]
+Si $X\sim\text{Be}(p)$, entonces
+$$E(X)=p, \qquad V(X)=pq.$$
+\end{propiedad}
+\begin{proof}
+$E(X)=0\cdot q+1\cdot p=p$. Como $X^2$ toma los mismos valores que $X$ (pues $0^2=0$ y $1^2=1$), $E(X^2)=0^2\cdot q+1^2\cdot p=p$. Luego
+$$V(X)=E(X^2)-[E(X)]^2=p-p^2=p(1-p)=pq.$$
+\end{proof}
+
+\begin{ejemplo}
+Se inspecciona un artículo tomado al azar de una línea de producción y se define $X=1$ si el artículo es defectuoso y $X=0$ si no lo es. Si históricamente el $8\%$ de los artículos son defectuosos, entonces $X\sim\text{Be}(0.08)$, con $E(X)=0.08$ y $V(X)=0.08\times0.92=0.0736$.
+\end{ejemplo}
+
+\subsection{Distribución Binomial}
+
+\begin{definicion}[Modelo binomial]
+Se realizan $n$ ensayos de Bernoulli \textbf{independientes}, todos con la misma probabilidad de éxito $p$. Sea
+$$X=\text{número total de éxitos en los $n$ ensayos}.$$
+Se dice que $X$ tiene \textbf{distribución Binomial} de parámetros $n$ y $p$, y se escribe $X\sim\text{Bi}(n,p)$.
+\end{definicion}
+
+\begin{teorema}[Función de probabilidad de la Binomial]\label{thm:binomial}
+Si $X\sim\text{Bi}(n,p)$, entonces
+$$p(x)=P(X=x)=\binom{n}{x}p^xq^{n-x},\qquad x=0,1,\dots,n,\qquad q=1-p.$$
+\end{teorema}
+
+\begin{proof}
+Fijemos $x\in\{0,1,\dots,n\}$. Consideremos primero una secuencia \emph{particular} de resultados de los $n$ ensayos que tenga exactamente $x$ éxitos y $n-x$ fracasos, por ejemplo, éxito en los primeros $x$ ensayos y fracaso en los restantes $n-x$. Por la independencia de los ensayos, la probabilidad de esa secuencia particular es
+$$\underbrace{p\cdot p\cdots p}_{x\text{ veces}}\cdot\underbrace{q\cdot q\cdots q}_{n-x\text{ veces}}=p^xq^{n-x}.$$
+Este mismo cálculo (por independencia, el orden de los factores no altera el producto) da la \emph{misma} probabilidad $p^xq^{n-x}$ para \textbf{cualquier} secuencia particular de $n$ resultados que contenga exactamente $x$ éxitos, sin importar en qué posiciones estén ubicados. El evento $\{X=x\}$ es la unión de todas esas secuencias posibles (mutuamente excluyentes entre sí, pues dos secuencias distintas de resultados no pueden ocurrir simultáneamente), y el número de tales secuencias es precisamente el número de formas de elegir cuáles $x$ de los $n$ ensayos son los éxitos, es decir, $\binom{n}{x}$. Por aditividad de $P$ sobre eventos disjuntos,
+$$P(X=x)=\binom{n}{x}p^xq^{n-x}.$$
+\end{proof}
+
+\begin{teorema}[La f.p.p. suma 1]
+$\displaystyle\sum_{x=0}^n\binom{n}{x}p^xq^{n-x}=1$.
+\end{teorema}
+\begin{proof}
+Por el teorema del binomio de Newton, para cualesquiera números reales $a,b$ y $n\in\mathbb{N}$,
+$$(a+b)^n=\sum_{x=0}^n\binom{n}{x}a^xb^{n-x}.$$
+Tomando $a=p$, $b=q=1-p$:
+$$\sum_{x=0}^n\binom{n}{x}p^xq^{n-x}=(p+q)^n=1^n=1.$$
+\end{proof}
+
+\begin{teorema}[Esperanza y varianza de la Binomial]\label{thm:binomEV}
+Si $X\sim\text{Bi}(n,p)$, entonces $E(X)=np$ y $V(X)=npq$.
+\end{teorema}
+
+\begin{proof}[Demostración directa de $E(X)=np$]
+Usamos la identidad combinatoria $x\binom{n}{x}=n\binom{n-1}{x-1}$ para $x\ge1$ (que se verifica reescribiendo los factoriales). Entonces
+$$E(X)=\sum_{x=0}^n x\binom{n}{x}p^xq^{n-x}=\sum_{x=1}^n n\binom{n-1}{x-1}p^xq^{n-x}=np\sum_{x=1}^n\binom{n-1}{x-1}p^{x-1}q^{n-x}.$$
+Con el cambio de índice $y=x-1$ (que recorre $0,1,\dots,n-1$),
+$$E(X)=np\sum_{y=0}^{n-1}\binom{n-1}{y}p^yq^{(n-1)-y}=np\,(p+q)^{n-1}=np.$$
+\end{proof}
+
+\begin{observacion}[Demostración alternativa mediante suma de indicadoras]
+Una manera más económica de obtener el mismo resultado, que se justifica rigurosamente en la Unidad 4, es escribir $X=X_1+X_2+\cdots+X_n$, donde $X_i\sim\text{Be}(p)$ es la indicadora de éxito en el $i$-ésimo ensayo. Por la propiedad de \textbf{linealidad de la esperanza} (que vale para variables aleatorias cualesquiera, sean o no independientes),
+$$E(X)=\sum_{i=1}^n E(X_i)=np.$$
+Para la varianza sí se requiere la \textbf{independencia} de los ensayos (que garantiza que las covarianzas cruzadas se anulan):
+$$V(X)=\sum_{i=1}^n V(X_i)=npq.$$
+Este último argumento, aunque más corto, presupone resultados de la Unidad 4 (linealidad de la esperanza y aditividad de la varianza bajo independencia); lo mencionamos aquí como adelanto porque ilustra la potencia de representar una variable compleja como suma de variables simples.
+\end{observacion}
+
+\begin{observacion}[Forma de la distribución]
+La distribución Binomial es simétrica cuando $p=0.5$, sesgada hacia la derecha (cola larga a la derecha) cuando $p<0.5$, y sesgada hacia la izquierda cuando $p>0.5$. Esto se aprecia en el siguiente gráfico para $\text{Bi}(10,0.3)$.
+\end{observacion}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, bar width=10pt,
+  xlabel={$x$}, ylabel={$p(x)$},
+  width=9cm, height=5cm,
+  xtick={0,...,10},
+  title={Bi(10,\,0.3)},
+]
+\addplot coordinates {
+(0,0.0282) (1,0.1211) (2,0.2335) (3,0.2668) (4,0.2001)
+(5,0.1029) (6,0.0368) (7,0.0090) (8,0.0014) (9,0.0001) (10,0.0000)
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\begin{ejemplo}
+Un examen de opción múltiple tiene $8$ preguntas, cada una con $4$ opciones y una única correcta. Un alumno no preparado responde al azar, de manera independiente en cada pregunta. Sea $X=$ número de aciertos; $X\sim\text{Bi}(n=8,\,p=0.25)$.
+
+La probabilidad de acertar exactamente $3$ preguntas es
+$$P(X=3)=\binom{8}{3}(0.25)^3(0.75)^5=56\times0.015625\times0.2373\approx0.2076.$$
+El número esperado de aciertos es $E(X)=np=8(0.25)=2$, con $V(X)=npq=8(0.25)(0.75)=1.5$. Podemos también calcular, por ejemplo, la probabilidad de aprobar (al menos $5$ aciertos, digamos):
+$$P(X\ge5)=\sum_{x=5}^8\binom{8}{x}(0.25)^x(0.75)^{8-x}\approx0.0273+0.0043+0.0004+0.00002\approx0.0320,$$
+es decir, menos del $3.5\%$ de probabilidad: adivinar al azar rinde muy poco en un examen con $4$ opciones por pregunta.
+\end{ejemplo}
+
+\subsection{Distribución de Pascal (binomial negativa)}
+
+\begin{definicion}[Modelo de Pascal]
+En una sucesión de ensayos de Bernoulli independientes, todos con la misma probabilidad de éxito $p$, sea
+$$X=\text{número de ensayos necesarios para lograr el $k$-ésimo éxito}\qquad(k\in\mathbb{N}\text{ fijo}).$$
+Se dice que $X$ tiene \textbf{distribución de Pascal} (o \textbf{binomial negativa}) de parámetros $k$ y $p$, y se escribe $X\sim\text{BN}(k,p)$.
+\end{definicion}
+
+\begin{teorema}[Función de probabilidad de Pascal]
+Si $X\sim\text{BN}(k,p)$, entonces
+$$p(x)=P(X=x)=\binom{x-1}{k-1}p^kq^{x-k},\qquad x=k,k+1,k+2,\dots$$
+\end{teorema}
+
+\begin{proof}
+Para que el ensayo número $x$ sea exactamente el $k$-ésimo éxito, deben ocurrir simultáneamente dos cosas: (i) en los primeros $x-1$ ensayos hay exactamente $k-1$ éxitos (y por lo tanto $x-k$ fracasos), y (ii) el ensayo $x$-ésimo es éxito. El número de formas de ubicar esos $k-1$ éxitos entre los primeros $x-1$ ensayos es $\binom{x-1}{k-1}$, y cada una de esas configuraciones, junto con el éxito en la posición $x$, tiene —por independencia— probabilidad $p^{k-1}q^{x-k}\cdot p=p^kq^{x-k}$. Como estas configuraciones son mutuamente excluyentes, sumamos (es decir, multiplicamos por la cantidad de ellas):
+$$P(X=x)=\binom{x-1}{k-1}p^kq^{x-k}.$$
+\end{proof}
+
+\begin{propiedad}[La f.p.p. de Pascal suma 1]
+Puede verificarse, usando el desarrollo en serie binomial generalizada $(1-q)^{-k}=\sum_{j=0}^\infty\binom{k+j-1}{j}q^j$, que
+$$\sum_{x=k}^\infty\binom{x-1}{k-1}p^kq^{x-k}=p^k\sum_{j=0}^\infty\binom{k+j-1}{k-1}q^j=p^k(1-q)^{-k}=p^k\cdot p^{-k}=1,$$
+donde se usó el cambio de índice $j=x-k$ y la identidad $\binom{x-1}{k-1}=\binom{k+j-1}{k-1}=\binom{k+j-1}{j}$.
+\end{propiedad}
+
+\begin{teorema}[Esperanza y varianza de Pascal]
+Si $X\sim\text{BN}(k,p)$, entonces
+$$E(X)=\frac{k}{p}, \qquad V(X)=\frac{kq}{p^2}.$$
+\end{teorema}
+
+\begin{proof}
+Escribimos $X=T_1+T_2+\cdots+T_k$, donde $T_1$ es el número de ensayos hasta el primer éxito, y para $i\ge2$, $T_i$ es el número de ensayos \emph{adicionales} (contados desde justo después del éxito $(i-1)$-ésimo) hasta lograr el éxito $i$-ésimo. Por la independencia de los ensayos originales, cada $T_i$ tiene la misma distribución: la del número de ensayos hasta el primer éxito, es decir, la distribución \textbf{Geométrica} de parámetro $p$ (que estudiaremos en la Sección \ref{sec:geometrica}), y los $T_i$ son independientes entre sí. Adelantando los resultados de esa sección ($E(T_i)=1/p$, $V(T_i)=q/p^2$), y usando linealidad de la esperanza junto con aditividad de la varianza bajo independencia,
+$$E(X)=\sum_{i=1}^k E(T_i)=\frac{k}{p}, \qquad V(X)=\sum_{i=1}^k V(T_i)=\frac{kq}{p^2}.$$
+\end{proof}
+
+\begin{observacion}[Caso particular $k=1$]
+Cuando $k=1$, la distribución $\text{BN}(1,p)$ es exactamente la distribución \textbf{Geométrica}: el número de ensayos hasta el primer éxito. La estudiaremos con demostraciones propias e independientes en la Sección \ref{sec:geometrica}, incluyendo su célebre propiedad de \emph{falta de memoria}.
+\end{observacion}
+
+\begin{ejemplo}
+Un vendedor tiene probabilidad $p=0.2$ de cerrar una venta en cada visita, de manera independiente entre visitas. ¿Cuál es la probabilidad de que logre su \textbf{tercera} venta exactamente en la \textbf{séptima} visita?
+
+Sea $X=$ número de visitas hasta la tercera venta; $X\sim\text{BN}(k=3,p=0.2)$.
+$$P(X=7)=\binom{6}{2}(0.2)^3(0.8)^4=15\times0.008\times0.4096\approx0.0492.$$
+El número esperado de visitas hasta la tercera venta es $E(X)=k/p=3/0.2=15$ visitas, con $V(X)=kq/p^2=3(0.8)/0.04=60$ visitas al cuadrado (desvío estándar $\sqrt{60}\approx7.75$ visitas: hay bastante variabilidad).
+\end{ejemplo}
+
+\subsection{Distribución Hipergeométrica}
+
+\begin{definicion}[Modelo hipergeométrico]
+Una población finita de $N$ elementos contiene $K$ elementos de un tipo (que llamamos "éxitos") y $N-K$ del otro tipo ("fracasos"). Se extrae, \textbf{sin reposición}, una muestra de tamaño $n\le N$. Sea
+$$X=\text{número de éxitos en la muestra}.$$
+Se dice que $X$ tiene \textbf{distribución Hipergeométrica} de parámetros $N$, $K$, $n$, y se escribe $X\sim\text{H}(N,K,n)$.
+\end{definicion}
+
+\begin{teorema}[Función de probabilidad hipergeométrica]
+Si $X\sim\text{H}(N,K,n)$, entonces
+$$p(x)=P(X=x)=\frac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}, \qquad \max(0,\,n-N+K)\le x\le\min(n,K).$$
+\end{teorema}
+
+\begin{proof}
+Aplicamos la regla de Laplace, contando casos favorables y casos totales sobre el espacio muestral de todas las submuestras de tamaño $n$ elegidas de la población de tamaño $N$ (todas equiprobables, al ser el muestreo sin reposición y al azar). El número de casos totales es $\binom{N}{n}$: todas las formas de elegir $n$ elementos de los $N$ disponibles. El número de casos favorables al evento $\{X=x\}$ es el número de formas de elegir simultáneamente $x$ elementos del grupo de $K$ éxitos y $n-x$ elementos del grupo de $N-K$ fracasos, es decir $\binom{K}{x}\binom{N-K}{n-x}$ (por la regla del producto, ya que ambas elecciones son independientes entre sí a nivel combinatorio). El cociente da la fórmula enunciada. Los límites en $x$ reflejan las restricciones naturales: no se pueden elegir más de $K$ éxitos ni más de $N-K$ fracasos, y $x$ no puede exceder el tamaño de muestra $n$.
+\end{proof}
+
+\begin{teorema}[Esperanza de la Hipergeométrica]
+Si $X\sim\text{H}(N,K,n)$ y $p:=K/N$, entonces $E(X)=np$.
+\end{teorema}
+\begin{proof}
+Numeremos los $N$ elementos de la población y para $i=1,\dots,n$ definamos la indicadora
+$$Y_i=\begin{cases}1 & \text{si el $i$-ésimo elemento extraído es un éxito}\\0 & \text{en caso contrario.}\end{cases}$$
+Entonces $X=Y_1+Y_2+\cdots+Y_n$. Aunque las $Y_i$ \textbf{no son independientes} (el muestreo es sin reposición, así que saber que la primera extracción fue éxito cambia la probabilidad de que la segunda también lo sea), por \textbf{simetría} cada $Y_i$ tiene la misma distribución marginal que $Y_1$: antes de observar ningún resultado, cualquier posición de la muestra tiene la misma probabilidad $K/N$ de ser un éxito (todos los elementos de la población son intercambiables a priori). Formalmente, $P(Y_i=1)=K/N=p$ para todo $i=1,\dots,n$. Por linealidad de la esperanza (que no requiere independencia),
+$$E(X)=\sum_{i=1}^n E(Y_i)=\sum_{i=1}^n p=np.$$
+\end{proof}
+
+\begin{teorema}[Varianza de la Hipergeométrica]
+Si $X\sim\text{H}(N,K,n)$ y $p=K/N$, entonces
+$$V(X)=np(1-p)\cdot\frac{N-n}{N-1}.$$
+\end{teorema}
+
+\begin{observacion}[Sobre la demostración de la varianza]
+La demostración completa de esta fórmula requiere calcular las covarianzas $\text{Cov}(Y_i,Y_j)$ para $i\ne j$ (que, a diferencia del caso binomial, no son nulas por la dependencia introducida por el muestreo sin reposición) y sumarlas junto con las varianzas individuales $V(Y_i)=p(1-p)$. Se puede mostrar, por simetría, que $\text{Cov}(Y_i,Y_j)=-\dfrac{p(1-p)}{N-1}$ para todo $i\ne j$, y que hay $n(n-1)$ pares ordenados $(i,j)$ con $i\ne j$; combinando estos términos se llega a la fórmula enunciada. Omitimos los detalles de este cálculo, que involucra herramientas de la Unidad 3 (covarianza de variables no independientes), pero el alumno interesado puede reconstruirlo como ejercicio una vez estudiada dicha unidad.
+\end{observacion}
+
+El factor $\dfrac{N-n}{N-1}$ se denomina \textbf{factor de corrección para población finita}, y mide cuánto se reduce la variabilidad de $X$ respecto de lo que tendría una Binomial con la misma $p$, como consecuencia de que el muestreo sin reposición "agota" gradualmente la población.
+
+\subsection{Aproximación de la Hipergeométrica por la Binomial}
+
+Cuando la población es muy grande en relación con el tamaño de la muestra, extraer sin reposición o con reposición produce prácticamente el mismo efecto, y por lo tanto cabe esperar que la Hipergeométrica se aproxime a la Binomial. Formalicemos esta idea intuitiva.
+
+\begin{propiedad}[Justificación de la aproximación]
+Fijemos $n$ y $x$, y hagamos $N\to\infty$ manteniendo la proporción $K/N=p$ constante. Reescribamos la función de probabilidad hipergeométrica desarrollando los coeficientes combinatorios en términos de productos:
+$$p(x)=\binom{n}{x}\,\frac{K(K-1)\cdots(K-x+1)\cdot(N-K)(N-K-1)\cdots(N-K-n+x+1)}{N(N-1)\cdots(N-n+1)}.$$
+Dividiendo cada uno de los $x$ factores del numerador que involucran a $K$ por $N$, y cada uno de los $n-x$ factores que involucran a $N-K$ por $N$, y cada uno de los $n$ factores del denominador por $N$, obtenemos que $p(x)$ es igual a
+$$\binom{n}{x}\left[\frac{K}{N}\cdot\frac{K-1}{N}\cdots\frac{K-x+1}{N}\right]\left[\frac{N-K}{N}\cdot\frac{N-K-1}{N}\cdots\frac{N-K-n+x+1}{N}\right]\Big/\left[\frac{N-1}{N}\cdots\frac{N-n+1}{N}\right].$$
+Cuando $N\to\infty$ con $K/N\to p$ fijo, cada uno de los $x$ factores del primer corchete tiende a $p$ (pues $K/N\to p$ y $(K-j)/N=K/N-j/N\to p$ para $j$ fijo), cada uno de los $n-x$ factores del segundo corchete tiende a $1-p$, y cada uno de los factores del denominador tiende a $1$. Por lo tanto,
+$$p(x)\longrightarrow\binom{n}{x}p^x(1-p)^{n-x},$$
+que es exactamente la función de probabilidad de $\text{Bi}(n,p)$.
+\end{propiedad}
+
+En la práctica, esta aproximación
+$$\text{H}(N,K,n)\approx\text{Bi}\left(n,\,p=\frac{K}{N}\right)$$
+se considera razonablemente buena cuando la fracción de muestreo $n/N$ es pequeña (una regla práctica habitual es $n/N<0.05$ o $n/N<0.1$), ya que en ese caso extraer sin reposición "casi no cambia" la composición de la población a medida que se van extrayendo elementos.
+
+\begin{ejemplo}
+Un lote contiene $20$ artículos, de los cuales $4$ son defectuosos. Se seleccionan $5$ artículos al azar sin reposición. ¿Cuál es la probabilidad de que exactamente $2$ sean defectuosos?
+
+Con $N=20$, $K=4$, $n=5$, $X\sim\text{H}(20,4,5)$:
+$$P(X=2)=\frac{\binom{4}{2}\binom{16}{3}}{\binom{20}{5}}=\frac{6\times560}{15504}=\frac{3360}{15504}\approx0.2167.$$
+Comparemos con la aproximación binomial, usando $p=4/20=0.2$:
+$$\binom{5}{2}(0.2)^2(0.8)^3=10\times0.04\times0.512=0.2048,$$
+un valor razonablemente cercano al exacto, aunque aquí $n/N=0.25$ no es tan pequeño como para garantizar una excelente aproximación (el error relativo es de aproximadamente el $5.5\%$). Cuando $N$ y $K$ son mucho mayores, manteniendo $n$ y $K/N$ fijos, la aproximación mejora sustancialmente.
+\end{ejemplo}
+
+\newpage
+\section{Distribuciones de Poisson y Geométrica}
+
+En esta sección estudiamos dos distribuciones discretas adicionales de gran importancia: la distribución de Poisson, que modela el conteo de ocurrencias de un evento "raro" en un intervalo continuo de tiempo o espacio, y la distribución Geométrica, que ya adelantamos en la sección anterior como el caso particular $k=1$ de Pascal.
+
+\subsection{Motivación: sucesos raros en el tiempo o el espacio}
+
+Muchos fenómenos de interés consisten en contar el número de ocurrencias de un evento en un intervalo continuo (de tiempo, área, volumen, longitud), sin que exista un "número de ensayos" natural como en el modelo binomial:
+\begin{itemize}
+\item Número de llamadas que llegan a una central telefónica en una hora.
+\item Número de defectos encontrados en un metro de tela.
+\item Número de autos que llegan a un peaje en un intervalo de 5 minutos.
+\item Número de partículas emitidas por una fuente radiactiva en un segundo.
+\item Número de errores tipográficos por página en un libro.
+\end{itemize}
+En todos estos casos, lo que se conoce no es "cuántos ensayos hay" sino una \textbf{tasa promedio de ocurrencia} $\lambda$ por unidad de tiempo o espacio (por ejemplo, "en promedio llegan 4 llamadas por minuto"). La distribución de Poisson formaliza el conteo de ocurrencias bajo este tipo de tasa constante.
+
+\subsection{La Poisson como límite de la Binomial}
+
+La manera más instructiva de introducir la distribución de Poisson es como un límite de la Binomial, y por eso la desarrollamos con toda su demostración.
+
+\begin{teorema}[La Poisson como límite de la Binomial]\label{thm:poissonlimite}
+Sea $\lambda>0$ fijo. Para cada $n\in\mathbb{N}$ con $n>\lambda$, consideremos $X_n\sim\text{Bi}(n,\,p_n)$ con $p_n=\lambda/n$. Entonces, para cada $x=0,1,2,\dots$ fijo,
+$$\lim_{n\to\infty}P(X_n=x)=\frac{e^{-\lambda}\lambda^x}{x!}.$$
+\end{teorema}
+
+\begin{proof}
+Escribimos la función de probabilidad binomial y la reorganizamos:
+$$P(X_n=x)=\binom{n}{x}\left(\frac{\lambda}{n}\right)^x\left(1-\frac{\lambda}{n}\right)^{n-x}=\frac{\lambda^x}{x!}\cdot\frac{n(n-1)\cdots(n-x+1)}{n^x}\cdot\left(1-\frac{\lambda}{n}\right)^{n}\cdot\left(1-\frac{\lambda}{n}\right)^{-x}.$$
+Analicemos cada factor cuando $n\to\infty$ con $x$ fijo:
+\begin{itemize}
+\item $\dfrac{n(n-1)\cdots(n-x+1)}{n^x}=1\cdot\left(1-\dfrac1n\right)\left(1-\dfrac2n\right)\cdots\left(1-\dfrac{x-1}{n}\right)\longrightarrow 1$, por ser un producto de un número fijo ($x$) de factores que tienden individualmente a $1$.
+\item $\left(1-\dfrac{\lambda}{n}\right)^{n}\longrightarrow e^{-\lambda}$, por la definición del número $e$ como límite $\left(1+\frac{a}{n}\right)^n\to e^a$, aplicada con $a=-\lambda$.
+\item $\left(1-\dfrac{\lambda}{n}\right)^{-x}\longrightarrow 1^{-x}=1$, ya que $x$ es fijo y $\lambda/n\to0$.
+\end{itemize}
+Multiplicando los tres límites,
+$$\lim_{n\to\infty}P(X_n=x)=\frac{\lambda^x}{x!}\cdot1\cdot e^{-\lambda}\cdot1=\frac{e^{-\lambda}\lambda^x}{x!}.$$
+\end{proof}
+
+Este teorema motiva la siguiente definición, en la que $\lambda$ juega el papel del número esperado de ocurrencias.
+
+\begin{definicion}[Distribución de Poisson]
+$X$ tiene \textbf{distribución de Poisson} de parámetro $\lambda>0$, y se escribe $X\sim\text{Po}(\lambda)$, si
+$$p(x)=P(X=x)=\frac{e^{-\lambda}\lambda^x}{x!},\qquad x=0,1,2,\dots$$
+\end{definicion}
+
+\subsection{Propiedades de la Poisson}
+
+\begin{propiedad}[La f.p.p. suma 1]
+$\displaystyle\sum_{x=0}^\infty\frac{e^{-\lambda}\lambda^x}{x!}=1$.
+\end{propiedad}
+\begin{proof}
+Por el desarrollo en serie de Taylor de la función exponencial, $e^{\lambda}=\displaystyle\sum_{x=0}^\infty\frac{\lambda^x}{x!}$ para todo $\lambda\in\mathbb{R}$. Entonces
+$$\sum_{x=0}^\infty\frac{e^{-\lambda}\lambda^x}{x!}=e^{-\lambda}\sum_{x=0}^\infty\frac{\lambda^x}{x!}=e^{-\lambda}\,e^{\lambda}=1.$$
+\end{proof}
+
+\begin{teorema}[Esperanza y varianza de la Poisson]
+Si $X\sim\text{Po}(\lambda)$, entonces $E(X)=\lambda$ y $V(X)=\lambda$.
+\end{teorema}
+\begin{proof}
+El término $x=0$ no aporta a la suma de $E(X)$, así que
+$$E(X)=\sum_{x=0}^\infty x\,\frac{e^{-\lambda}\lambda^x}{x!}=\sum_{x=1}^\infty\frac{e^{-\lambda}\lambda^x}{(x-1)!}=\lambda e^{-\lambda}\sum_{x=1}^\infty\frac{\lambda^{x-1}}{(x-1)!}=\lambda e^{-\lambda}\sum_{j=0}^\infty\frac{\lambda^j}{j!}=\lambda e^{-\lambda}e^\lambda=\lambda,$$
+con el cambio de índice $j=x-1$. Para la varianza calculamos primero $E(X(X-1))$, que se conoce como el segundo \textbf{momento factorial}:
+$$E(X(X-1))=\sum_{x=0}^\infty x(x-1)\frac{e^{-\lambda}\lambda^x}{x!}=\sum_{x=2}^\infty\frac{e^{-\lambda}\lambda^x}{(x-2)!}=\lambda^2e^{-\lambda}\sum_{j=0}^\infty\frac{\lambda^j}{j!}=\lambda^2,$$
+con el cambio de índice $j=x-2$. Como $E(X^2)=E(X(X-1))+E(X)$, resulta $E(X^2)=\lambda^2+\lambda$, y entonces
+$$V(X)=E(X^2)-[E(X)]^2=\lambda^2+\lambda-\lambda^2=\lambda.$$
+\end{proof}
+
+\begin{observacion}[Media y varianza coinciden]
+En la distribución de Poisson, la media y la varianza son \textbf{iguales}: $E(X)=V(X)=\lambda$. Esta propiedad, llamada a veces "equidispersión", es útil en la práctica: si al analizar un conjunto de datos de conteo se observa que la varianza muestral es considerablemente mayor que la media muestral (sobre-dispersión) o menor (sub-dispersión), suele ser indicio de que el modelo de Poisson no es adecuado.
+\end{observacion}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, bar width=10pt,
+  xlabel={$x$}, ylabel={$p(x)$},
+  width=9cm, height=5cm,
+  xtick={0,...,10},
+  title={Po(3)},
+]
+\addplot coordinates {
+(0,0.0498)(1,0.1494)(2,0.2240)(3,0.2240)(4,0.1680)
+(5,0.1008)(6,0.0504)(7,0.0216)(8,0.0081)(9,0.0027)(10,0.0008)
+};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\subsection{El proceso de Poisson}
+
+La distribución de Poisson se enmarca de manera natural dentro de un modelo dinámico llamado \textbf{proceso de Poisson}, que describe la ocurrencia aleatoria de eventos a lo largo del tiempo (o el espacio).
+
+\begin{definicion}[Proceso de Poisson]
+Un \textbf{proceso de Poisson} de tasa $\lambda>0$ (eventos por unidad de tiempo) es un modelo para la ocurrencia de eventos que satisface los siguientes postulados:
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Independencia de incrementos}: el número de eventos que ocurren en intervalos de tiempo disjuntos son variables aleatorias independientes.
+\item \textbf{Homogeneidad y proporcionalidad}: la probabilidad de que ocurra exactamente un evento en un intervalo corto $[t,t+h]$ es aproximadamente $\lambda h$, para $h$ pequeño (más precisamente, es $\lambda h+o(h)$).
+\item \textbf{Orden}: la probabilidad de que ocurran dos o más eventos en un intervalo corto $[t,t+h]$ es despreciable frente a $h$ (es $o(h)$, es decir, tiende a $0$ más rápido que $h$).
+\end{enumerate}
+\end{definicion}
+
+\begin{propiedad}[Consecuencia fundamental]
+Bajo los postulados anteriores, puede demostrarse (mediante un argumento de ecuaciones diferenciales que excede el alcance de este curso, pero que es esencialmente una versión continua del límite del Teorema \ref{thm:poissonlimite}) que el número de eventos $X$ que ocurren en un intervalo de longitud $t$ sigue una distribución
+$$X\sim\text{Po}(\lambda t).$$
+\end{propiedad}
+
+Intuitivamente, esta consecuencia es coherente con el Teorema \ref{thm:poissonlimite}: si dividimos el intervalo $[0,t]$ en $n$ subintervalos muy pequeños de longitud $t/n$, por el postulado (ii) cada subintervalo contiene un evento con probabilidad aproximada $\lambda(t/n)$ (y, por (iii), a lo sumo uno), y por el postulado (i) los subintervalos se comportan de manera independiente entre sí. El número total de eventos en $[0,t]$ es entonces, aproximadamente, $\text{Bi}(n,\lambda t/n)$, y al hacer $n\to\infty$ obtenemos, por el Teorema \ref{thm:poissonlimite} (con $\lambda t$ en el rol del parámetro), la distribución $\text{Po}(\lambda t)$.
+
+El proceso de Poisson será retomado en la Sección \ref{sec:exponencial}, al estudiar la distribución del \emph{tiempo} hasta la ocurrencia de eventos (distribuciones Exponencial y Gamma).
+
+\begin{ejemplo}
+A una central telefónica llegan en promedio $4$ llamadas por minuto, según un proceso de Poisson. Calculemos la probabilidad de que en un minuto dado lleguen exactamente $6$ llamadas, y la probabilidad de que no llegue ninguna llamada en un intervalo de $30$ segundos.
+
+\textbf{Parte 1.} Con $\lambda=4$ (por minuto), $X\sim\text{Po}(4)$:
+$$P(X=6)=\frac{e^{-4}4^6}{6!}=\frac{0.0183\times4096}{720}\approx0.1042.$$
+
+\textbf{Parte 2.} En un intervalo de $t=0.5$ minutos, la tasa esperada es $\lambda t=4\times0.5=2$. Sea $Y\sim\text{Po}(2)$ el número de llamadas en esos $30$ segundos:
+$$P(Y=0)=\frac{e^{-2}2^0}{0!}=e^{-2}\approx0.1353.$$
+\end{ejemplo}
+
+\subsection{Aproximación de la Binomial por la Poisson}
+
+El Teorema \ref{thm:poissonlimite} no solo justifica la definición de la Poisson, sino que también proporciona una \textbf{aproximación práctica} muy útil: cuando $n$ es grande y $p$ es pequeño (evento "raro"), de modo que el producto $np=\lambda$ se mantiene moderado, se tiene
+$$\text{Bi}(n,p)\approx\text{Po}(\lambda=np).$$
+Una regla práctica habitual para considerar razonable esta aproximación es $n\ge30$, $p\le0.1$ y $np\le10$; cuanto más grande es $n$ y más chico es $p$ (con $np$ fijo), mejor es la aproximación, en concordancia con el límite demostrado.
+
+\begin{ejemplo}
+En una fábrica, el $0.5\%$ de los tornillos producidos son defectuosos. En una caja de $400$ tornillos, ¿cuál es la probabilidad de encontrar exactamente $3$ defectuosos?
+
+El cálculo exacto usa $X\sim\text{Bi}(400,0.005)$:
+$$P(X=3)=\binom{400}{3}(0.005)^3(0.995)^{397}\approx0.1789.$$
+La aproximación de Poisson usa $\lambda=np=400\times0.005=2$, con $Y\sim\text{Po}(2)$:
+$$P(Y=3)=\frac{e^{-2}2^3}{3!}=\frac{0.1353\times8}{6}\approx0.1804,$$
+un valor muy cercano al exacto (error relativo menor al $1\%$), a pesar de que el cálculo con la Poisson es considerablemente más simple que el binomial.
+\end{ejemplo}
+
+\subsection{Distribución Geométrica}\label{sec:geometrica}
+
+\begin{definicion}[Modelo geométrico]
+En una sucesión de ensayos de Bernoulli independientes, todos con la misma probabilidad de éxito $p$, sea
+$$X=\text{número de ensayos necesarios hasta obtener el \emph{primer} éxito}.$$
+Se dice que $X$ tiene \textbf{distribución Geométrica} de parámetro $p$, y se escribe $X\sim\text{Ge}(p)$.
+\end{definicion}
+
+\begin{teorema}[Función de probabilidad geométrica]
+Si $X\sim\text{Ge}(p)$, entonces
+$$p(x)=P(X=x)=q^{x-1}p,\qquad x=1,2,3,\dots\qquad(q=1-p).$$
+\end{teorema}
+\begin{proof}
+Para que el primer éxito ocurra exactamente en el ensayo $x$, los primeros $x-1$ ensayos deben ser todos fracasos (por independencia, esto ocurre con probabilidad $q\cdot q\cdots q=q^{x-1}$) y el ensayo $x$-ésimo debe ser éxito (probabilidad $p$, independiente de lo anterior). Multiplicando,
+$$P(X=x)=q^{x-1}p.$$
+\end{proof}
+
+Nótese que la distribución Geométrica coincide con $\text{BN}(k=1,p)$: es el caso particular de Pascal correspondiente al primer éxito.
+
+\begin{propiedad}[La f.p.p. suma 1]
+$\displaystyle\sum_{x=1}^\infty q^{x-1}p=1$.
+\end{propiedad}
+\begin{proof}
+Es una serie geométrica de razón $q\in(0,1)$:
+$$\sum_{x=1}^\infty q^{x-1}p=p\sum_{j=0}^\infty q^j=p\cdot\frac{1}{1-q}=\frac{p}{p}=1.$$
+\end{proof}
+
+\begin{teorema}[Esperanza y varianza de la Geométrica]\label{thm:geomEV}
+Si $X\sim\text{Ge}(p)$, entonces
+$$E(X)=\frac1p,\qquad V(X)=\frac{q}{p^2}.$$
+\end{teorema}
+
+\begin{proof}
+Partimos de la serie geométrica $\displaystyle\sum_{x=0}^\infty q^x=\frac{1}{1-q}$, válida para $|q|<1$. Derivando ambos miembros respecto de $q$ (lo cual está justificado dentro del radio de convergencia):
+$$\sum_{x=1}^\infty x\,q^{x-1}=\frac{1}{(1-q)^2}=\frac{1}{p^2}.$$
+Entonces
+$$E(X)=\sum_{x=1}^\infty x\,q^{x-1}p=p\sum_{x=1}^\infty x\,q^{x-1}=p\cdot\frac{1}{p^2}=\frac1p.$$
+Para la varianza, derivamos una vez más respecto de $q$ la igualdad $\displaystyle\sum_{x=1}^\infty x\,q^{x-1}=\frac{1}{(1-q)^2}$:
+$$\sum_{x=2}^\infty x(x-1)\,q^{x-2}=\frac{2}{(1-q)^3}=\frac{2}{p^3}.$$
+Luego
+$$E(X(X-1))=\sum_{x=1}^\infty x(x-1)q^{x-1}p=pq\sum_{x=2}^\infty x(x-1)q^{x-2}=pq\cdot\frac{2}{p^3}=\frac{2q}{p^2}.$$
+Como $E(X^2)=E(X(X-1))+E(X)=\dfrac{2q}{p^2}+\dfrac1p$, resulta
+$$V(X)=E(X^2)-[E(X)]^2=\frac{2q}{p^2}+\frac1p-\frac{1}{p^2}=\frac{2q-1}{p^2}+\frac1p=\frac{2q-1+p}{p^2}.$$
+Como $q=1-p$, tenemos $2q-1+p=2-2p-1+p=1-p=q$, de donde
+$$V(X)=\frac{q}{p^2}.$$
+\end{proof}
+
+\begin{observacion}[Interpretación de $E(X)=1/p$]
+Cuanto menor es la probabilidad de éxito $p$, mayor es el número esperado de ensayos hasta el primer éxito. Por ejemplo, si $p=0.1$, se esperan en promedio $10$ ensayos hasta el primer éxito; si $p=0.5$, se esperan $2$.
+\end{observacion}
+
+\subsection{Falta de memoria de la Geométrica}
+
+Una de las propiedades más notables (y más citadas) de la distribución Geométrica es la llamada \textbf{falta de memoria}: informalmente, el proceso "no recuerda" cuántos fracasos ya ocurrieron.
+
+\begin{lema}
+Si $X\sim\text{Ge}(p)$, entonces para todo entero $n\ge0$, $P(X>n)=q^n$.
+\end{lema}
+\begin{proof}
+$P(X>n)=\displaystyle\sum_{x=n+1}^\infty q^{x-1}p$. Con el cambio de índice $j=x-n-1$ (que recorre $0,1,2,\dots$),
+$$P(X>n)=\sum_{j=0}^\infty q^{n+j}p=q^n\,p\sum_{j=0}^\infty q^j=q^n\,p\cdot\frac{1}{1-q}=q^n.$$
+(Alternativamente: $\{X>n\}$ equivale a que los primeros $n$ ensayos sean todos fracasos, lo cual, por independencia, tiene probabilidad $q^n$ directamente, sin necesidad de sumar la serie.)
+\end{proof}
+
+\begin{teorema}[Falta de memoria]\label{thm:falta_memoria_geom}
+Si $X\sim\text{Ge}(p)$, entonces para todo $m,n\ge0$ enteros,
+$$P(X>m+n\mid X>m)=P(X>n).$$
+\end{teorema}
+\begin{proof}
+Usando el lema anterior y la definición de probabilidad condicional,
+$$P(X>m+n\mid X>m)=\frac{P(X>m+n\ \cap\ X>m)}{P(X>m)}=\frac{P(X>m+n)}{P(X>m)}=\frac{q^{m+n}}{q^m}=q^n=P(X>n),$$
+donde usamos que $\{X>m+n\}\subseteq\{X>m\}$ (pues $m+n\ge m$), de modo que la intersección de ambos eventos es simplemente $\{X>m+n\}$.
+\end{proof}
+
+\begin{observacion}[Interpretación e importancia]
+Si ya hubo $m$ fracasos consecutivos, la probabilidad de necesitar $n$ ensayos adicionales para el primer éxito es exactamente la misma que la probabilidad de necesitar $n$ ensayos al empezar de cero: el proceso "olvida" los fracasos pasados. Puede demostrarse (aunque no lo haremos aquí) que la Geométrica es la \textbf{única} distribución discreta soportada en $\{1,2,3,\dots\}$ con esta propiedad; esto la vincula estrechamente con la distribución Exponencial, que es la única distribución continua con la propiedad análoga (Sección \ref{sec:exponencial}), y explica por qué ambas distribuciones son tan frecuentes como modelos de "tiempos de espera sin envejecimiento".
+\end{observacion}
+
+\begin{ejemplo}
+La probabilidad de que una perforación petrolera tenga éxito es $p=0.2$, de manera independiente entre perforaciones.
+\textbf{(a)} ¿Cuál es la probabilidad de que la primera perforación exitosa sea la cuarta?
+\textbf{(b)} Si ya se realizaron $3$ perforaciones sin éxito, ¿cuál es la probabilidad de necesitar al menos $2$ perforaciones más?
+
+\textbf{(a)} $X\sim\text{Ge}(0.2)$: $P(X=4)=(0.8)^3(0.2)=0.512\times0.2=0.1024$.
+
+\textbf{(b)} Por la propiedad de falta de memoria (Teorema \ref{thm:falta_memoria_geom}), con $m=3$, $n=2$:
+$$P(X>3+2\mid X>3)=P(X>2)=(0.8)^2=0.64.$$
+Verificación directa sin usar la propiedad: $P(X>5\mid X>3)=q^5/q^3=q^2=0.64$, el mismo resultado, como debía ser.
+\end{ejemplo}
+
+\subsection{Comparación y elección del modelo discreto adecuado}
+
+\begin{center}
+\small
+\begin{tabular}{p{5.2cm}p{6.5cm}}
+\toprule
+\textbf{Pregunta que se formula} & \textbf{Modelo adecuado} \\
+\midrule
+Número de éxitos en $n$ ensayos independientes con $p$ fijo & Binomial \\
+Número de éxitos en una muestra sin reposición de una población finita & Hipergeométrica \\
+Número de ensayos hasta lograr el $k$-ésimo éxito & Pascal (binomial negativa) \\
+Número de ensayos hasta el primer éxito & Geométrica \\
+Número de ocurrencias de un evento en un intervalo continuo de tiempo o espacio, con tasa constante & Poisson \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{observacion}[Aproximaciones útiles entre modelos discretos]
+$$\text{H}(N,K,n)\approx\text{Bi}(n,p) \text{ si } n/N \text{ es pequeño}; \qquad \text{Bi}(n,p)\approx\text{Po}(np) \text{ si } n \text{ es grande y } p \text{ es pequeño}.$$
+Estas dos aproximaciones, ambas demostradas en esta unidad, permiten en la práctica reemplazar cálculos combinatorios complicados (factoriales grandes) por cálculos mucho más simples, con un error controlado.
+\end{observacion}
+
+\newpage
+\section{Variables continuas y distribución Normal}
+
+\subsection{De lo discreto a lo continuo}
+
+Muchas variables de interés —tiempo, longitud, peso, temperatura, concentración— toman, al menos en principio, cualquier valor dentro de un intervalo de números reales. Como vimos en la Sección \ref{sec:continuas}, para este tipo de variables no tiene sentido describir la distribución mediante una función de probabilidad puntual $p(x)=P(X=x)$, ya que dicha probabilidad es idénticamente nula. En su lugar, se describe la distribución mediante una \textbf{función de densidad}.
+
+\begin{definicion}[Variable aleatoria continua y densidad]
+Una v.a. $X$ es \textbf{continua} si existe una función $f:\mathbb{R}\to[0,\infty)$, llamada \textbf{función de densidad de probabilidad}, tal que
+$$F(x)=P(X\le x)=\int_{-\infty}^x f(t)\,dt\qquad\text{para todo }x\in\mathbb{R}.$$
+\end{definicion}
+
+\begin{teorema}[Propiedades de la densidad]
+Sea $X$ continua con densidad $f$. Entonces:
+\begin{enumerate}[label=(\roman*)]
+\item $f(x)\ge0$ para todo $x$.
+\item $\displaystyle\int_{-\infty}^{\infty}f(x)\,dx=1$.
+\item En todo punto $x$ donde $f$ sea continua, $F$ es derivable y $F'(x)=f(x)$ (Teorema Fundamental del Cálculo).
+\item Para $a<b$, $\displaystyle P(a\le X\le b)=\int_a^b f(x)\,dx$: la probabilidad de un intervalo es el área bajo la curva de $f$ entre $a$ y $b$.
+\end{enumerate}
+\end{teorema}
+\begin{proof}
+(i) es parte de la definición. (ii) se obtiene tomando $x\to\infty$ en $F(x)=\int_{-\infty}^x f(t)\,dt$ y usando que $\lim_{x\to\infty}F(x)=1$ (Teorema \ref{thm:propF}). (iii) es el Teorema Fundamental del Cálculo aplicado a $F$ como función área bajo $f$. (iv) se obtiene de $P(a\le X\le b)=F(b)-F(a^-)$ y, al ser $F$ continua (por ser $X$ continua), $F(a^-)=F(a)=\int_{-\infty}^a f$; entonces $P(a\le X\le b)=\int_{-\infty}^bf-\int_{-\infty}^af=\int_a^bf(x)\,dx$.
+\end{proof}
+
+\begin{corolario}
+Si $X$ es continua, $P(X=a)=0$ para todo $a\in\mathbb{R}$; en consecuencia
+$$P(a\le X\le b)=P(a<X\le b)=P(a\le X<b)=P(a<X<b)$$
+para todo $a<b$: no importa si los extremos del intervalo se incluyen o no.
+\end{corolario}
+
+\begin{observacion}[$f(x)$ no es una probabilidad]
+Es un error frecuente pensar que $f(x)$ representa "la probabilidad de $x$". De hecho, $f(x)$ puede tomar valores mayores que $1$ (por ejemplo, la densidad uniforme en $[0,0.5]$ vale $2$ en todo el intervalo). Lo que necesariamente vale $1$ es el \textbf{área total} bajo la curva completa de $f$, no los valores puntuales de $f$. La interpretación correcta es que $f(x)$ mide una \emph{densidad} de probabilidad: la probabilidad "por unidad de longitud" en un entorno de $x$, en el sentido de que $P(x\le X\le x+h)\approx f(x)\,h$ para $h$ pequeño.
+\end{observacion}
+
+Análogamente al caso discreto, la esperanza y la varianza de una v.a. continua se definen mediante integrales (formalizadas con generalidad en la Unidad 4):
+$$E(X)=\int_{-\infty}^{\infty}x\,f(x)\,dx,\qquad V(X)=\int_{-\infty}^{\infty}(x-E(X))^2f(x)\,dx=E(X^2)-[E(X)]^2.$$
+
+\begin{ejemplo}
+Sea $f(x)=2x$ para $0\le x\le1$ (y $f(x)=0$ fuera de ese intervalo). Verifiquemos primero que integra $1$:
+$$\int_0^1 2x\,dx=\big[x^2\big]_0^1=1.\ \checkmark$$
+Entonces
+$$P(0.3\le X\le0.6)=\int_{0.3}^{0.6}2x\,dx=\big[x^2\big]_{0.3}^{0.6}=0.36-0.09=0.27.$$
+La esperanza es $E(X)=\int_0^1 x\cdot2x\,dx=\int_0^1 2x^2\,dx=\dfrac{2}{3}$, y $E(X^2)=\int_0^1x^2\cdot2x\,dx=\dfrac{1}{2}$, de donde $V(X)=\dfrac12-\left(\dfrac23\right)^2=\dfrac12-\dfrac49=\dfrac{1}{18}$.
+\end{ejemplo}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  xmin=0, xmax=1.1, ymin=0, ymax=2.2,
+  xlabel={$x$}, ylabel={$f(x)$},
+  width=9cm, height=5cm,
+  axis lines=middle,
+  domain=0:1, samples=60,
+]
+\addplot[thick,blue] {2*x};
+\addplot[blue!20, domain=0.3:0.6] {2*x} \closedcycle;
+\addplot[dashed] coordinates {(0.3,0)(0.3,0.6)};
+\addplot[dashed] coordinates {(0.6,0)(0.6,1.2)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+El área sombreada entre $x=0.3$ y $x=0.6$ representa $P(0.3\le X\le0.6)=0.27$: nótese que, aunque $f$ toma valores mayores que $1$ en ese intervalo (llega a $1.2$), el área bajo la curva es una cantidad menor que $1$, como corresponde a una probabilidad.
+
+\subsection{La distribución Normal}
+
+La distribución Normal (o gaussiana) es, sin dudas, la más importante de toda la Estadística, por varios motivos:
+\begin{itemize}
+\item Describe con buena aproximación una enorme cantidad de fenómenos naturales y sociales: estaturas, pesos, errores de medición, calificaciones, etc.
+\item Es el límite, bajo condiciones muy generales, de sumas (o promedios) de un gran número de variables aleatorias independientes, sea cual sea su distribución individual: este es el contenido del célebre \textbf{Teorema Central del Límite}, que se estudiará en la Unidad 3 y que constituye una de las razones profundas de su omnipresencia.
+\item Es la base de gran parte de la inferencia estadística clásica: intervalos de confianza, pruebas de hipótesis, regresión lineal, etc. (Unidades 5 a 8).
+\end{itemize}
+
+\begin{definicion}[Distribución Normal]
+$X$ tiene \textbf{distribución Normal} de parámetros $\mu\in\mathbb{R}$ y $\sigma^2>0$, y se escribe $X\sim N(\mu,\sigma^2)$, si su densidad es
+$$f(x)=\frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right),\qquad x\in\mathbb{R}.$$
+\end{definicion}
+
+Antes de estudiar sus propiedades probabilísticas, es imprescindible verificar que $f$ efectivamente define una densidad, es decir, que su integral sobre toda la recta vale $1$. Esta demostración, uno de los cálculos más elegantes del análisis clásico, utiliza un truco que consiste en pasar a dos dimensiones y usar coordenadas polares.
+
+\subsection{Demostración de que la densidad normal integra 1}
+
+\begin{teorema}[Integral gaussiana]\label{thm:integral_gaussiana}
+$$\int_{-\infty}^{\infty}e^{-u^2/2}\,du=\sqrt{2\pi}.$$
+\end{teorema}
+
+\begin{proof}
+Llamemos $I=\displaystyle\int_{-\infty}^{\infty}e^{-u^2/2}\,du$. Como el integrando es positivo, $I>0$ (y la integral converge, ya que $e^{-u^2/2}$ decae más rápido que cualquier potencia de $u$). La idea central de la demostración es considerar $I^2$ como una integral doble sobre el plano, escribiendo el producto de dos integrales unidimensionales (una en la variable $x$, otra en la variable $y$) como una única integral doble:
+$$I^2=\left(\int_{-\infty}^{\infty}e^{-x^2/2}\,dx\right)\left(\int_{-\infty}^{\infty}e^{-y^2/2}\,dy\right)=\int_{-\infty}^{\infty}\int_{-\infty}^{\infty}e^{-(x^2+y^2)/2}\,dx\,dy,$$
+donde en el último paso usamos que $e^{-x^2/2}e^{-y^2/2}=e^{-(x^2+y^2)/2}$ y el teorema de Fubini (la integral doble de una función no negativa siempre puede calcularse como integral iterada).
+
+Pasamos ahora a \textbf{coordenadas polares}: $x=r\cos\theta$, $y=r\sin\theta$, con $r\ge0$ y $\theta\in[0,2\pi)$. El jacobiano de este cambio de variables es $r$ (es decir, $dx\,dy=r\,dr\,d\theta$), y además $x^2+y^2=r^2$. La integral doble sobre todo el plano se transforma en una integral sobre $r\in[0,\infty)$, $\theta\in[0,2\pi)$:
+$$I^2=\int_0^{2\pi}\int_0^\infty e^{-r^2/2}\,r\,dr\,d\theta=\left(\int_0^{2\pi}d\theta\right)\left(\int_0^\infty r\,e^{-r^2/2}\,dr\right)=2\pi\int_0^\infty r\,e^{-r^2/2}\,dr.$$
+La ventaja decisiva de haber pasado a polares es que ahora la integral en $r$ se resuelve con una simple sustitución: sea $v=r^2/2$, de donde $dv=r\,dr$. Cuando $r=0$, $v=0$; cuando $r\to\infty$, $v\to\infty$. Entonces
+$$\int_0^\infty r\,e^{-r^2/2}\,dr=\int_0^\infty e^{-v}\,dv=\big[-e^{-v}\big]_0^\infty=0-(-1)=1.$$
+Por lo tanto $I^2=2\pi\cdot1=2\pi$, y como $I>0$, se concluye
+$$I=\sqrt{2\pi}.$$
+\end{proof}
+
+\begin{corolario}[La densidad normal estándar integra 1]
+$$\int_{-\infty}^{\infty}\frac{1}{\sqrt{2\pi}}e^{-z^2/2}\,dz=1.$$
+\end{corolario}
+\begin{proof}
+Es consecuencia inmediata de dividir ambos miembros del Teorema \ref{thm:integral_gaussiana} por $\sqrt{2\pi}$.
+\end{proof}
+
+\begin{corolario}[La densidad $N(\mu,\sigma^2)$ integra 1]
+Para todo $\mu\in\mathbb{R}$ y $\sigma>0$,
+$$\int_{-\infty}^{\infty}\frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)dx=1.$$
+\end{corolario}
+\begin{proof}
+Realizamos la sustitución $z=\dfrac{x-\mu}{\sigma}$, de donde $x=\mu+\sigma z$ y $dx=\sigma\,dz$. Cuando $x$ recorre $\mathbb{R}$, también $z$ recorre $\mathbb{R}$ (ya que $\sigma>0$). Entonces
+$$\int_{-\infty}^{\infty}\frac{1}{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/(2\sigma^2)}\,dx=\int_{-\infty}^{\infty}\frac{1}{\sigma\sqrt{2\pi}}e^{-z^2/2}\,\sigma\,dz=\int_{-\infty}^{\infty}\frac{1}{\sqrt{2\pi}}e^{-z^2/2}\,dz=1,$$
+por el corolario anterior.
+\end{proof}
+
+Esta técnica de pasar a coordenadas polares para resolver la llamada \emph{integral gaussiana} es uno de los cálculos más célebres de la matemática, atribuido usualmente a Laplace y Gauss (aunque también se conoce como la "integral de Euler-Poisson"), y reaparecerá cuando calculemos $\Gamma(1/2)=\sqrt{\pi}$ en la Sección \ref{sec:gamma}.
+
+\subsection{Propiedades geométricas y momentos de la Normal}
+
+\begin{propiedad}[Forma de la campana]
+La densidad normal $f(x)=\dfrac{1}{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/(2\sigma^2)}$ es:
+\begin{itemize}
+\item \textbf{Simétrica} respecto de $x=\mu$: $f(\mu+t)=f(\mu-t)$ para todo $t$, ya que la exponencial depende de $x$ únicamente a través de $(x-\mu)^2$.
+\item Máxima en $x=\mu$, donde $f(\mu)=\dfrac{1}{\sigma\sqrt{2\pi}}$ (el exponente se anula ahí, siendo su único máximo).
+\item Tiene puntos de inflexión exactamente en $x=\mu\pm\sigma$ (donde $f''(x)=0$), lo que puede verificarse derivando dos veces.
+\end{itemize}
+El parámetro $\mu$ controla la posición del centro de la campana; el parámetro $\sigma$ controla su dispersión: valores mayores de $\sigma$ producen una curva más "achatada" y ancha (mantiniendo siempre área total $1$).
+\end{propiedad}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  xmin=-6, xmax=8, ymin=0, ymax=0.85,
+  xlabel={$x$}, ylabel={$f(x)$},
+  width=10cm, height=5.5cm,
+  domain=-6:8, samples=100,
+  legend pos=north east, legend style={font=\tiny},
+]
+\addplot[thick,blue] {1/(1*sqrt(2*pi))*exp(-(x-0)^2/(2*1^2))};
+\addplot[thick,red] {1/(1*sqrt(2*pi))*exp(-(x-3)^2/(2*1^2))};
+\addplot[thick,green!60!black] {1/(2*sqrt(2*pi))*exp(-(x-0)^2/(2*2^2))};
+\legend{{$N(0,1)$}, {$N(3,1)$}, {$N(0,4)$}}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\begin{teorema}[Esperanza y varianza de la normal estándar]\label{thm:momentos_estandar}
+Sea $Z\sim N(0,1)$, con densidad $\varphi(z)=\dfrac{1}{\sqrt{2\pi}}e^{-z^2/2}$. Entonces $E(Z)=0$ y $V(Z)=1$.
+\end{teorema}
+\begin{proof}
+\textbf{$E(Z)=0$.} El integrando $z\,\varphi(z)=\dfrac{z}{\sqrt{2\pi}}e^{-z^2/2}$ es una función \textbf{impar} de $z$ (al cambiar $z$ por $-z$, el integrando cambia de signo), y la integral converge absolutamente (ya que $|z|e^{-z^2/2}\to0$ rápidamente). Por lo tanto, las contribuciones de $z>0$ y $z<0$ se cancelan exactamente:
+$$E(Z)=\int_{-\infty}^{\infty}z\,\varphi(z)\,dz=0.$$
+
+\textbf{$V(Z)=E(Z^2)=1$.} Observamos que $\varphi'(z)=-z\varphi(z)$ (derivando directamente la exponencial). Integramos por partes $E(Z^2)=\int_{-\infty}^\infty z^2\varphi(z)\,dz=\int_{-\infty}^\infty z\cdot\big(z\varphi(z)\big)\,dz$ tomando $u=z$, $dv=z\varphi(z)\,dz=-\varphi'(z)\,dz$, de donde $du=dz$, $v=-\varphi(z)$:
+$$E(Z^2)=\big[-z\varphi(z)\big]_{-\infty}^{\infty}+\int_{-\infty}^{\infty}\varphi(z)\,dz.$$
+El término de borde se anula: $z\varphi(z)\to0$ cuando $z\to\pm\infty$ (la exponencial domina a cualquier potencia). La integral restante es exactamente $1$, por ser $\varphi$ una densidad. Por lo tanto $E(Z^2)=1$, y como $E(Z)=0$, resulta $V(Z)=E(Z^2)-[E(Z)]^2=1-0=1$.
+\end{proof}
+
+\begin{teorema}[Esperanza y varianza de $N(\mu,\sigma^2)$]
+Si $X\sim N(\mu,\sigma^2)$, entonces $E(X)=\mu$ y $V(X)=\sigma^2$.
+\end{teorema}
+\begin{proof}
+Usando la sustitución $x=\mu+\sigma z$ empleada anteriormente, se demuestra en la Sección \ref{sec:transformaciones} (Ejemplo de transformación lineal) que si $Z\sim N(0,1)$ entonces $X:=\mu+\sigma Z\sim N(\mu,\sigma^2)$, y recíprocamente $Z=(X-\mu)/\sigma$. Por las propiedades de linealidad de la esperanza y la varianza ante transformaciones afines (que se demuestran en la Unidad 4, pero que usamos aquí como herramienta ya conocida del álgebra de esperanzas: $E(a+bY)=a+bE(Y)$, $V(a+bY)=b^2V(Y)$),
+$$E(X)=E(\mu+\sigma Z)=\mu+\sigma E(Z)=\mu+\sigma\cdot0=\mu,$$
+$$V(X)=V(\mu+\sigma Z)=\sigma^2V(Z)=\sigma^2\cdot1=\sigma^2,$$
+usando el Teorema \ref{thm:momentos_estandar}.
+\end{proof}
+
+\begin{observacion}[Regla empírica]
+Para $X\sim N(\mu,\sigma^2)$, es útil recordar (y se deduce de las tablas de $\Phi$, más adelante) que
+$$P(\mu-\sigma<X<\mu+\sigma)\approx0.68,\qquad P(\mu-2\sigma<X<\mu+2\sigma)\approx0.95,\qquad P(\mu-3\sigma<X<\mu+3\sigma)\approx0.997.$$
+Esta "regla 68-95-99.7" es una referencia rápida muy usada para juzgar si una observación es "típica" o "atípica" bajo un modelo normal.
+\end{observacion}
+
+\subsection{Estandarización y uso de tablas}
+
+Un problema práctico inmediato es que la primitiva de $f$ no puede expresarse mediante funciones elementales: $F(x)=\int_{-\infty}^x f(t)\,dt$ no tiene una fórmula cerrada. Por eso, en la práctica $F$ se calcula numéricamente y se tabula, pero sería inviable tabular una función distinta para cada combinación de $(\mu,\sigma)$. La solución es el siguiente resultado, que reduce el cálculo de probabilidades de \emph{cualquier} Normal al de una única Normal de referencia.
+
+\begin{definicion}[Normal estándar]
+La v.a. $Z\sim N(0,1)$ se llama \textbf{Normal estándar}. Su densidad se denota $\varphi(z)=\dfrac{1}{\sqrt{2\pi}}e^{-z^2/2}$ y su función de distribución se denota $\Phi(z)=P(Z\le z)$, la cual se encuentra tabulada.
+\end{definicion}
+
+\begin{teorema}[Estandarización]\label{thm:estandarizacion}
+Si $X\sim N(\mu,\sigma^2)$, entonces
+$$Z=\frac{X-\mu}{\sigma}\sim N(0,1).$$
+\end{teorema}
+
+Este resultado —que demostraremos formalmente en la Sección \ref{sec:transformaciones} como aplicación del método del jacobiano— permite escribir, para $X\sim N(\mu,\sigma^2)$ y cualquier $a<b$,
+$$P(a<X<b)=P\left(\frac{a-\mu}{\sigma}<Z<\frac{b-\mu}{\sigma}\right)=\Phi\left(\frac{b-\mu}{\sigma}\right)-\Phi\left(\frac{a-\mu}{\sigma}\right),$$
+reduciendo cualquier cálculo de probabilidades normales a evaluaciones de la función tabulada $\Phi$.
+
+\begin{propiedad}[Propiedades útiles de $\Phi$]
+\begin{itemize}
+\item $\Phi(0)=0.5$ (por simetría de $\varphi$ respecto de $0$, la mitad del área está a la izquierda de $0$).
+\item $\Phi(-z)=1-\Phi(z)$ para todo $z$ (simetría de la densidad respecto de $0$: el área a la izquierda de $-z$ es igual al área a la derecha de $z$).
+\item $P(Z>z)=1-\Phi(z)$.
+\item $P(a<Z<b)=\Phi(b)-\Phi(a)$.
+\end{itemize}
+\end{propiedad}
+\begin{proof}[Demostración de $\Phi(-z)=1-\Phi(z)$]
+Por el cambio de variable $u=-t$ (con $du=-dt$) y usando que $\varphi$ es una función par ($\varphi(-t)=\varphi(t)$):
+$$\Phi(-z)=\int_{-\infty}^{-z}\varphi(t)\,dt=\int_{\infty}^{z}\varphi(-u)(-du)=\int_z^\infty\varphi(u)\,du=1-\int_{-\infty}^z\varphi(u)\,du=1-\Phi(z).$$
+\end{proof}
+
+\begin{ejemplo}
+Usando la tabla estándar: $\Phi(1.96)\approx0.975$, luego $P(Z<1.96)=0.975$ y $P(Z>1.96)=0.025$. Por simetría, $\Phi(-1.96)=1-0.975=0.025$. Este valor $1.96$ es célebre porque deja exactamente $2.5\%$ de área en cada cola, un umbral que reaparecerá constantemente en la Unidad 6 (intervalos de confianza al $95\%$).
+\end{ejemplo}
+
+\subsection{Ejemplos resueltos}
+
+\begin{ejemplo}[Cálculo directo de probabilidades]
+El peso de los paquetes producidos por una máquina se distribuye $N(\mu=500\text{ g},\sigma=15\text{ g})$.
+\textbf{(a)} ¿Qué proporción de paquetes pesa menos de $480$ g?
+\textbf{(b)} ¿Qué proporción pesa entre $490$ y $520$ g?
+
+\textbf{(a)} Estandarizamos: $Z=\dfrac{480-500}{15}=-1.33$.
+$$P(X<480)=P(Z<-1.33)=\Phi(-1.33)=1-\Phi(1.33)\approx1-0.9082=0.0918.$$
+
+\textbf{(b)} $Z_1=\dfrac{490-500}{15}=-0.67$, $Z_2=\dfrac{520-500}{15}=1.33$.
+$$P(490<X<520)=\Phi(1.33)-\Phi(-0.67)=0.9082-(1-0.7486)=0.9082-0.2514=0.6568.$$
+\end{ejemplo}
+
+\begin{ejemplo}[Problema inverso: percentiles]
+Con los mismos datos ($\mu=500$, $\sigma=15$), ¿cuál es el peso $x_0$ tal que solo el $10\%$ de los paquetes pesa más que $x_0$?
+
+Buscamos $x_0$ tal que $P(X>x_0)=0.10$, es decir $\Phi(z_0)=0.90$, donde $z_0=(x_0-\mu)/\sigma$. De la tabla, el valor de $z$ que deja $0.90$ de área a la izquierda es aproximadamente $z_0\approx1.28$. Deshaciendo la estandarización:
+$$x_0=\mu+z_0\sigma=500+1.28\times15=519.2\text{ g}.$$
+Este tipo de cálculo "inverso" (hallar el valor de $X$ que corresponde a una probabilidad dada) es la base del concepto de \textbf{percentil} o \textbf{cuantil}, fundamental en la Unidad 6.
+\end{ejemplo}
+
+\newpage
+\section{Exponencial, Gamma y funciones de una variable aleatoria}\label{sec:exponencial}
+
+\subsection{Distribución Exponencial}
+
+Retomemos el proceso de Poisson de tasa $\lambda$ estudiado en la sección anterior, que cuenta el número de eventos en un intervalo. Ahora cambiamos la pregunta: en vez de contar eventos en un intervalo de longitud fija, preguntamos \textbf{cuánto tiempo} transcurre hasta que ocurre el próximo evento.
+
+\begin{definicion}[Distribución Exponencial]
+$X$ tiene \textbf{distribución Exponencial} de parámetro $\lambda>0$, y se escribe $X\sim\text{Exp}(\lambda)$, si su densidad es
+$$f(x)=\lambda e^{-\lambda x},\qquad x\ge0,$$
+y $f(x)=0$ para $x<0$.
+\end{definicion}
+
+Integrando, su función de distribución es
+$$F(x)=\int_0^x\lambda e^{-\lambda t}\,dt=\big[-e^{-\lambda t}\big]_0^x=1-e^{-\lambda x},\qquad x\ge0,$$
+y $F(x)=0$ para $x<0$.
+
+\begin{teorema}[Relación con el proceso de Poisson]
+Sea $T$ el tiempo transcurrido hasta el primer evento de un proceso de Poisson de tasa $\lambda$. Entonces $T\sim\text{Exp}(\lambda)$.
+\end{teorema}
+\begin{proof}
+El evento $\{T>t\}$ (el primer evento ocurre después del instante $t$) equivale exactamente a que \textbf{no haya ocurrido ningún evento} en el intervalo $[0,t]$. Como el número de eventos en $[0,t]$ sigue $\text{Po}(\lambda t)$,
+$$P(T>t)=P\big(\text{Po}(\lambda t)=0\big)=\frac{e^{-\lambda t}(\lambda t)^0}{0!}=e^{-\lambda t}.$$
+Por lo tanto,
+$$F_T(t)=P(T\le t)=1-P(T>t)=1-e^{-\lambda t},\qquad t\ge0,$$
+que es exactamente la f.d.a. de $\text{Exp}(\lambda)$.
+\end{proof}
+
+Esta demostración muestra que el \textbf{tiempo entre eventos consecutivos} de un proceso de Poisson de tasa $\lambda$ sigue una distribución exponencial de parámetro $\lambda$: es la contrapartida continua natural de la relación entre la Binomial y la Geométrica (contar éxitos vs. contar ensayos hasta un éxito).
+
+\begin{teorema}[Esperanza y varianza de la Exponencial]
+Si $X\sim\text{Exp}(\lambda)$, entonces $E(X)=1/\lambda$ y $V(X)=1/\lambda^2$.
+\end{teorema}
+\begin{proof}
+Calculamos $E(X)$ por integración por partes, con $u=x$, $dv=\lambda e^{-\lambda x}dx$, de donde $du=dx$, $v=-e^{-\lambda x}$:
+$$E(X)=\int_0^\infty x\lambda e^{-\lambda x}\,dx=\big[-xe^{-\lambda x}\big]_0^\infty+\int_0^\infty e^{-\lambda x}\,dx=0+\left[-\frac{1}{\lambda}e^{-\lambda x}\right]_0^\infty=0+\frac{1}{\lambda}=\frac1\lambda.$$
+(El término de borde se anula pues $xe^{-\lambda x}\to0$ cuando $x\to\infty$, y vale $0$ en $x=0$.) Para $E(X^2)$, integramos por partes dos veces (o usamos directamente la fórmula general de momentos de la Gamma que veremos en la Sección \ref{sec:gamma}, ya que $\text{Exp}(\lambda)=\text{Gamma}(1,\lambda)$):
+$$E(X^2)=\int_0^\infty x^2\lambda e^{-\lambda x}\,dx=\frac{2}{\lambda^2}.$$
+Entonces $V(X)=E(X^2)-[E(X)]^2=\dfrac{2}{\lambda^2}-\dfrac{1}{\lambda^2}=\dfrac{1}{\lambda^2}$.
+\end{proof}
+
+\subsection{Falta de memoria de la Exponencial}
+
+\begin{teorema}[Falta de memoria, versión continua]
+Si $X\sim\text{Exp}(\lambda)$, entonces para todo $s,t\ge0$,
+$$P(X>s+t\mid X>s)=P(X>t).$$
+\end{teorema}
+\begin{proof}
+Como $P(X>x)=1-F(x)=e^{-\lambda x}$ para $x\ge0$, y $\{X>s+t\}\subseteq\{X>s\}$ (pues $s+t\ge s$),
+$$P(X>s+t\mid X>s)=\frac{P(X>s+t)}{P(X>s)}=\frac{e^{-\lambda(s+t)}}{e^{-\lambda s}}=e^{-\lambda t}=P(X>t).$$
+\end{proof}
+
+\begin{observacion}[Interpretación y unicidad]
+Si un componente "no envejece" en el sentido de que la distribución de su vida útil \emph{restante} no depende de cuánto tiempo lleva funcionando, entonces su tiempo de vida es necesariamente exponencial: se puede demostrar (aunque no lo haremos aquí) que la Exponencial es la \textbf{única} distribución continua en $[0,\infty)$ con esta propiedad, del mismo modo que la Geométrica es la única distribución discreta análoga (Teorema \ref{thm:falta_memoria_geom}). Esta es una de las razones por las que la exponencial se usa tanto para modelar tiempos de espera "sin desgaste" (llamadas telefónicas, decaimiento radiactivo), aunque \emph{no} sea apropiada para modelar fenómenos con desgaste o envejecimiento (para eso se usan, por ejemplo, distribuciones Weibull, fuera del alcance de este curso).
+\end{observacion}
+
+\begin{ejemplo}
+El tiempo de vida de un componente electrónico sigue $\text{Exp}(\lambda)$ con vida media $E(X)=1000$ horas. \textbf{(a)} Hallar $P(X>1500)$. \textbf{(b)} Si el componente ya funcionó $1000$ horas sin fallar, ¿cuál es la probabilidad de que dure al menos $1500$ horas más?
+
+Como $E(X)=1/\lambda=1000$, resulta $\lambda=0.001$.
+
+\textbf{(a)} $P(X>1500)=e^{-0.001\times1500}=e^{-1.5}\approx0.2231$.
+
+\textbf{(b)} Por falta de memoria, $P(X>1000+1500\mid X>1000)=P(X>1500)\approx0.2231$: el hecho de que el componente ya haya funcionado $1000$ horas \emph{no cambia en nada} la probabilidad de que dure $1500$ horas adicionales.
+\end{ejemplo}
+
+\subsection{Función Gamma}\label{sec:gamma}
+
+Para generalizar la Exponencial a sumas de varios tiempos de espera, necesitamos primero introducir una función especial clásica del análisis matemático.
+
+\begin{definicion}[Función Gamma]
+Para $\alpha>0$, se define
+$$\Gamma(\alpha)=\int_0^\infty x^{\alpha-1}e^{-x}\,dx.$$
+\end{definicion}
+
+Esta integral impropia converge para todo $\alpha>0$ (cerca de $0$ la posible singularidad de $x^{\alpha-1}$ es integrable cuando $\alpha>0$, y en el infinito la exponencial domina a cualquier potencia).
+
+\begin{propiedad}[Recurrencia]\label{prop:gamma_recurrencia}
+Para $\alpha>1$, $\Gamma(\alpha)=(\alpha-1)\Gamma(\alpha-1)$.
+\end{propiedad}
+\begin{proof}
+Integramos por partes con $u=x^{\alpha-1}$, $dv=e^{-x}dx$, de donde $du=(\alpha-1)x^{\alpha-2}dx$, $v=-e^{-x}$:
+$$\Gamma(\alpha)=\big[-x^{\alpha-1}e^{-x}\big]_0^\infty+(\alpha-1)\int_0^\infty x^{\alpha-2}e^{-x}\,dx=0+(\alpha-1)\Gamma(\alpha-1),$$
+donde el término de borde se anula tanto en $x=0$ (pues $\alpha-1>0$) como en $x\to\infty$ (la exponencial domina).
+\end{proof}
+
+\begin{corolario}[Valores en los naturales]
+Para $n\in\mathbb{N}$, $\Gamma(n)=(n-1)!$.
+\end{corolario}
+\begin{proof}
+Primero, $\Gamma(1)=\int_0^\infty e^{-x}\,dx=1=0!$. Aplicando reiteradamente la Propiedad \ref{prop:gamma_recurrencia} (inducción):
+$$\Gamma(n)=(n-1)\Gamma(n-1)=(n-1)(n-2)\Gamma(n-2)=\cdots=(n-1)(n-2)\cdots1\cdot\Gamma(1)=(n-1)!.$$
+\end{proof}
+
+\begin{propiedad}[$\Gamma(1/2)=\sqrt{\pi}$]
+$$\Gamma\left(\frac12\right)=\sqrt{\pi}.$$
+\end{propiedad}
+\begin{proof}
+Por definición, $\Gamma(1/2)=\displaystyle\int_0^\infty x^{-1/2}e^{-x}\,dx$. Sustituimos $x=u^2$ (con $u\ge0$), de donde $dx=2u\,du$ y $x^{-1/2}=1/u$:
+$$\Gamma\left(\frac12\right)=\int_0^\infty \frac{1}{u}e^{-u^2}\,2u\,du=2\int_0^\infty e^{-u^2}\,du.$$
+Por la simetría de $e^{-u^2}$ (función par), $\displaystyle\int_0^\infty e^{-u^2}\,du=\frac12\int_{-\infty}^\infty e^{-u^2}\,du$. Usando el Teorema \ref{thm:integral_gaussiana} (integral gaussiana) con la sustitución $w=u\sqrt2$ (de donde $dw=\sqrt2\,du$):
+$$\int_{-\infty}^{\infty}e^{-u^2}\,du=\int_{-\infty}^{\infty}e^{-w^2/2}\,\frac{dw}{\sqrt2}=\frac{1}{\sqrt2}\sqrt{2\pi}=\sqrt{\pi}.$$
+Por lo tanto $\displaystyle\int_0^\infty e^{-u^2}\,du=\dfrac{\sqrt\pi}{2}$, y
+$$\Gamma\left(\frac12\right)=2\cdot\frac{\sqrt\pi}{2}=\sqrt\pi.$$
+\end{proof}
+
+Esta última demostración ilustra cómo la integral gaussiana (Teorema \ref{thm:integral_gaussiana}), que usamos para verificar que la densidad normal integra $1$, reaparece de manera natural en el cálculo de $\Gamma(1/2)$: ambos resultados están profundamente conectados, como veremos a continuación con la distribución chi-cuadrado.
+
+\subsection{Distribución Gamma}
+
+\begin{definicion}[Distribución Gamma]
+$X$ tiene \textbf{distribución Gamma} de parámetros $\alpha>0$ (\textbf{forma}) y $\lambda>0$ (\textbf{escala} o \textbf{tasa}), y se escribe $X\sim\text{Gamma}(\alpha,\lambda)$, si su densidad es
+$$f(x)=\frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x},\qquad x>0.$$
+\end{definicion}
+
+\begin{propiedad}[La densidad Gamma integra 1]
+$\displaystyle\int_0^\infty\frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}\,dx=1$.
+\end{propiedad}
+\begin{proof}
+Con la sustitución $u=\lambda x$ (de donde $x=u/\lambda$, $dx=du/\lambda$):
+$$\int_0^\infty\frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}\,dx=\frac{\lambda^\alpha}{\Gamma(\alpha)}\int_0^\infty\left(\frac{u}{\lambda}\right)^{\alpha-1}e^{-u}\frac{du}{\lambda}=\frac{1}{\Gamma(\alpha)}\int_0^\infty u^{\alpha-1}e^{-u}\,du=\frac{\Gamma(\alpha)}{\Gamma(\alpha)}=1.$$
+\end{proof}
+
+\begin{teorema}[Interpretación: suma de tiempos exponenciales]
+Si $\alpha=k\in\mathbb{N}$, y $T_1,T_2,\dots,T_k$ son los tiempos entre eventos consecutivos de un proceso de Poisson de tasa $\lambda$ (independientes, cada uno $\text{Exp}(\lambda)$), entonces el tiempo transcurrido hasta el $k$-ésimo evento,
+$$X=T_1+T_2+\cdots+T_k,$$
+sigue una distribución $\text{Gamma}(k,\lambda)$.
+\end{teorema}
+
+Este resultado (cuya demostración rigurosa requiere técnicas de convolución de densidades, que se estudian en la Unidad 3) es completamente análogo, en el mundo continuo, a la representación de la distribución de Pascal como suma de $k$ tiempos geométricos independientes que vimos en la Sección 2: así como \emph{Pascal = suma de Geométricas}, tenemos \emph{Gamma (con $\alpha$ entero) = suma de Exponenciales}. Por esta razón, la distribución $\text{Gamma}(k,\lambda)$ con $k$ entero también se conoce como distribución de \textbf{Erlang}.
+
+\begin{teorema}[Esperanza y varianza de la Gamma]
+Si $X\sim\text{Gamma}(\alpha,\lambda)$, entonces
+$$E(X)=\frac{\alpha}{\lambda},\qquad V(X)=\frac{\alpha}{\lambda^2}.$$
+\end{teorema}
+\begin{proof}
+$$E(X)=\int_0^\infty x\cdot\frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}\,dx=\frac{\lambda^\alpha}{\Gamma(\alpha)}\int_0^\infty x^{\alpha}e^{-\lambda x}\,dx.$$
+Con la sustitución $u=\lambda x$:
+$$\int_0^\infty x^{\alpha}e^{-\lambda x}\,dx=\int_0^\infty\left(\frac{u}{\lambda}\right)^{\alpha}e^{-u}\frac{du}{\lambda}=\frac{1}{\lambda^{\alpha+1}}\int_0^\infty u^{\alpha}e^{-u}\,du=\frac{\Gamma(\alpha+1)}{\lambda^{\alpha+1}}.$$
+Usando la recurrencia $\Gamma(\alpha+1)=\alpha\Gamma(\alpha)$ (Propiedad \ref{prop:gamma_recurrencia} con $\alpha+1$ en el rol de "$\alpha$"),
+$$E(X)=\frac{\lambda^\alpha}{\Gamma(\alpha)}\cdot\frac{\alpha\Gamma(\alpha)}{\lambda^{\alpha+1}}=\frac{\alpha}{\lambda}.$$
+Un cálculo análogo, usando $\Gamma(\alpha+2)=(\alpha+1)\alpha\Gamma(\alpha)$, da $E(X^2)=\dfrac{\alpha(\alpha+1)}{\lambda^2}$, y por lo tanto
+$$V(X)=E(X^2)-[E(X)]^2=\frac{\alpha(\alpha+1)}{\lambda^2}-\frac{\alpha^2}{\lambda^2}=\frac{\alpha}{\lambda^2}.$$
+\end{proof}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  xmin=0, xmax=12, ymin=0, ymax=0.6,
+  xlabel={$x$}, ylabel={$f(x)$},
+  width=10cm, height=5.5cm,
+  domain=0.01:12, samples=100,
+  legend pos=north east, legend style={font=\tiny},
+]
+\addplot[thick,blue] {1*exp(-1*x)};
+\addplot[thick,red] {1^2/1 * x * exp(-1*x)};
+\addplot[thick,green!60!black] {1^3/2 * x^2 * exp(-1*x)};
+\legend{$\alpha=1$ (Exp), $\alpha=2$, $\alpha=3$}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+Con $\lambda=1$ fijo, a medida que $\alpha$ aumenta, la densidad se desplaza hacia la derecha (aumenta $E(X)=\alpha/\lambda$) y se vuelve progresivamente más simétrica (en el límite, apropiadamente reescalada, se aproxima a una Normal, aunque no desarrollaremos ese resultado en este curso).
+
+\subsection{Casos particulares: Exponencial y Chi-cuadrado}
+
+\begin{observacion}[La Exponencial es un caso particular de la Gamma]
+Cuando $\alpha=1$, $\Gamma(1)=0!=1$, y la densidad Gamma se reduce a
+$$f(x)=\frac{\lambda^1}{\Gamma(1)}x^{0}e^{-\lambda x}=\lambda e^{-\lambda x},\qquad x>0,$$
+que es exactamente la densidad Exponencial: $\text{Gamma}(1,\lambda)=\text{Exp}(\lambda)$. Es una buena verificación de consistencia comprobar que las fórmulas de esperanza y varianza también coinciden: con $\alpha=1$, $E(X)=1/\lambda$ y $V(X)=1/\lambda^2$, tal como habíamos obtenido directamente para la Exponencial.
+\end{observacion}
+
+Otro caso particular importante —que anticipa contenidos que se retomarán en unidades posteriores, especialmente al estudiar estimación de parámetros y pruebas de hipótesis— es la distribución \textbf{chi-cuadrado}.
+
+\begin{definicion}[Distribución chi-cuadrado con un grado de libertad]
+Se define la distribución \textbf{chi-cuadrado con $1$ grado de libertad}, denotada $\chi^2_1$, como el caso particular
+$$\chi^2_1:=\text{Gamma}\left(\alpha=\frac12,\ \lambda=\frac12\right).$$
+\end{definicion}
+
+El siguiente resultado, que retomaremos formalmente en la Sección \ref{sec:transformaciones} como ejemplo de cambio de variable, justifica esta definición mostrando que $\chi^2_1$ surge naturalmente como el cuadrado de una Normal estándar.
+
+\begin{teorema}
+Si $Z\sim N(0,1)$, entonces $Y=Z^2\sim\chi^2_1$.
+\end{teorema}
+\begin{proof}
+Se demuestra en el Ejemplo \ref{ej:chi_cuadrado} de la Sección \ref{sec:transformaciones}, aplicando el método de la función de distribución.
+\end{proof}
+
+\begin{observacion}[Generalización]
+Más generalmente, se define la distribución chi-cuadrado con $n$ grados de libertad como $\chi^2_n:=\text{Gamma}(\alpha=n/2,\lambda=1/2)$, y puede demostrarse (usando técnicas de convolución de la Unidad 3, análogas a las que relacionan Gamma con sumas de exponenciales) que si $Z_1,\dots,Z_n$ son variables $N(0,1)$ independientes, entonces $Z_1^2+\cdots+Z_n^2\sim\chi^2_n$. Esta distribución es central en la Unidad 6 (estimación de la varianza) y en la Unidad 7 (pruebas de hipótesis y bondad de ajuste), donde reaparecerá con mucha frecuencia.
+\end{observacion}
+
+\begin{ejemplo}
+A un taller llegan pedidos de reparación según un proceso de Poisson con tasa $\lambda=2$ por día. ¿Cuál es el tiempo esperado hasta que lleguen $5$ pedidos, y cuál es la varianza de ese tiempo?
+
+El tiempo $X$ hasta el $5$-ésimo pedido es la suma de $5$ tiempos exponenciales independientes de parámetro $\lambda=2$, por lo tanto $X\sim\text{Gamma}(\alpha=5,\lambda=2)$:
+$$E(X)=\frac{\alpha}{\lambda}=\frac52=2.5\text{ días},\qquad V(X)=\frac{\alpha}{\lambda^2}=\frac54=1.25\text{ días}^2.$$
+\end{ejemplo}
+
+\subsection{Función de una variable aleatoria}\label{sec:transformaciones}
+
+Cerramos la unidad con un problema de naturaleza distinta a los anteriores: dada una variable aleatoria $X$ con distribución conocida, y una función $Y=g(X)$, ¿cuál es la distribución de $Y$? Este problema es de gran importancia práctica (por ejemplo, si $X$ es una temperatura en grados Celsius y $Y=1.8X+32$ es la misma temperatura en Fahrenheit, ¿qué distribución tiene $Y$?) y también teórica, ya que es la herramienta que permite, por ejemplo, demostrar formalmente el Teorema de estandarización (Teorema \ref{thm:estandarizacion}) y construir nuevas distribuciones a partir de otras conocidas (como acabamos de ver con la chi-cuadrado).
+
+Presentamos dos métodos: el \textbf{método de la función de distribución}, general y siempre aplicable, y el \textbf{método del jacobiano}, más rápido cuando $g$ es monótona y derivable.
+
+\subsubsection{Método de la función de distribución}
+
+\begin{propiedad}[Procedimiento general]
+Para hallar la distribución de $Y=g(X)$:
+\begin{enumerate}[label=(\arabic*)]
+\item Se escribe $F_Y(y)=P(Y\le y)=P(g(X)\le y)$.
+\item Se despeja la desigualdad $g(X)\le y$ para expresarla como un evento equivalente sobre $X$ (usando la invertibilidad de $g$, si $g$ es monótona, o descomponiendo en casos si no lo es).
+\item Se expresa el resultado en términos de $F_X$, la f.d.a. conocida de $X$.
+\item Si se requiere la densidad $f_Y$, se deriva $F_Y$ respecto de $y$.
+\end{enumerate}
+Este método es general: funciona incluso cuando $g$ no es monótona (por ejemplo $g(x)=x^2$), a costa de un análisis más cuidadoso en el paso (2).
+\end{propiedad}
+
+\begin{ejemplo}[Transformación lineal de una exponencial]
+Sea $X\sim\text{Exp}(\lambda)$ y $Y=2X$. Como $g(x)=2x$ es estrictamente creciente,
+$$F_Y(y)=P(2X\le y)=P\left(X\le\frac{y}{2}\right)=F_X\left(\frac y2\right)=1-e^{-\lambda y/2},\qquad y\ge0.$$
+Derivando respecto de $y$: $f_Y(y)=\dfrac{\lambda}{2}e^{-\lambda y/2}$, es decir, $Y\sim\text{Exp}(\lambda/2)$. Este resultado es intuitivo: si duplicamos una variable que mide un tiempo de espera, la nueva "tasa" de ocurrencia efectiva se reduce a la mitad.
+\end{ejemplo}
+
+\subsubsection{Método del jacobiano}
+
+\begin{teorema}[Cambio de variable, caso monótono]\label{thm:jacobiano}
+Sea $X$ una v.a. continua con densidad $f_X$, y sea $Y=g(X)$ con $g$ \textbf{estrictamente monótona y derivable} en el rango de $X$, con función inversa $x=g^{-1}(y)=h(y)$ (también derivable). Entonces $Y$ es continua con densidad
+$$f_Y(y)=f_X\big(h(y)\big)\,\big|h'(y)\big|.$$
+\end{teorema}
+\begin{proof}
+\textbf{Caso $g$ creciente.} Como $g$ es estrictamente creciente, $g(X)\le y \iff X\le h(y)=g^{-1}(y)$. Entonces
+$$F_Y(y)=P(Y\le y)=P(X\le h(y))=F_X(h(y)).$$
+Derivando ambos miembros respecto de $y$ con la regla de la cadena,
+$$f_Y(y)=F_X'(h(y))\cdot h'(y)=f_X(h(y))\,h'(y).$$
+Como $g$ es creciente, su inversa $h$ también es creciente, por lo que $h'(y)\ge0=|h'(y)|$, y la fórmula coincide con la del enunciado.
+
+\textbf{Caso $g$ decreciente.} Ahora $g(X)\le y \iff X\ge h(y)$ (la desigualdad se invierte al aplicar una función decreciente), de modo que
+$$F_Y(y)=P(X\ge h(y))=1-F_X(h(y)).$$
+Derivando,
+$$f_Y(y)=-f_X(h(y))\,h'(y).$$
+Como $g$ es decreciente, $h$ también lo es, por lo que $h'(y)\le0$, y entonces $-h'(y)=|h'(y)|$, con lo cual nuevamente $f_Y(y)=f_X(h(y))|h'(y)|$.
+
+En ambos casos se obtiene la misma fórmula, lo que justifica escribirla de manera unificada con valor absoluto.
+\end{proof}
+
+\subsubsection{Ejemplos completos de cambio de variable}
+
+\begin{ejemplo}[Transformación lineal general]\label{ej:lineal}
+Sea $X\sim N(\mu,\sigma^2)$ y $Y=aX+b$, con $a\ne0$. Hallemos la distribución de $Y$ mediante el método del jacobiano.
+
+Aquí $g(x)=ax+b$, con inversa $h(y)=\dfrac{y-b}{a}$ y $h'(y)=\dfrac1a$. Aplicando el Teorema \ref{thm:jacobiano}:
+$$f_Y(y)=f_X\!\left(\frac{y-b}{a}\right)\left|\frac1a\right|=\frac{1}{|a|\sigma\sqrt{2\pi}}\exp\left(-\frac{\left(\frac{y-b}{a}-\mu\right)^2}{2\sigma^2}\right).$$
+Simplificando el exponente: $\dfrac{y-b}{a}-\mu=\dfrac{y-b-a\mu}{a}=\dfrac{y-(a\mu+b)}{a}$, de modo que
+$$\left(\frac{y-b}{a}-\mu\right)^2=\frac{\big(y-(a\mu+b)\big)^2}{a^2},$$
+y por lo tanto
+$$f_Y(y)=\frac{1}{|a|\sigma\sqrt{2\pi}}\exp\left(-\frac{\big(y-(a\mu+b)\big)^2}{2(a\sigma)^2}\right)=\frac{1}{\sigma_Y\sqrt{2\pi}}\exp\left(-\frac{(y-\mu_Y)^2}{2\sigma_Y^2}\right),$$
+con $\mu_Y=a\mu+b$ y $\sigma_Y=|a|\sigma$ (de modo que $\sigma_Y^2=a^2\sigma^2$). Se reconoce la densidad Normal:
+$$Y=aX+b\sim N(a\mu+b,\ a^2\sigma^2).$$
+En particular, tomando $a=1/\sigma$ y $b=-\mu/\sigma$, se obtiene $Y=(X-\mu)/\sigma\sim N(0,1)$, que es exactamente el Teorema \ref{thm:estandarizacion} de estandarización, ahora demostrado formalmente. Este resultado también confirma, retrospectivamente, la afirmación usada en la demostración de $E(X)=\mu$, $V(X)=\sigma^2$: la relación $X=\mu+\sigma Z$ efectivamente produce una $N(\mu,\sigma^2)$ a partir de una $N(0,1)$.
+\end{ejemplo}
+
+\begin{ejemplo}[Transformación no lineal (cuadrática)]
+Sea $X$ con densidad $f_X(x)=2x$ para $0\le x\le1$ (y $0$ fuera de ese intervalo). Hallemos la densidad de $Y=X^2$.
+
+Como $X$ toma valores en $[0,1]$, $Y=X^2$ también toma valores en $[0,1]$, y en ese intervalo $g(x)=x^2$ es estrictamente creciente (aunque no lo sea en toda la recta, alcanza con que lo sea en el rango de $X$ para aplicar el método). Usamos primero el \textbf{método de la función de distribución}: para $0\le y\le1$,
+$$F_Y(y)=P(X^2\le y)=P(X\le\sqrt y)=F_X(\sqrt y)=\int_0^{\sqrt y}2x\,dx=\big[x^2\big]_0^{\sqrt y}=y.$$
+Derivando, $f_Y(y)=1$ para $0\le y\le1$: es decir, $Y\sim\text{Uniforme}(0,1)$, un resultado sorprendente a primera vista (elevar al cuadrado una variable con densidad creciente produce una variable perfectamente uniforme).
+
+\textbf{Verificación con el método del jacobiano.} Aquí $h(y)=\sqrt y$, $h'(y)=\dfrac{1}{2\sqrt y}$. Por el Teorema \ref{thm:jacobiano}:
+$$f_Y(y)=f_X(\sqrt y)\,|h'(y)|=2\sqrt y\cdot\frac{1}{2\sqrt y}=1,\qquad 0\le y\le1,$$
+coincidiendo exactamente con el resultado anterior. Este ejemplo ilustra que, cuando $g$ es monótona y derivable, ambos métodos son equivalentes; el método del jacobiano suele ser más directo, mientras que el método de la f.d.a. es más robusto (y necesario) cuando $g$ no es globalmente monótona.
+\end{ejemplo}
+
+\begin{ejemplo}[La chi-cuadrado como cuadrado de una Normal estándar]\label{ej:chi_cuadrado}
+Sea $Z\sim N(0,1)$ y $Y=Z^2$. A diferencia de los ejemplos anteriores, aquí $g(z)=z^2$ \textbf{no es monótona} en todo $\mathbb{R}$ (es decreciente en $(-\infty,0)$ y creciente en $(0,\infty)$), por lo que el método del jacobiano en su forma simple no se aplica directamente, y usamos el método de la función de distribución, con más cuidado en el despeje.
+
+Para $y<0$, es imposible que $Z^2\le y$ (un cuadrado nunca es negativo), así que $F_Y(y)=0$. Para $y\ge0$:
+$$F_Y(y)=P(Z^2\le y)=P(-\sqrt y\le Z\le\sqrt y)=\Phi(\sqrt y)-\Phi(-\sqrt y).$$
+Usando la simetría $\Phi(-\sqrt y)=1-\Phi(\sqrt y)$:
+$$F_Y(y)=\Phi(\sqrt y)-\big(1-\Phi(\sqrt y)\big)=2\Phi(\sqrt y)-1.$$
+Derivando respecto de $y$ con la regla de la cadena (recordando que $\Phi'=\varphi$):
+$$f_Y(y)=2\,\varphi(\sqrt y)\cdot\frac{1}{2\sqrt y}=\frac{\varphi(\sqrt y)}{\sqrt y}=\frac{1}{\sqrt{2\pi}}\cdot\frac{e^{-y/2}}{\sqrt y}=\frac{1}{\sqrt{2\pi}}\,y^{-1/2}e^{-y/2},\qquad y>0.$$
+Comparemos con la densidad $\text{Gamma}(\alpha=1/2,\lambda=1/2)$:
+$$f(y)=\frac{\lambda^\alpha}{\Gamma(\alpha)}y^{\alpha-1}e^{-\lambda y}=\frac{(1/2)^{1/2}}{\Gamma(1/2)}\,y^{-1/2}e^{-y/2}=\frac{1/\sqrt2}{\sqrt\pi}\,y^{-1/2}e^{-y/2}=\frac{1}{\sqrt{2\pi}}\,y^{-1/2}e^{-y/2},$$
+donde usamos $\Gamma(1/2)=\sqrt\pi$. ¡Coincide exactamente con lo obtenido para $f_Y$! Esto confirma rigurosamente que
+$$Z^2\sim\text{Gamma}\left(\frac12,\frac12\right)=\chi^2_1,$$
+como habíamos anticipado en la Sección \ref{sec:gamma}. Este ejemplo conecta, en un solo cálculo, la técnica de cambio de variable con densidad no monótona, la función Gamma, y la distribución chi-cuadrado que reaparecerá en unidades posteriores.
+\end{ejemplo}
+
+\newpage
+\section{Tabla resumen de las distribuciones de la Unidad 2}
+
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+\textbf{Distribución} & \textbf{Parámetros} & \textbf{$p(x)$ o $f(x)$} & \textbf{$E(X)$} & \textbf{$V(X)$} \\
+\midrule
+Bernoulli & $p\in(0,1)$ & $p^xq^{1-x}$, $x=0,1$ & $p$ & $pq$ \\
+Binomial & $n\in\mathbb{N}$, $p\in(0,1)$ & $\binom{n}{x}p^xq^{n-x}$, $x=0,\dots,n$ & $np$ & $npq$ \\
+Pascal (BN) & $k\in\mathbb{N}$, $p\in(0,1)$ & $\binom{x-1}{k-1}p^kq^{x-k}$, $x\ge k$ & $k/p$ & $kq/p^2$ \\
+Hipergeométrica & $N,K,n$ & $\dfrac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}$ & $n\dfrac{K}{N}$ & $np(1-p)\dfrac{N-n}{N-1}$ \\
+Poisson & $\lambda>0$ & $\dfrac{e^{-\lambda}\lambda^x}{x!}$, $x\ge0$ & $\lambda$ & $\lambda$ \\
+Geométrica & $p\in(0,1)$ & $q^{x-1}p$, $x\ge1$ & $1/p$ & $q/p^2$ \\
+Uniforme cont. & $[c,d]$ & $\dfrac{1}{d-c}$, $c\le x\le d$ & $\dfrac{c+d}{2}$ & $\dfrac{(d-c)^2}{12}$ \\
+Normal & $\mu\in\mathbb{R}$, $\sigma^2>0$ & $\dfrac{1}{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/(2\sigma^2)}$ & $\mu$ & $\sigma^2$ \\
+Exponencial & $\lambda>0$ & $\lambda e^{-\lambda x}$, $x\ge0$ & $1/\lambda$ & $1/\lambda^2$ \\
+Gamma & $\alpha>0$, $\lambda>0$ & $\dfrac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}$, $x>0$ & $\alpha/\lambda$ & $\alpha/\lambda^2$ \\
+Chi-cuadrado & $n$ (grados de libertad) & $\text{Gamma}(n/2,\,1/2)$ & $n$ & $2n$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{observacion}
+La distribución Uniforme continua en $[c,d]$, con densidad constante $f(x)=1/(d-c)$ para $x\in[c,d]$, no fue desarrollada en detalle en esta unidad (se mencionó de manera incidental como resultado de los Ejemplos de la Sección \ref{sec:transformaciones}), pero se incluye en la tabla por ser un caso particularmente simple e importante de variable continua, útil como referencia y como caso límite intuitivo (es, informalmente, el análogo continuo de una distribución "sin preferencia" por ningún valor del intervalo). Los parámetros de esperanza y varianza se obtienen por cálculo directo de las integrales correspondientes, ejercicio que se deja para el alumno como aplicación de las fórmulas $E(X)=\int xf(x)dx$ y $V(X)=E(X^2)-[E(X)]^2$.
+\end{observacion}
+
+\section{Observaciones adicionales}
+
+Cerramos este apunte con algunas observaciones que conectan lo desarrollado en esta unidad con lo que viene en las siguientes.
+
+\begin{itemize}
+\item \textbf{Hacia la Unidad 3 (Vectores aleatorios).} Todo lo estudiado aquí se refiere a una \emph{única} variable aleatoria. En numerosas situaciones prácticas interesa estudiar simultáneamente dos o más variables definidas sobre el mismo espacio de probabilidad (por ejemplo, el peso y la altura de una persona elegida al azar, o el número de éxitos en dos etapas sucesivas de un experimento). La Unidad 3 extiende el concepto de función de distribución y de densidad/f.p.p. al caso de \textbf{vectores aleatorios} $(X,Y)$, introduce las distribuciones \emph{marginales} y \emph{condicionales}, formaliza la noción de \textbf{independencia} entre variables aleatorias (que en esta unidad usamos reiteradamente de manera informal, por ejemplo al hablar de "ensayos de Bernoulli independientes"), y demuestra el \textbf{Teorema Central del Límite}, que explica por qué la distribución Normal aparece con tanta frecuencia como límite de sumas de variables independientes. Las técnicas de cambio de variable de la Sección \ref{sec:transformaciones} también se generalizan a transformaciones de varios vectores aleatorios simultáneamente (el jacobiano deja de ser un escalar y pasa a ser una matriz), y la demostración de que la suma de $k$ exponenciales independientes es Gamma —que aquí solo enunciamos— se completa allí mediante la técnica de convolución de densidades.
+
+\item \textbf{Hacia la Unidad 4 (Esperanza y función generadora de momentos).} En este apunte usamos $E(X)$ y $V(X)$ de manera reiterada, calculándolos "a mano" para cada distribución particular mediante sumas o integrales directas. La Unidad 4 formaliza estos conceptos con generalidad (esperanza de una función $g(X)$, propiedades de linealidad que aquí solo mencionamos de paso, desigualdades como la de Chebyshev) e introduce la \textbf{función generadora de momentos} $M_X(t)=E(e^{tX})$, una herramienta muy poderosa que permite, entre otras cosas, demostrar de manera mucho más eficiente resultados que aquí obtuvimos "por fuerza bruta" (como la esperanza y varianza de la Binomial o de la Gamma), así como establecer rigurosamente afirmaciones que en esta unidad solo enunciamos sin demostrar completamente, como que la suma de variables Gamma independientes con igual parámetro de escala es nuevamente Gamma, o que la suma de $n$ variables $N(0,1)^2$ independientes es $\chi^2_n$.
+
+\item \textbf{Una mirada de conjunto.} El hilo conductor de esta unidad fue mostrar cómo, a partir de un puñado de preguntas naturales ("¿cuántos éxitos?", "¿cuántos ensayos hasta el éxito?", "¿cuánto tiempo hasta el evento?"), se derivan de manera sistemática las distribuciones de probabilidad más usadas en la práctica, todas ellas relacionadas entre sí por límites (Binomial $\to$ Poisson), aproximaciones (Hipergeométrica $\approx$ Binomial), sumas (Geométricas $\to$ Pascal, Exponenciales $\to$ Gamma) y transformaciones (Normal $\to$ chi-cuadrado). Comprender estas relaciones, más que memorizar cada fórmula de manera aislada, es la clave para poder elegir el modelo correcto ante un problema nuevo, y es la base sobre la que se construye el resto del curso.
+\end{itemize}
+
+\end{document}

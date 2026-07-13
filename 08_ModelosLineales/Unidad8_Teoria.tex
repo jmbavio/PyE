@@ -1,0 +1,1187 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{propiedad}[teorema]{Propiedad}
+\newtheorem{corolario}[teorema]{Corolario}
+\newtheorem{lema}[teorema]{Lema}
+\theoremstyle{definition}
+\newtheorem{definicion}[teorema]{Definición}
+\newtheorem{ejemplo}[teorema]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{observacion}[teorema]{Observación}
+
+\renewcommand{\proofname}{Demostración}
+
+\title{Unidad 8: Modelos lineales \\ \large Apunte de teoría}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Regresión lineal simple: modelo, estimación y bondad de ajuste}
+
+\subsection{De la correlación a la regresión}
+
+En unidades anteriores estudiamos cómo describir la relación conjunta entre dos variables aleatorias mediante la distribución conjunta, la covarianza y el coeficiente de correlación. Esos objetos miden la \emph{intensidad} de una asociación lineal, pero no proponen una fórmula operativa para \emph{predecir} el valor de una variable a partir de otra. La regresión lineal responde exactamente a esa necesidad práctica: dado un valor conocido (o controlado) de una variable explicativa $X$, ¿cuál es el mejor valor esperado, en algún sentido preciso, de una variable respuesta $Y$?
+
+Esta pregunta aparece en una enorme variedad de contextos aplicados: la nota de un examen en función de las horas de estudio, la resistencia de una pieza cerámica en función de la temperatura de cocción, el rendimiento de un cultivo en función de la dosis de fertilizante aplicada, el costo de mantenimiento anual de una máquina en función de su antigüedad, el precio de una vivienda en función de su superficie. En todos los casos hay una variable que se considera \emph{explicativa} o \emph{regresora}, habitualmente denotada $X$, y otra que se considera \emph{respuesta}, denotada $Y$, cuyo comportamiento queremos describir, explicar o predecir en términos de $X$.
+
+La primera herramienta exploratoria, siempre recomendable antes de ajustar cualquier modelo, es el \textbf{diagrama de dispersión}: se grafican en el plano los pares observados $(x_i,y_i)$, $i=1,\dots,n$, y se examina si exhiben una tendencia reconocible. Cuando la nube de puntos se agrupa, aproximadamente, alrededor de una tendencia lineal, cobra sentido buscar la recta que mejor resuma esa tendencia. Ese es precisamente el objetivo de la \textbf{regresión lineal simple}: el calificativo ``simple'' refiere a que hay una única variable explicativa (a diferencia de la regresión múltiple, que queda fuera del alcance de este curso, aunque la mencionaremos brevemente como generalización natural al final de la unidad).
+
+Es importante subrayar desde el inicio una asimetría conceptual del modelo: $X$ se trata como una variable no aleatoria, fijada o controlada por quien diseña el estudio (o, en un estudio observacional, se condiciona el análisis a los valores de $X$ efectivamente observados), mientras que $Y$ es una variable aleatoria cuyo comportamiento probabilístico depende de $X$. Esta asimetría se refleja en toda la notación que sigue.
+
+\subsection{Planteo del modelo y sus supuestos}
+
+\begin{definicion}[Modelo de regresión lineal simple]
+Supongamos que la variable respuesta $Y$ se relaciona con la variable regresora $X$ mediante la ecuación
+\[
+Y = \beta_0 + \beta_1 X + \varepsilon,
+\]
+donde:
+\begin{itemize}
+\item $\beta_0$ es la \textbf{ordenada al origen} (intercepto), un parámetro poblacional desconocido;
+\item $\beta_1$ es la \textbf{pendiente}, un parámetro poblacional desconocido que mide el cambio esperado en $Y$ por cada unidad de cambio en $X$;
+\item $\varepsilon$ es el \textbf{error aleatorio}, una variable no observable que recoge toda la variabilidad de $Y$ que no queda explicada por la relación lineal con $X$: efectos de variables omitidas, error de medición, variabilidad puramente intrínseca del fenómeno, etc.
+\end{itemize}
+\end{definicion}
+
+El modelo postula que, para cada valor fijo $x$ de la regresora, la respuesta $Y$ fluctúa alrededor de la recta $\beta_0+\beta_1 x$ debido al error $\varepsilon$. Para que esta idea sea operativa necesitamos formalizar el comportamiento probabilístico de $\varepsilon$ mediante un conjunto de supuestos.
+
+\begin{definicion}[Supuestos del modelo de regresión lineal simple]
+Sobre el error aleatorio $\varepsilon$ se asume:
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Linealidad / esperanza nula}: $E(\varepsilon)=0$. Esto equivale a decir que, en promedio, la relación entre $X$ e $Y$ es efectivamente la recta $\beta_0+\beta_1 x$; no hay un sesgo sistemático no lineal sin capturar.
+\item \textbf{Homocedasticidad}: $V(\varepsilon)=\sigma^2$, una constante que \emph{no depende} del valor de $X$. La dispersión de $Y$ alrededor de la recta es la misma en todo el rango de la regresora.
+\item \textbf{Independencia}: los errores correspondientes a observaciones distintas, $\varepsilon_1,\dots,\varepsilon_n$, son variables aleatorias independientes entre sí. En particular no están autocorrelacionados (supuesto especialmente relevante cuando los datos se recogen en el tiempo).
+\item \textbf{Normalidad} (necesaria para construir pruebas de hipótesis e intervalos de confianza exactos, no para la sola estimación puntual): $\varepsilon \sim N(0,\sigma^2)$.
+\end{enumerate}
+\end{definicion}
+
+Los supuestos (i)--(iii) alcanzan para obtener estimadores con buenas propiedades (insesgadez, mínima varianza dentro de la clase de estimadores lineales insesgados); el supuesto (iv) es adicional y se necesita recién quando se pasa de la estimación puntual a la inferencia formal (pruebas $t$, $F$, intervalos de confianza), tema que retomaremos en la Sección 2.
+
+\begin{observacion}
+Bajo los supuestos (i) y (ii), para cada valor fijo $x$ de la regresora se obtiene
+\[
+E(Y\mid X=x) = \beta_0+\beta_1 x, \qquad V(Y\mid X=x)=\sigma^2.
+\]
+La recta $\beta_0+\beta_1 x$ describe cómo cambia la \emph{media condicional} de $Y$ a medida que cambia $x$; el parámetro $\sigma^2$ mide la dispersión de $Y$ alrededor de esa media, y por homocedasticidad esa dispersión es la misma para todo $x$. Es un error conceptual frecuente creer que la regresión ``predice $Y$ exactamente''; en rigor, predice la \emph{media condicional} de $Y$, y $\sigma^2$ cuantifica cuánto puede desviarse una observación individual de esa media.
+\end{observacion}
+
+Formalmente, disponemos de una muestra de $n$ pares de observaciones $(x_1,y_1),(x_2,y_2),\dots,(x_n,y_n)$, donde cada $y_i$ se interpreta como la realización de la variable aleatoria
+\[
+Y_i = \beta_0+\beta_1 x_i + \varepsilon_i, \qquad i=1,\dots,n,
+\]
+con $\varepsilon_1,\dots,\varepsilon_n$ independientes, $E(\varepsilon_i)=0$ y $V(\varepsilon_i)=\sigma^2$ para todo $i$. El objetivo es estimar $\beta_0$ y $\beta_1$ a partir de los datos, obteniendo una \textbf{recta ajustada}
+\[
+\hat y = \hat\beta_0+\hat\beta_1 x
+\]
+que resuma, de la mejor manera posible según un criterio que precisaremos, la nube de puntos observada.
+
+\subsection{Estimación por mínimos cuadrados: deducción completa}
+
+Dada cualquier recta candidata $\hat y = b_0+b_1 x$ (con $b_0,b_1$ números reales arbitrarios, no necesariamente los valores óptimos), el \textbf{residuo} de la observación $i$ respecto de esa recta se define como
+\[
+e_i = y_i - (b_0+b_1 x_i),
+\]
+es decir, la distancia vertical (en el eje $Y$) entre el punto observado $(x_i,y_i)$ y el punto de la recta con la misma abscisa. El \textbf{método de mínimos cuadrados} propone elegir, entre todas las rectas posibles, aquella que minimiza la suma de los residuos al cuadrado:
+\[
+S(b_0,b_1) = \sum_{i=1}^n e_i^2 = \sum_{i=1}^n \big(y_i-b_0-b_1 x_i\big)^2.
+\]
+La elección de minimizar la suma de \emph{cuadrados} de los residuos, en lugar de, por ejemplo, la suma de sus valores absolutos, tiene dos razones principales: penaliza más fuertemente los errores grandes que los pequeños (lo cual suele ser deseable), y —crucialmente— el problema de optimización resultante tiene una solución analítica cerrada y sencilla, como veremos a continuación. Los valores de $b_0,b_1$ que minimizan $S$ se denotan $\hat\beta_0,\hat\beta_1$ y se llaman \textbf{estimadores de mínimos cuadrados}.
+
+Como $S(b_0,b_1)$ es una función cuadrática (y por lo tanto convexa) de $(b_0,b_1)$, su mínimo global se alcanza en el único punto crítico, que se obtiene igualando a cero las derivadas parciales.
+
+\begin{teorema}[Ecuaciones normales]
+Los minimizadores $\hat\beta_0,\hat\beta_1$ de $S(b_0,b_1)$ satisfacen el sistema
+\[
+\begin{cases}
+\displaystyle \sum_{i=1}^n y_i = n\,\hat\beta_0 + \hat\beta_1\sum_{i=1}^n x_i, \\[6pt]
+\displaystyle \sum_{i=1}^n x_iy_i = \hat\beta_0\sum_{i=1}^n x_i + \hat\beta_1 \sum_{i=1}^n x_i^2,
+\end{cases}
+\]
+llamado el sistema de \textbf{ecuaciones normales}.
+\end{teorema}
+
+\begin{proof}
+Derivamos $S$ respecto de cada parámetro y usamos la regla de la cadena:
+\[
+\frac{\partial S}{\partial b_0} = \sum_{i=1}^n 2\big(y_i-b_0-b_1x_i\big)(-1) = -2\sum_{i=1}^n \big(y_i-b_0-b_1x_i\big),
+\]
+\[
+\frac{\partial S}{\partial b_1} = \sum_{i=1}^n 2\big(y_i-b_0-b_1x_i\big)(-x_i) = -2\sum_{i=1}^n x_i\big(y_i-b_0-b_1x_i\big).
+\]
+En el mínimo, ambas derivadas parciales deben anularse. Igualando a cero y dividiendo por $-2$:
+\[
+\sum_{i=1}^n \big(y_i-\hat\beta_0-\hat\beta_1x_i\big) = 0, \qquad \sum_{i=1}^n x_i\big(y_i-\hat\beta_0-\hat\beta_1x_i\big) = 0.
+\]
+Distribuyendo la suma en la primera ecuación:
+\[
+\sum_i y_i - n\hat\beta_0 - \hat\beta_1\sum_i x_i = 0 \ \Longrightarrow\ \sum_i y_i = n\hat\beta_0+\hat\beta_1\sum_i x_i,
+\]
+que es la primera ecuación normal. Distribuyendo en la segunda:
+\[
+\sum_i x_iy_i - \hat\beta_0\sum_i x_i - \hat\beta_1 \sum_i x_i^2 = 0 \ \Longrightarrow\ \sum_i x_iy_i = \hat\beta_0\sum_i x_i + \hat\beta_1\sum_i x_i^2,
+\]
+la segunda ecuación normal. Como $S$ es una forma cuadrática con matriz Hessiana definida positiva (siempre que los $x_i$ no sean todos iguales), el punto crítico hallado es efectivamente el mínimo global, no un punto de silla ni un máximo.
+\end{proof}
+
+El sistema anterior es lineal en las dos incógnitas $\hat\beta_0,\hat\beta_1$, y se resuelve fácilmente por sustitución.
+
+\begin{teorema}[Fórmulas explícitas de los estimadores de mínimos cuadrados]
+\[
+\hat\beta_1 = \frac{\displaystyle\sum_{i=1}^n (x_i-\bar x)(y_i-\bar y)}{\displaystyle\sum_{i=1}^n (x_i-\bar x)^2} = \frac{S_{xy}}{S_{xx}}, \qquad \hat\beta_0 = \bar y - \hat\beta_1 \bar x,
+\]
+donde $\bar x=\frac1n\sum_i x_i$, $\bar y=\frac1n\sum_i y_i$, y se definen las sumas de cuadrados y productos corregidas
+\[
+S_{xy} = \sum_{i=1}^n (x_i-\bar x)(y_i-\bar y) = \sum_i x_iy_i - n\bar x\bar y, \qquad S_{xx} = \sum_{i=1}^n (x_i-\bar x)^2 = \sum_i x_i^2 - n\bar x^2.
+\]
+\end{teorema}
+
+\begin{proof}
+Dividiendo la primera ecuación normal por $n$ obtenemos directamente
+\[
+\bar y = \hat\beta_0 + \hat\beta_1 \bar x \quad\Longrightarrow\quad \hat\beta_0 = \bar y - \hat\beta_1\bar x. \tag{$\ast$}
+\]
+Sustituimos ($\ast$) en la segunda ecuación normal:
+\[
+\sum_i x_iy_i = (\bar y - \hat\beta_1\bar x)\sum_i x_i + \hat\beta_1\sum_i x_i^2 = \bar y\sum_i x_i - \hat\beta_1\bar x\sum_i x_i + \hat\beta_1\sum_i x_i^2.
+\]
+Como $\sum_i x_i = n\bar x$, el término $\bar y\sum_i x_i = n\bar x\bar y$. Reagrupando los términos con $\hat\beta_1$:
+\[
+\sum_i x_iy_i - n\bar x\bar y = \hat\beta_1\Big(\sum_i x_i^2 - n\bar x^2\Big).
+\]
+El miembro izquierdo es exactamente $S_{xy}$ y el paréntesis del miembro derecho es exactamente $S_{xx}$ (basta desarrollar $\sum_i(x_i-\bar x)^2 = \sum_i x_i^2 - 2\bar x\sum_i x_i + n\bar x^2 = \sum_i x_i^2 - n\bar x^2$, y análogamente para $S_{xy}$). Por lo tanto
+\[
+S_{xy} = \hat\beta_1 S_{xx} \quad\Longrightarrow\quad \hat\beta_1 = \frac{S_{xy}}{S_{xx}},
+\]
+siempre que $S_{xx}>0$, es decir, que no todos los $x_i$ sean iguales (condición necesaria para que exista variabilidad en la regresora y el problema esté bien planteado). Sustituyendo de vuelta en ($\ast$) se obtiene $\hat\beta_0=\bar y-\hat\beta_1\bar x$.
+\end{proof}
+
+Con $\hat\beta_0$ y $\hat\beta_1$ ya determinados, la \textbf{recta de mínimos cuadrados} (o recta de regresión estimada) es
+\[
+\hat y_i = \hat\beta_0+\hat\beta_1 x_i, \qquad i=1,\dots,n,
+\]
+y el \textbf{residuo} de la observación $i$ respecto de esta recta ajustada es $e_i = y_i-\hat y_i$: la diferencia entre el valor observado y el valor predicho por el modelo.
+
+\begin{propiedad}[Propiedades algebraicas de la recta de mínimos cuadrados]
+Como consecuencia directa de las ecuaciones normales (evaluadas en $\hat\beta_0,\hat\beta_1$), se cumple:
+\begin{enumerate}[label=(\alph*)]
+\item $\displaystyle\sum_{i=1}^n e_i = 0$: los residuos suman cero (la primera ecuación normal es exactamente esta igualdad).
+\item $\displaystyle\sum_{i=1}^n x_i e_i = 0$: los residuos son ``no correlacionados'' con la regresora (la segunda ecuación normal).
+\item La recta ajustada pasa exactamente por el punto $(\bar x,\bar y)$, pues $\hat\beta_0+\hat\beta_1\bar x = (\bar y-\hat\beta_1\bar x)+\hat\beta_1\bar x=\bar y$.
+\item Como consecuencia de (a) y (b), también $\displaystyle\sum_{i=1}^n \hat y_i e_i = 0$: los residuos son ortogonales a los valores predichos.
+\end{enumerate}
+\end{propiedad}
+
+Estas propiedades tienen una lectura geométrica elegante: el vector de residuos es ortogonal (en el sentido del producto interno usual de $\mathbb{R}^n$) tanto al vector de unos como al vector de regresores $(x_1,\dots,x_n)$, y por lo tanto a cualquier combinación lineal de ambos, en particular al vector de valores ajustados $(\hat y_1,\dots,\hat y_n)$. Esta es la manifestación, en el caso simple, del principio general de que mínimos cuadrados \emph{proyecta} ortogonalmente el vector de observaciones sobre el subespacio generado por las columnas del modelo —idea que se generaliza directamente a la regresión múltiple.
+
+\subsection{Insesgadez de los estimadores}
+
+Una propiedad deseable de un estimador es que, en promedio (sobre repeticiones hipotéticas del muestreo), reproduzca el valor del parámetro que estima. A continuación demostramos que $\hat\beta_1$ y $\hat\beta_0$ tienen esta propiedad, trabajando con los estimadores como funciones de las variables aleatorias $Y_1,\dots,Y_n$ (no de sus realizaciones $y_1,\dots,y_n$).
+
+\begin{teorema}[Insesgadez de $\hat\beta_1$]
+Bajo el modelo $Y_i=\beta_0+\beta_1x_i+\varepsilon_i$ con $E(\varepsilon_i)=0$ para todo $i$, se cumple $E(\hat\beta_1)=\beta_1$.
+\end{teorema}
+
+\begin{proof}
+Escribimos $\hat\beta_1$ como una combinación lineal de las $Y_i$. Definiendo $c_i = \dfrac{x_i-\bar x}{S_{xx}}$, se verifica que
+\[
+\hat\beta_1 = \frac{\sum_i (x_i-\bar x)(Y_i-\bar Y)}{S_{xx}} = \frac{\sum_i (x_i-\bar x)Y_i - \bar Y\sum_i(x_i-\bar x)}{S_{xx}} = \sum_{i=1}^n c_i Y_i,
+\]
+donde usamos que $\sum_i(x_i-\bar x)=0$ para eliminar el término en $\bar Y$. Antes de tomar esperanza, observamos dos identidades algebraicas sobre los coeficientes $c_i$, que dependen solo de los $x_i$ (no aleatorios) y por lo tanto son constantes:
+\[
+\sum_{i=1}^n c_i = \frac{\sum_i (x_i-\bar x)}{S_{xx}} = \frac{0}{S_{xx}} = 0, \qquad \sum_{i=1}^n c_i x_i = \frac{\sum_i (x_i-\bar x)x_i}{S_{xx}} = \frac{S_{xx}}{S_{xx}} = 1,
+\]
+donde la segunda igualdad usa que $\sum_i(x_i-\bar x)x_i = \sum_i(x_i-\bar x)(x_i-\bar x) = S_{xx}$ (pues restar $\bar x\sum_i(x_i-\bar x)=0$ no cambia la suma). Ahora, usando linealidad de la esperanza y que $E(Y_i)=\beta_0+\beta_1x_i$:
+\[
+E(\hat\beta_1) = \sum_{i=1}^n c_i\,E(Y_i) = \sum_{i=1}^n c_i(\beta_0+\beta_1x_i) = \beta_0\underbrace{\sum_i c_i}_{=0} + \beta_1\underbrace{\sum_i c_ix_i}_{=1} = \beta_1.
+\]
+\end{proof}
+
+\begin{teorema}[Insesgadez de $\hat\beta_0$]
+Bajo las mismas hipótesis, $E(\hat\beta_0)=\beta_0$.
+\end{teorema}
+
+\begin{proof}
+Como $\hat\beta_0=\bar Y-\hat\beta_1\bar x$, calculamos primero $E(\bar Y)$: promediando el modelo sobre las $n$ observaciones,
+\[
+\bar Y = \frac1n\sum_i Y_i = \frac1n\sum_i(\beta_0+\beta_1x_i+\varepsilon_i) = \beta_0+\beta_1\bar x+\bar\varepsilon,
+\]
+y como $E(\bar\varepsilon)=\frac1n\sum_i E(\varepsilon_i)=0$, resulta $E(\bar Y)=\beta_0+\beta_1\bar x$. Entonces, usando linealidad de la esperanza y el teorema anterior:
+\[
+E(\hat\beta_0) = E(\bar Y) - \bar x\,E(\hat\beta_1) = (\beta_0+\beta_1\bar x) - \bar x\,\beta_1 = \beta_0.
+\]
+\end{proof}
+
+\begin{observacion}
+Ambos estimadores son, además de insesgados, \textbf{lineales} en las observaciones $Y_1,\dots,Y_n$ (son combinaciones lineales de ellas con coeficientes que dependen solo de los $x_i$). Esta doble condición —lineal e insesgado— motiva preguntarse si existe, dentro de esa clase de estimadores, alguno de menor varianza. La respuesta es afirmativa y es el contenido del célebre teorema de Gauss--Markov, que desarrollamos a continuación como complemento.
+\end{observacion}
+
+\subsection{Un tema adicional: el teorema de Gauss--Markov}
+
+Los estimadores de mínimos cuadrados no solo son insesgados: bajo los supuestos (i)--(iii) de la Definición 1.2 (sin necesidad del supuesto de normalidad) son, además, los de menor varianza entre \emph{todos} los estimadores lineales e insesgados de $\beta_1$. Esta propiedad se resume con la sigla BLUE (\emph{Best Linear Unbiased Estimator}) y es uno de los resultados más importantes de la teoría de la regresión, porque justifica por qué mínimos cuadrados es, en cierto sentido preciso, ``el mejor'' método de estimación lineal disponible, sin necesitar apelar a la normalidad de los errores.
+
+\begin{teorema}[Gauss--Markov, caso de la pendiente]
+Bajo los supuestos (i)--(iii), $\hat\beta_1=\sum_i c_iY_i$ (con $c_i=(x_i-\bar x)/S_{xx}$) tiene varianza mínima entre todos los estimadores de la forma $\tilde\beta_1=\sum_i d_iY_i$ que son lineales e insesgados para $\beta_1$.
+\end{teorema}
+
+\begin{proof}
+Sea $\tilde\beta_1=\sum_i d_iY_i$ cualquier otro estimador lineal. Para que sea insesgado para cualquier valor de $\beta_0,\beta_1$, razonando como en la demostración de insesgadez de $\hat\beta_1$, se necesita
+\[
+E(\tilde\beta_1) = \beta_0\sum_i d_i + \beta_1\sum_i d_ix_i \overset{!}{=} \beta_1 \quad \text{para todo } \beta_0,\beta_1 \ \Longrightarrow\ \sum_i d_i = 0, \quad \sum_i d_ix_i=1.
+\]
+Escribamos $d_i=c_i+f_i$, donde $f_i=d_i-c_i$. De las restricciones sobre $c_i$ y $d_i$ se deduce que $\sum_i f_i=0$ y $\sum_i f_ix_i=0$, y por lo tanto también $\sum_i f_ic_i = \frac{1}{S_{xx}}\sum_i f_i(x_i-\bar x) = \frac{1}{S_{xx}}\Big(\sum_i f_ix_i - \bar x\sum_i f_i\Big) = 0$. Como los $Y_i$ son independientes con varianza común $\sigma^2$:
+\[
+V(\tilde\beta_1) = \sigma^2\sum_i d_i^2 = \sigma^2\sum_i (c_i+f_i)^2 = \sigma^2\Big(\sum_i c_i^2 + 2\sum_i c_if_i + \sum_i f_i^2\Big) = \sigma^2\sum_i c_i^2 + \sigma^2\sum_i f_i^2,
+\]
+donde el término cruzado se anuló por la identidad recién probada. Como $\sigma^2\sum_i f_i^2\geq 0$, con igualdad si y solo si $f_i=0$ para todo $i$ (es decir, $\tilde\beta_1=\hat\beta_1$), concluimos
+\[
+V(\tilde\beta_1) = V(\hat\beta_1) + \sigma^2\sum_i f_i^2 \ \geq\ V(\hat\beta_1),
+\]
+con igualdad si y solo si $\tilde\beta_1$ coincide con $\hat\beta_1$. Un argumento análogo, aunque algebraicamente más laborioso, se aplica a $\hat\beta_0$ y, más generalmente, a cualquier combinación lineal $a\hat\beta_0+b\hat\beta_1$.
+\end{proof}
+
+\subsection{Descomposición de la variabilidad y coeficiente de determinación}
+
+Una vez ajustada la recta, interesa cuantificar qué tan bien describe a los datos. La idea central es descomponer la variabilidad total observada en $Y$ en dos partes: la que queda explicada por la relación lineal con $X$, y la que no.
+
+\begin{definicion}
+Se definen las siguientes sumas de cuadrados:
+\[
+SCT = \sum_{i=1}^n (y_i-\bar y)^2 \quad \text{(suma de cuadrados \textbf{total})},
+\]
+\[
+SCR = \sum_{i=1}^n (\hat y_i-\bar y)^2 \quad \text{(suma de cuadrados de la \textbf{regresión})},
+\]
+\[
+SCE = \sum_{i=1}^n (y_i-\hat y_i)^2 = \sum_{i=1}^n e_i^2 \quad \text{(suma de cuadrados del \textbf{error} o residual)}.
+\]
+\end{definicion}
+
+\begin{teorema}[Identidad fundamental del análisis de la regresión]
+\[
+SCT = SCR + SCE.
+\]
+\end{teorema}
+
+\begin{proof}
+Sumamos y restamos $\hat y_i$ dentro de cada desvío respecto de $\bar y$:
+\[
+y_i-\bar y = (\hat y_i-\bar y) + (y_i-\hat y_i).
+\]
+Elevando al cuadrado y sumando sobre $i=1,\dots,n$:
+\[
+\sum_i (y_i-\bar y)^2 = \sum_i (\hat y_i-\bar y)^2 + \sum_i (y_i-\hat y_i)^2 + 2\sum_i (\hat y_i-\bar y)(y_i-\hat y_i).
+\]
+Basta demostrar que el término cruzado se anula. Escribiendo $\hat y_i-\bar y = \hat\beta_1(x_i-\bar x)$ (pues $\hat y_i-\bar y = \hat\beta_0+\hat\beta_1x_i-\bar y = \hat\beta_1x_i-\hat\beta_1\bar x=\hat\beta_1(x_i-\bar x)$, usando $\bar y=\hat\beta_0+\hat\beta_1\bar x$) y $y_i-\hat y_i=e_i$:
+\[
+\sum_i (\hat y_i-\bar y)(y_i-\hat y_i) = \hat\beta_1\sum_i (x_i-\bar x)e_i = \hat\beta_1\Big(\sum_i x_ie_i - \bar x\sum_i e_i\Big).
+\]
+Por la Propiedad 1.5(a) y (b), $\sum_i e_i=0$ y $\sum_i x_ie_i=0$; por lo tanto el término cruzado es idénticamente cero, y se obtiene $SCT=SCR+SCE$.
+\end{proof}
+
+Esta identidad es completamente análoga, en espíritu, a la identidad de Pitágoras: el vector de desvíos totales $(y_i-\bar y)$ se descompone en dos componentes ortogonales, la explicada por el modelo y el residuo, y las respectivas ``longitudes al cuadrado'' se suman. La misma idea de descomposición ortogonal de la variabilidad reaparecerá en la Sección 3, bajo el nombre de análisis de la varianza.
+
+\begin{definicion}[Coeficiente de determinación]
+\[
+R^2 = \frac{SCR}{SCT} = 1-\frac{SCE}{SCT}.
+\]
+\end{definicion}
+
+\begin{teorema}
+$0\leq R^2\leq 1$.
+\end{teorema}
+
+\begin{proof}
+Como $SCR=\sum_i(\hat y_i-\bar y)^2$ es una suma de cuadrados, $SCR\geq 0$; análogamente $SCE\geq 0$. Por la identidad $SCT=SCR+SCE$, y dado que $SCT>0$ siempre que los datos no sean todos idénticos (caso trivial sin interés), tenemos
+\[
+R^2 = \frac{SCR}{SCT} = \frac{SCR}{SCR+SCE} \geq 0,
+\]
+pues numerador y denominador son no negativos y el denominador es positivo. Por otro lado, como $SCE\geq0$,
+\[
+SCR = SCT-SCE \leq SCT \ \Longrightarrow\ R^2=\frac{SCR}{SCT}\leq 1.
+\]
+Se sigue que $0\leq R^2\leq1$.
+\end{proof}
+
+$R^2$ se interpreta como la \textbf{proporción de la variabilidad total de $Y$ que es explicada por la relación lineal con $X$}. Un valor de $R^2$ cercano a $1$ indica que el ajuste lineal explica casi toda la variabilidad observada en $Y$ ($SCE$ es pequeña en relación a $SCT$); un valor cercano a $0$ indica que la recta ajustada aporta muy poco poder explicativo, y que la mayor parte de la variabilidad de $Y$ se debe a otras causas no capturadas por $X$ (o a que la relación, si existe, no es lineal).
+
+\subsection{Coeficiente de correlación muestral y su relación con \texorpdfstring{$R^2$}{R2}}
+
+\begin{definicion}[Coeficiente de correlación muestral de Pearson]
+\[
+r = \frac{S_{xy}}{\sqrt{S_{xx}\,S_{yy}}}, \qquad \text{donde } S_{yy}=\sum_{i=1}^n (y_i-\bar y)^2 = SCT.
+\]
+\end{definicion}
+
+Este coeficiente ya fue estudiado en unidades anteriores como medida descriptiva de la asociación lineal entre dos variables cuantitativas: satisface $-1\leq r\leq 1$, con $r$ cercano a $\pm1$ indicando una asociación lineal fuerte (directa si $r>0$, inversa si $r<0$) y $r$ cercano a $0$ indicando ausencia de asociación lineal apreciable (aunque podría existir una asociación no lineal fuerte). El siguiente resultado conecta $r$ con $R^2$, cerrando el círculo entre el enfoque descriptivo (correlación) y el enfoque de modelado (regresión).
+
+\begin{teorema}
+En el modelo de regresión lineal simple, $R^2=r^2$.
+\end{teorema}
+
+\begin{proof}
+Partimos de $SCR=\sum_i(\hat y_i-\bar y)^2$ y usamos, como en la demostración del Teorema 1.9, que $\hat y_i-\bar y=\hat\beta_1(x_i-\bar x)$:
+\[
+SCR = \sum_i \hat\beta_1^2(x_i-\bar x)^2 = \hat\beta_1^2\, S_{xx} = \left(\frac{S_{xy}}{S_{xx}}\right)^2 S_{xx} = \frac{S_{xy}^2}{S_{xx}}.
+\]
+Entonces
+\[
+R^2 = \frac{SCR}{SCT} = \frac{S_{xy}^2/S_{xx}}{S_{yy}} = \frac{S_{xy}^2}{S_{xx}S_{yy}} = \left(\frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}}\right)^2 = r^2.
+\]
+\end{proof}
+
+\begin{observacion}
+De esta identidad se sigue, en particular, que $\hat\beta_1$ y $r$ tienen siempre el mismo signo, pues ambos son proporcionales a $S_{xy}$ con constante de proporcionalidad positiva ($1/S_{xx}$ y $1/\sqrt{S_{xx}S_{yy}}$, respectivamente). También se sigue que, en regresión simple, no hace falta calcular $R^2$ y $r$ por separado: basta calcular uno de los dos y el otro se obtiene inmediatamente. Sin embargo $R^2$ tiene una interpretación (proporción de variabilidad explicada) que $r$ por sí solo no tiene, y es la generalización que se usa en regresión múltiple, donde el concepto análogo a $r$ (correlación con una sola variable) deja de tener sentido directo.
+\end{observacion}
+
+\subsection{Ejemplo numérico completo}
+
+\begin{ejemplo}
+Un ingeniero estudia la relación entre el \textbf{tiempo de soldadura} $X$ (en segundos) y la \textbf{resistencia a la tracción} $Y$ (en kg) de una unión soldada, sobre $n=8$ probetas.
+
+\begin{center}
+\begin{tabular}{c|cccccccc}
+\toprule
+$i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+\midrule
+$x_i$ (seg) & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+$y_i$ (kg) & 32 & 38 & 41 & 45 & 48 & 53 & 55 & 61 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Se pide: (a) la recta de mínimos cuadrados; (b) el coeficiente de determinación $R^2$ y el coeficiente de correlación $r$; (c) interpretar los resultados.
+
+\medskip
+\noindent\textbf{(a) Cálculos preliminares.} Con $n=8$:
+\[
+\sum x_i=44,\quad \bar x=5.5, \qquad \sum y_i=373,\quad \bar y=46.625,
+\]
+\[
+\sum x_i^2 = 284, \qquad \sum x_iy_i = 2215, \qquad \sum y_i^2=18033.
+\]
+Entonces
+\[
+S_{xx} = \sum x_i^2-n\bar x^2 = 284-8(5.5)^2 = 284-242=42,
+\]
+\[
+S_{xy} = \sum x_iy_i - n\bar x\bar y = 2215-8(5.5)(46.625) = 2215-2051.5=163.5,
+\]
+\[
+S_{yy} = \sum y_i^2-n\bar y^2 = 18033-8(46.625)^2 = 18033-17391.125 = 641.875.
+\]
+Los estimadores de mínimos cuadrados resultan
+\[
+\hat\beta_1 = \frac{S_{xy}}{S_{xx}} = \frac{163.5}{42} \approx 3.893, \qquad \hat\beta_0 = \bar y-\hat\beta_1\bar x = 46.625-3.893(5.5)\approx 25.214,
+\]
+de modo que la recta de mínimos cuadrados es
+\[
+\hat y = 25.214+3.893\,x.
+\]
+\textbf{Interpretación de los coeficientes}: por cada segundo adicional de soldadura, la resistencia media esperada aumenta en aproximadamente $3.89$ kg. La ordenada $\hat\beta_0\approx25.21$ kg sería la resistencia media esperada para $x=0$ segundos de soldadura, un valor fuera del rango observado ($2$ a $9$ segundos); extrapolar la recta más allá del rango de los datos debe hacerse con extrema cautela, ya que nada garantiza que la relación lineal se mantenga fuera de ese rango.
+
+\medskip
+\noindent\textbf{(b) Bondad del ajuste.} Usando el Teorema 1.10,
+\[
+SCR = \frac{S_{xy}^2}{S_{xx}} = \frac{163.5^2}{42} = \frac{26732.25}{42} \approx 636.482, \qquad SCT=S_{yy}=641.875,
+\]
+\[
+SCE = SCT-SCR = 641.875-636.482 \approx 5.393.
+\]
+El coeficiente de correlación es
+\[
+r = \frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}} = \frac{163.5}{\sqrt{42\times 641.875}} = \frac{163.5}{\sqrt{26958.75}} \approx \frac{163.5}{164.19} \approx 0.9958,
+\]
+y, consistentemente con el Teorema 1.12,
+\[
+R^2 = \frac{SCR}{SCT} = \frac{636.482}{641.875} \approx 0.9916 \approx r^2 = (0.9958)^2 \approx 0.9916. \ \checkmark
+\]
+
+\medskip
+\noindent\textbf{(c) Interpretación.} La correlación lineal es muy fuerte y positiva ($r\approx0.996$); el modelo lineal explica aproximadamente el $99.2\%$ de la variabilidad observada en la resistencia a la tracción, y solo el $0.8\%$ restante queda sin explicar por la recta (atribuible a variabilidad del proceso de soldadura, error de medición, u otros factores no incluidos en el modelo). El ajuste lineal es, para estos datos, excelente.
+\end{ejemplo}
+
+A continuación se muestra el diagrama de dispersión de los datos junto con la recta ajustada, que permite visualizar el excelente ajuste obtenido:
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=10cm,height=6.5cm,xlabel={$x$ (segundos)},ylabel={$y$ (kg)},
+  xmin=0,xmax=10,ymin=20,ymax=65,
+  tick label style={font=\scriptsize}, label style={font=\small},
+  legend pos=north west, legend style={font=\scriptsize}]
+\addplot[only marks, mark=*, mark size=1.8pt, blue] coordinates {
+(2,32)(3,38)(4,41)(5,45)(6,48)(7,53)(8,55)(9,61)
+};
+\addlegendentry{Datos observados}
+\addplot[domain=0:10, red, thick] {25.214 + 3.893*x};
+\addlegendentry{$\hat y = 25.214+3.893x$}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\begin{observacion}
+Vale la pena inspeccionar también la tabla de residuos, que retomaremos en la Sección 2 al hablar de diagnóstico del modelo. Para las primeras dos observaciones, por ejemplo: $\hat y_1=25.214+3.893(2)\approx33.00$, de modo que $e_1=32-33.00=-1.00$; $\hat y_2=25.214+3.893(3)\approx36.89$, con $e_2=38-36.89\approx1.11$. Residuos de magnitud pequeña y sin un patrón sistemático aparente son consistentes con un buen ajuste lineal, como confirma el alto valor de $R^2$ obtenido.
+\end{observacion}
+
+\newpage
+\section{Inferencia en el modelo de regresión lineal simple}
+
+\subsection{Del supuesto de normalidad a la distribución de los estimadores}
+
+En la Sección 1 obtuvimos los estimadores de mínimos cuadrados $\hat\beta_0,\hat\beta_1$ y demostramos que son insesgados, sin necesitar más que los supuestos de esperanza nula, homocedasticidad e independencia de los errores. Sin embargo, para construir \textbf{pruebas de hipótesis} e \textbf{intervalos de confianza} necesitamos conocer la \textbf{distribución muestral exacta} de estos estimadores, y para eso recurrimos ahora al cuarto supuesto del modelo: la normalidad de los errores,
+\[
+\varepsilon_i \sim N(0,\sigma^2), \qquad \varepsilon_1,\dots,\varepsilon_n \text{ independientes},
+\]
+equivalentemente $Y_i\sim N(\beta_0+\beta_1x_i,\sigma^2)$, con $Y_1,\dots,Y_n$ independientes. Como tanto $\hat\beta_1=\sum_ic_iY_i$ como $\hat\beta_0=\bar Y-\hat\beta_1\bar x$ son combinaciones lineales de las $Y_i$, y toda combinación lineal de variables normales independientes es a su vez normal, se sigue de inmediato que $\hat\beta_0$ y $\hat\beta_1$ tienen distribución normal. Solo resta determinar sus varianzas.
+
+\begin{teorema}[Distribución de $\hat\beta_1$]
+Bajo normalidad de los errores,
+\[
+\hat\beta_1 \sim N\left(\beta_1,\ \frac{\sigma^2}{S_{xx}}\right).
+\]
+\end{teorema}
+
+\begin{proof}
+La esperanza ya fue calculada en el Teorema 1.6: $E(\hat\beta_1)=\beta_1$. Para la varianza, usando que $\hat\beta_1=\sum_ic_iY_i$ con $c_i=(x_i-\bar x)/S_{xx}$ constantes, y que las $Y_i$ son independientes con varianza común $\sigma^2$:
+\[
+V(\hat\beta_1) = \sum_{i=1}^n c_i^2\, V(Y_i) = \sigma^2\sum_{i=1}^n c_i^2 = \sigma^2\sum_{i=1}^n \frac{(x_i-\bar x)^2}{S_{xx}^2} = \frac{\sigma^2}{S_{xx}^2}\sum_i(x_i-\bar x)^2 = \frac{\sigma^2}{S_{xx}^2}\,S_{xx} = \frac{\sigma^2}{S_{xx}}.
+\]
+La normalidad se sigue de que $\hat\beta_1$ es combinación lineal de normales independientes.
+\end{proof}
+
+Este resultado tiene una lectura práctica importante: cuanto mayor es la dispersión de los valores de $X$ en la muestra (mayor $S_{xx}$), menor es la varianza de $\hat\beta_1$, es decir, con mayor precisión se estima la pendiente. Esto sugiere, al diseñar un experimento, elegir los valores de $X$ lo más ``separados'' posible dentro del rango de interés, en lugar de concentrarlos todos cerca de $\bar x$.
+
+\begin{teorema}[Distribución de $\hat\beta_0$]
+Bajo normalidad de los errores,
+\[
+\hat\beta_0 \sim N\left(\beta_0,\ \sigma^2\left[\frac1n+\frac{\bar x^2}{S_{xx}}\right]\right).
+\]
+\end{teorema}
+
+\begin{proof}
+La esperanza fue calculada en el Teorema 1.7. Para la varianza escribimos $\hat\beta_0=\bar Y-\hat\beta_1\bar x=\sum_i\left(\frac1n-c_i\bar x\right)Y_i$, y como es nuevamente una combinación lineal de las $Y_i$ independientes:
+\[
+V(\hat\beta_0) = \sum_i \left(\frac1n-c_i\bar x\right)^2 \sigma^2 = \sigma^2\sum_i\left(\frac{1}{n^2} - \frac{2\bar xc_i}{n} + c_i^2\bar x^2\right).
+\]
+El término central se anula al sumar sobre $i$, pues $\sum_ic_i=0$; el primer término suma $\sigma^2\cdot n\cdot\frac{1}{n^2}=\sigma^2/n$; el tercero, usando $\sum_ic_i^2=1/S_{xx}$ (obtenido en la demostración anterior), suma $\sigma^2\bar x^2/S_{xx}$. Sumando ambos términos no nulos se obtiene $V(\hat\beta_0)=\sigma^2\left[\frac1n+\frac{\bar x^2}{S_{xx}}\right]$.
+\end{proof}
+
+\begin{observacion}
+Los estimadores $\hat\beta_0$ y $\hat\beta_1$ son ambos normales e insesgados, pero \textbf{no son independientes} entre sí: están correlacionados a través de $\bar x$ (puede probarse que $\operatorname{Cov}(\hat\beta_0,\hat\beta_1)=-\sigma^2\bar x/S_{xx}$), salvo en el caso particular en que $\bar x=0$. Esta dependencia debe tenerse presente si se quisiera construir una región de confianza conjunta para $(\beta_0,\beta_1)$, tema que excede el alcance de este curso pero que es la generalización natural de los intervalos individuales que construiremos a continuación.
+\end{observacion}
+
+\subsection{Estimación de \texorpdfstring{$\sigma^2$}{sigma\texttwosuperior}: cuadrado medio del error}
+
+Las varianzas de $\hat\beta_0$ y $\hat\beta_1$ obtenidas arriba dependen del parámetro $\sigma^2$, que en la práctica es desconocido y debe estimarse a partir de los datos. La idea natural es estimarlo a partir de la dispersión de los residuos, del mismo modo en que la varianza muestral $S^2$ estima $\sigma^2$ a partir de los desvíos respecto de la media muestral (Unidad 5).
+
+\begin{definicion}[Cuadrado medio del error]
+\[
+CME = \frac{SCE}{n-2} = \frac{\sum_{i=1}^n (y_i-\hat y_i)^2}{n-2} = \frac{\sum_{i=1}^n e_i^2}{n-2}.
+\]
+\end{definicion}
+
+\begin{observacion}[¿Por qué se divide por $n-2$?]
+La suma $SCE$ involucra $n$ residuos, pero estos no son libres: satisfacen las dos restricciones lineales de la Propiedad 1.5, $\sum_ie_i=0$ y $\sum_ix_ie_i=0$, que provienen precisamente de haber estimado los \textbf{dos} parámetros $\beta_0$ y $\beta_1$ mediante mínimos cuadrados. En consecuencia, solo $n-2$ de los $n$ residuos son ``libres''; los dos grados de libertad restantes se ``gastan'' en la estimación de $\beta_0$ y $\beta_1$. Esta es exactamente la misma lógica por la cual, al estimar la varianza de una única población a partir de $\bar X$, se divide por $n-1$ (se gasta un grado de libertad en estimar la media); aquí se gastan dos, porque el modelo tiene dos parámetros de posición.
+\end{observacion}
+
+\begin{teorema}
+$E(CME)=\sigma^2$; es decir, $CME$ es un estimador insesgado de $\sigma^2$.
+\end{teorema}
+
+\begin{proof}[Demostración (idea)]
+Puede demostrarse, descomponiendo $SCE$ en términos de los errores $\varepsilon_i$ y usando las propiedades de $\hat\beta_1$ obtenidas anteriormente, que
+\[
+E(SCE) = (n-2)\sigma^2,
+\]
+de donde $E(CME)=E(SCE)/(n-2)=\sigma^2$. El cálculo detallado requiere expresar $SCE=SCT-SCR$ en términos de $\sum_i\varepsilon_i^2$ y $\hat\beta_1$, y excede el nivel de detalle de este curso; el resultado en sí, sin embargo, es de uso constante y debe recordarse. Se define además $\hat\sigma=\sqrt{CME}$, llamado el \textbf{error estándar de la estimación}, que tiene las mismas unidades que $Y$ y mide la dispersión típica de los puntos observados alrededor de la recta ajustada.
+\end{proof}
+
+Reemplazando $\sigma^2$ por su estimador insesgado $CME$ en las fórmulas de varianza de los Teoremas 2.1 y 2.2 se obtienen los \textbf{errores estándar estimados}:
+\[
+\widehat{ee}(\hat\beta_1) = \sqrt{\frac{CME}{S_{xx}}}, \qquad \widehat{ee}(\hat\beta_0) = \sqrt{CME\left[\frac1n+\frac{\bar x^2}{S_{xx}}\right]}.
+\]
+
+\begin{teorema}[Distribución $t$ de los estadísticos estandarizados]
+Bajo normalidad de los errores,
+\[
+\frac{\hat\beta_1-\beta_1}{\widehat{ee}(\hat\beta_1)} \sim t_{n-2}, \qquad \frac{\hat\beta_0-\beta_0}{\widehat{ee}(\hat\beta_0)} \sim t_{n-2}.
+\]
+\end{teorema}
+
+Este resultado es enteramente análogo, en su estructura, al que vincula la distribución $t$ de Student con la estimación de una media poblacional cuando $\sigma$ es desconocida (Unidad 6): en ambos casos se parte de un pivote normal estándar, $\dfrac{\hat\beta_1-\beta_1}{\sigma/\sqrt{S_{xx}}}\sim N(0,1)$, y se reemplaza el $\sigma$ desconocido por su estimador $\hat\sigma=\sqrt{CME}$, lo cual introduce variabilidad adicional que se traduce en colas más pesadas que las de la normal, capturadas exactamente por la distribución $t$ con $n-2$ grados de libertad (los mismos grados de libertad con que se estimó $\sigma^2$ mediante $CME$). Puede demostrarse, usando el teorema de Cochran (que retomaremos con más detalle en la Sección 4), que $SCE/\sigma^2\sim\chi^2_{n-2}$ y que $SCE$ es independiente de $\hat\beta_1$, lo cual formaliza por qué el cociente resultante sigue exactamente una distribución $t_{n-2}$ y no otra.
+
+\subsection{Inferencia sobre la pendiente \texorpdfstring{$\beta_1$}{beta1}}
+
+La hipótesis de mayor interés práctico en todo el análisis de regresión es la que involucra a la pendiente $\beta_1$, porque $\beta_1=0$ significa, literalmente, que $X$ no aporta información lineal sobre $Y$: la recta se reduciría a la recta horizontal $y=\beta_0$, y conocer $X$ no ayudaría a predecir mejor a $Y$ que simplemente usar $\bar Y$.
+
+\begin{definicion}[Intervalo de confianza del $(1-\alpha)100\%$ para $\beta_1$]
+\[
+\hat\beta_1 \pm t_{n-2,\,\alpha/2}\ \widehat{ee}(\hat\beta_1).
+\]
+\end{definicion}
+
+\begin{definicion}[Prueba de hipótesis para $\beta_1$]
+Para contrastar
+\[
+H_0: \beta_1=0 \qquad \text{vs.} \qquad H_1: \beta_1\neq 0
+\]
+(o las versiones unilaterales $H_1:\beta_1>0$ o $H_1:\beta_1<0$, según el contexto aplicado), se usa el estadístico de prueba
+\[
+T = \frac{\hat\beta_1-0}{\widehat{ee}(\hat\beta_1)} \sim t_{n-2} \quad \text{bajo } H_0,
+\]
+y se rechaza $H_0$, al nivel $\alpha$, si $|T|>t_{n-2,\alpha/2}$ en el caso bilateral (con las regiones de rechazo unilaterales correspondientes en los otros dos casos).
+\end{definicion}
+
+Más generalmente, si interesa contrastar $H_0:\beta_1=\beta_{1,0}$ para un valor $\beta_{1,0}$ distinto de cero (por ejemplo, para verificar si la pendiente coincide con un valor teórico esperado), el estadístico es $T=(\hat\beta_1-\beta_{1,0})/\widehat{ee}(\hat\beta_1)$, con la misma distribución $t_{n-2}$ bajo $H_0$.
+
+\subsection{Inferencia sobre la ordenada \texorpdfstring{$\beta_0$}{beta0}}
+
+De manera enteramente análoga, usando la distribución del Teorema 2.6 aplicada a $\hat\beta_0$:
+
+\begin{definicion}
+El intervalo de confianza del $(1-\alpha)100\%$ para $\beta_0$ es $\hat\beta_0\pm t_{n-2,\alpha/2}\,\widehat{ee}(\hat\beta_0)$, y el estadístico de prueba para $H_0:\beta_0=\beta_{0,0}$ es
+\[
+T = \frac{\hat\beta_0-\beta_{0,0}}{\widehat{ee}(\hat\beta_0)} \sim t_{n-2} \quad \text{bajo } H_0.
+\]
+\end{definicion}
+
+\begin{observacion}
+En la mayoría de las aplicaciones el interés central recae en $\beta_1$ (existencia, sentido y magnitud de la relación lineal entre $X$ e $Y$), ya que $\beta_0$ suele carecer de interpretación práctica directa: con frecuencia corresponde a una extrapolación fuera del rango observado de $X$ (como ocurrió en el Ejemplo 1.13, donde $x=0$ no pertenece al rango experimental $[2,9]$). Hay excepciones importantes, sin embargo: en un modelo de costos donde $X$ es la cantidad producida, $\beta_0$ representa el costo fijo (independiente de la producción), y sí tiene sentido económico contrastar si es significativamente distinto de cero.
+\end{observacion}
+
+\subsection{Significancia global de la regresión: la prueba F y su relación con la prueba t}
+
+Existe una segunda manera, aparentemente distinta, de contrastar $H_0:\beta_1=0$: comparar, mediante un cociente de cuadrados medios, la variabilidad explicada por la regresión con la variabilidad residual. Esta vía, además de ofrecer otra perspectiva del mismo problema, es la que se generaliza directamente a la regresión múltiple y al análisis de la varianza (Secciones 3 y 4).
+
+\begin{definicion}[Cuadrados medios de la regresión]
+\[
+CMR = \frac{SCR}{1}, \qquad CME = \frac{SCE}{n-2}.
+\]
+(La suma de cuadrados de la regresión tiene un único grado de libertad porque, en regresión simple, hay una sola regresora.)
+\end{definicion}
+
+\begin{teorema}[Prueba F de significancia de la regresión]
+Bajo $H_0:\beta_1=0$ y normalidad de los errores,
+\[
+F = \frac{CMR}{CME} = \frac{SCR/1}{SCE/(n-2)} \sim F_{1,\,n-2}.
+\]
+Se rechaza $H_0$ al nivel $\alpha$ si $F_{\text{calc}}>F_{1,n-2;\alpha}$.
+\end{teorema}
+
+\begin{teorema}[Equivalencia entre la prueba $t$ y la prueba $F$ en regresión simple]
+En regresión lineal simple, $F=T^2$, donde $T$ es el estadístico de la prueba $t$ para $H_0:\beta_1=0$ del Teorema/Definición 2.8. En consecuencia, ambas pruebas son equivalentes: llevan siempre a la misma decisión respecto de $H_0$.
+\end{teorema}
+
+\begin{proof}
+Por el Teorema 1.10 (usado también en la demostración del Teorema 1.12), $SCR=\hat\beta_1^2\,S_{xx}$. Entonces
+\[
+F = \frac{SCR/1}{CME} = \frac{\hat\beta_1^2\,S_{xx}}{CME} = \hat\beta_1^2\cdot\frac{S_{xx}}{CME} = \frac{\hat\beta_1^2}{CME/S_{xx}} = \left(\frac{\hat\beta_1}{\sqrt{CME/S_{xx}}}\right)^2 = \left(\frac{\hat\beta_1}{\widehat{ee}(\hat\beta_1)}\right)^2 = T^2,
+\]
+usando en el último paso la definición $\widehat{ee}(\hat\beta_1)=\sqrt{CME/S_{xx}}$. Esta identidad algebraica, válida siempre (no solo bajo $H_0$), junto con el hecho general de que el cuadrado de una variable $t_{n-2}$ tiene distribución $F_{1,n-2}$, confirma que ambos procedimientos de prueba son formalmente el mismo test, expresado de dos maneras distintas.
+\end{proof}
+
+Es habitual resumir toda esta información en una \textbf{tabla ANOVA de la regresión}:
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Regresión & $SCR$ & $1$ & $CMR=SCR/1$ & $CMR/CME$ \\
+Error & $SCE$ & $n-2$ & $CME=SCE/(n-2)$ & \\
+\midrule
+Total & $SCT$ & $n-1$ & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Nótese que, tal como ocurría con las sumas de cuadrados, los grados de libertad también se descomponen: $n-1=1+(n-2)$, reflejando la misma lógica de partición de la variabilidad total en una parte explicada y una parte residual.
+
+\subsection{Un tema adicional: prueba de hipótesis sobre el coeficiente de correlación poblacional}
+
+En unidades anteriores se definió el coeficiente de correlación \emph{poblacional} $\rho$ entre dos variables aleatorias, del cual $r$ es el estimador muestral natural. Bajo el supuesto adicional de que el par $(X,Y)$ sigue una distribución normal bivariada (un supuesto ligeramente distinto, aunque estrechamente relacionado, al de normalidad de los errores del modelo de regresión), puede demostrarse que
+\[
+T = \frac{r\sqrt{n-2}}{\sqrt{1-r^2}} \sim t_{n-2} \quad \text{bajo } H_0: \rho=0,
+\]
+estadístico que se usa para contrastar $H_0:\rho=0$ (ausencia de asociación lineal poblacional) frente a $H_1:\rho\neq0$. Este resultado no es una casualidad: como $R^2=r^2$ (Teorema 1.12), y a su vez $R^2=SCR/SCT$ está algebraicamente ligado a $\hat\beta_1$, puede verificarse que este estadístico $T$ coincide exactamente, valor por valor, con el estadístico $T=\hat\beta_1/\widehat{ee}(\hat\beta_1)$ del Teorema/Definición 2.8. Es decir: contrastar si existe correlación lineal poblacional entre $X$ e $Y$ es, numéricamente, exactamente lo mismo que contrastar si la pendiente poblacional $\beta_1$ es distinta de cero.
+
+\begin{ejemplo}
+Retomando los datos de soldadura del Ejemplo 1.13, con $r\approx0.9958$ y $n=8$:
+\[
+T = \frac{0.9958\sqrt{6}}{\sqrt{1-0.9916}} = \frac{0.9958(2.4495)}{\sqrt{0.0084}} = \frac{2.4392}{0.09165} \approx 26.61,
+\]
+valor que coincide (salvo error de redondeo) con el estadístico $T=\hat\beta_1/\widehat{ee}(\hat\beta_1)$ que calcularemos en el Ejemplo 2.13, confirmando numéricamente la equivalencia señalada.
+\end{ejemplo}
+
+\subsection{Predicción: respuesta media vs. observación individual}
+
+Uno de los usos más importantes de un modelo de regresión ajustado es la \textbf{predicción}. Dado un valor particular $x_0$ de la regresora (que puede o no coincidir con alguno de los $x_i$ observados), conviene distinguir con cuidado dos problemas de predicción que, aunque comparten el mismo valor puntual, tienen varianzas —y por lo tanto intervalos— distintos.
+
+\begin{definicion}[(a) Estimación de la respuesta media en $x_0$]
+Se estima $E(Y\mid X=x_0)=\beta_0+\beta_1x_0$ mediante $\hat y_0=\hat\beta_0+\hat\beta_1x_0$, cuya varianza es
+\[
+V(\hat y_0) = \sigma^2\left[\frac1n+\frac{(x_0-\bar x)^2}{S_{xx}}\right].
+\]
+El intervalo de confianza del $(1-\alpha)100\%$ para la respuesta media es
+\[
+\hat y_0 \pm t_{n-2,\alpha/2}\sqrt{CME\left[\frac1n+\frac{(x_0-\bar x)^2}{S_{xx}}\right]}.
+\]
+\end{definicion}
+
+\begin{proof}[Justificación de la fórmula de varianza]
+Como $\hat y_0=\hat\beta_0+\hat\beta_1x_0 = \bar Y+\hat\beta_1(x_0-\bar x)$ (sustituyendo $\hat\beta_0=\bar Y-\hat\beta_1\bar x$), y $\bar Y$ y $\hat\beta_1$ no son independientes en general, el cálculo riguroso de $V(\hat y_0)$ requiere la covarianza entre ambos. Puede demostrarse, escribiendo $\hat y_0$ como combinación lineal de las $Y_i$ con coeficientes $\frac1n+c_i(x_0-\bar x)$, y procediendo como en la demostración del Teorema 2.2, que efectivamente $V(\hat y_0)=\sigma^2\left[\frac1n+\frac{(x_0-\bar x)^2}{S_{xx}}\right]$. Obsérvese que esta varianza es mínima quando $x_0=\bar x$ (donde vale $\sigma^2/n$) y crece a medida que $x_0$ se aleja de $\bar x$ en cualquier dirección: es más preciso predecir la respuesta media cerca del centro de los datos que lejos de él.
+\end{proof}
+
+\begin{definicion}[(b) Predicción de una observación individual futura]
+Se desea predecir una \textbf{nueva} observación $Y_0=\beta_0+\beta_1x_0+\varepsilon_0$, con $\varepsilon_0$ independiente de los errores de la muestra usada para ajustar el modelo. El punto de predicción es el mismo, $\hat y_0=\hat\beta_0+\hat\beta_1x_0$, pero ahora el error de predicción es $Y_0-\hat y_0$, cuya varianza es
+\[
+V(Y_0-\hat y_0) = V(Y_0)+V(\hat y_0) = \sigma^2+\sigma^2\left[\frac1n+\frac{(x_0-\bar x)^2}{S_{xx}}\right] = \sigma^2\left[1+\frac1n+\frac{(x_0-\bar x)^2}{S_{xx}}\right],
+\]
+usando independencia entre $Y_0$ (con la nueva observación) y $\hat y_0$ (función de la muestra original). El \textbf{intervalo de predicción} del $(1-\alpha)100\%$ es
+\[
+\hat y_0 \pm t_{n-2,\alpha/2}\sqrt{CME\left[1+\frac1n+\frac{(x_0-\bar x)^2}{S_{xx}}\right]}.
+\]
+\end{definicion}
+
+\begin{observacion}[Por qué difieren los dos intervalos]
+La diferencia entre ambas varianzas es exactamente el término $\sigma^2$ adicional que aparece en (b). Esto tiene una explicación conceptual clara: al estimar la respuesta \emph{media} $E(Y\mid X=x_0)$, la única fuente de incertidumbre es la incertidumbre en la estimación de la recta (es decir, en $\hat\beta_0,\hat\beta_1$); pero al predecir una observación \emph{individual} nueva, a esa incertidumbre hay que sumarle la variabilidad propia e irreducible de esa observación alrededor de su propia media, capturada por $\sigma^2$. En otras palabras: aunque conociéramos exactamente $\beta_0$ y $\beta_1$ (sin ningún error de estimación), seguiría existiendo incertidumbre sobre el valor exacto de una futura observación individual, porque $Y_0$ es aleatoria. Como consecuencia, el intervalo de \textbf{predicción} es \emph{siempre} más ancho que el intervalo de \textbf{confianza para la respuesta media}, para el mismo $x_0$ y el mismo nivel de confianza. Ambos intervalos, además, son más angostos cuanto más cerca está $x_0$ de $\bar x$, y se ensanchan a medida que $x_0$ se aleja del centro de los datos (y, más aún, si $x_0$ cae fuera del rango observado, situación de extrapolación que debe evitarse).
+\end{observacion}
+
+\subsection{Análisis de residuos como diagnóstico del modelo}
+
+Toda la inferencia desarrollada en esta sección —pruebas $t$, prueba $F$, intervalos de confianza y de predicción— depende críticamente de que los supuestos del modelo (normalidad, homocedasticidad, independencia y linealidad) sean razonablemente ciertos. En la práctica estos supuestos se verifican de manera informal, principalmente mediante gráficos de los residuos $e_i=y_i-\hat y_i$.
+
+\begin{itemize}
+\item \textbf{Gráfico de residuos vs. valores ajustados $\hat y_i$ (o vs. $x_i$)}: una nube de puntos sin patrón discernible, dispersa aleatoriamente alrededor de la línea $e=0$, apoya los supuestos del modelo.
+\item \textbf{Forma de embudo o abanico} (los residuos crecen o decrecen sistemáticamente en magnitud a medida que aumenta $\hat y_i$): es indicio de \textbf{heterocedasticidad}, es decir, de violación del supuesto $V(\varepsilon)=\sigma^2$ constante.
+\item \textbf{Patrón curvo, no aleatorio}: sugiere que la relación entre $X$ e $Y$ no es realmente lineal, o que falta algún término en el modelo (por ejemplo, un término cuadrático).
+\item \textbf{Puntos muy alejados del resto} (residuos grandes en valor absoluto): posibles valores atípicos (\emph{outliers}), que ameritan una investigación adicional (¿error de medición? ¿unidad experimental atípica?) antes de decidir si se excluyen del análisis.
+\item Un histograma o un gráfico de probabilidad normal (\emph{Q-Q plot}) de los residuos permite evaluar, informalmente, el supuesto de normalidad.
+\end{itemize}
+
+\begin{observacion}
+Un modelo con $R^2$ alto no está necesariamente libre de problemas: es perfectamente posible tener un $R^2$ elevado y, sin embargo, un patrón claramente no aleatorio en el gráfico de residuos (por ejemplo, si la verdadera relación es cuadrática pero razonablemente cercana a una recta en el rango observado). Por esta razón el análisis de residuos es un complemento indispensable, no un sustituto, del cálculo de $R^2$ y de las pruebas de hipótesis.
+\end{observacion}
+
+\subsection{Ejemplo numérico completo (continuación)}
+
+\begin{ejemplo}
+Retomamos los datos de soldadura de los Ejemplos 1.13: $\hat\beta_0\approx25.214$, $\hat\beta_1\approx3.893$, $S_{xx}=42$, $S_{yy}=641.875$, $S_{xy}=163.5$, $\bar x=5.5$, $n=8$, $SCR\approx636.482$, $SCE\approx5.393$.
+
+\medskip
+\noindent\textbf{Tabla ANOVA de la regresión.}
+\[
+CME = \frac{SCE}{n-2} = \frac{5.393}{6} \approx 0.899, \qquad F = \frac{CMR}{CME} = \frac{636.482}{0.899} \approx 708.1.
+\]
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Fuente & SC & gl & CM & F \\
+\midrule
+Regresión & $636.482$ & $1$ & $636.482$ & $708.1$ \\
+Error & $5.393$ & $6$ & $0.899$ & \\
+\midrule
+Total & $641.875$ & $7$ & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Con $F_{1,6;0.05}=5.99$: como $F\approx708.1\gg5.99$, se \textbf{rechaza} $H_0:\beta_1=0$; la regresión es altamente significativa.
+
+\medskip
+\noindent\textbf{IC del 95\% para $\beta_1$.} $\widehat{ee}(\hat\beta_1)=\sqrt{CME/S_{xx}}=\sqrt{0.899/42}=\sqrt{0.02140}\approx0.1463$. Con $t_{6;0.025}=2.447$:
+\[
+3.893\pm2.447(0.1463) = 3.893\pm0.358 \ \Rightarrow\ (3.535,\ 4.251).
+\]
+Como el intervalo no contiene al $0$, se confirma —por esta vía alternativa— el rechazo de $H_0:\beta_1=0$; nótese además que $T=\hat\beta_1/\widehat{ee}(\hat\beta_1)=3.893/0.1463\approx26.61$, y en efecto $T^2\approx708.1\approx F$, verificando numéricamente el Teorema 2.9.
+
+\medskip
+\noindent\textbf{Predicción en $x_0=6.5$ segundos.} $\hat y_0=25.214+3.893(6.5)\approx50.518$ kg. Para la respuesta \textbf{media}:
+\[
+\widehat{ee}(\hat y_0) = \sqrt{CME\left[\frac18+\frac{(6.5-5.5)^2}{42}\right]} = \sqrt{0.899(0.1488)} \approx 0.366,
+\]
+\[
+\text{IC 95\%: } 50.518\pm2.447(0.366) \approx (49.62,\ 51.41) \text{ kg}.
+\]
+Para el valor \textbf{individual} futuro:
+\[
+\widehat{ee}(Y_0-\hat y_0) = \sqrt{CME\left[1+\frac18+\frac{(6.5-5.5)^2}{42}\right]} \approx \sqrt{0.899(1.1488)} \approx 1.016,
+\]
+\[
+\text{IP 95\%: } 50.518\pm2.447(1.016) \approx (48.03,\ 53.00) \text{ kg},
+\]
+claramente más ancho que el intervalo de confianza para la respuesta media, tal como establece la Observación 2.12.
+
+\medskip
+\noindent\textbf{Conclusión general del ejemplo.} Existe una relación lineal fuerte, positiva y altamente significativa entre el tiempo de soldadura y la resistencia a la tracción ($R^2\approx0.9916$); el modelo ajustado explica más del $99\%$ de la variabilidad observada y permite predecir con buena precisión la resistencia media (y, con algo menos de precisión, un valor individual futuro) para tiempos de soldadura dentro del rango estudiado ($2$ a $9$ segundos).
+\end{ejemplo}
+
+\newpage
+\section{Análisis de la varianza de un factor: fundamentos}
+
+\subsection{Motivación: el problema de las comparaciones múltiples}
+
+En la Unidad 7 aprendimos a comparar las medias de \textbf{dos} poblaciones mediante la prueba $t$ para dos muestras. Muchas situaciones aplicadas exigen, sin embargo, comparar \textbf{tres o más} poblaciones simultáneamente: el rendimiento de un cultivo bajo varios fertilizantes distintos, la resistencia de piezas fabricadas por varias máquinas o proveedores, el tiempo de reacción de un fármaco administrado a distintas dosis, el puntaje de satisfacción de clientes en distintas sucursales de una empresa.
+
+Un primer intento, ingenuo, sería aplicar la prueba $t$ de dos muestras a \textbf{todos los pares posibles} de grupos. Si hay $k$ grupos, el número de comparaciones de a pares es $\binom{k}{2}=\frac{k(k-1)}{2}$. El problema de este enfoque es que cada prueba individual tiene una probabilidad $\alpha$ de cometer un error de tipo I (rechazar una igualdad de medias que en realidad es verdadera), y al repetir muchas pruebas sobre el mismo conjunto de datos, la probabilidad de cometer \textbf{al menos un} error de tipo I en el conjunto de comparaciones —el llamado \textbf{error de tipo I global} o \emph{familywise}— crece muy por encima de $\alpha$.
+
+\begin{ejemplo}[Inflación del error de tipo I]
+Supongamos $k=5$ grupos, de modo que hay $\binom{5}{2}=10$ comparaciones de a pares, cada una realizada al nivel $\alpha=0.05$. Si, de manera optimista, asumimos que las 10 pruebas fuesen independientes entre sí (en la práctica no lo son, porque comparten los mismos datos, pero esta aproximación ya alcanza para ilustrar el problema), la probabilidad de \textbf{no} cometer ningún error de tipo I en ninguna de las 10 pruebas, cuando en realidad las 5 medias poblacionales son todas iguales, sería
+\[
+(1-0.05)^{10} \approx 0.5987,
+\]
+de modo que la probabilidad de cometer \textbf{al menos un} error de tipo I en el conjunto de comparaciones sería aproximadamente
+\[
+1-0.5987 = 0.4013,
+\]
+¡más del $40\%$! Es decir, aun cuando no exista ninguna diferencia real entre las 5 poblaciones, hay más de un $40\%$ de probabilidad de concluir erróneamente que \emph{alguna} de las 10 comparaciones de a pares resulta ``significativa'' solo por azar. Esto vuelve inaceptable, como procedimiento general, el enfoque de comparar de a pares sin ningún ajuste.
+\end{ejemplo}
+
+Se necesita, entonces, un procedimiento que compare las $k$ medias \textbf{simultáneamente}, con un único nivel de significación global $\alpha$ para el conjunto de la comparación: ese procedimiento es el \textbf{análisis de la varianza} (ANOVA, por sus siglas en inglés, \emph{Analysis of Variance}).
+
+\begin{observacion}[La idea, paradójica en apariencia, del ANOVA]
+Para comparar \textbf{medias}, el procedimiento analiza \textbf{varianzas}: se compara la variabilidad \emph{entre} los grupos (qué tan distintas son las medias muestrales de los distintos grupos entre sí) con la variabilidad \emph{dentro} de cada grupo (cuánto fluctúan naturalmente las observaciones de un mismo grupo alrededor de su propia media). La intuición es la siguiente: si las medias poblacionales de los $k$ grupos son todas iguales, la variabilidad \emph{entre} las medias muestrales debería ser del mismo orden que la variabilidad \emph{dentro} de cada grupo, porque ambas reflejarían únicamente fluctuación aleatoria (muestral). En cambio, si las medias poblacionales difieren genuinamente, la variabilidad \emph{entre} grupos tenderá a ser sustancialmente mayor que la variabilidad \emph{dentro} de los grupos. El análisis de la varianza formaliza esta comparación mediante un cociente de varianzas, que estudiaremos en detalle en la Sección 4.
+\end{observacion}
+
+\subsection{El modelo de un factor de efectos fijos (Modelo I)}
+
+Se tienen $k$ poblaciones (llamadas \textbf{niveles} o \textbf{tratamientos} del factor en estudio), de las cuales se extraen muestras aleatorias independientes de tamaños $n_1,n_2,\dots,n_k$, con $N=\sum_{i=1}^kn_i$ el número total de observaciones.
+
+\begin{definicion}[Modelo I: modelo de un factor de efectos fijos]
+La observación $j$-ésima correspondiente al tratamiento $i$ se modela como
+\[
+Y_{ij} = \mu+\tau_i+\varepsilon_{ij}, \qquad i=1,\dots,k,\ \ j=1,\dots,n_i,
+\]
+donde:
+\begin{itemize}
+\item $\mu$ es la \textbf{media general}, común a todos los tratamientos;
+\item $\tau_i$ es el \textbf{efecto del tratamiento} $i$, un parámetro fijo y desconocido, sujeto a la restricción de identificabilidad
+\[
+\sum_{i=1}^k n_i\,\tau_i = 0;
+\]
+\item $\varepsilon_{ij}$ es el error aleatorio asociado a la observación $(i,j)$.
+\end{itemize}
+\end{definicion}
+
+\begin{observacion}[¿Por qué la restricción sobre los $\tau_i$?]
+El modelo $Y_{ij}=\mu+\tau_i+\varepsilon_{ij}$, tal como está escrito, tiene un problema de identificabilidad: si sumamos una constante $c$ a $\mu$ y restamos esa misma constante a todos los $\tau_i$, la suma $\mu+\tau_i$ (y por lo tanto la distribución de $Y_{ij}$) no cambia, de modo que hay infinitas combinaciones de $(\mu,\tau_1,\dots,\tau_k)$ que producen exactamente el mismo modelo probabilístico. La restricción $\sum_in_i\tau_i=0$ (que en el caso de diseño equilibrado, $n_i=n$ para todo $i$, se reduce a $\sum_i\tau_i=0$) fija unívocamente los parámetros: con esta convención, $\mu$ resulta ser el promedio ponderado de las medias poblacionales de los $k$ tratamientos, y $\tau_i$ mide cuánto se aparta la media del tratamiento $i$ de ese promedio general.
+\end{observacion}
+
+Se dice que este es el ``Modelo I'' o modelo de \textbf{efectos fijos} porque los $k$ niveles del factor bajo estudio son, en sí mismos, los únicos de interés para el investigador (por ejemplo, se comparan exactamente esas $4$ máquinas de una fábrica, no una muestra aleatoria de máquinas de un universo más amplio). Esto se contrapone al Modelo II o de \textbf{efectos aleatorios}, en el cual los niveles del factor se conciben como una muestra aleatoria de una población más amplia de niveles posibles (por ejemplo, si se seleccionaran al azar $4$ operarios de una planta con muchos operarios, y el interés fuera generalizar a la variabilidad entre operarios en general, no a esos $4$ en particular). El Modelo II requiere un tratamiento estadístico distinto (los $\tau_i$ pasan a ser variables aleatorias con su propia varianza) y queda fuera del alcance de este curso.
+
+Si definimos $\mu_i=\mu+\tau_i$ como la \textbf{media poblacional del tratamiento} $i$, el modelo se reescribe de forma más directa como
+\[
+Y_{ij} = \mu_i+\varepsilon_{ij},
+\]
+es decir: las observaciones del grupo $i$ tienen media $\mu_i$ y fluctúan alrededor de ella por efecto del error aleatorio, exactamente como en un modelo de una sola muestra, pero replicado $k$ veces con una varianza común. La hipótesis de interés central es la igualdad de las $k$ medias poblacionales:
+\[
+H_0: \mu_1=\mu_2=\cdots=\mu_k \qquad \text{vs.} \qquad H_1: \text{al menos dos de las } \mu_i \text{ son distintas},
+\]
+equivalente, en términos de los efectos, a $H_0:\tau_1=\tau_2=\cdots=\tau_k=0$.
+
+\begin{definicion}[Supuestos del Modelo I]
+Sobre los errores $\varepsilon_{ij}$ se asume:
+\begin{enumerate}[label=(\roman*)]
+\item $E(\varepsilon_{ij})=0$ para todo $i,j$;
+\item $V(\varepsilon_{ij})=\sigma^2$, la \textbf{misma} varianza para todos los tratamientos (homocedasticidad);
+\item los $\varepsilon_{ij}$ son independientes entre sí;
+\item $\varepsilon_{ij}\sim N(0,\sigma^2)$ (normalidad, necesaria para la prueba $F$ de la Sección 4).
+\end{enumerate}
+\end{definicion}
+
+Estos cuatro supuestos son formalmente idénticos, en su naturaleza, a los que se plantearon en la Definición 1.2 para el modelo de regresión: linealidad (aquí, aditividad de $\mu$ y $\tau_i$), homocedasticidad, independencia y normalidad. Bajo ellos, $Y_{ij}\sim N(\mu_i,\sigma^2)$, con las $k$ poblaciones compartiendo la misma varianza $\sigma^2$ pero posiblemente distintas medias $\mu_i$.
+
+\subsection{Notación para los datos}
+
+Es conveniente introducir la siguiente notación, estándar en el tratamiento del ANOVA de un factor:
+\[
+\bar Y_{i\cdot} = \frac{1}{n_i}\sum_{j=1}^{n_i} Y_{ij} \quad \text{(media muestral del tratamiento } i\text{)}, \qquad \bar Y_{\cdot\cdot} = \frac1N\sum_{i=1}^k\sum_{j=1}^{n_i} Y_{ij} \quad \text{(media general de todas las observaciones).}
+\]
+
+\subsection{Descomposición de la suma de cuadrados total: demostración algebraica completa}
+
+Al igual que en regresión, la herramienta central del ANOVA es una descomposición de la variabilidad total de los datos en dos componentes: la variabilidad atribuible a diferencias \emph{entre} tratamientos, y la variabilidad atribuible al azar \emph{dentro} de cada tratamiento.
+
+\begin{definicion}
+La \textbf{suma de cuadrados total} mide la dispersión de todas las $N$ observaciones respecto de la media general:
+\[
+SCTo = \sum_{i=1}^k\sum_{j=1}^{n_i} \big(Y_{ij}-\bar Y_{\cdot\cdot}\big)^2.
+\]
+\end{definicion}
+
+\begin{teorema}[Descomposición de la suma de cuadrados]
+\[
+SCTo = SCTr+SCE,
+\]
+donde
+\[
+SCTr = \sum_{i=1}^k n_i\big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big)^2 \quad \text{(suma de cuadrados \textbf{entre} tratamientos)},
+\]
+\[
+SCE = \sum_{i=1}^k\sum_{j=1}^{n_i} \big(Y_{ij}-\bar Y_{i\cdot}\big)^2 \quad \text{(suma de cuadrados \textbf{dentro} de los tratamientos, o del error)}.
+\]
+\end{teorema}
+
+\begin{proof}
+Sumamos y restamos $\bar Y_{i\cdot}$ dentro de cada desvío respecto de la media general:
+\[
+Y_{ij}-\bar Y_{\cdot\cdot} = \big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big) + \big(Y_{ij}-\bar Y_{i\cdot}\big).
+\]
+Elevamos al cuadrado y sumamos sobre todos los índices $i=1,\dots,k$ y $j=1,\dots,n_i$:
+\[
+\sum_{i,j}\big(Y_{ij}-\bar Y_{\cdot\cdot}\big)^2 = \sum_{i,j}\big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big)^2 + \sum_{i,j}\big(Y_{ij}-\bar Y_{i\cdot}\big)^2 + 2\sum_{i,j}\big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big)\big(Y_{ij}-\bar Y_{i\cdot}\big).
+\]
+Como el primer sumando de cada término cruzado, $\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}$, no depende de $j$, podemos sacarlo fuera de la suma interna en $j$ dentro de cada $i$ fijo:
+\[
+\sum_{i,j}\big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big)\big(Y_{ij}-\bar Y_{i\cdot}\big) = \sum_{i=1}^k \big(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot}\big) \underbrace{\sum_{j=1}^{n_i}\big(Y_{ij}-\bar Y_{i\cdot}\big)}_{=\,0}.
+\]
+La suma interna se anula para cada $i$ fijo, pues es exactamente la suma de los desvíos de las observaciones del grupo $i$ respecto de \emph{su propia} media muestral $\bar Y_{i\cdot}$ —una propiedad elemental de la media aritmética, idéntica en espíritu a la propiedad $\sum_ie_i=0$ de los residuos de mínimos cuadrados vista en la Sección 1—. Por lo tanto el término cruzado es idénticamente cero para todo $i$, y en consecuencia también su suma sobre $i$. Reconociendo el primer y el segundo sumando como $SCTr$ y $SCE$ respectivamente (el primero no depende de $j$, por lo que $\sum_j(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot})^2=n_i(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot})^2$), obtenemos
+\[
+SCTo = SCTr+SCE.
+\]
+\end{proof}
+
+\begin{observacion}
+Esta demostración es formalmente idéntica, paso a paso, a la del Teorema 1.9 ($SCT=SCR+SCE$ en regresión): en ambos casos se suma y resta un término intermedio (allí $\hat y_i$, aquí $\bar Y_{i\cdot}$), y en ambos casos el término cruzado se anula gracias a una propiedad de ortogonalidad de la media (o de los residuos de mínimos cuadrados) respecto de los desvíos dentro de cada grupo. Esto no es casual: el ANOVA de un factor puede reformularse exactamente como un caso particular de regresión lineal (múltiple) usando variables indicadoras de cada tratamiento, como veremos en la síntesis final de la Sección 4.
+\end{observacion}
+
+\subsection{Grados de libertad}
+
+\begin{propiedad}[Conteo de grados de libertad]
+\begin{itemize}
+\item $SCTo$ involucra $N$ desvíos $(Y_{ij}-\bar Y_{\cdot\cdot})$, sujetos a la única restricción $\sum_{i,j}(Y_{ij}-\bar Y_{\cdot\cdot})=0$ (pues suman cero por definición de media); por lo tanto tiene $N-1$ grados de libertad.
+\item $SCTr$ involucra $k$ desvíos $(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot})$, sujetos a la única restricción $\sum_in_i(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot})=0$; por lo tanto tiene $k-1$ grados de libertad.
+\item $SCE$: dentro de cada grupo $i$ hay $n_i$ desvíos $(Y_{ij}-\bar Y_{i\cdot})$ sujetos a la restricción $\sum_j(Y_{ij}-\bar Y_{i\cdot})=0$, es decir $n_i-1$ grados de libertad por grupo (se ``gasta'' un grado de libertad al estimar $\mu_i$ con $\bar Y_{i\cdot}$); sumando sobre los $k$ grupos independientes se obtienen $\sum_{i=1}^k(n_i-1)=N-k$ grados de libertad.
+\end{itemize}
+\end{propiedad}
+
+\begin{corolario}
+Los grados de libertad se descomponen exactamente igual que las sumas de cuadrados:
+\[
+N-1 = (k-1)+(N-k).
+\]
+\end{corolario}
+
+Esta descomposición paralela —de sumas de cuadrados y de grados de libertad simultáneamente— es la marca distintiva del análisis de la varianza, y reaparece en cada aplicación del método, incluyendo la regresión (Sección 2) y diseños más complejos (de dos o más factores) que exceden el alcance de este curso.
+
+\subsection{Cuadrados medios y sus valores esperados}
+
+Dividiendo cada suma de cuadrados por sus correspondientes grados de libertad se obtienen los \textbf{cuadrados medios}:
+\[
+CMTr = \frac{SCTr}{k-1} \quad \text{(cuadrado medio entre tratamientos)}, \qquad CME = \frac{SCE}{N-k} \quad \text{(cuadrado medio del error)}.
+\]
+
+El siguiente resultado —que enunciamos sin demostración completa, por requerir manipulaciones algebraicas más extensas, aunque damos la idea esencial— es la clave conceptual de todo el análisis de la varianza: explica \emph{por qué} comparar $CMTr$ con $CME$ es un procedimiento razonable para contrastar $H_0$.
+
+\begin{teorema}[Esperanza de los cuadrados medios]
+Bajo el Modelo I,
+\[
+E(CME) = \sigma^2 \qquad \text{(siempre, sea $H_0$ verdadera o falsa)},
+\]
+\[
+E(CMTr) = \sigma^2 + \frac{\sum_{i=1}^k n_i\tau_i^2}{k-1} \ \geq\ \sigma^2,
+\]
+con igualdad si y solo si $\tau_1=\tau_2=\cdots=\tau_k=0$, es decir, si y solo si $H_0$ es verdadera.
+\end{teorema}
+
+\begin{proof}[Idea de la demostración]
+Para $E(CME)$: dentro de cada grupo $i$, los $n_i$ valores $Y_{i1},\dots,Y_{in_i}$ son observaciones independientes de una población con media $\mu_i$ y varianza $\sigma^2$ (el mismo $\sigma^2$ para todos los grupos, por homocedasticidad). La suma de cuadrados dentro del grupo $i$, $\sum_j(Y_{ij}-\bar Y_{i\cdot})^2$, es exactamente la suma de cuadrados que aparece en el estimador insesgado usual de la varianza de una única muestra, de modo que su esperanza es $(n_i-1)\sigma^2$ (resultado ya usado en unidades anteriores al estudiar la distribución de $S^2$). Sumando sobre los $k$ grupos, $E(SCE)=\sum_i(n_i-1)\sigma^2=(N-k)\sigma^2$, y por lo tanto $E(CME)=E(SCE)/(N-k)=\sigma^2$, sin importar si $H_0$ es cierta o no: $CME$ siempre estima a $\sigma^2$, porque se calcula \emph{dentro} de cada grupo, comparando cada observación solo con la media de su propio grupo, nunca entre grupos.
+
+Para $E(CMTr)$, el cálculo es algo más laborioso: se parte de $\bar Y_{i\cdot}=\mu_i+\bar\varepsilon_{i\cdot}=\mu+\tau_i+\bar\varepsilon_{i\cdot}$, se sustituye en $SCTr=\sum_in_i(\bar Y_{i\cdot}-\bar Y_{\cdot\cdot})^2$, y se toma esperanza usando que $E(\bar\varepsilon_{i\cdot})=0$ y $V(\bar\varepsilon_{i\cdot})=\sigma^2/n_i$. El resultado es que $SCTr$ tiene una parte que depende únicamente de la variabilidad muestral de los errores promediados por grupo (que aporta $(k-1)\sigma^2$ a la esperanza, igual que $SCE$ aporta $(N-k)\sigma^2$) y una parte adicional, sistemática, que depende de cuán distintos son los verdaderos efectos $\tau_i$ entre sí, y que se anula exactamente si y solo si todos los $\tau_i$ son iguales entre sí (y por la restricción de identificabilidad, iguales a cero).
+\end{proof}
+
+Este resultado es la justificación estadística precisa de la intuición presentada en la Observación 3.2: si $H_0$ es verdadera, tanto $CMTr$ como $CME$ estiman a $\sigma^2$, y se espera que su cociente sea cercano a $1$; si $H_0$ es falsa, $CMTr$ sobreestima sistemáticamente a $\sigma^2$ (tanto más cuanto mayores y más dispares sean los efectos $\tau_i$), mientras que $CME$ sigue estimando correctamente a $\sigma^2$ (porque se calcula exclusivamente a partir de la variabilidad \emph{dentro} de cada grupo, que no se ve afectada por diferencias \emph{entre} las medias de los grupos). Esto motiva usar el cociente $F=CMTr/CME$ como estadístico de prueba, tema que desarrollamos en detalle en la Sección 4.
+
+\subsection{Fórmulas de cálculo directo}
+
+En la práctica, para evitar acumular error de redondeo al trabajar con los desvíos respecto de las medias, conviene usar fórmulas de cálculo equivalentes basadas en las sumas y no en los desvíos. Sea $T_i=\sum_jY_{ij}$ el total de las observaciones del tratamiento $i$, y $T=\sum_iT_i$ el total general. Puede demostrarse, desarrollando los cuadrados en las definiciones originales (exactamente como se hizo con $S_{xx}$ y $S_{xy}$ en la Sección 1), que
+\[
+SCTo = \sum_{i,j} Y_{ij}^2 - \frac{T^2}{N}, \qquad SCTr = \sum_{i=1}^k \frac{T_i^2}{n_i} - \frac{T^2}{N}, \qquad SCE = SCTo-SCTr.
+\]
+Estas son las fórmulas que se usan en la práctica y las que emplearemos en los ejemplos numéricos de la Sección 4.
+
+\subsection{Un tema adicional: estimación puntual y por intervalos de las medias de tratamiento}
+
+Un subproducto natural, y de interés práctico, del Modelo I es la posibilidad de estimar cada media poblacional $\mu_i$ individualmente, no solo contrastar si son todas iguales. El estimador puntual natural de $\mu_i$ es, por supuesto, $\bar Y_{i\cdot}$, que es insesgado ($E(\bar Y_{i\cdot})=\mu_i$, pues es el promedio de observaciones con esa media). Para construir un intervalo de confianza es preciso estimar $V(\bar Y_{i\cdot})=\sigma^2/n_i$; y aquí aparece una idea importante, propia del enfoque de ANOVA: en lugar de estimar $\sigma^2$ usando \emph{solo} las $n_i$ observaciones del grupo $i$ (lo cual sería válido, pero desaprovecharía información), se usa el estimador \textbf{combinado} (\emph{pooled}) $CME$, que aprovecha la información de \textbf{todos} los grupos bajo el supuesto común de homocedasticidad, y que tiene muchos más grados de libertad ($N-k$) que el estimador de un único grupo ($n_i-1$).
+
+\begin{propiedad}[Intervalo de confianza para una media de tratamiento]
+Bajo el Modelo I y normalidad de los errores, un intervalo de confianza del $(1-\alpha)100\%$ para $\mu_i$ es
+\[
+\bar Y_{i\cdot} \pm t_{N-k,\,\alpha/2}\sqrt{\frac{CME}{n_i}}.
+\]
+\end{propiedad}
+
+Esta idea —estimar la varianza combinando información de todos los grupos, con muchos más grados de libertad que cualquier grupo individual— es exactamente la misma que subyace a las comparaciones múltiples post-hoc que estudiaremos en la Sección 4 (Tukey, Bonferroni), y es una de las razones prácticas más importantes por las que conviene realizar un análisis de la varianza conjunto en lugar de $k$ análisis de una sola muestra por separado: se gana precisión al estimar $\sigma^2$.
+
+\begin{ejemplo}[Ilustración numérica de la descomposición $SCTo=SCTr+SCE$]
+Para fijar ideas con un ejemplo mínimo antes del caso completo de la Sección 4, consideremos $k=3$ tratamientos con $n_i=3$ observaciones cada uno:
+\[
+\text{Grupo 1: } 4,6,5 \ (\bar Y_{1\cdot}=5), \qquad \text{Grupo 2: } 7,9,8\ (\bar Y_{2\cdot}=8), \qquad \text{Grupo 3: } 5,7,6\ (\bar Y_{3\cdot}=6).
+\]
+El total general es $T=57$, $N=9$, y la media general es $\bar Y_{\cdot\cdot}=57/9=6.3333$. Calculando directamente:
+\[
+SCTo = \sum_{i,j}(Y_{ij}-6.3333)^2 = 20.0,
+\]
+\[
+SCTr = 3(5-6.3333)^2+3(8-6.3333)^2+3(6-6.3333)^2 = 5.333+8.333+0.333 = 14.0,
+\]
+\[
+SCE = (1+1+0)+(1+1+0)+(1+1+0) = 2+2+2=6.0.
+\]
+En efecto, $SCTr+SCE=14.0+6.0=20.0=SCTo$, verificando numéricamente la identidad del Teorema 3.6. Con $k-1=2$ y $N-k=6$ grados de libertad, $CMTr=14/2=7.0$ y $CME=6/6=1.0$; el cociente $F=CMTr/CME=7.0$ ya sugiere, informalmente, que las medias de los tres grupos difieren más de lo que explicaría el solo azar (esta intuición se formaliza con la prueba $F$ de la Sección 4).
+\end{ejemplo}
+
+\newpage
+\section{La prueba F en ANOVA, ejemplo completo y síntesis del curso}
+
+\subsection{Distribución del estadístico F bajo \texorpdfstring{$H_0$}{H0}}
+
+En la Sección 3 vimos que $E(CME)=\sigma^2$ siempre, y que $E(CMTr)=\sigma^2$ si y solo si $H_0$ es verdadera, lo que motiva usar el cociente $F=CMTr/CME$ como estadístico de prueba. Para poder fijar un nivel de significación $\alpha$ exacto, necesitamos conocer la distribución \emph{exacta} de $F$ bajo $H_0$, y no solo su comportamiento en esperanza. Este es el punto donde interviene, de manera esencial, el supuesto de normalidad de los errores.
+
+\begin{teorema}[Resultados distribucionales bajo el Modelo I, con normalidad]
+Bajo los supuestos del Modelo I (en particular $\varepsilon_{ij}\sim N(0,\sigma^2)$ independientes):
+\[
+\frac{SCE}{\sigma^2} \sim \chi^2_{N-k} \qquad \text{siempre (sea $H_0$ verdadera o no)},
+\]
+\[
+\frac{SCTr}{\sigma^2} \sim \chi^2_{k-1} \qquad \text{bajo } H_0:\mu_1=\cdots=\mu_k,
+\]
+y, además, $SCTr$ y $SCE$ son variables aleatorias \textbf{independientes}.
+\end{teorema}
+
+Este resultado (que en un curso más avanzado se demuestra mediante el llamado \textbf{teorema de Cochran}, un resultado general sobre formas cuadráticas de vectores normales) es la contraparte, para $k$ grupos, exactamente del mismo tipo de resultado que se usó en la Unidad 5 para establecer que $(n-1)S^2/\sigma^2\sim\chi^2_{n-1}$ y que $\bar X$ y $S^2$ son independientes bajo muestreo de una población normal: allí se trataba de un único grupo, aquí de $k$ grupos simultáneamente, y la independencia entre $SCTr$ (que depende únicamente de las medias $\bar Y_{i\cdot}$) y $SCE$ (que depende únicamente de la variabilidad dentro de cada grupo, ortogonal a las medias) es la generalización directa de la independencia entre $\bar X$ y $S^2$.
+
+\begin{teorema}[Distribución del estadístico F]
+Bajo $H_0:\mu_1=\cdots=\mu_k$ y normalidad,
+\[
+F = \frac{CMTr}{CME} = \frac{SCTr/(k-1)}{SCE/(N-k)} \sim F_{k-1,\,N-k}.
+\]
+\end{teorema}
+
+\begin{proof}
+Por el Teorema 4.1, bajo $H_0$ tenemos $SCTr/\sigma^2\sim\chi^2_{k-1}$ y $SCE/\sigma^2\sim\chi^2_{N-k}$, independientes entre sí. Recordando la definición de la distribución $F$ de Snedecor introducida en la Unidad 3: si $U\sim\chi^2_{d_1}$ y $V\sim\chi^2_{d_2}$ son independientes, entonces $\dfrac{U/d_1}{V/d_2}\sim F_{d_1,d_2}$. Aplicando esta definición con $U=SCTr/\sigma^2$, $d_1=k-1$, $V=SCE/\sigma^2$, $d_2=N-k$:
+\[
+\frac{(SCTr/\sigma^2)/(k-1)}{(SCE/\sigma^2)/(N-k)} = \frac{SCTr/(k-1)}{SCE/(N-k)} = \frac{CMTr}{CME} = F,
+\]
+donde los factores $\sigma^2$ se cancelan algebraicamente entre numerador y denominador. Por lo tanto $F\sim F_{k-1,N-k}$ bajo $H_0$.
+\end{proof}
+
+\begin{definicion}[Regla de decisión]
+Se rechaza $H_0:\mu_1=\cdots=\mu_k$ al nivel $\alpha$ si
+\[
+F_{\text{calc}} > F_{k-1,\,N-k;\,\alpha},
+\]
+el percentil $(1-\alpha)$ de la distribución $F_{k-1,N-k}$.
+\end{definicion}
+
+La prueba es \textbf{siempre unilateral a derecha}, y esto merece una explicación conceptual, no solo formal. Si $H_0$ es verdadera, $CMTr$ y $CME$ estiman ambos a $\sigma^2$, y se espera $F\approx1$. Si $H_0$ es falsa, por el Teorema 3.10 se tiene $E(CMTr)>\sigma^2=E(CME)$, de modo que se espera $F>1$, y cuanto mayor la dispersión real entre las medias poblacionales (medida por $\sum_in_i\tau_i^2$), mayor tenderá a ser $F$. Valores de $F$ muy \emph{pequeños} (bastante menores que $1$) no constituyen evidencia en contra de $H_0$; en un diseño correctamente aleatorizado esto simplemente no se penaliza (aunque, si ocurriera de manera marcada y sistemática, podría alertar sobre otros problemas del diseño, como una aleatorización deficiente).
+
+\subsection{Tabla ANOVA de un factor}
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Fuente de variación & SC & gl & CM & F \\
+\midrule
+Entre tratamientos & $SCTr$ & $k-1$ & $CMTr=\dfrac{SCTr}{k-1}$ & $\dfrac{CMTr}{CME}$ \\[8pt]
+Dentro de tratamientos (error) & $SCE$ & $N-k$ & $CME=\dfrac{SCE}{N-k}$ & \\[8pt]
+\midrule
+Total & $SCTo$ & $N-1$ & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Ejemplo numérico completo: comparación de cuatro máquinas}
+
+\begin{ejemplo}
+Una fábrica cuenta con cuatro máquinas (A, B, C, D) que producen piezas del mismo tipo. Se desea determinar si el \textbf{diámetro medio} de las piezas (medido en décimas de milímetro por encima de un valor nominal) es el mismo para las cuatro máquinas. Se toman $n_i=5$ piezas de cada máquina, $N=20$ en total:
+
+\begin{center}
+\begin{tabular}{c|ccccc|c}
+\toprule
+Máquina & \multicolumn{5}{c|}{Observaciones} & Total $T_i$ \\
+\midrule
+A & 23 & 25 & 21 & 24 & 22 & 115 \\
+B & 27 & 29 & 26 & 28 & 30 & 140 \\
+C & 22 & 20 & 23 & 21 & 19 & 105 \\
+D & 25 & 24 & 27 & 26 & 23 & 125 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Aquí $k=4$, $n_i=5$ para todo $i$ (diseño equilibrado), $N=20$, y el total general es $T=115+140+105+125=485$.
+
+\medskip
+\noindent\textbf{Medias por tratamiento.}
+\[
+\bar Y_{A\cdot}=\frac{115}{5}=23.0, \quad \bar Y_{B\cdot}=\frac{140}{5}=28.0, \quad \bar Y_{C\cdot}=\frac{105}{5}=21.0, \quad \bar Y_{D\cdot}=\frac{125}{5}=25.0, \quad \bar Y_{\cdot\cdot}=\frac{485}{20}=24.25.
+\]
+Las medias muestrales difieren notoriamente entre sí (van de $21.0$ a $28.0$); el ANOVA cuantificará si esa diferencia es estadísticamente significativa o si es atribuible al azar.
+
+\medskip
+\noindent\textbf{Sumas de cuadrados.} Con $\sum_{i,j}Y_{ij}^2=11935$ (suma de los 20 valores individuales al cuadrado):
+\[
+SCTo = \sum_{i,j}Y_{ij}^2 - \frac{T^2}{N} = 11935-\frac{485^2}{20} = 11935-11761.25 = 173.75,
+\]
+\[
+SCTr = \sum_{i=1}^4\frac{T_i^2}{n_i} - \frac{T^2}{N} = \frac{115^2+140^2+105^2+125^2}{5} - 11761.25 = \frac{13225+19600+11025+15625}{5}-11761.25
+\]
+\[
+= \frac{59475}{5}-11761.25 = 11895-11761.25 = 133.75,
+\]
+\[
+SCE = SCTo-SCTr = 173.75-133.75 = 40.0.
+\]
+
+\medskip
+\noindent\textbf{Tabla ANOVA.} Grados de libertad: $k-1=3$, $N-k=16$, $N-1=19$.
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Fuente de variación & SC & gl & CM & F \\
+\midrule
+Entre máquinas & $133.75$ & $3$ & $44.583$ & $17.83$ \\
+Dentro (error) & $40.00$ & $16$ & $2.500$ & \\
+\midrule
+Total & $173.75$ & $19$ & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+\[
+CMTr = \frac{133.75}{3} \approx 44.583, \qquad CME = \frac{40.0}{16} = 2.5, \qquad F = \frac{44.583}{2.5} \approx 17.83.
+\]
+
+\medskip
+\noindent\textbf{Decisión.} Planteamos, al nivel $\alpha=0.05$:
+\[
+H_0:\mu_A=\mu_B=\mu_C=\mu_D \qquad\text{vs.}\qquad H_1: \text{al menos una media difiere.}
+\]
+El valor crítico es $F_{3,16;0.05}\approx3.24$. Como $F_{\text{calc}}\approx17.83>3.24$, se \textbf{rechaza} $H_0$. Existe evidencia estadísticamente significativa, al $5\%$, de que el diámetro medio de las piezas \textbf{no} es el mismo para las cuatro máquinas: el factor ``máquina'' tiene un efecto real sobre el diámetro producido (el valor $p$ asociado, con $3$ y $16$ grados de libertad, es muy pequeño, $p<0.0001$).
+\end{ejemplo}
+
+\subsection{Robustez de la prueba F frente a violaciones de los supuestos}
+
+En la práctica, ningún conjunto de datos reales satisface exactamente los supuestos del Modelo I. Es útil, por eso, saber qué tan sensible es la prueba $F$ a apartamientos moderados de cada supuesto:
+\begin{itemize}
+\item \textbf{Normalidad}: la prueba $F$ es razonablemente \textbf{robusta} a apartamientos moderados de la normalidad, en especial con tamaños muestrales $n_i$ no demasiado pequeños, por un efecto similar al del Teorema Central del Límite actuando sobre las medias $\bar Y_{i\cdot}$.
+\item \textbf{Homocedasticidad}: la prueba es más sensible a la desigualdad de varianzas entre grupos, particularmente cuando los $n_i$ son muy distintos entre sí; en diseños equilibrados ($n_i$ iguales, como en el Ejemplo 4.4) la prueba $F$ tolera mejor esta violación. Una regla práctica frecuente es que, si el mayor desvío estándar muestral no supera el doble del menor, la prueba $F$ sigue siendo razonablemente confiable.
+\item \textbf{Independencia}: es el supuesto más crítico de los tres; su violación (por ejemplo, mediciones repetidas mal tratadas, o falta de aleatorización en la asignación de las unidades experimentales a los tratamientos) puede invalidar por completo las conclusiones, y a diferencia de la normalidad, no se corrige aumentando el tamaño de muestra. La independencia se garantiza fundamentalmente por el \textbf{diseño} del estudio (muestreo aleatorio o aleatorización), más que verificándose a posteriori sobre los datos.
+\end{itemize}
+
+Como complemento a los gráficos de residuos ya mencionados en la Sección 2 (aplicables aquí de forma idéntica, usando $e_{ij}=Y_{ij}-\bar Y_{i\cdot}$), existen pruebas formales para contrastar la homocedasticidad, como la \textbf{prueba de Bartlett} (que compara las $k$ varianzas muestrales mediante un estadístico basado en $\chi^2$, sensible a la normalidad) o la más robusta \textbf{prueba de Levene} (basada en los desvíos absolutos respecto de la mediana de cada grupo). Frente a evidencia de heterocedasticidad marcada existen alternativas, como la prueba de \textbf{Welch}, y frente a apartamientos severos de la normalidad, alternativas no paramétricas como la prueba de \textbf{Kruskal--Wallis} (que reemplaza las observaciones por sus rangos). El desarrollo detallado de estas pruebas excede el alcance de este curso introductorio, pero es importante conocer que existen como caminos alternativos cuando los supuestos del Modelo I no son sostenibles.
+
+\subsection{El caso particular \texorpdfstring{$k=2$}{k=2}: equivalencia con la prueba t de dos muestras}
+
+Cuando $k=2$, el ANOVA de un factor debe coincidir, necesariamente, con la prueba $t$ para dos muestras independientes con varianzas poblacionales iguales (el caso ``combinado'' o \emph{pooled}) estudiada en la Unidad 7. El siguiente resultado formaliza y demuestra esa equivalencia con un ejemplo numérico completo.
+
+\begin{teorema}
+Cuando $k=2$, $F=CMTr/CME=T^2$, donde $T$ es el estadístico $t$ de dos muestras con varianza combinada y $N-2$ grados de libertad (exactamente los mismos grados de libertad que $N-k$, con $k=2$).
+\end{teorema}
+
+\begin{ejemplo}[Verificación numérica de $F=T^2$ con $k=2$]
+Retomamos los dos primeros grupos del Ejemplo 3.13: Grupo 1 ($4,6,5$, $\bar Y_{1\cdot}=5$, $n_1=3$) y Grupo 2 ($7,9,8$, $\bar Y_{2\cdot}=8$, $n_2=3$).
+
+\medskip
+\noindent\textbf{Vía la prueba $t$ de dos muestras (Unidad 7).} Las varianzas muestrales son $s_1^2=\frac{(-1)^2+1^2+0^2}{3-1}=\frac{2}{2}=1$ y $s_2^2=\frac{(-1)^2+1^2+0^2}{2}=1$. La varianza combinada es
+\[
+s_p^2 = \frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2} = \frac{2(1)+2(1)}{4} = 1,
+\]
+y el estadístico $t$ para $H_0:\mu_1=\mu_2$ es
+\[
+T = \frac{\bar Y_{1\cdot}-\bar Y_{2\cdot}}{\sqrt{s_p^2\left(\frac{1}{n_1}+\frac{1}{n_2}\right)}} = \frac{5-8}{\sqrt{1\left(\frac13+\frac13\right)}} = \frac{-3}{\sqrt{0.6667}} = \frac{-3}{0.8165} \approx -3.674,
+\]
+con $N-2=4$ grados de libertad, de modo que $T^2\approx13.50$.
+
+\medskip
+\noindent\textbf{Vía el ANOVA de un factor con $k=2$.} Con $T_1=15$, $T_2=24$, $T=39$, $N=6$, y $\sum_{i,j}Y_{ij}^2=16+36+25+49+81+64=271$:
+\[
+SCTo = 271-\frac{39^2}{6} = 271-253.5 = 17.5, \qquad SCTr = \frac{15^2}{3}+\frac{24^2}{3}-253.5 = 75+192-253.5=13.5,
+\]
+\[
+SCE = 17.5-13.5=4.0, \qquad CMTr=\frac{13.5}{1}=13.5, \qquad CME=\frac{4.0}{4}=1.0, \qquad F=\frac{13.5}{1.0}=13.5.
+\]
+Efectivamente $F\approx13.5\approx T^2$ (la pequeña discrepancia se debe únicamente al redondeo intermedio), verificando numéricamente el Teorema 4.5.
+\end{ejemplo}
+
+\begin{observacion}[Conclusión conceptual]
+El ANOVA de un factor es la \textbf{generalización natural} de la prueba $t$ de dos muestras a $k\geq2$ grupos: comparte el mismo tipo de supuestos (normalidad, homocedasticidad, independencia) y el mismo tipo de lógica estadística (un cociente que compara variabilidad sistemática con variabilidad puramente aleatoria), aplicada ahora a un número arbitrario de poblaciones en lugar de solo dos.
+\end{observacion}
+
+\subsection{Comparaciones múltiples post-hoc}
+
+Rechazar $H_0:\mu_1=\cdots=\mu_k$ en el Ejemplo 4.4 nos dice que \textbf{no todas} las medias de las cuatro máquinas son iguales, pero no nos dice \textbf{cuáles} pares de máquinas difieren entre sí. Para responder esa pregunta, sin volver a caer en el problema de inflación del error de tipo I discutido en la Sección 3 (Ejemplo 3.2), se recurre a procedimientos de \textbf{comparaciones múltiples} (o \emph{post-hoc}), diseñados específicamente para controlar el error de tipo I \textbf{global} (\emph{familywise}) del conjunto de comparaciones, en lugar de controlarlo comparación por comparación.
+
+\begin{itemize}
+\item \textbf{Prueba de Tukey (HSD, ``Honestly Significant Difference'')}: compara todos los $\binom{k}{2}$ pares de medias muestrales $\bar Y_{i\cdot}-\bar Y_{j\cdot}$ frente a una diferencia mínima significativa
+\[
+HSD = q_{\alpha,k,N-k}\sqrt{\frac{CME}{n}} \qquad (\text{caso equilibrado, } n_i=n \text{ para todo } i),
+\]
+donde $q_{\alpha,k,N-k}$ es un valor crítico de la distribución del \textbf{rango studentizado}, tabulado, que depende de $k$, de $N-k$ y de $\alpha$. Dos medias se consideran significativamente distintas si $|\bar Y_{i\cdot}-\bar Y_{j\cdot}|>HSD$. Este procedimiento controla exactamente el error de tipo I global en $\alpha$ para el conjunto de todas las comparaciones de a pares.
+\item \textbf{Prueba de Bonferroni}: ajusta el nivel de significación de cada comparación individual, dividiendo $\alpha$ por el número total de comparaciones $m=\binom{k}{2}$, y usando $\alpha/m$ como nivel para cada prueba $t$ individual (o, equivalentemente, multiplicando cada $p$-valor individual por $m$). Es un procedimiento más simple y general que Tukey (aplicable a cualquier conjunto de comparaciones, no solo de a pares), aunque típicamente algo más conservador cuando el número de comparaciones es grande.
+\item \textbf{Contrastes planificados}: a diferencia de las anteriores, son comparaciones específicas decididas \emph{antes} de observar los datos (por ejemplo, ``control vs. promedio de los tratamientos''), y por lo tanto no requieren el mismo nivel de corrección que las comparaciones exploratorias post-hoc.
+\end{itemize}
+
+\begin{ejemplo}[Comparaciones de Tukey para el ejemplo de las cuatro máquinas]
+Retomando el Ejemplo 4.4, con $CME=2.5$, $n=5$, $k=4$, $N-k=16$, y usando un valor tabulado aproximado $q_{0.05,4,16}\approx4.05$:
+\[
+HSD = 4.05\sqrt{\frac{2.5}{5}} = 4.05\sqrt{0.5} \approx 4.05(0.7071) \approx 2.86.
+\]
+Las diferencias absolutas entre las medias muestrales son:
+\[
+|\bar Y_{B\cdot}-\bar Y_{A\cdot}|=5, \quad |\bar Y_{B\cdot}-\bar Y_{C\cdot}|=7, \quad |\bar Y_{B\cdot}-\bar Y_{D\cdot}|=3, \quad |\bar Y_{D\cdot}-\bar Y_{C\cdot}|=4, \quad |\bar Y_{A\cdot}-\bar Y_{D\cdot}|=2, \quad |\bar Y_{A\cdot}-\bar Y_{C\cdot}|=2.
+\]
+Comparando cada diferencia con $HSD\approx2.86$: todos los pares resultan significativamente distintos entre sí (diferencia mayor que $2.86$), \textbf{excepto} el par (A, C), cuya diferencia de $2$ décimas de mm no alcanza a ser estadísticamente significativa al $5\%$. La conclusión práctica, más informativa que el solo rechazo global de $H_0$, es que la máquina B produce piezas con un diámetro medio claramente mayor que las otras tres, la máquina C tiende al diámetro más bajo, y las máquinas A y C no se distinguen claramente entre sí con estos datos.
+\end{ejemplo}
+
+\begin{observacion}
+La necesidad de las comparaciones múltiples post-hoc responde exactamente al mismo problema que motivó, en primer lugar, todo el desarrollo del ANOVA en la Sección 3: evitar la inflación del error de tipo I al realizar múltiples pruebas sobre el mismo conjunto de datos. La diferencia es que el ANOVA resuelve ese problema para \textbf{una} pregunta global (¿son todas las medias iguales?), mientras que Tukey y Bonferroni lo resuelven para el conjunto de preguntas \textbf{más específicas} que naturalmente siguen a un rechazo de esa hipótesis global (¿cuáles pares difieren?).
+\end{observacion}
+
+\subsection{Regresión y ANOVA: dos caras del modelo lineal general}
+
+A esta altura debería resultar evidente el fuerte paralelismo estructural entre la regresión lineal simple (Secciones 1--2) y el análisis de la varianza de un factor (Secciones 3--4):
+\[
+\text{observación} = \text{parte sistemática (explicada por el modelo)} + \text{error aleatorio},
+\]
+\[
+\textbf{Regresión: } Y_i=\beta_0+\beta_1x_i+\varepsilon_i, \quad SCT=SCR+SCE; \qquad \textbf{ANOVA: } Y_{ij}=\mu+\tau_i+\varepsilon_{ij}, \quad SCTo=SCTr+SCE.
+\]
+En ambos casos se descompone ortogonalmente la variabilidad total en una parte explicada por el modelo y una parte residual, se cuentan y descomponen los grados de libertad, se arma una tabla ANOVA, y se contrasta la significancia mediante un cociente $F=CM_{\text{explicado}}/CME$. De hecho, el ANOVA de un factor puede reescribirse formalmente como un caso particular de \textbf{regresión múltiple}, usando $k-1$ variables indicadoras (\emph{dummy}) que codifican la pertenencia de cada observación a un tratamiento: en ese sentido, regresión y ANOVA no son dos técnicas distintas, sino dos presentaciones del mismo \textbf{modelo lineal general}, la primera pensada para una regresora cuantitativa continua y la segunda para un factor cualitativo (categórico). Esta unificación —que en un curso más avanzado de modelos lineales se desarrolla en toda su generalidad, incluyendo regresión múltiple, ANOVA de dos o más factores, y análisis de la covarianza (ANCOVA)— es la razón profunda por la cual ambos temas comparten capítulo en esta unidad, y por la cual todas las herramientas desarrolladas (sumas de cuadrados, grados de libertad, cuadrados medios, estadístico $F$) tienen exactamente la misma forma en ambos casos.
+
+\subsection{Síntesis integradora: de la probabilidad axiomática a los modelos lineales}
+
+Esta unidad cierra no solo el tema de los modelos lineales, sino el curso completo de Probabilidad y Estadística. Vale la pena recorrer, en retrospectiva, el hilo conductor que conecta lo estudiado en esta última unidad con los fundamentos sentados desde el comienzo de la materia.
+
+\begin{itemize}
+\item \textbf{Unidades 1 a 4} construyeron el lenguaje formal de la probabilidad: los axiomas de Kolmogorov, la noción de variable aleatoria, sus distribuciones (discretas y continuas), la esperanza y la varianza, los vectores aleatorios y la dependencia entre variables, y las funciones generadoras de momentos. Sin ese lenguaje, ni siquiera podríamos escribir con precisión la expresión $Y=\beta_0+\beta_1X+\varepsilon$ ni el supuesto $\varepsilon\sim N(0,\sigma^2)$ que sustenta toda esta unidad.
+\item \textbf{Unidad 5} estudió cómo se comportan los \textbf{estadísticos} calculados a partir de una muestra aleatoria —principalmente $\bar X$ y $S^2$— y estableció las distribuciones muestrales fundamentales: la $\chi^2$, la $t$ de Student y la $F$ de Snedecor. Estas tres distribuciones son, literalmente, las que aparecen a cada paso en esta unidad: la $t_{n-2}$ en la inferencia sobre $\beta_0,\beta_1$ (Sección 2), y la $F_{k-1,N-k}$ en el ANOVA (Sección 4), construida a partir de dos $\chi^2$ independientes exactamente como en la Unidad 5.
+\item \textbf{Unidad 6} desarrolló la teoría de la \textbf{estimación}, puntual (insesgadez, buenas propiedades de los estimadores) y por intervalos (pivotes, niveles de confianza). Los estimadores de mínimos cuadrados $\hat\beta_0,\hat\beta_1$ y los intervalos de confianza construidos en la Sección 2 de esta unidad son aplicaciones directas —más elaboradas, pero conceptualmente idénticas— de esa teoría general.
+\item \textbf{Unidad 7} formalizó la \textbf{prueba de hipótesis} como procedimiento de decisión bajo incertidumbre: error de tipo I y tipo II, estadísticos de prueba, regiones de rechazo, $p$-valores. Toda la maquinaria de pruebas $t$ y $F$ desarrollada en las Secciones 2 y 4 de esta unidad es, en esencia, una aplicación repetida de ese mismo esquema general a nuevas hipótesis (sobre $\beta_1$, sobre la igualdad de $k$ medias) y a nuevos estadísticos.
+\item \textbf{Unidad 8} (esta unidad) integró todo lo anterior en \textbf{modelos con más de un parámetro poblacional}: la regresión lineal simple, que describe y predice la relación entre dos variables cuantitativas, y el análisis de la varianza de un factor, que compara simultáneamente las medias de $k$ poblaciones. Ambos modelos comparten una misma estructura profunda —descomposición ortogonal de la variabilidad, cociente de cuadrados medios con distribución $F$— que es, a su vez, el caso más simple del \textbf{modelo lineal general}, marco que unifica prácticamente toda la estadística inferencial paramétrica clásica.
+\end{itemize}
+
+\begin{observacion}[Idea final]
+Pese a la aparente diversidad de fórmulas, pruebas y distribuciones recorridas a lo largo del curso, la estadística inferencial responde, en el fondo, siempre al mismo esquema: se propone un \textbf{modelo probabilístico} para los datos (con supuestos explícitos, verificables al menos parcialmente); se construye un \textbf{estimador} razonable de los parámetros de interés (típicamente por máxima verosimilitud o, como en esta unidad, por mínimos cuadrados); se deduce su \textbf{distribución muestral} bajo los supuestos del modelo (apoyándose en las distribuciones fundamentales de la Unidad 5); y se usa esa distribución para construir una \textbf{regla de decisión} —una prueba de hipótesis o un intervalo de confianza— con propiedades de error controladas. Los modelos lineales de esta unidad, con su combinación de estimación por mínimos cuadrados, distribuciones $t$ y $F$, y descomposición de la variabilidad, son la culminación natural de ese esquema aplicado a problemas de datos reales, y la puerta de entrada a la estadística aplicada moderna: desde la regresión múltiple y el diseño de experimentos con varios factores, hasta los modelos lineales generalizados que extienden estas ideas más allá del supuesto de normalidad.
+\end{observacion}
+
+\end{document}

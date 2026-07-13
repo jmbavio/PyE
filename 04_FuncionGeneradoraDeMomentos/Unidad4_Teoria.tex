@@ -1,0 +1,1216 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{propiedad}[teorema]{Propiedad}
+\newtheorem{corolario}[teorema]{Corolario}
+\newtheorem{lema}[teorema]{Lema}
+\theoremstyle{definition}
+\newtheorem{definicion}[teorema]{Definición}
+\newtheorem{ejemplo}[teorema]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{observacion}[teorema]{Observación}
+
+\renewcommand{\proofname}{Demostración}
+
+\title{Unidad 4: Función generadora de momentos \\ \large Apunte de teoría}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Esperanza matemática}
+
+\subsection{Motivación: de la distribución a un resumen numérico}
+
+Hasta esta unidad, describimos por completo el comportamiento probabilístico de una variable aleatoria $X$ mediante su función de probabilidad puntual $p(x)$ (caso discreto) o su función de densidad $f(x)$ (caso continuo). Estas funciones contienen \emph{toda} la información sobre $X$: a partir de ellas podemos calcular la probabilidad de cualquier evento relacionado con $X$. Sin embargo, en la práctica —y también en la teoría— resulta extremadamente útil disponer de unos pocos números que resuman los aspectos más relevantes de una distribución: su valor ``central'' o típico, y su grado de dispersión alrededor de ese valor. Estos números se llaman \textbf{momentos} de la distribución, y el primero y más importante de ellos es la \textbf{esperanza matemática}.
+
+La esperanza matemática generaliza la idea intuitiva de ``promedio''. Si tenemos una lista finita de números $x_1,\dots,x_n$ (sin ponderar), el promedio aritmético es $\frac1n\sum x_i$. Si en cambio algunos valores son más frecuentes que otros, tiene sentido ponderar cada valor por su frecuencia relativa. La esperanza matemática de una variable aleatoria hace exactamente eso, pero ponderando cada valor posible por su \emph{probabilidad} en lugar de su frecuencia empírica.
+
+\subsection{Esperanza de una variable aleatoria discreta}
+
+\begin{definicion}[Esperanza matemática --- caso discreto]
+Sea $X$ una variable aleatoria discreta con rango $R_X=\{x_1,x_2,x_3,\dots\}$ y función de probabilidad puntual $p(x_i)=P(X=x_i)$. La \textbf{esperanza matemática} (también llamada valor esperado, media, o momento de primer orden) de $X$ es
+\[
+E(X) = \sum_{x_i \in R_X} x_i\, p(x_i),
+\]
+siempre que la serie converja \textbf{absolutamente}, es decir, $\sum_{x_i} |x_i|\,p(x_i) < \infty$. En tal caso decimos que $X$ tiene esperanza finita. Si el rango es infinito y la serie no converge absolutamente, decimos que la esperanza \textbf{no existe} (aun cuando la serie ``con signos'' pudiera converger condicionalmente: exigimos convergencia absoluta para que el valor de $E(X)$ no dependa del orden en que sumemos los términos, ya que el rango de $X$ no viene naturalmente ordenado).
+\end{definicion}
+
+También se usa la notación $\mu$ o $\mu_X$ para $E(X)$. La exigencia de convergencia absoluta no es un mero tecnicismo: existen variables aleatorias (como la distribución de Cauchy, o ciertas variables con colas muy pesadas) para las cuales la esperanza simplemente no existe, y es importante saber reconocer esos casos antes de operar alegremente con sumas infinitas.
+
+$E(X)$ se interpreta como el valor promedio que tomaría $X$ si pudiéramos repetir el experimento aleatorio un número muy grande de veces y promediar los resultados obtenidos. Esta interpretación frecuencial no es casual: es precisamente el contenido de la ley de los grandes números, que demostraremos rigurosamente en la Sección \ref{sec:lgn} de este apunte, usando como herramienta central la varianza y la desigualdad de Chebyshev de la Sección \ref{sec:varianza}.
+
+\begin{ejemplo}[Dado equilibrado]
+Sea $X$ el resultado de tirar un dado equilibrado de seis caras. Entonces $R_X=\{1,2,3,4,5,6\}$ y $p(x_i)=1/6$ para cada $i$. Luego
+\[
+E(X) = \sum_{i=1}^{6} i\cdot\frac16 = \frac16(1+2+3+4+5+6) = \frac{21}{6} = 3.5.
+\]
+Es importante notar que $E(X)=3.5$ \textbf{no} es un valor posible de $X$ (el dado nunca marca $3.5$). La esperanza no es el valor ``más probable'' ni necesariamente un valor observable en una única realización: es un promedio ponderado a largo plazo. En este ejemplo la ponderación es uniforme, de modo que $E(X)$ coincide con el promedio aritmético simple de los valores del rango, reflejando la simetría de la distribución alrededor de $3.5$.
+\end{ejemplo}
+
+\begin{ejemplo}[Bernoulli y binomial]
+Sea $X\sim\text{Bernoulli}(p)$, es decir $P(X=1)=p$, $P(X=0)=1-p$. Entonces
+\[
+E(X) = 0\cdot(1-p) + 1\cdot p = p.
+\]
+Este resultado es intuitivo: si $X$ indica el éxito de un ensayo con probabilidad $p$, en promedio ``vale'' $p$.
+
+Sea ahora $X\sim\text{Bin}(n,p)$. Podemos calcular su esperanza directamente desde la definición, aunque el cálculo requiere cierta manipulación combinatoria:
+\[
+E(X) = \sum_{k=0}^n k\binom{n}{k}p^k(1-p)^{n-k}.
+\]
+El término $k=0$ se anula, y para $k\geq 1$ usamos la identidad $k\binom{n}{k}=n\binom{n-1}{k-1}$ (que se verifica directamente desarrollando los factoriales: $k\cdot\frac{n!}{k!(n-k)!} = \frac{n!}{(k-1)!(n-k)!} = n\cdot\frac{(n-1)!}{(k-1)!(n-k)!} = n\binom{n-1}{k-1}$). Así,
+\[
+E(X) = \sum_{k=1}^n n\binom{n-1}{k-1}p^k(1-p)^{n-k} = np\sum_{k=1}^n \binom{n-1}{k-1}p^{k-1}(1-p)^{(n-1)-(k-1)}.
+\]
+Cambiando el índice $j=k-1$, la suma recorre $j=0,\dots,n-1$ y es exactamente el desarrollo binomial de $(p+(1-p))^{n-1}=1^{n-1}=1$. Por lo tanto
+\[
+E(X) = np.
+\]
+Más adelante (Sección \ref{sec:fgm}) obtendremos este mismo resultado de manera mucho más directa usando la función generatriz de momentos, y en la Sección \ref{sec:propiedades-esperanza} veremos que también se deduce trivialmente escribiendo $X$ como suma de $n$ variables Bernoulli independientes y usando la aditividad de la esperanza.
+\end{ejemplo}
+
+\begin{ejemplo}[Poisson]
+Sea $X\sim\text{Poisson}(\lambda)$, con función de probabilidad puntual $p(k)=\dfrac{e^{-\lambda}\lambda^k}{k!}$, $k=0,1,2,\dots$. Entonces
+\[
+E(X) = \sum_{k=0}^{\infty} k\,\frac{e^{-\lambda}\lambda^k}{k!}.
+\]
+El término $k=0$ se anula, y para $k\geq1$ simplificamos $k/k! = 1/(k-1)!$:
+\[
+E(X) = \sum_{k=1}^{\infty} \frac{e^{-\lambda}\lambda^k}{(k-1)!} = \lambda e^{-\lambda}\sum_{k=1}^\infty \frac{\lambda^{k-1}}{(k-1)!} = \lambda e^{-\lambda}\sum_{j=0}^\infty \frac{\lambda^j}{j!} = \lambda e^{-\lambda} e^{\lambda} = \lambda,
+\]
+usando el desarrollo en serie de Taylor $e^{\lambda}=\sum_{j=0}^\infty \lambda^j/j!$. Así, el parámetro $\lambda$ de la Poisson es, precisamente, su esperanza: el número medio de ocurrencias por unidad de tiempo o espacio.
+\end{ejemplo}
+
+\subsection{Esperanza de una variable aleatoria continua}
+
+\begin{definicion}[Esperanza matemática --- caso continuo]
+Sea $X$ una variable aleatoria continua con función de densidad $f(x)$. La esperanza matemática de $X$ es
+\[
+E(X) = \int_{-\infty}^{\infty} x\,f(x)\,dx,
+\]
+siempre que $\displaystyle\int_{-\infty}^{\infty}|x|\,f(x)\,dx < \infty$.
+\end{definicion}
+
+La analogía con el caso discreto es directa: la suma se reemplaza por una integral, y la función de probabilidad puntual por la densidad. La interpretación es idéntica: un promedio ponderado por la ``masa de probabilidad'' que la densidad asigna a cada región del eje real.
+
+\begin{ejemplo}[Uniforme]
+Sea $X\sim U(a,b)$, con densidad $f(x)=\dfrac{1}{b-a}$ para $x\in[a,b]$ y $f(x)=0$ fuera de ese intervalo. Entonces
+\[
+E(X) = \int_a^b x\cdot\frac{1}{b-a}\,dx = \frac{1}{b-a}\left[\frac{x^2}{2}\right]_a^b = \frac{b^2-a^2}{2(b-a)} = \frac{(b-a)(b+a)}{2(b-a)} = \frac{a+b}{2}.
+\]
+La esperanza es el punto medio del intervalo, resultado esperable por la simetría de la densidad uniforme respecto de $\frac{a+b}{2}$: en general, si la densidad de una variable aleatoria es simétrica respecto de un punto $c$ (es decir, $f(c+u)=f(c-u)$ para todo $u$) y la esperanza existe, entonces $E(X)=c$.
+\end{ejemplo}
+
+\begin{ejemplo}[Exponencial]
+Sea $X\sim\text{Exp}(\lambda)$, con densidad $f(x)=\lambda e^{-\lambda x}$ para $x\geq0$. Entonces
+\[
+E(X) = \int_0^\infty x\lambda e^{-\lambda x}\,dx.
+\]
+Integramos por partes con $u=x$, $dv=\lambda e^{-\lambda x}dx$, de donde $du=dx$, $v=-e^{-\lambda x}$:
+\[
+E(X) = \left[-xe^{-\lambda x}\right]_0^\infty + \int_0^\infty e^{-\lambda x}\,dx.
+\]
+El término de borde se anula: en $x=0$ vale $0$, y cuando $x\to\infty$, $xe^{-\lambda x}\to 0$ porque la exponencial decae más rápido de lo que $x$ crece (se puede verificar con la regla de L'Hôpital). Queda
+\[
+E(X) = \int_0^\infty e^{-\lambda x}\,dx = \left[-\frac{1}{\lambda}e^{-\lambda x}\right]_0^\infty = \frac{1}{\lambda}.
+\]
+Este resultado tiene una interpretación natural en el contexto de procesos de Poisson: si $\lambda$ es la tasa media de ocurrencias por unidad de tiempo, el tiempo medio de espera hasta la próxima ocurrencia es $1/\lambda$.
+\end{ejemplo}
+
+\begin{ejemplo}[Normal]
+Si $X\sim N(\mu,\sigma^2)$, con densidad $f(x)=\dfrac{1}{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/(2\sigma^2)}$, se puede demostrar que $E(X)=\mu$. Una forma directa es hacer el cambio de variable $z=(x-\mu)/\sigma$:
+\[
+E(X) = \int_{-\infty}^\infty x\, f(x)\,dx = \int_{-\infty}^\infty (\mu+\sigma z)\,\frac{1}{\sqrt{2\pi}}e^{-z^2/2}\,dz = \mu\underbrace{\int_{-\infty}^\infty \frac{1}{\sqrt{2\pi}}e^{-z^2/2}\,dz}_{=1} + \sigma\underbrace{\int_{-\infty}^\infty z\,\frac{1}{\sqrt{2\pi}}e^{-z^2/2}\,dz}_{=0},
+\]
+donde la primera integral vale $1$ porque es el área total bajo la densidad normal estándar, y la segunda vale $0$ porque el integrando $z\,e^{-z^2/2}$ es una función impar integrada en un intervalo simétrico respecto del origen. Así, $E(X)=\mu$: el parámetro $\mu$ de la normal es, exactamente, su esperanza.
+\end{ejemplo}
+
+\subsection{Propiedades de la esperanza}
+\label{sec:propiedades-esperanza}
+
+Las siguientes propiedades son de uso constante y conviene demostrarlas con cuidado, porque se emplean repetidamente en el resto de la unidad.
+
+\begin{teorema}[Propiedades de la esperanza]
+Sean $X,Y$ variables aleatorias con esperanza finita y $a,b\in\mathbb{R}$ constantes. Entonces:
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Esperanza de una constante}: $E(c)=c$ para toda constante $c$.
+\item \textbf{Homogeneidad}: $E(aX) = a\,E(X)$.
+\item \textbf{Linealidad}: $E(aX+b) = a\,E(X)+b$.
+\item \textbf{Aditividad}: $E(X+Y) = E(X)+E(Y)$, propiedad que vale \emph{siempre}, incluso si $X$ e $Y$ no son independientes.
+\item \textbf{No negatividad}: si $X\geq 0$ (con probabilidad $1$), entonces $E(X)\geq 0$.
+\item \textbf{Monotonía}: si $X\leq Y$ (con probabilidad $1$), entonces $E(X)\leq E(Y)$.
+\end{enumerate}
+\end{teorema}
+
+\begin{proof}
+Demostramos linealidad en el caso discreto; los demás incisos se obtienen de manera similar o como consecuencia directa. Sea $X$ discreta con función de probabilidad puntual $p(x_i)$. Por definición,
+\[
+E(aX+b) = \sum_i (ax_i+b)\,p(x_i) = a\sum_i x_i\,p(x_i) + b\sum_i p(x_i).
+\]
+Como $\sum_i x_i p(x_i)=E(X)$ (por definición) y $\sum_i p(x_i)=1$ (axioma de probabilidad), se obtiene
+\[
+E(aX+b) = a\,E(X)+b.
+\]
+En el caso continuo, la demostración es completamente análoga, usando la linealidad de la integral:
+\[
+E(aX+b) = \int_{-\infty}^\infty (ax+b)f(x)\,dx = a\int_{-\infty}^\infty xf(x)\,dx + b\int_{-\infty}^\infty f(x)\,dx = a\,E(X)+b.
+\]
+Los incisos (i) y (ii) son casos particulares de (iii) tomando $a=0,b=c$ y $b=0$ respectivamente. Para (v), si $X\geq0$ c.s.\ (con probabilidad $1$), en el caso discreto todos los $x_i$ con $p(x_i)>0$ satisfacen $x_i\geq0$, luego cada término de la suma que define $E(X)$ es no negativo y por lo tanto $E(X)\geq0$; el caso continuo es análogo integrando sobre el soporte de $f$. El inciso (vi) se deduce de (v) y de la aditividad aplicada a $Y-X\geq0$: $E(Y)-E(X)=E(Y-X)\geq0$.
+
+Para (iv), usamos la densidad (o función de probabilidad) conjunta $f_{X,Y}(x,y)$ de $X$ e $Y$:
+\[
+E(X+Y) = \iint_{\mathbb{R}^2} (x+y)\,f_{X,Y}(x,y)\,dx\,dy = \iint x\,f_{X,Y}(x,y)\,dx\,dy + \iint y\,f_{X,Y}(x,y)\,dx\,dy.
+\]
+La primera integral doble, integrando primero en $y$, produce la densidad marginal de $X$: $\int_{-\infty}^\infty f_{X,Y}(x,y)\,dy = f_X(x)$, por lo que la primera integral se reduce a $\int x f_X(x)\,dx = E(X)$. Análogamente, la segunda integral se reduce a $E(Y)$. Por lo tanto $E(X+Y)=E(X)+E(Y)$. Notemos que en ningún paso de esta demostración usamos que $X$ e $Y$ fueran independientes: la aditividad de la esperanza es una propiedad universal, válida para cualquier par de variables aleatorias con esperanza finita definidas en el mismo espacio de probabilidad. El caso discreto se demuestra de manera idéntica reemplazando las integrales dobles por sumas dobles.
+\end{proof}
+
+\begin{corolario}[Linealidad general]
+Por inducción sobre $n$, para cualquier combinación lineal de variables aleatorias $X_1,\dots,X_n$ (con esperanza finita) y constantes $a_1,\dots,a_n,b\in\mathbb{R}$:
+\[
+E\left(\sum_{i=1}^n a_i X_i + b\right) = \sum_{i=1}^n a_i\,E(X_i) + b.
+\]
+\end{corolario}
+
+Esta generalización, extremadamente sencilla de enunciar pero muy poderosa, será la herramienta clave en la Sección \ref{sec:lgn} para calcular la esperanza del promedio muestral $\overline{X}_n$ sin necesidad de conocer su distribución exacta.
+
+\subsection{El teorema del estadístico inconsciente}
+
+Si $X$ es una variable aleatoria y $g:\mathbb{R}\to\mathbb{R}$ es una función (razonablemente bien portada, por ejemplo medible), entonces $Y=g(X)$ es también una variable aleatoria. Una pregunta natural es cómo calcular $E(Y)$. El procedimiento ``directo'' consistiría en hallar primero la distribución de $Y$ (su función de probabilidad puntual o densidad) y luego aplicarle la definición de esperanza. Existe, sin embargo, un atajo mucho más eficiente, conocido informalmente como \textbf{ley (o teorema) del estadístico inconsciente}, porque permite calcular $E(g(X))$ sin siquiera preocuparse por cuál es la distribución de $Y$.
+
+\begin{teorema}[Ley del estadístico inconsciente]
+Sea $X$ una variable aleatoria y $g:\mathbb{R}\to\mathbb{R}$ una función tal que $g(X)$ tiene esperanza finita. Entonces:
+\begin{itemize}
+\item Caso discreto: $\displaystyle E(g(X)) = \sum_{x_i\in R_X} g(x_i)\,p(x_i)$.
+\item Caso continuo: $\displaystyle E(g(X)) = \int_{-\infty}^{\infty} g(x)\,f(x)\,dx$.
+\end{itemize}
+\end{teorema}
+
+\begin{proof}[Demostración (caso discreto)]
+Sea $Y=g(X)$, con rango $R_Y=\{y_1,y_2,\dots\}$ (los valores distintos que toma $g$ sobre $R_X$). Por definición de esperanza aplicada a $Y$,
+\[
+E(Y) = \sum_{y_j\in R_Y} y_j\, P(Y=y_j).
+\]
+Para cada $y_j$, el evento $\{Y=y_j\}$ es la unión disjunta de los eventos $\{X=x_i\}$ sobre todos los $x_i\in R_X$ tales que $g(x_i)=y_j$; llamemos $A_j=\{x_i\in R_X : g(x_i)=y_j\}$. Por aditividad de la probabilidad sobre eventos disjuntos,
+\[
+P(Y=y_j) = \sum_{x_i\in A_j} p(x_i).
+\]
+Sustituyendo,
+\[
+E(Y) = \sum_{y_j\in R_Y} y_j \sum_{x_i\in A_j} p(x_i) = \sum_{y_j\in R_Y}\ \sum_{x_i\in A_j} y_j\, p(x_i).
+\]
+Pero para $x_i\in A_j$ se tiene, por definición, $y_j=g(x_i)$. Como los conjuntos $A_j$ particionan exactamente a $R_X$ (cada $x_i$ pertenece a exactamente un $A_j$, el correspondiente a $y_j=g(x_i)$), la suma doble anterior recorre cada $x_i\in R_X$ exactamente una vez, y podemos reescribirla como
+\[
+E(Y) = \sum_{x_i \in R_X} g(x_i)\, p(x_i),
+\]
+que es precisamente lo que queríamos demostrar. El caso continuo requiere herramientas de teoría de la medida (el cambio de variable en la integral de Lebesgue-Stieltjes) que exceden el alcance de este curso, pero la idea es la misma: se agrupa la ``masa de densidad'' según el valor que toma $g$.
+\end{proof}
+
+La utilidad práctica de este teorema es enorme: permite calcular $E(g(X))$ usando \emph{únicamente} la distribución de $X$, sin necesidad de derivar la distribución de $Y=g(X)$, la cual en muchos casos es mucho más difícil de obtener (piense, por ejemplo, en $g(x)=x^2$, $g(x)=e^x$, o funciones a trozos).
+
+\begin{ejemplo}
+Sea $X$ discreta con $P(X=-1)=0.3$, $P(X=0)=0.4$, $P(X=1)=0.3$. Calculemos $E(X^2)$ aplicando la ley del estadístico inconsciente con $g(x)=x^2$:
+\[
+E(X^2) = (-1)^2(0.3) + 0^2(0.4) + 1^2(0.3) = 0.3+0+0.3 = 0.6.
+\]
+Observemos que $E(X) = -1(0.3)+0(0.4)+1(0.3)=0$, pero $E(X^2)=0.6 \neq [E(X)]^2=0$. En general, $E(g(X))\neq g(E(X))$ salvo que $g$ sea afín (lineal más constante): la esperanza no ``conmuta'' con funciones no lineales. Esta observación, aparentemente elemental, es la raíz de por qué necesitamos una definición cuidadosa de varianza (Sección \ref{sec:varianza}) en lugar de simplemente ``calcular la esperanza de la distancia a la media''.
+\end{ejemplo}
+
+\begin{ejemplo}
+Sea $X\sim U(0,1)$ y $Y=e^X$. Calculemos $E(Y)$ sin hallar la densidad de $Y$:
+\[
+E(Y) = E(e^X) = \int_0^1 e^x\cdot 1\,dx = \left[e^x\right]_0^1 = e-1 \approx 1.718.
+\]
+En general, definimos el \textbf{momento de orden $k$} de $X$ como $E(X^k)$ (tomando $g(x)=x^k$ en el teorema). Por ejemplo, para $X\sim\text{Exp}(\lambda)$, integrando por partes dos veces (o usando la función Gamma, $\Gamma(3)=2!=2$):
+\[
+E(X^2) = \int_0^\infty x^2\lambda e^{-\lambda x}\,dx = \frac{2}{\lambda^2}.
+\]
+Este segundo momento será esencial para calcular la varianza de la exponencial en la Sección \ref{sec:varianza}.
+\end{ejemplo}
+
+\begin{observacion}[Extensión a funciones de dos variables]
+Si $X,Y$ tienen densidad (o función de probabilidad) conjunta $f_{X,Y}(x,y)$, el teorema se extiende de manera natural:
+\[
+E(g(X,Y)) = \iint_{\mathbb{R}^2} g(x,y)\,f_{X,Y}(x,y)\,dx\,dy
+\]
+(análogamente en el caso discreto, con una doble suma). Esta versión bivariada se usará en la Sección \ref{sec:covarianza} para definir la covarianza, $\text{Cov}(X,Y)=E[(X-\mu_X)(Y-\mu_Y)]$, tomando $g(x,y)=(x-\mu_X)(y-\mu_Y)$.
+
+Un caso particular importante: si $X,Y$ son independientes, entonces $E(XY)=E(X)\,E(Y)$. En efecto, si son independientes, $f_{X,Y}(x,y)=f_X(x)f_Y(y)$, y
+\[
+E(XY) = \iint xy\, f_X(x)f_Y(y)\,dx\,dy = \left(\int x f_X(x)\,dx\right)\left(\int y f_Y(y)\,dy\right) = E(X)E(Y).
+\]
+En general, \textbf{sin} independencia, esta factorización puede fallar; volveremos sobre este punto crucial al estudiar la covarianza.
+\end{observacion}
+
+\begin{ejemplo}[Ejemplo integrador]
+Un juego consiste en tirar dos dados equilibrados independientes $X_1,X_2$ y pagar (o cobrar) $G=2(X_1+X_2)-15$ pesos, donde valores positivos de $G$ representan ganancia del jugador. Calculemos $E(G)$. Por linealidad y aditividad de la esperanza (sin necesidad de conocer la distribución de $X_1+X_2$):
+\[
+E(G) = E\big(2(X_1+X_2)-15\big) = 2\,E(X_1+X_2) - 15 = 2\big(E(X_1)+E(X_2)\big)-15.
+\]
+Como $E(X_1)=E(X_2)=3.5$ (dado equilibrado, visto antes),
+\[
+E(G) = 2(3.5+3.5)-15 = 14-15 = -1.
+\]
+En promedio, el jugador pierde \$1 por partida: el juego no es favorable. Es importante notar la economía de este cálculo: no hizo falta hallar la distribución de probabilidad de $X_1+X_2$ (que es una distribución triangular sobre $\{2,\dots,12\}$), sino únicamente aplicar las propiedades de linealidad y aditividad.
+\end{ejemplo}
+
+\begin{observacion}[Esperanza de las distribuciones vistas en la Unidad 2]
+A modo de referencia rápida, resumimos las esperanzas de las distribuciones estudiadas en la Unidad 2, varias de las cuales calculamos arriba y las restantes se dejan como ejercicio (algunas se retoman en la Práctica):
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Distribución & $E(X)$ \\
+\midrule
+Bernoulli$(p)$ & $p$ \\
+Binomial$(n,p)$ & $np$ \\
+Geométrica$(p)$ (número de ensayos hasta el primer éxito) & $1/p$ \\
+Poisson$(\lambda)$ & $\lambda$ \\
+Uniforme$(a,b)$ & $(a+b)/2$ \\
+Exponencial$(\lambda)$ & $1/\lambda$ \\
+Normal$(\mu,\sigma^2)$ & $\mu$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{observacion}
+
+\newpage
+\section{Varianza, desigualdad de Chebyshev y esperanza condicional}
+\label{sec:varianza}
+
+\subsection{Motivación y definición de varianza}
+
+La esperanza matemática resume la ubicación ``central'' de una distribución, pero dos variables aleatorias muy distintas pueden compartir exactamente la misma esperanza. Por ejemplo:
+\begin{itemize}
+\item $X$: siempre vale $0$ (variable degenerada). $E(X)=0$.
+\item $Y$: vale $-100$ con probabilidad $0.5$ y $100$ con probabilidad $0.5$. $E(Y)=0$.
+\end{itemize}
+Ambas tienen esperanza $0$, pero el comportamiento de $Y$ es radicalmente más ``disperso'' que el de $X$. Necesitamos, entonces, una medida numérica de \emph{dispersión} alrededor de la media.
+
+Una primera idea natural sería calcular $E(X-\mu)$, la esperanza de la desviación respecto de la media. Pero por linealidad, $E(X-\mu)=E(X)-\mu=\mu-\mu=0$ siempre, sin importar cuán dispersa sea $X$: las desviaciones positivas y negativas se cancelan exactamente. Para evitar esta cancelación, se eleva la desviación al cuadrado antes de promediar.
+
+\begin{definicion}[Varianza]
+Sea $X$ una variable aleatoria con $E(X)=\mu$ finita. La \textbf{varianza} de $X$ es
+\[
+\text{Var}(X) = E\big[(X-\mu)^2\big].
+\]
+La \textbf{desviación estándar} (o desviación típica) de $X$ es $\sigma_X = \sqrt{\text{Var}(X)}$.
+\end{definicion}
+
+Aplicando la ley del estadístico inconsciente con $g(x)=(x-\mu)^2$:
+\[
+\text{Var}(X) = \sum_i (x_i-\mu)^2 p(x_i) \quad\text{(caso discreto)}, \qquad \text{Var}(X) = \int_{-\infty}^\infty (x-\mu)^2 f(x)\,dx \quad\text{(caso continuo)}.
+\]
+La varianza mide el promedio del cuadrado de la distancia de $X$ a su media; al elevar al cuadrado, las desviaciones positivas y negativas contribuyen de igual manera y no se cancelan. Como consecuencia de esta elevación al cuadrado, $\text{Var}(X)$ tiene unidades ``al cuadrado'' respecto de las de $X$ (por ejemplo, si $X$ se mide en metros, $\text{Var}(X)$ se mide en metros cuadrados), lo cual dificulta su interpretación directa. Por eso se define también la desviación estándar $\sigma_X=\sqrt{\text{Var}(X)}$, que sí tiene las mismas unidades que $X$.
+
+\subsection{Fórmula de cálculo}
+
+\begin{teorema}[Fórmula de cálculo de la varianza]
+\[
+\text{Var}(X) = E(X^2) - [E(X)]^2.
+\]
+\end{teorema}
+
+\begin{proof}
+Sea $\mu=E(X)$. Desarrollamos el cuadrado dentro de la esperanza y usamos linealidad:
+\begin{align*}
+\text{Var}(X) &= E\big[(X-\mu)^2\big] = E\big[X^2 - 2\mu X + \mu^2\big] \\
+&= E(X^2) - 2\mu\,E(X) + \mu^2 \qquad\text{(linealidad de la esperanza)} \\
+&= E(X^2) - 2\mu\cdot\mu + \mu^2 = E(X^2) - \mu^2 = E(X^2) - [E(X)]^2. \qedhere
+\end{align*}
+\end{proof}
+
+En la práctica, casi siempre es más sencillo calcular $\text{Var}(X)$ mediante esta fórmula que directamente a partir de la definición $E[(X-\mu)^2]$, porque solo requiere conocer los dos primeros momentos $E(X)$ y $E(X^2)$, ambos calculables con la ley del estadístico inconsciente sin necesidad de trabajar con la variable centrada $X-\mu$.
+
+\begin{ejemplo}[Dado equilibrado]
+Sea $X$ el resultado de tirar un dado. Ya sabemos $E(X)=3.5$. Calculemos $E(X^2)$:
+\[
+E(X^2) = \frac16(1^2+2^2+3^2+4^2+5^2+6^2) = \frac{91}{6} \approx 15.1\overline{6}.
+\]
+Luego,
+\[
+\text{Var}(X) = \frac{91}{6} - (3.5)^2 = \frac{91}{6} - \frac{49}{4} = \frac{182}{12}-\frac{147}{12} = \frac{35}{12} \approx 2.9167,
+\]
+y $\sigma_X = \sqrt{35/12}\approx 1.708$.
+\end{ejemplo}
+
+\begin{ejemplo}[Verificación para la exponencial]
+Ya calculamos $E(X)=1/\lambda$ y $E(X^2)=2/\lambda^2$ para $X\sim\text{Exp}(\lambda)$. Luego
+\[
+\text{Var}(X) = \frac{2}{\lambda^2} - \left(\frac1\lambda\right)^2 = \frac{2}{\lambda^2}-\frac{1}{\lambda^2} = \frac{1}{\lambda^2}.
+\]
+\end{ejemplo}
+
+\begin{observacion}[Varianzas de las distribuciones de la Unidad 2]
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Distribución & $\text{Var}(X)$ \\
+\midrule
+Bernoulli$(p)$ & $p(1-p)$ \\
+Binomial$(n,p)$ & $np(1-p)$ \\
+Geométrica$(p)$ & $(1-p)/p^2$ \\
+Poisson$(\lambda)$ & $\lambda$ \\
+Uniforme$(a,b)$ & $(b-a)^2/12$ \\
+Exponencial$(\lambda)$ & $1/\lambda^2$ \\
+Normal$(\mu,\sigma^2)$ & $\sigma^2$ (por construcción del modelo) \\
+\bottomrule
+\end{tabular}
+\end{center}
+Notablemente, la Poisson tiene esperanza y varianza iguales entre sí ($\lambda$): esta propiedad se usa a veces como diagnóstico informal para verificar si un conjunto de datos de conteo es razonablemente modelable por una Poisson (si la varianza muestral es mucho mayor que la media muestral, se habla de ``sobredispersión'' y se buscan modelos alternativos).
+\end{observacion}
+
+\subsection{Propiedades de la varianza}
+
+\begin{teorema}[Propiedades de la varianza]
+Sean $X,Y$ variables aleatorias con varianza finita y $a,b\in\mathbb{R}$:
+\begin{enumerate}[label=(\roman*)]
+\item $\text{Var}(X)\geq 0$, y $\text{Var}(X)=0$ si y solo si $X$ es constante con probabilidad $1$.
+\item $\text{Var}(c)=0$ para toda constante $c$.
+\item $\text{Var}(aX+b) = a^2\,\text{Var}(X)$: la traslación por $b$ no afecta la dispersión, y el escalado por $a$ afecta la dispersión en un factor $a^2$.
+\item Si $X,Y$ son \textbf{independientes}: $\text{Var}(X+Y)=\text{Var}(X)+\text{Var}(Y)$.
+\item En general, sin suponer independencia: $\text{Var}(X+Y) = \text{Var}(X)+\text{Var}(Y)+2\,\text{Cov}(X,Y)$ (Sección \ref{sec:covarianza}).
+\end{enumerate}
+\end{teorema}
+
+\begin{proof}
+El inciso (i) se deduce de que $(X-\mu)^2\geq 0$ siempre, por lo que su esperanza es no negativa (propiedad de no negatividad de la esperanza); la igualdad a $0$ ocurre si y solo si $(X-\mu)^2=0$ con probabilidad $1$, es decir, $X=\mu$ con probabilidad $1$. El inciso (ii) es el caso particular $X=c$ constante, con $\mu=c$ y $(X-\mu)^2=0$ siempre.
+
+Demostramos (iii). Sea $\mu=E(X)$; por linealidad, $E(aX+b)=a\mu+b$. Entonces:
+\begin{align*}
+\text{Var}(aX+b) &= E\Big[\big((aX+b)-(a\mu+b)\big)^2\Big] = E\big[(aX-a\mu)^2\big] \\
+&= E\big[a^2(X-\mu)^2\big] = a^2\, E\big[(X-\mu)^2\big] = a^2\,\text{Var}(X).
+\end{align*}
+Los incisos (iv) y (v) se demostrarán en la Sección \ref{sec:covarianza}, como consecuencia directa de la definición de covarianza y sus propiedades.
+\end{proof}
+
+\begin{observacion}[Estandarización]
+Si $Z=\dfrac{X-\mu}{\sigma}$ con $\sigma=\sigma_X>0$, aplicando las propiedades anteriores con $a=1/\sigma$, $b=-\mu/\sigma$:
+\[
+E(Z) = \frac{E(X)-\mu}{\sigma} = 0, \qquad \text{Var}(Z) = \frac{1}{\sigma^2}\text{Var}(X) = 1.
+\]
+La variable $Z$ se llama \textbf{variable estandarizada} asociada a $X$: tiene media $0$ y varianza $1$ sin importar cuáles fueran la media y varianza originales de $X$. Esta construcción será central en el teorema central del límite (Sección \ref{sec:tcl}).
+\end{observacion}
+
+\subsection{Desigualdad de Chebyshev}
+
+Una pregunta natural es si podemos acotar la probabilidad de que $X$ se aleje mucho de su media $\mu$, \emph{sin conocer} la distribución exacta de $X$, usando únicamente $\mu$ y $\sigma^2=\text{Var}(X)$. La respuesta es afirmativa, y la herramienta que lo permite es la célebre \textbf{desigualdad de Chebyshev} (también llamada de Bienaymé--Chebyshev), válida para \emph{cualquier} distribución con varianza finita.
+
+\begin{teorema}[Desigualdad de Chebyshev]
+Sea $X$ una variable aleatoria con $E(X)=\mu$ y $\text{Var}(X)=\sigma^2<\infty$. Entonces, para todo $k>0$:
+\[
+P\big(|X-\mu|\geq k\big) \leq \frac{\sigma^2}{k^2}.
+\]
+Equivalentemente, tomando $k=c\sigma$ con $c>0$:
+\[
+P\big(|X-\mu|\geq c\sigma\big) \leq \frac{1}{c^2}.
+\]
+\end{teorema}
+
+\begin{proof}
+Damos la demostración para el caso continuo; el caso discreto es idéntico reemplazando integrales por sumas. Sea $f$ la densidad de $X$. Por definición de varianza,
+\[
+\sigma^2 = \int_{-\infty}^{\infty} (x-\mu)^2 f(x)\,dx.
+\]
+Como el integrando $(x-\mu)^2 f(x)$ es no negativo en todo punto, restringir el dominio de integración a un subconjunto solo puede disminuir (o dejar igual) el valor de la integral. En particular, restringiendo al conjunto $A=\{x : |x-\mu|\geq k\}$:
+\[
+\sigma^2 \geq \int_{A} (x-\mu)^2 f(x)\,dx.
+\]
+Ahora bien, para todo $x\in A$ se cumple, por definición del conjunto, $|x-\mu|\geq k$, y por lo tanto $(x-\mu)^2\geq k^2$. Sustituyendo esta cota inferior dentro de la integral (que preserva la desigualdad porque estamos acotando por debajo un integrando no negativo):
+\[
+\int_A (x-\mu)^2 f(x)\,dx \geq \int_A k^2 f(x)\,dx = k^2 \int_A f(x)\,dx = k^2\, P(X\in A) = k^2\, P(|X-\mu|\geq k).
+\]
+Combinando ambas desigualdades,
+\[
+\sigma^2 \geq k^2\, P(|X-\mu|\geq k),
+\]
+y despejando (dado que $k>0$),
+\[
+P(|X-\mu|\geq k) \leq \frac{\sigma^2}{k^2}. \qedhere
+\]
+\end{proof}
+
+\begin{ejemplo}
+El tiempo de espera $X$ (en minutos) en una fila tiene $E(X)=10$ y $\text{Var}(X)=4$, sin que se conozca la distribución exacta de $X$. Acotemos $P(|X-10|\geq 6)$ usando Chebyshev con $k=6$:
+\[
+P(|X-10|\geq 6) \leq \frac{4}{6^2} = \frac{4}{36} = \frac19 \approx 0.111.
+\]
+Es decir, la probabilidad de esperar menos de $4$ minutos o más de $16$ minutos es a lo sumo $11.1\%$. Tomando complemento, obtenemos la forma dual de la desigualdad: $P(|X-\mu|<k)\geq 1-\sigma^2/k^2$, de donde en este ejemplo $P(4<X<16)\geq 1-1/9 = 8/9\approx 0.889$.
+\end{ejemplo}
+
+\begin{observacion}[Ventajas y limitaciones de Chebyshev]
+La principal ventaja de la desigualdad de Chebyshev es su \textbf{universalidad}: no requiere conocer la distribución de $X$, solo su media y varianza. Esto la hace aplicable en situaciones donde disponemos de información parcial sobre una variable (por ejemplo, mediciones experimentales de las cuales solo estimamos media y varianza muestral). Su principal limitación es que la cota que produce suele ser bastante conservadora (poco ajustada) en comparación con la probabilidad real, cuando efectivamente conocemos la distribución.
+
+Por ejemplo, si $X\sim N(\mu,\sigma^2)$, sabemos de la Unidad 3 que $P(|X-\mu|\geq 2\sigma)\approx 0.0455$. La cota de Chebyshev solo garantiza $P(|X-\mu|\geq 2\sigma)\leq 1/4=0.25$: una cota mucho más floja que el valor exacto normal, pero —a diferencia de ese valor exacto— válida para \emph{cualquier} distribución con varianza finita, sea cual sea su forma.
+
+A pesar de esta imprecisión, la desigualdad de Chebyshev es la herramienta central para demostrar rigurosamente la \textbf{ley débil de los grandes números}, como veremos en la Sección \ref{sec:lgn}.
+\end{observacion}
+
+\subsection{Esperanza condicional}
+
+La \textbf{esperanza condicional} $E(Y\mid X=x)$ es el valor esperado de $Y$ una vez que sabemos que $X$ tomó el valor $x$. Se calcula exactamente igual que una esperanza ordinaria, pero utilizando la distribución \emph{condicional} de $Y$ dado $X=x$, en lugar de la distribución marginal de $Y$.
+
+\begin{definicion}[Esperanza condicional]
+Caso discreto:
+\[
+E(Y\mid X=x) = \sum_{y_j} y_j\, P(Y=y_j\mid X=x) = \sum_{y_j} y_j\, \frac{p_{X,Y}(x,y_j)}{p_X(x)}.
+\]
+Caso continuo:
+\[
+E(Y\mid X=x) = \int_{-\infty}^{\infty} y\, f_{Y\mid X}(y\mid x)\,dy, \qquad f_{Y\mid X}(y\mid x) = \frac{f_{X,Y}(x,y)}{f_X(x)}.
+\]
+\end{definicion}
+
+\begin{ejemplo}
+Se lanza un dado equilibrado. Si sale el valor $x$, se lanza una moneda equilibrada $x$ veces, y $Y$ cuenta el número de caras obtenidas. Dado $X=x$, la distribución condicional de $Y$ es $Y\mid X=x \sim \text{Bin}(x,0.5)$, y por lo tanto
+\[
+E(Y\mid X=x) = x\cdot 0.5 = 0.5x.
+\]
+Por ejemplo, $E(Y\mid X=4)=2$: si el dado dio $4$, esperamos en promedio $2$ caras.
+\end{ejemplo}
+
+Un punto conceptual importante: si en lugar de fijar $x$ dejamos que $X$ varíe aleatoriamente, la expresión $g(X):=E(Y\mid X)$ se convierte en sí misma en una variable aleatoria (función de $X$), ya que su valor depende del valor —aleatorio— que tome $X$. En el ejemplo anterior, $E(Y\mid X)=0.5X$, que toma el valor $0.5x$ cada vez que $X=x$, con la misma probabilidad con que $X$ toma el valor $x$.
+
+\begin{teorema}[Ley de la esperanza total]
+\[
+E(Y) = E\big[E(Y\mid X)\big] = \sum_x E(Y\mid X=x)\,P(X=x) \quad\text{(caso discreto)},
+\]
+o, en el caso continuo, $\displaystyle E(Y) = \int_{-\infty}^\infty E(Y\mid X=x)\,f_X(x)\,dx$.
+\end{teorema}
+
+\begin{proof}
+Demostramos el caso discreto; el continuo es análogo reemplazando sumas por integrales. Partiendo de la definición de esperanza condicional,
+\[
+\sum_x E(Y\mid X=x)\,P(X=x) = \sum_x \left(\sum_{y} y\, \frac{p_{X,Y}(x,y)}{p_X(x)}\right) p_X(x) = \sum_x \sum_y y\, p_{X,Y}(x,y).
+\]
+Intercambiando el orden de sumación (lo cual es válido bajo las condiciones de convergencia absoluta que garantiza la existencia de $E(Y)$),
+\[
+\sum_x\sum_y y\,p_{X,Y}(x,y) = \sum_y y \sum_x p_{X,Y}(x,y) = \sum_y y\, p_Y(y) = E(Y),
+\]
+donde usamos que $\sum_x p_{X,Y}(x,y) = p_Y(y)$ es la función de probabilidad puntual marginal de $Y$. Esto completa la demostración.
+\end{proof}
+
+\begin{ejemplo}
+Continuando el ejemplo del dado y la moneda:
+\[
+E(Y) = \sum_{x=1}^{6} (0.5x)\cdot\frac16 = 0.5\cdot E(X) = 0.5\cdot 3.5 = 1.75.
+\]
+Notemos la economía del cálculo: no fue necesario hallar la distribución marginal de $Y$ (que resulta ser una mezcla de binomiales), sino únicamente condicionar sobre $X$, cuya distribución es sencilla.
+\end{ejemplo}
+
+\begin{observacion}[Utilidad de la ley de la esperanza total]
+La ley de la esperanza total permite calcular $E(Y)$ ``condicionando'' sobre otra variable auxiliar $X$, lo cual simplifica enormemente los cálculos cuando la distribución condicional de $Y$ dado $X$ es más simple que la distribución marginal de $Y$. Esta técnica es de uso muy frecuente en modelos jerárquicos o de dos etapas: por ejemplo, cuando el número de ensayos de un experimento binomial es en sí mismo aleatorio (como en el ejemplo del dado y la moneda), o en modelos de riesgo donde el número de siniestros y el monto de cada siniestro son aleatorios.
+\end{observacion}
+
+\begin{observacion}[Varianza condicional y ley de varianza total]
+De manera análoga a la esperanza condicional, se define la \textbf{varianza condicional} de $Y$ dado $X=x$ como
+\[
+\text{Var}(Y\mid X=x) = E\big[(Y-E(Y\mid X=x))^2 \,\big|\, X=x\big] = E(Y^2\mid X=x) - [E(Y\mid X=x)]^2.
+\]
+Pensando en $\text{Var}(Y\mid X)$ como función (aleatoria) de $X$, vale la siguiente descomposición, conocida como \textbf{ley de varianza total} (o fórmula de Eve):
+\[
+\text{Var}(Y) = E\big[\text{Var}(Y\mid X)\big] + \text{Var}\big[E(Y\mid X)\big].
+\]
+Esta identidad —que no demostraremos en este apunte, aunque se deduce combinando la fórmula $\text{Var}(Y)=E(Y^2)-[E(Y)]^2$ con la ley de la esperanza total aplicada a $Y$ y a $Y^2$— descompone la variabilidad total de $Y$ en dos componentes: la variabilidad ``promedio'' dentro de cada grupo definido por $X$ (primer término), y la variabilidad ``entre grupos'' debida a que $E(Y\mid X)$ cambia según el valor de $X$ (segundo término). Esta descomposición es la base conceptual del análisis de varianza (ANOVA), que se estudia en cursos más avanzados de estadística.
+\end{observacion}
+
+\newpage
+\section{Covarianza, correlación y función generatriz de momentos}
+\label{sec:covarianza}
+\label{sec:fgm}
+
+\subsection{Covarianza}
+
+Cuando disponemos de dos variables aleatorias $X,Y$ definidas sobre el mismo espacio muestral, es natural preguntarse si tienden a moverse ``juntas'' (cuando una es grande, la otra también tiende a serlo) o en sentido opuesto. Ya adelantamos, en la sección anterior, que en general
+\[
+\text{Var}(X+Y) = \text{Var}(X)+\text{Var}(Y)+2\,\text{Cov}(X,Y),
+\]
+lo cual motiva definir formalmente esta cantidad.
+
+\begin{definicion}[Covarianza]
+Sean $X,Y$ variables aleatorias con $E(X)=\mu_X$, $E(Y)=\mu_Y$ finitas. La \textbf{covarianza} entre $X$ e $Y$ es
+\[
+\text{Cov}(X,Y) = E\big[(X-\mu_X)(Y-\mu_Y)\big].
+\]
+\end{definicion}
+
+\begin{teorema}[Fórmula de cálculo de la covarianza]
+\[
+\text{Cov}(X,Y) = E(XY) - E(X)\,E(Y).
+\]
+\end{teorema}
+
+\begin{proof}
+Desarrollamos el producto $(X-\mu_X)(Y-\mu_Y)$ y usamos linealidad de la esperanza:
+\begin{align*}
+\text{Cov}(X,Y) &= E\big[XY - \mu_X Y - \mu_Y X + \mu_X \mu_Y\big] \\
+&= E(XY) - \mu_X E(Y) - \mu_Y E(X) + \mu_X\mu_Y \\
+&= E(XY) - \mu_X\mu_Y - \mu_Y\mu_X + \mu_X\mu_Y = E(XY) - \mu_X\mu_Y. \qedhere
+\end{align*}
+\end{proof}
+
+\begin{teorema}[Propiedades de la covarianza]
+Sean $X,Y,Z$ variables aleatorias y $a,b,c,d\in\mathbb{R}$:
+\begin{enumerate}[label=(\roman*)]
+\item $\text{Cov}(X,X)=\text{Var}(X)$.
+\item $\text{Cov}(X,Y)=\text{Cov}(Y,X)$ (simetría).
+\item $\text{Cov}(aX+b,\,cY+d) = ac\,\text{Cov}(X,Y)$.
+\item $\text{Cov}(X+Z,\,Y) = \text{Cov}(X,Y)+\text{Cov}(Z,Y)$ (bilinealidad).
+\item Si $X,Y$ son independientes, $\text{Cov}(X,Y)=0$ (la recíproca \textbf{no} vale en general, como veremos en el Ejemplo \ref{ej:cov-cero}).
+\end{enumerate}
+\end{teorema}
+
+\begin{proof}
+(i) es inmediata de la definición, tomando $Y=X$: $\text{Cov}(X,X)=E[(X-\mu_X)^2]=\text{Var}(X)$. (ii) es evidente porque el producto $(X-\mu_X)(Y-\mu_Y)$ es simétrico en $X,Y$. Para (iii), notando que $E(aX+b)=a\mu_X+b$ y $E(cY+d)=c\mu_Y+d$:
+\[
+\text{Cov}(aX+b,cY+d) = E\big[(aX+b-a\mu_X-b)(cY+d-c\mu_Y-d)\big] = E\big[ac(X-\mu_X)(Y-\mu_Y)\big] = ac\,\text{Cov}(X,Y).
+\]
+Para (iv), usando la fórmula de cálculo y aditividad de la esperanza:
+\begin{align*}
+\text{Cov}(X+Z,Y) &= E[(X+Z)Y] - E(X+Z)E(Y) = E(XY)+E(ZY) - \big(E(X)+E(Z)\big)E(Y) \\
+&= \big[E(XY)-E(X)E(Y)\big] + \big[E(ZY)-E(Z)E(Y)\big] = \text{Cov}(X,Y)+\text{Cov}(Z,Y).
+\end{align*}
+Para (v), si $X,Y$ son independientes, ya vimos (Sección 1) que $E(XY)=E(X)E(Y)$, y por lo tanto $\text{Cov}(X,Y)=E(XY)-E(X)E(Y)=0$.
+\end{proof}
+
+Con estas propiedades ya podemos completar la demostración de los incisos (iv) y (v) del teorema de propiedades de la varianza de la Sección \ref{sec:varianza}.
+
+\begin{teorema}[Varianza de una suma]
+Para $X,Y$ variables aleatorias con varianza finita,
+\[
+\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y) + 2\,\text{Cov}(X,Y).
+\]
+En particular, si $X,Y$ son independientes, $\text{Var}(X+Y)=\text{Var}(X)+\text{Var}(Y)$.
+\end{teorema}
+
+\begin{proof}
+Usando la propiedad de bilinealidad de la covarianza recién demostrada, junto con $\text{Cov}(X,X)=\text{Var}(X)$ y la simetría $\text{Cov}(X,Y)=\text{Cov}(Y,X)$:
+\[
+\text{Var}(X+Y) = \text{Cov}(X+Y,X+Y) = \text{Cov}(X,X)+\text{Cov}(X,Y)+\text{Cov}(Y,X)+\text{Cov}(Y,Y) = \text{Var}(X)+2\,\text{Cov}(X,Y)+\text{Var}(Y).
+\]
+Si $X,Y$ son independientes, $\text{Cov}(X,Y)=0$ por la propiedad (v) anterior, y la fórmula se reduce a $\text{Var}(X+Y)=\text{Var}(X)+\text{Var}(Y)$.
+\end{proof}
+
+\begin{observacion}[Generalización a $n$ variables]
+Más generalmente, para variables aleatorias $X_1,\dots,X_n$ y constantes $a_1,\dots,a_n$, aplicando repetidamente la bilinealidad de la covarianza:
+\[
+\text{Var}\left(\sum_{i=1}^n a_i X_i\right) = \sum_{i=1}^n a_i^2\,\text{Var}(X_i) + 2\sum_{i<j} a_i a_j\,\text{Cov}(X_i,X_j).
+\]
+Si además los $X_i$ son independientes dos a dos, todos los términos de covarianza se anulan y queda $\text{Var}\left(\sum_i a_i X_i\right)=\sum_i a_i^2\,\text{Var}(X_i)$. Esta fórmula, en el caso particular $a_i=1/n$ para todo $i$, será exactamente la que usemos en la Sección \ref{sec:lgn} para calcular $\text{Var}(\overline{X}_n)$.
+\end{observacion}
+
+\begin{ejemplo}[Covarianza cero no implica independencia]
+\label{ej:cov-cero}
+Sea $X\sim U(-1,1)$ e $Y=X^2$. Claramente $Y$ depende \emph{fuertemente} de $X$ (de hecho, $Y$ es una función determinística de $X$: conocer $X$ determina exactamente el valor de $Y$), por lo que $X$ e $Y$ no son independientes. Sin embargo, calculemos su covarianza. Como la densidad de $X$ es $f(x)=1/2$ en $(-1,1)$:
+\[
+E(XY) = E(X^3) = \int_{-1}^1 x^3\cdot\frac12\,dx = 0,
+\]
+porque $x^3$ es una función impar integrada sobre un intervalo simétrico respecto del origen. Además $E(X)=0$ (por simetría, o cálculo directo). Por lo tanto,
+\[
+\text{Cov}(X,Y) = E(XY)-E(X)E(Y) = 0 - 0\cdot E(Y) = 0.
+\]
+Este ejemplo es fundamental: muestra que la covarianza (y, como veremos, la correlación) mide únicamente el grado de dependencia \emph{lineal} entre dos variables, y puede ser nula incluso ante una dependencia funcional exacta, si esta es de naturaleza no lineal (aquí, cuadrática).
+\end{ejemplo}
+
+\subsection{Coeficiente de correlación de Pearson}
+
+Un inconveniente de la covarianza es que su valor numérico depende de las unidades en que midamos $X$ e $Y$: si medimos $X$ en metros o en centímetros, la covarianza cambia de escala (por la propiedad de homogeneidad demostrada arriba). Para obtener una medida de asociación lineal que sea ``adimensional'' y comparable entre distintos pares de variables, se normaliza la covarianza por las desviaciones estándar de cada variable.
+
+\begin{definicion}[Coeficiente de correlación de Pearson]
+Sean $X,Y$ con $\sigma_X,\sigma_Y>0$ finitas. El coeficiente de correlación (lineal) de Pearson entre $X$ e $Y$ es
+\[
+\rho_{X,Y} = \frac{\text{Cov}(X,Y)}{\sigma_X\,\sigma_Y}.
+\]
+\end{definicion}
+
+\begin{teorema}[Rango del coeficiente de correlación]
+\[
+-1 \leq \rho_{X,Y} \leq 1.
+\]
+\end{teorema}
+
+Para demostrar este resultado necesitamos un lema previo, la desigualdad de Cauchy--Schwarz para esperanzas, que es en sí misma un resultado interesante y de amplia aplicación.
+
+\begin{lema}[Desigualdad de Cauchy--Schwarz]
+Para cualesquiera variables aleatorias $U,V$ con segundo momento finito,
+\[
+[E(UV)]^2 \leq E(U^2)\,E(V^2).
+\]
+\end{lema}
+
+\begin{proof}
+Consideremos la función $h(t) = E\big[(tU+V)^2\big]$, definida para $t\in\mathbb{R}$. Como $(tU+V)^2\geq 0$ siempre, tenemos $h(t)\geq 0$ para todo $t$. Desarrollando el cuadrado y usando linealidad de la esperanza:
+\[
+h(t) = E(t^2U^2 + 2tUV + V^2) = t^2\,E(U^2) + 2t\,E(UV) + E(V^2).
+\]
+Esto es un polinomio cuadrático en $t$ (asumiendo $E(U^2)>0$; si $E(U^2)=0$ entonces $U=0$ c.s.\ y la desigualdad es trivial) que es no negativo para todo valor real de $t$. Un polinomio cuadrático $At^2+Bt+C$ con $A>0$ es no negativo para todo $t$ si y solo si su discriminante es no positivo: $B^2-4AC\leq 0$. Aquí $A=E(U^2)$, $B=2E(UV)$, $C=E(V^2)$, de donde
+\[
+4[E(UV)]^2 - 4\,E(U^2)\,E(V^2) \leq 0 \quad\Longrightarrow\quad [E(UV)]^2 \leq E(U^2)\,E(V^2). \qedhere
+\]
+\end{proof}
+
+\begin{proof}[Demostración del rango de $\rho$]
+Aplicamos la desigualdad de Cauchy--Schwarz a $U=X-\mu_X$, $V=Y-\mu_Y$:
+\[
+[\text{Cov}(X,Y)]^2 = [E(UV)]^2 \leq E(U^2)\,E(V^2) = \text{Var}(X)\,\text{Var}(Y) = \sigma_X^2\sigma_Y^2.
+\]
+Por lo tanto $\text{Cov}(X,Y)^2 \leq \sigma_X^2\sigma_Y^2$, y dividiendo ambos miembros por $\sigma_X^2\sigma_Y^2>0$:
+\[
+\rho_{X,Y}^2 = \frac{\text{Cov}(X,Y)^2}{\sigma_X^2\sigma_Y^2} \leq 1 \quad\Longrightarrow\quad -1\leq \rho_{X,Y}\leq 1. \qedhere
+\]
+\end{proof}
+
+\begin{observacion}[Casos de igualdad e interpretación]
+Analizando cuándo se da la igualdad en Cauchy--Schwarz (que ocurre cuando el discriminante del polinomio $h(t)$ es exactamente cero, es decir, cuando existe $t_0$ tal que $h(t_0)=E[(t_0 U+V)^2]=0$, lo cual fuerza $t_0 U+V=0$ con probabilidad $1$), se puede probar que:
+\begin{itemize}
+\item $\rho_{X,Y}=1$ si y solo si existe una relación lineal \textbf{exacta} creciente entre $X$ e $Y$: $Y=aX+b$ con $a>0$, con probabilidad $1$.
+\item $\rho_{X,Y}=-1$ si y solo si existe una relación lineal exacta decreciente, $Y=aX+b$ con $a<0$.
+\item $\rho_{X,Y}=0$: se dice que $X$ e $Y$ son \textbf{incorreladas}. No hay asociación lineal entre ellas, aunque —como muestra el Ejemplo \ref{ej:cov-cero}— puede existir una relación no lineal muy fuerte.
+\item Valores intermedios: cuanto más cerca de $\pm1$ esté $\rho_{X,Y}$, más fuerte es la asociación lineal entre las variables; cuanto más cerca de $0$, más débil.
+\end{itemize}
+\end{observacion}
+
+\begin{ejemplo}
+Si $Y=3X-5$ (relación lineal exacta creciente, con pendiente $a=3>0$), usando las propiedades de covarianza demostradas arriba:
+\[
+\text{Cov}(X,Y) = \text{Cov}(X,3X-5) = 3\,\text{Cov}(X,X) = 3\,\text{Var}(X) = 3\sigma_X^2,
+\]
+y, usando la propiedad de la varianza $\text{Var}(aX+b)=a^2\text{Var}(X)$, $\sigma_Y = \sqrt{9\sigma_X^2}=3\sigma_X$ (asumiendo $\sigma_X>0$). Luego,
+\[
+\rho_{X,Y} = \frac{3\sigma_X^2}{\sigma_X\cdot 3\sigma_X} = 1,
+\]
+confirmando que una relación lineal exacta creciente produce correlación máxima.
+\end{ejemplo}
+
+\begin{ejemplo}[Ejemplo numérico con tabla conjunta]
+Sean $X,Y$ con función de probabilidad conjunta dada por la siguiente tabla:
+\begin{center}
+\begin{tabular}{c|ccc}
+ & $Y=0$ & $Y=1$ & $Y=2$ \\ \hline
+$X=0$ & $0.2$ & $0.1$ & $0.0$ \\
+$X=1$ & $0.1$ & $0.3$ & $0.3$
+\end{tabular}
+\end{center}
+Las marginales son $P(X=0)=0.3$, $P(X=1)=0.7$; $P(Y=0)=0.3$, $P(Y=1)=0.4$, $P(Y=2)=0.3$. Calculamos:
+\[
+E(X) = 0\cdot 0.3+1\cdot 0.7 = 0.7, \qquad E(Y) = 0(0.3)+1(0.4)+2(0.3) = 1.0,
+\]
+\[
+E(XY) = \sum_{x,y} xy\,p(x,y) = 0+0+0+0+1(0.3)+2(0.3) = 0.9,
+\]
+\[
+\text{Cov}(X,Y) = E(XY)-E(X)E(Y) = 0.9 - (0.7)(1.0) = 0.2.
+\]
+Para completar el cálculo de $\rho_{X,Y}$ hace falta además $E(X^2)$ y $E(Y^2)$: $E(X^2)=0^2(0.3)+1^2(0.7)=0.7$, de donde $\text{Var}(X)=0.7-0.7^2=0.21$; y $E(Y^2)=0^2(0.3)+1^2(0.4)+2^2(0.3)=0.4+1.2=1.6$, de donde $\text{Var}(Y)=1.6-1.0^2=0.6$. Así,
+\[
+\rho_{X,Y} = \frac{0.2}{\sqrt{0.21}\sqrt{0.6}} = \frac{0.2}{\sqrt{0.126}} \approx \frac{0.2}{0.355} \approx 0.564,
+\]
+una correlación positiva moderada: $X$ e $Y$ tienden a ser grandes juntas, aunque no de manera perfectamente lineal.
+\end{ejemplo}
+
+\subsection{Función generatriz de momentos}
+
+Calcular $E(X), E(X^2), E(X^3),\dots$ (los momentos sucesivos de $X$) requiere, en principio, resolver una suma o integral distinta para cada orden. La \textbf{función generatriz de momentos} (FGM) es una única función que ``codifica'' todos los momentos de $X$ simultáneamente y que, además, caracteriza unívocamente la distribución de la variable: dos variables con la misma FGM tienen exactamente la misma distribución. Esta doble propiedad —generar momentos y caracterizar la distribución— la convierte en una herramienta extraordinariamente poderosa, que usaremos de manera esencial en las Secciones \ref{sec:lgn} y \ref{sec:tcl}.
+
+\begin{definicion}[Función generatriz de momentos]
+Sea $X$ una variable aleatoria. La función generatriz de momentos de $X$ es
+\[
+M_X(t) = E\big(e^{tX}\big),
+\]
+definida para todo $t$ en algún entorno de $0$ tal que la esperanza sea finita. Si no existe tal entorno (por ejemplo, porque $E(e^{tX})=\infty$ para todo $t\neq0$), decimos que la FGM de $X$ no existe.
+\end{definicion}
+
+En el caso discreto, $M_X(t)=\sum_i e^{tx_i}\,p(x_i)$; en el caso continuo, $M_X(t)=\int_{-\infty}^\infty e^{tx}f(x)\,dx$. Nótese que en ambos casos $M_X(0)=E(e^{0})=E(1)=1$, lo cual sirve como verificación rápida de cualquier cálculo de FGM.
+
+\begin{teorema}[Propiedad de generación de momentos]
+Si $M_X(t)$ existe en un entorno de $0$, entonces es infinitamente derivable allí, y
+\[
+M_X^{(k)}(0) = E(X^k), \qquad k=1,2,3,\dots
+\]
+donde $M_X^{(k)}$ denota la derivada $k$-ésima de $M_X$ respecto de $t$.
+\end{teorema}
+
+\begin{proof}
+Bajo las condiciones de regularidad que garantizan la existencia de la FGM en un entorno de $0$ (formalmente, se requiere poder intercambiar el orden de derivación e integración/suma, lo cual está garantizado cuando $M_X$ existe en un intervalo abierto que contiene a $0$), podemos derivar directamente bajo el signo de esperanza:
+\[
+M_X'(t) = \frac{d}{dt}E\big(e^{tX}\big) = E\left(\frac{d}{dt}e^{tX}\right) = E\big(Xe^{tX}\big).
+\]
+Evaluando en $t=0$:
+\[
+M_X'(0) = E\big(Xe^{0}\big) = E(X).
+\]
+Derivando nuevamente respecto de $t$ (aplicando el mismo argumento de intercambio de derivada y esperanza a la función $Xe^{tX}$):
+\[
+M_X''(t) = \frac{d}{dt}E\big(Xe^{tX}\big) = E\big(X^2 e^{tX}\big) \quad\Longrightarrow\quad M_X''(0) = E(X^2).
+\]
+Repitiendo este argumento inductivamente, se obtiene en general
+\[
+M_X^{(k)}(t) = E\big(X^k e^{tX}\big), \qquad\text{y por lo tanto}\qquad M_X^{(k)}(0) = E(X^k). \qedhere
+\]
+\end{proof}
+
+\begin{teorema}[Unicidad]
+Si $M_X(t)$ y $M_Y(t)$ existen y coinciden en un entorno de $0$, entonces $X$ e $Y$ tienen exactamente la \textbf{misma} distribución de probabilidad.
+\end{teorema}
+
+No demostraremos este teorema (su prueba rigurosa requiere teoría de transformadas de Laplace/Fourier y análisis complejo, fuera del alcance de este curso), pero destacamos su enorme utilidad práctica: para identificar la distribución de una variable aleatoria —por ejemplo, una suma de variables cuya distribución conjunta no es evidente a simple vista— basta calcular su FGM y reconocerla como la de alguna distribución conocida. No hace falta calcular explícitamente la función de densidad o de probabilidad puntual de la variable en cuestión.
+
+\begin{teorema}[FGM de una suma de variables independientes]
+Si $X$ e $Y$ son independientes y ambas poseen FGM en un entorno común de $0$, entonces
+\[
+M_{X+Y}(t) = M_X(t)\cdot M_Y(t).
+\]
+\end{teorema}
+
+\begin{proof}
+Por definición de FGM aplicada a $X+Y$:
+\[
+M_{X+Y}(t) = E\big(e^{t(X+Y)}\big) = E\big(e^{tX}e^{tY}\big).
+\]
+Como $X$ e $Y$ son independientes, cualquier función medible de $X$ es independiente de cualquier función medible de $Y$; en particular, $e^{tX}$ y $e^{tY}$ son variables aleatorias independientes (para $t$ fijo). Usamos entonces la propiedad de que la esperanza del producto de dos variables independientes es el producto de sus esperanzas (demostrada en la Sección 1):
+\[
+E\big(e^{tX}e^{tY}\big) = E\big(e^{tX}\big)\,E\big(e^{tY}\big) = M_X(t)\,M_Y(t). \qedhere
+\]
+\end{proof}
+
+\begin{corolario}
+Por inducción, si $X_1,\dots,X_n$ son independientes, $M_{X_1+\cdots+X_n}(t) = \prod_{i=1}^n M_{X_i}(t)$. En particular, si además son idénticamente distribuidas con FGM común $M_X(t)$, entonces $M_{X_1+\cdots+X_n}(t) = [M_X(t)]^n$.
+\end{corolario}
+
+\begin{observacion}[Otras propiedades útiles]
+Directamente de la definición se deducen las identidades $M_{aX+b}(t) = e^{bt}\,M_X(at)$ (pues $E(e^{t(aX+b)})=e^{bt}E(e^{(at)X})=e^{bt}M_X(at)$) y $M_X(0)=1$ siempre. Estas dos propiedades, junto con las tres anteriores, son las que usaremos sistemáticamente al calcular FGM de distribuciones concretas y, más adelante, en la demostración (idea) del teorema central del límite.
+\end{observacion}
+
+\subsection{Cálculo de la FGM para las distribuciones vistas en la Unidad 2}
+
+\begin{ejemplo}[FGM de la binomial]
+Sea $X\sim\text{Bin}(n,p)$. Por definición,
+\[
+M_X(t) = \sum_{k=0}^n e^{tk}\binom{n}{k}p^k(1-p)^{n-k} = \sum_{k=0}^n \binom{n}{k}(pe^t)^k(1-p)^{n-k}.
+\]
+Reconociendo el desarrollo del binomio de Newton $\sum_{k=0}^n \binom{n}{k}u^k v^{n-k}=(u+v)^n$ con $u=pe^t$, $v=1-p$:
+\[
+M_X(t) = \big(1-p+pe^t\big)^n.
+\]
+\textbf{Verificación de $E(X)$ mediante derivación.} Derivando respecto de $t$ (regla de la cadena):
+\[
+M_X'(t) = n\big(1-p+pe^t\big)^{n-1}\cdot pe^t.
+\]
+Evaluando en $t=0$ (donde $e^0=1$):
+\[
+M_X'(0) = n\big(1-p+p\big)^{n-1}\cdot p = n\cdot 1^{n-1}\cdot p = np = E(X),
+\]
+consistente con el cálculo directo de la Sección 1.
+
+\textbf{Verificación de $\text{Var}(X)$.} Derivamos nuevamente. Escribiendo $M_X'(t)=np\,e^t(1-p+pe^t)^{n-1}$ y aplicando la regla del producto:
+\[
+M_X''(t) = np\left[e^t(1-p+pe^t)^{n-1} + e^t\cdot(n-1)(1-p+pe^t)^{n-2}\cdot pe^t\right].
+\]
+Evaluando en $t=0$:
+\[
+M_X''(0) = np\big[1\cdot 1^{n-1} + 1\cdot(n-1)\cdot 1^{n-2}\cdot p\big] = np\big[1+(n-1)p\big] = np + n(n-1)p^2.
+\]
+Por lo tanto $E(X^2)=M_X''(0)=np+n(n-1)p^2$, y
+\[
+\text{Var}(X) = E(X^2)-[E(X)]^2 = np+n(n-1)p^2 - n^2p^2 = np + n^2p^2-np^2-n^2p^2 = np-np^2 = np(1-p),
+\]
+que coincide con el valor conocido $\text{Var}(X)=np(1-p)$, obtenido aquí de manera puramente algebraica a partir de la FGM, sin necesidad de manipulaciones combinatorias.
+\end{ejemplo}
+
+\begin{ejemplo}[FGM de la Poisson]
+Sea $X\sim\text{Poisson}(\lambda)$. Entonces
+\[
+M_X(t) = \sum_{k=0}^\infty e^{tk}\,\frac{e^{-\lambda}\lambda^k}{k!} = e^{-\lambda}\sum_{k=0}^\infty \frac{(\lambda e^t)^k}{k!} = e^{-\lambda}\, e^{\lambda e^t} = e^{\lambda(e^t-1)},
+\]
+usando nuevamente el desarrollo en serie de $e^u=\sum_{k=0}^\infty u^k/k!$ con $u=\lambda e^t$. Esta FGM existe para todo $t\in\mathbb{R}$ (no hay restricción de convergencia, a diferencia de la exponencial que veremos a continuación), lo cual es consistente con el hecho de que la Poisson tiene momentos finitos de todo orden.
+\end{ejemplo}
+
+\begin{ejemplo}[FGM de la exponencial]
+Sea $X\sim\text{Exp}(\lambda)$. Para $t<\lambda$:
+\[
+M_X(t) = \int_0^\infty e^{tx}\lambda e^{-\lambda x}\,dx = \lambda\int_0^\infty e^{-(\lambda-t)x}\,dx = \lambda\left[\frac{-1}{\lambda-t}e^{-(\lambda-t)x}\right]_0^\infty = \frac{\lambda}{\lambda-t},
+\]
+donde la integral converge únicamente si $\lambda-t>0$, es decir $t<\lambda$; para $t\geq\lambda$, la integral diverge y la FGM no existe en ese punto. Esto ilustra por qué en la definición general se exige que la FGM exista solo en un \emph{entorno de $0$}: aquí basta con $t\in(-\infty,\lambda)$, que sí contiene un entorno de $0$ (pues $\lambda>0$).
+
+\textbf{Verificación de $E(X)$ y $\text{Var}(X)$ mediante derivación.} Escribiendo $M_X(t)=\lambda(\lambda-t)^{-1}$:
+\[
+M_X'(t) = \lambda(\lambda-t)^{-2}, \qquad M_X'(0) = \lambda\cdot\lambda^{-2} = \frac{1}{\lambda} = E(X),
+\]
+que coincide con el resultado de la Sección 1. Derivando otra vez,
+\[
+M_X''(t) = 2\lambda(\lambda-t)^{-3}, \qquad M_X''(0) = 2\lambda\cdot\lambda^{-3} = \frac{2}{\lambda^2} = E(X^2),
+\]
+también consistente con lo calculado anteriormente. Luego $\text{Var}(X)=E(X^2)-[E(X)]^2 = 2/\lambda^2 - 1/\lambda^2 = 1/\lambda^2$.
+\end{ejemplo}
+
+\begin{ejemplo}[FGM de la distribución normal]
+Comenzamos con $Z\sim N(0,1)$, de densidad $\varphi(z)=\frac{1}{\sqrt{2\pi}}e^{-z^2/2}$. Por definición,
+\[
+M_Z(t) = \int_{-\infty}^\infty e^{tz}\,\frac{1}{\sqrt{2\pi}}e^{-z^2/2}\,dz = \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}+tz}\,dz.
+\]
+Completamos cuadrados en el exponente: $-\frac{z^2}{2}+tz = -\frac12(z^2-2tz) = -\frac12\big[(z-t)^2-t^2\big] = -\frac{(z-t)^2}{2}+\frac{t^2}{2}$. Sustituyendo,
+\[
+M_Z(t) = e^{t^2/2}\int_{-\infty}^\infty \frac{1}{\sqrt{2\pi}} e^{-(z-t)^2/2}\,dz = e^{t^2/2},
+\]
+pues la integral remanente es el área total bajo una densidad $N(t,1)$ (una normal centrada en $t$ con varianza $1$), que vale $1$ para cualquier valor de $t$, al ser una densidad de probabilidad válida.
+
+Si $X=\mu+\sigma Z\sim N(\mu,\sigma^2)$ (con $\sigma>0$), usamos la propiedad $M_{aX+b}(t)=e^{bt}M_X(at)$ aplicada a $Z$ con $a=\sigma$, $b=\mu$:
+\[
+M_X(t) = M_{\mu+\sigma Z}(t) = e^{\mu t}\, M_Z(\sigma t) = e^{\mu t}\, e^{(\sigma t)^2/2} = e^{\mu t + \sigma^2 t^2/2}.
+\]
+
+\textbf{Verificación de $E(X)$ y $\text{Var}(X)$.} Derivando $M_X(t)=e^{\mu t+\sigma^2t^2/2}$ respecto de $t$ (regla de la cadena):
+\[
+M_X'(t) = (\mu+\sigma^2 t)\,e^{\mu t+\sigma^2t^2/2} \quad\Longrightarrow\quad M_X'(0) = \mu\cdot e^0 = \mu = E(X).
+\]
+Derivando otra vez (regla del producto):
+\[
+M_X''(t) = \sigma^2 e^{\mu t+\sigma^2t^2/2} + (\mu+\sigma^2t)^2 e^{\mu t+\sigma^2t^2/2} \quad\Longrightarrow\quad M_X''(0) = \sigma^2 + \mu^2.
+\]
+Por lo tanto, $\text{Var}(X)=E(X^2)-[E(X)]^2 = (\sigma^2+\mu^2)-\mu^2 = \sigma^2$, confirmando que el segundo parámetro de la normal es efectivamente su varianza.
+\end{ejemplo}
+
+\begin{observacion}[Aplicación: la suma de normales independientes es normal]
+Como consecuencia inmediata del teorema de la FGM de una suma de independientes, si $X_1\sim N(\mu_1,\sigma_1^2)$ y $X_2\sim N(\mu_2,\sigma_2^2)$ son independientes,
+\[
+M_{X_1+X_2}(t) = M_{X_1}(t)\,M_{X_2}(t) = e^{\mu_1 t+\sigma_1^2t^2/2}\cdot e^{\mu_2t+\sigma_2^2t^2/2} = e^{(\mu_1+\mu_2)t + (\sigma_1^2+\sigma_2^2)t^2/2},
+\]
+que es exactamente la FGM de una distribución $N(\mu_1+\mu_2,\ \sigma_1^2+\sigma_2^2)$. Por la propiedad de unicidad de la FGM, concluimos que $X_1+X_2\sim N(\mu_1+\mu_2,\sigma_1^2+\sigma_2^2)$: \textbf{la suma de normales independientes es normal}, con parámetros que se suman de la manera esperada. Este resultado —que sería mucho más laborioso de demostrar por convolución directa de densidades— es un ejemplo paradigmático de la potencia de la FGM, y será usado en la Unidad 5 al estudiar la distribución exacta de $\overline{X}_n$ cuando la población de origen es normal.
+\end{observacion}
+
+\newpage
+\section{Convergencia en probabilidad y ley de los grandes números}
+\label{sec:lgn}
+
+\subsection{La intuición frecuencial de la probabilidad}
+
+Desde el comienzo del curso hemos usado, de manera informal, una interpretación frecuencial de la probabilidad: cuando decimos que ``la probabilidad de cara al tirar una moneda equilibrada es $0.5$'', intuitivamente queremos decir que si tiramos la moneda muchas veces, la \emph{proporción} de caras observadas se aproxima a $0.5$. El objetivo de esta sección es formalizar y demostrar rigurosamente esta intuición mediante la \textbf{ley de los grandes números}, que además de justificar matemáticamente la interpretación frecuencial de la probabilidad, constituye la base teórica de los métodos de simulación (Monte Carlo) y de gran parte de la inferencia estadística que se estudiará en unidades posteriores.
+
+\subsection{Convergencia en probabilidad}
+
+Consideremos una sucesión de variables aleatorias $X_1,X_2,X_3,\dots$ y queramos dar sentido preciso a la afirmación ``$X_n$ se acerca a un valor (o variable) $X$ a medida que $n\to\infty$''. A diferencia de las sucesiones numéricas ordinarias, esto requiere una definición específicamente probabilística, porque cada $X_n$ es en sí misma aleatoria y no tiene, en general, un único valor al que ``converger'' en el sentido usual del análisis.
+
+\begin{definicion}[Convergencia en probabilidad]
+Decimos que la sucesión $\{X_n\}$ \textbf{converge en probabilidad} a una constante (o variable aleatoria) $X$, y escribimos $X_n \xrightarrow{P} X$, si para todo $\varepsilon>0$:
+\[
+\lim_{n\to\infty} P\big(|X_n-X|\geq\varepsilon\big) = 0.
+\]
+\end{definicion}
+
+En palabras: para cualquier margen de error $\varepsilon$ que fijemos (por pequeño que sea), la probabilidad de que $X_n$ se aparte de $X$ en más de $\varepsilon$ se vuelve arbitrariamente chica a medida que $n$ crece. Es importante remarcar una distinción conceptual: la convergencia en probabilidad \textbf{no} afirma que $X_n(\omega)\to X(\omega)$ para cada resultado particular $\omega$ del espacio muestral (esa sería la llamada convergencia \emph{casi segura}, un modo de convergencia más fuerte que la convergencia en probabilidad, y que queda fuera del alcance de este curso introductorio). La convergencia en probabilidad es, en cambio, una afirmación sobre cómo se comporta, en el límite, la probabilidad de discrepancia entre $X_n$ y $X$.
+
+\subsection{Ley débil de los grandes números}
+
+Consideremos el siguiente escenario: sean $X_1,X_2,\dots,X_n$ variables aleatorias \textbf{independientes e idénticamente distribuidas} (i.i.d.), con $E(X_i)=\mu$ y $\text{Var}(X_i)=\sigma^2<\infty$ para todo $i$ (por ejemplo: resultados de tiradas repetidas de un dado, o mediciones repetidas e independientes de un instrumento). Definimos el \textbf{promedio muestral}
+\[
+\overline{X}_n = \frac{X_1+X_2+\cdots+X_n}{n} = \frac1n\sum_{i=1}^n X_i.
+\]
+La pregunta central de esta sección es: ¿qué le sucede a $\overline{X}_n$ a medida que $n\to\infty$?
+
+\begin{propiedad}[Esperanza y varianza del promedio muestral]
+Bajo las hipótesis anteriores,
+\[
+E(\overline{X}_n) = \mu, \qquad \text{Var}(\overline{X}_n) = \frac{\sigma^2}{n}.
+\]
+\end{propiedad}
+
+\begin{proof}
+Usando linealidad de la esperanza (Sección 1):
+\[
+E(\overline{X}_n) = E\left(\frac1n\sum_{i=1}^n X_i\right) = \frac1n\sum_{i=1}^n E(X_i) = \frac1n(n\mu) = \mu.
+\]
+Usando que los $X_i$ son independientes, y por lo tanto la varianza de la suma es la suma de las varianzas (Sección \ref{sec:covarianza}):
+\[
+\text{Var}(\overline{X}_n) = \text{Var}\left(\frac1n\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\text{Var}\left(\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\sum_{i=1}^n \text{Var}(X_i) = \frac{1}{n^2}(n\sigma^2) = \frac{\sigma^2}{n}. \qedhere
+\]
+\end{proof}
+
+Este resultado ya es muy revelador: $E(\overline{X}_n)=\mu$ para \emph{todo} $n$ (el promedio muestral está siempre ``centrado'' exactamente en $\mu$, sin sesgo alguno), pero $\text{Var}(\overline{X}_n)=\sigma^2/n \to 0$ cuando $n\to\infty$: la dispersión del promedio muestral se reduce progresivamente a medida que promediamos más observaciones. Intuitivamente, esto sugiere que $\overline{X}_n$ debería concentrarse cada vez más alrededor de $\mu$. La desigualdad de Chebyshev nos permite convertir esta intuición en una demostración rigurosa.
+
+\begin{teorema}[Ley débil de los grandes números]
+Sean $X_1,\dots,X_n$ i.i.d.\ con $E(X_i)=\mu$ y $\text{Var}(X_i)=\sigma^2<\infty$. Entonces el promedio muestral converge en probabilidad a $\mu$:
+\[
+\overline{X}_n \xrightarrow{P} \mu, \qquad\text{es decir,}\qquad \lim_{n\to\infty} P\big(|\overline{X}_n-\mu|\geq\varepsilon\big) = 0 \quad\forall\,\varepsilon>0.
+\]
+\end{teorema}
+
+\begin{proof}
+Aplicamos la desigualdad de Chebyshev (Sección \ref{sec:varianza}) a la variable $\overline{X}_n$, que —según acabamos de demostrar— tiene esperanza $\mu$ y varianza $\sigma^2/n$. Para cualquier $\varepsilon>0$ fijo:
+\[
+P\big(|\overline{X}_n-\mu|\geq\varepsilon\big) \leq \frac{\text{Var}(\overline{X}_n)}{\varepsilon^2} = \frac{\sigma^2/n}{\varepsilon^2} = \frac{\sigma^2}{n\,\varepsilon^2}.
+\]
+Como $\sigma^2$ y $\varepsilon$ están fijos (no dependen de $n$), al tomar el límite $n\to\infty$ el lado derecho de la desigualdad tiende a $0$:
+\[
+\lim_{n\to\infty} \frac{\sigma^2}{n\varepsilon^2} = 0.
+\]
+Por otro lado, siendo $P(|\overline{X}_n-\mu|\geq\varepsilon)$ una probabilidad, es siempre no negativa. Tenemos entonces la sucesión de probabilidades $\{P(|\overline{X}_n-\mu|\geq\varepsilon)\}_{n\geq1}$ acotada entre $0$ y una sucesión que tiende a $0$; por el teorema de \emph{sandwich} (o del emparedado) para límites de sucesiones numéricas,
+\[
+\lim_{n\to\infty} P\big(|\overline{X}_n-\mu|\geq\varepsilon\big) = 0.
+\]
+Como esto vale para todo $\varepsilon>0$ arbitrario, concluimos que $\overline{X}_n \xrightarrow{P} \mu$, que es precisamente la definición de convergencia en probabilidad.
+\end{proof}
+
+Esta ley se denomina ``débil'' porque solo garantiza convergencia en probabilidad; existe una versión ``fuerte'' de la ley de los grandes números (que garantiza convergencia casi segura, un modo de convergencia estrictamente más fuerte) cuya demostración requiere herramientas de teoría de la medida más avanzadas y queda fuera del alcance de este curso. Es interesante notar, además, que la demostración presentada aquí —vía Chebyshev— exige la existencia de varianza finita, una hipótesis que en realidad puede debilitarse: existen demostraciones alternativas (típicamente usando funciones características) que solo requieren $E(|X_i|)<\infty$, pero estas técnicas exceden también el alcance de este curso.
+
+\begin{ejemplo}[Acotando el número de mediciones necesarias]
+Se mide el tiempo de reacción de personas a un estímulo. Se sabe que cada medición tiene desviación estándar $\sigma=0.5$ segundos (la distribución exacta es desconocida). ¿Cuántas mediciones independientes $n$ se necesitan para garantizar, usando Chebyshev, que $P(|\overline{X}_n-\mu|\geq 0.1)\leq 0.05$?
+
+Por Chebyshev,
+\[
+P(|\overline{X}_n-\mu|\geq 0.1) \leq \frac{\sigma^2}{n(0.1)^2} = \frac{0.25}{0.01\,n} = \frac{25}{n}.
+\]
+Queremos $\dfrac{25}{n}\leq 0.05 \iff n\geq \dfrac{25}{0.05}=500$. Se necesitan al menos $500$ mediciones para esa garantía. Es una cota conservadora: en la práctica, usando el teorema central del límite (Sección \ref{sec:tcl}) se obtienen cotas considerablemente más ajustadas para el mismo nivel de confianza.
+\end{ejemplo}
+
+\subsection{Interpretación frecuencial de la probabilidad como consecuencia}
+
+Un caso particular de la ley débil de los grandes números, de enorme importancia conceptual, es la justificación formal de la interpretación frecuencial de la probabilidad.
+
+\begin{corolario}[Convergencia de la frecuencia relativa]
+Sea $A$ un evento con $P(A)=p$, y repitamos el experimento aleatorio $n$ veces de forma independiente. Definamos $X_i=1$ si $A$ ocurre en el ensayo $i$-ésimo, y $X_i=0$ en caso contrario, es decir, $X_i\sim\text{Bernoulli}(p)$ i.i.d. Entonces
+\[
+\overline{X}_n = \frac1n\sum_{i=1}^n X_i
+\]
+es exactamente la \textbf{frecuencia relativa} de ocurrencia de $A$ en las $n$ repeticiones (la proporción de éxitos observados), y por la ley débil,
+\[
+\overline{X}_n \xrightarrow{P} p.
+\]
+\end{corolario}
+
+\begin{proof}
+Como $X_i\sim\text{Bernoulli}(p)$, sabemos (Sección 1 y 2) que $E(X_i)=p$ y $\text{Var}(X_i)=p(1-p)<\infty$. Aplicando directamente la ley débil de los grandes números a esta sucesión i.i.d., $\overline{X}_n\xrightarrow{P}p$.
+\end{proof}
+
+Es decir: \textbf{la frecuencia relativa de un evento converge en probabilidad a su probabilidad teórica}. Este corolario formaliza, con todo rigor matemático, la interpretación frecuencial (empírica) de la probabilidad que hemos venido usando informalmente desde el comienzo de la materia, y explica por qué la simulación de un experimento aleatorio un gran número de veces permite estimar probabilidades desconocidas con precisión creciente.
+
+\begin{ejemplo}[Simulación conceptual de una moneda]
+Se tira una moneda equilibrada ($p=0.5$) $n$ veces, y sea $\hat{p}_n$ la frecuencia relativa de caras. Por la ley débil, $\hat{p}_n\xrightarrow{P}0.5$. Usando Chebyshev con $\sigma^2=p(1-p)=0.25$ y $\varepsilon=0.05$:
+\[
+P(|\hat{p}_n-0.5|\geq0.05) \leq \frac{0.25}{n(0.05)^2} = \frac{0.25}{0.0025\,n} = \frac{100}{n}.
+\]
+Con $n=1000$, la cota es $100/1000=0.10$; con $n=10\,000$, la cota es $100/10\,000=0.01$. Se observa cómo, al aumentar el número de tiradas, la probabilidad de que la frecuencia relativa se aleje de $0.5$ en más de $5$ puntos porcentuales se vuelve cada vez más chica, consistente con la intuición de que ``con más tiradas, la proporción de caras se estabiliza cerca de $0.5$''.
+\end{ejemplo}
+
+\begin{ejemplo}[Control de calidad]
+Una fábrica produce artículos con una proporción $p=0.02$ de defectuosos (valor real, supuesto conocido a fines del ejemplo). Se inspecciona una muestra de $n=2000$ artículos independientes, y sea $\hat p$ la proporción muestral de defectuosos. Entonces $E(\hat p)=0.02$ y
+\[
+\text{Var}(\hat p) = \frac{p(1-p)}{n} = \frac{0.02(0.98)}{2000} = 0.0000098.
+\]
+Por Chebyshev, con $\varepsilon=0.01$:
+\[
+P(|\hat p-0.02|\geq0.01) \leq \frac{0.0000098}{(0.01)^2} = \frac{0.0000098}{0.0001} = 0.098.
+\]
+Hay a lo sumo un $9.8\%$ de probabilidad de que la proporción muestral se aparte más de un punto porcentual de la proporción real de defectuosos.
+\end{ejemplo}
+
+\begin{ejemplo}[Promedio de calificaciones]
+Las calificaciones de un examen (escala $0$ a $100$) tienen $\mu=68$ y $\sigma=15$, con distribución desconocida. Se promedian los exámenes de $n=225$ estudiantes elegidos al azar e independientes entre sí. Acotemos, con Chebyshev, la probabilidad de que el promedio muestral difiera de $68$ en más de $3$ puntos.
+
+Calculamos $\text{Var}(\overline{X}_{225}) = 15^2/225 = 225/225 = 1$. Por Chebyshev con $k=3$:
+\[
+P(|\overline{X}_{225}-68|\geq3) \leq \frac{1}{3^2} = \frac19 \approx 0.111.
+\]
+Con $225$ exámenes, la probabilidad de que el promedio se aparte más de $3$ puntos de la media poblacional es a lo sumo $11.1\%$: el promedio muestral es un estimador cada vez más preciso de $\mu$ a medida que $n$ crece.
+\end{ejemplo}
+
+\begin{observacion}[Alcance y limitaciones de la ley débil]
+La ley débil de los grandes números garantiza que, para $n$ suficientemente grande, es \emph{muy probable} que $\overline{X}_n$ esté cerca de $\mu$. Sin embargo, no garantiza nada sobre una realización \emph{particular} de la muestra: en una muestra concreta de tamaño $n$ (por grande que sea), $\overline{X}_n$ todavía puede alejarse de $\mu$; simplemente, ese evento se vuelve cada vez menos probable a medida que $n$ crece. Además, tal como fue demostrada aquí, la ley requiere que $\text{Var}(X_i)$ sea finita; existen versiones más generales (fuera del alcance de este curso) que solo requieren $E(|X_i|)<\infty$. La ley débil de los grandes números es la base teórica de la simulación de Monte Carlo, de la estimación de probabilidades mediante frecuencias relativas, y de buena parte de la inferencia estadística que se desarrollará en unidades posteriores de la materia.
+\end{observacion}
+
+\newpage
+\section{Teorema central del límite}
+\label{sec:tcl}
+
+\subsection{De la ley de los grandes números al teorema central del límite}
+
+Ya sabemos, por la Sección anterior, que si $X_1,\dots,X_n$ son i.i.d.\ con $E(X_i)=\mu$, $\text{Var}(X_i)=\sigma^2$, entonces $\overline{X}_n\xrightarrow{P}\mu$: el promedio muestral se acerca a $\mu$, y su varianza $\sigma^2/n\to0$. Una pregunta natural, y mucho más fina, es la siguiente: sabemos que $\overline{X}_n-\mu$ tiende a $0$, pero ¿con qué \emph{forma} (distribución) se acerca a $0$? Si ``agrandamos la lupa'' apropiadamente —reescalando la diferencia $\overline{X}_n-\mu$ por un factor que compense su achicamiento—, ¿qué distribución límite emerge?
+
+Este es precisamente el contenido del \textbf{teorema central del límite} (TCL), posiblemente el resultado más importante de toda la teoría clásica de la probabilidad, tanto por su generalidad extraordinaria como por sus innumerables aplicaciones prácticas en estadística, ciencias naturales y ciencias sociales.
+
+\subsection{Enunciado del teorema}
+
+Sean $X_1,\dots,X_n$ i.i.d.\ con $E(X_i)=\mu$, $\text{Var}(X_i)=\sigma^2<\infty$, y sea $S_n=X_1+\cdots+X_n$ la suma parcial. Por las propiedades de esperanza y varianza vistas anteriormente,
+\[
+E(S_n) = n\mu, \qquad \text{Var}(S_n) = n\sigma^2.
+\]
+Definimos la versión estandarizada de $S_n$ (equivalentemente, de $\overline{X}_n$):
+\[
+Z_n = \frac{S_n-n\mu}{\sigma\sqrt{n}} = \frac{\overline{X}_n-\mu}{\sigma/\sqrt{n}}.
+\]
+Por construcción (Sección \ref{sec:varianza}, propiedad de estandarización), $E(Z_n)=0$ y $\text{Var}(Z_n)=1$ para todo $n$: la estandarización elimina, en cada paso $n$, tanto el desplazamiento como el achicamiento de la escala, de modo que podamos preguntarnos por la \emph{forma} de la distribución límite sin que esta colapse trivialmente a una constante.
+
+\begin{teorema}[Teorema central del límite]
+Sean $X_1,\dots,X_n$ variables aleatorias i.i.d.\ con $E(X_i)=\mu$ y $\text{Var}(X_i)=\sigma^2\in(0,\infty)$. Entonces, cuando $n\to\infty$, la distribución de
+\[
+Z_n = \frac{\overline{X}_n-\mu}{\sigma/\sqrt n} = \frac{S_n-n\mu}{\sqrt n\,\sigma}
+\]
+converge a la distribución normal estándar $N(0,1)$. Formalmente, para todo $z\in\mathbb{R}$:
+\[
+\lim_{n\to\infty} P(Z_n\leq z) = \Phi(z) = P(Z\leq z), \qquad Z\sim N(0,1).
+\]
+\end{teorema}
+
+Lo verdaderamente notable de este resultado es que vale sin importar cuál sea la distribución \emph{original} de los $X_i$ (discreta o continua, simétrica o asimétrica, acotada o no...), siempre que tenga media y varianza finitas. Por esta razón se lo llama ``central'': es un resultado unificador que explica la omnipresencia de la distribución normal en la naturaleza y en la práctica estadística.
+
+\subsection{Idea de la demostración usando la función generatriz de momentos}
+
+Aunque una demostración completamente rigurosa del TCL requiere el uso de funciones características (transformadas de Fourier de la distribución), que garantizan existencia y buen comportamiento incluso cuando la FGM no existe, podemos capturar la idea esencial de la demostración usando la FGM, apoyándonos en su propiedad de unicidad (Sección \ref{sec:fgm}): si logramos mostrar que $M_{Z_n}(t)\to M_Z(t)=e^{t^2/2}$ (la FGM de $N(0,1)$, calculada en la Sección \ref{sec:fgm}) para todo $t$, entonces $Z_n$ converge en distribución a $N(0,1)$.
+
+Sea $Y_i=\dfrac{X_i-\mu}{\sigma}$ la estandarización de cada $X_i$ individual, de modo que $E(Y_i)=0$, $\text{Var}(Y_i)=E(Y_i^2)=1$ (todos los $Y_i$ son i.i.d., por serlo los $X_i$). Con esta notación,
+\[
+Z_n = \frac{1}{\sqrt n}\sum_{i=1}^n Y_i.
+\]
+Por independencia de los $Y_i$ (teorema de la FGM de una suma de independientes, Sección \ref{sec:fgm}) y la propiedad $M_{aX}(t)=M_X(at)$:
+\[
+M_{Z_n}(t) = M_{\frac{1}{\sqrt n}\sum_i Y_i}(t) = \prod_{i=1}^n M_{Y_i}\!\left(\frac{t}{\sqrt n}\right) = \left[M_Y\!\left(\frac{t}{\sqrt n}\right)\right]^n,
+\]
+donde $M_Y$ denota la FGM común de los $Y_i$ (idénticamente distribuidos).
+
+Ahora bien, como $M_Y(0)=1$, $M_Y'(0)=E(Y)=0$ y $M_Y''(0)=E(Y^2)=1$ (propiedad de generación de momentos, Sección \ref{sec:fgm}), el desarrollo de Taylor de segundo orden de $M_Y$ alrededor de $s=0$ da
+\[
+M_Y(s) = M_Y(0) + M_Y'(0)\,s + \frac{M_Y''(0)}{2}s^2 + o(s^2) = 1 + \frac{s^2}{2} + o(s^2), \qquad s\to0.
+\]
+Sustituyendo $s=t/\sqrt n$ (que, para $t$ fijo, tiende a $0$ cuando $n\to\infty$):
+\[
+M_Y\!\left(\frac{t}{\sqrt n}\right) = 1 + \frac{t^2}{2n} + o\!\left(\frac1n\right).
+\]
+Elevando a la potencia $n$ y usando el límite notable $\left(1+\dfrac{a}{n}+o(1/n)\right)^n \to e^a$ cuando $n\to\infty$ (con $a=t^2/2$ fijo):
+\[
+M_{Z_n}(t) = \left[1+\frac{t^2}{2n}+o\!\left(\frac1n\right)\right]^n \xrightarrow[n\to\infty]{} e^{t^2/2} = M_Z(t).
+\]
+Por la propiedad de unicidad de la FGM (o, más precisamente, por el correspondiente teorema de continuidad que relaciona convergencia puntual de FGM con convergencia en distribución), concluimos que $Z_n$ converge en distribución a $Z\sim N(0,1)$. Una demostración completamente rigurosa requiere justificar con más cuidado el paso al límite —típicamente reemplazando la FGM por la función característica $\varphi_X(t)=E(e^{itX})$, que existe siempre (sin restricciones de convergencia) para cualquier variable aleatoria—, pero la idea central del argumento es exactamente la presentada arriba.
+
+\subsection{Forma práctica del TCL}
+
+Para $n$ suficientemente grande (en la práctica, suele adoptarse la regla empírica $n\geq30$, aunque el valor de $n$ necesario depende de cuán alejada esté la distribución original de una forma simétrica y de colas ligeras), el TCL se usa en la forma aproximada
+\[
+\overline{X}_n \ \dot\sim\ N\left(\mu,\ \frac{\sigma^2}{n}\right), \qquad S_n = \sum_{i=1}^n X_i \ \dot\sim\ N(n\mu,\ n\sigma^2),
+\]
+donde el símbolo $\dot\sim$ se lee ``se distribuye aproximadamente como''. Equivalentemente,
+\[
+P(\overline{X}_n\leq a) \approx \Phi\left(\frac{a-\mu}{\sigma/\sqrt n}\right).
+\]
+
+\begin{ejemplo}[Suma de tiempos de servicio]
+El tiempo de atención en una caja tiene media $\mu=4$ minutos y desviación estándar $\sigma=2$ minutos (distribución no especificada). Se atienden $n=64$ clientes independientes. Aproximemos la probabilidad de que el tiempo total de atención supere las $4.5$ horas ($270$ minutos).
+
+Por el TCL, $S_{64}\ \dot\sim\ N(64\cdot4,\ 64\cdot4)=N(256,256)$, con $\sqrt{256}=16$. Luego,
+\[
+P(S_{64}>270) \approx P\left(Z>\frac{270-256}{16}\right) = P(Z>0.875) \approx 1-\Phi(0.875) \approx 1-0.8092 = 0.1908.
+\]
+Hay aproximadamente $19\%$ de probabilidad de superar las $4.5$ horas.
+\end{ejemplo}
+
+\subsection{Aproximación normal a la binomial}
+
+Si $X\sim\text{Bin}(n,p)$, podemos escribir $X=\sum_{i=1}^n X_i$ con $X_i\sim\text{Bernoulli}(p)$ i.i.d. (esta es, de hecho, la construcción natural de la binomial como conteo de éxitos en $n$ ensayos independientes). Por el TCL aplicado a esta suma, para $n$ suficientemente grande,
+\[
+X\ \dot\sim\ N\big(np,\ np(1-p)\big).
+\]
+La aproximación se considera razonable, según la regla práctica habitual, cuando $np\geq5$ y $n(1-p)\geq5$ (algunos textos exigen el umbral más conservador $\geq10$): se necesita que la distribución binomial sea suficientemente simétrica, lo cual falla cuando $p$ está muy cerca de $0$ o de $1$ y $n$ no es muy grande.
+
+Como la distribución binomial es discreta (toma valores enteros) y la distribución normal aproximante es continua, se mejora sustancialmente la calidad de la aproximación aplicando la \textbf{corrección por continuidad}. La idea es la siguiente: al aproximar $P(X=k)$ por una densidad continua, es más razonable ``repartir'' la masa de probabilidad puntual $P(X=k)$ sobre el intervalo $(k-0.5,\,k+0.5)$ (de longitud $1$, centrado en $k$) que evaluarla en el punto exacto $k$ (donde una densidad continua asigna probabilidad nula). Formalmente, para $k$ entero y $Y\sim N(np,np(1-p))$:
+\[
+P(X=k) \approx P(k-0.5<Y<k+0.5), \qquad P(X\leq k) \approx P(Y\leq k+0.5).
+\]
+Esta corrección resulta especialmente importante cuando $n$ no es extremadamente grande o cuando se buscan probabilidades de intervalos relativamente angostos, donde ignorarla puede introducir un sesgo sistemático apreciable.
+
+\begin{ejemplo}[Aproximación normal a la binomial]
+Una empresa afirma que el $30\%$ de sus clientes usa la aplicación móvil. Se encuesta a $n=200$ clientes independientes. Sea $X$ el número de clientes que usan la app. Aproximemos $P(50\leq X\leq70)$.
+
+Tenemos $X\sim\text{Bin}(200,0.3)$, con $np=60\geq5$ y $n(1-p)=140\geq5$: la aproximación es aplicable. Calculamos $\mu=60$, $\sigma^2=200(0.3)(0.7)=42$, $\sigma=\sqrt{42}\approx6.481$.
+
+Con corrección por continuidad,
+\[
+P(50\leq X\leq70) \approx P(49.5\leq Y\leq70.5), \qquad Y\sim N(60,42).
+\]
+\[
+= \Phi\!\left(\frac{70.5-60}{6.481}\right) - \Phi\!\left(\frac{49.5-60}{6.481}\right) = \Phi(1.620)-\Phi(-1.620) \approx 0.9474-0.0526 = 0.8948.
+\]
+La probabilidad aproximada es $89.5\%$.
+\end{ejemplo}
+
+\begin{ejemplo}[Otra aproximación normal a la binomial]
+En una línea de producción, la probabilidad de que un artículo pase el control de calidad es $p=0.85$. Se inspeccionan $n=120$ artículos independientes. Aproximemos $P(X<95)$, donde $X$ es el número de artículos que pasan el control.
+
+Verificamos $np=120(0.85)=102\geq5$, $n(1-p)=120(0.15)=18\geq5$. Calculamos $\mu=102$, $\sigma^2=120(0.85)(0.15)=15.3$, $\sigma\approx3.912$.
+
+Con corrección por continuidad, $P(X<95)=P(X\leq94)\approx P(Y\leq94.5)$:
+\[
+P(X<95) \approx \Phi\left(\frac{94.5-102}{3.912}\right) = \Phi(-1.917) \approx 0.0276.
+\]
+Hay aproximadamente $2.76\%$ de probabilidad de que menos de $95$ artículos pasen el control.
+\end{ejemplo}
+
+\subsection{Aproximación normal a la Poisson}
+
+Si $X\sim\text{Poisson}(\lambda)$ con $\lambda$ grande, $X$ puede pensarse informalmente como una suma de muchas variables Poisson ``pequeñas'' independientes, gracias a la propiedad de que la familia Poisson es cerrada bajo sumas: si $X_1\sim\text{Poisson}(\lambda_1)$ y $X_2\sim\text{Poisson}(\lambda_2)$ son independientes, entonces $X_1+X_2\sim\text{Poisson}(\lambda_1+\lambda_2)$ (resultado que se demuestra fácilmente con la FGM: $M_{X_1+X_2}(t)=e^{\lambda_1(e^t-1)}e^{\lambda_2(e^t-1)}=e^{(\lambda_1+\lambda_2)(e^t-1)}$, que es la FGM de una $\text{Poisson}(\lambda_1+\lambda_2)$, por unicidad). Podemos entonces escribir, para $\lambda$ entero, $X$ como suma de $\lambda$ variables i.i.d.\ $\text{Poisson}(1)$, y aplicar el TCL a esa suma. Como $E(X)=\text{Var}(X)=\lambda$, esto sugiere la aproximación
+\[
+X\ \dot\sim\ N(\lambda,\lambda), \qquad\text{razonable en la práctica para } \lambda\gtrsim10,
+\]
+con la correspondiente corrección por continuidad: $P(X\leq k)\approx\Phi\!\left(\dfrac{k+0.5-\lambda}{\sqrt\lambda}\right)$.
+
+\begin{ejemplo}[Aproximación normal a la Poisson]
+El número de llamadas que recibe un call center en una hora sigue una distribución Poisson con $\lambda=50$. Aproximemos $P(X>60)$.
+
+Tenemos $\mu=\lambda=50$, $\sigma=\sqrt{50}\approx7.071$. Con corrección por continuidad, $P(X>60)=P(X\geq61)\approx P(Y>60.5)$:
+\[
+P(X>60) \approx 1-\Phi\!\left(\frac{60.5-50}{7.071}\right) = 1-\Phi(1.485) \approx 1-0.9312 = 0.0688.
+\]
+Hay aproximadamente $6.9\%$ de probabilidad de recibir más de $60$ llamadas en una hora. El valor exacto (calculado sumando directamente $P(X=61)+P(X=62)+\cdots$ con la fórmula de Poisson) es aproximadamente $0.0655$: la aproximación normal con corrección por continuidad resulta bastante precisa incluso con $\lambda$ moderado.
+\end{ejemplo}
+
+\subsection{Alcance del teorema y ejemplo final}
+
+El TCL explica por qué la distribución normal aparece con tanta frecuencia en la naturaleza y en las ciencias sociales: cualquier magnitud que resulte de \emph{sumar o promediar} muchos efectos pequeños e independientes (errores de medición, alturas influidas por numerosos factores genéticos y ambientales, promedios de calificaciones, etc.) tiende a distribuirse aproximadamente normal, sin importar la distribución particular de cada efecto individual. Esta es la razón profunda detrás de la ubicuidad empírica de la ``curva de campana'' en tantos fenómenos aparentemente no relacionados entre sí.
+
+Además, el TCL constituye la base teórica de la \textbf{inferencia estadística} —estimación de parámetros, intervalos de confianza, pruebas de hipótesis— que se estudiará en las unidades posteriores de esta materia: permite aproximar la distribución de estadísticos muestrales (como $\overline{X}_n$ o proporciones muestrales) por una distribución normal, aun cuando la población de origen no lo sea.
+
+\begin{ejemplo}[Margen de error de una encuesta]
+Retomando el ejemplo de la Sección \ref{sec:lgn} ($n=1500$ votantes, proporción real $p=0.48$), comparemos la cota de Chebyshev con la aproximación que brinda el TCL para la probabilidad de que la proporción muestral $\hat p$ se aparte de $0.48$ en más de $0.03$.
+
+Ya calculamos $\text{Var}(\hat p)=p(1-p)/n = 0.48(0.52)/1500 \approx 0.0001664$, de donde $\sigma_{\hat p}\approx0.01290$. Por el TCL, $\hat p\ \dot\sim\ N(0.48,\,0.0001664)$, y entonces
+\[
+P(|\hat p-0.48|\geq0.03) \approx 2\left[1-\Phi\left(\frac{0.03}{0.01290}\right)\right] = 2[1-\Phi(2.326)] \approx 2(1-0.9900) = 0.0200.
+\]
+La probabilidad aproximada es solo $2\%$, mucho más ajustada que el $18.5\%$ que había dado la cota (universal, pero conservadora) de Chebyshev en la Sección \ref{sec:lgn}. Al conocer —gracias al TCL— que $\hat p$ es aproximadamente normal, la estimación de probabilidades resulta considerablemente más precisa que la cota genérica de Chebyshev, que no usa ninguna información sobre la \emph{forma} de la distribución de $\hat p$, sino únicamente su media y varianza.
+\end{ejemplo}
+
+\newpage
+\section{Observaciones adicionales: conexión con la Unidad 5}
+
+Esta unidad desarrolló las herramientas fundamentales del análisis probabilístico —esperanza, varianza, covarianza, correlación, función generatriz de momentos, ley de los grandes números y teorema central del límite— que constituyen la base indispensable de la \textbf{inferencia estadística}, tema central de las unidades siguientes. A modo de cierre, señalamos explícitamente algunas de las conexiones más directas con la Unidad 5 (Muestras aleatorias y distribuciones), para que el lector aprecie la continuidad del programa.
+
+\begin{itemize}
+\item \textbf{Muestra aleatoria como sucesión i.i.d.} En la Unidad 5, una muestra aleatoria $X_1,\dots,X_n$ se define precisamente como una sucesión de variables aleatorias independientes e idénticamente distribuidas, extraídas de una población con cierta distribución (de media $\mu$ y varianza $\sigma^2$, en general desconocidas). Esta es exactamente la estructura que usamos en las Secciones \ref{sec:lgn} y \ref{sec:tcl} de este apunte para estudiar $\overline{X}_n$.
+
+\item \textbf{Esperanza y varianza de la media muestral.} Los resultados $E(\overline{X}_n)=\mu$ y $\text{Var}(\overline{X}_n)=\sigma^2/n$, demostrados en la Sección \ref{sec:lgn} usando linealidad de la esperanza e independencia (a través de la fórmula de la varianza de una suma de independientes de la Sección \ref{sec:covarianza}), son el punto de partida de la Unidad 5 para estudiar las propiedades de $\overline{X}_n$ como \textbf{estimador} del parámetro poblacional $\mu$. Como $E(\overline{X}_n)=\mu$ para todo $n$, se dice que $\overline{X}_n$ es un estimador \emph{insesgado} de $\mu$; y como $\text{Var}(\overline{X}_n)\to0$, se dice que es \emph{consistente} (noción íntimamente ligada a la convergencia en probabilidad estudiada en la Sección \ref{sec:lgn}).
+
+\item \textbf{Distribución exacta de $\overline{X}_n$ para poblaciones normales.} La observación de que la suma (y, por lo tanto, el promedio, que es una transformación lineal de la suma) de variables normales independientes es normal —demostrada en la Sección \ref{sec:fgm} mediante la FGM— permite obtener en la Unidad 5 la distribución \emph{exacta} (no solo aproximada) de $\overline{X}_n$ cuando la población de origen es $N(\mu,\sigma^2)$: en ese caso, $\overline{X}_n \sim N(\mu,\sigma^2/n)$ exactamente, para cualquier tamaño de muestra $n$, sin necesidad de apelar al TCL ni de requerir que $n$ sea grande.
+
+\item \textbf{TCL como aproximación cuando la población no es normal.} Cuando la distribución poblacional no es normal (o es desconocida), el teorema central del límite de la Sección \ref{sec:tcl} es precisamente la herramienta que permite aproximar la distribución de $\overline{X}_n$ por una normal para $n$ suficientemente grande, lo cual es indispensable en la práctica, dado que rara vez conocemos con certeza la forma exacta de la distribución poblacional subyacente.
+
+\item \textbf{Varianza muestral y esperanza condicional.} La Unidad 5 introduce también la varianza muestral $S^2=\frac{1}{n-1}\sum_{i=1}^n (X_i-\overline{X}_n)^2$ como estimador de $\sigma^2$, y demuestra que $E(S^2)=\sigma^2$ (propiedad de insesgadez), un resultado cuya demostración se apoya directamente en las propiedades de esperanza, varianza y covarianza desarrolladas en este apunte. Asimismo, la ley de la esperanza total y la ley de varianza total de la Sección \ref{sec:varianza} reaparecen en la Unidad 6 al estudiar propiedades de estimadores en modelos más generales.
+
+\item \textbf{Chebyshev y TCL como herramientas complementarias.} A lo largo de este apunte comparamos sistemáticamente las cotas de Chebyshev (universales pero conservadoras) con las aproximaciones del TCL (más precisas, pero válidas solo asintóticamente). Esta misma dualidad reaparecerá en la Unidad 6 al comparar métodos de construcción de intervalos de confianza, y en la Unidad 7 al analizar la potencia de distintas pruebas de hipótesis.
+\end{itemize}
+
+En definitiva, el contenido de esta unidad —lejos de ser un conjunto de resultados aislados— es el andamiaje matemático sobre el cual se construye toda la inferencia estadística clásica: sin esperanza y varianza no hay estimadores; sin covarianza y correlación no hay análisis de asociación entre variables; sin la función generatriz de momentos no podríamos identificar con facilidad la distribución de sumas de variables aleatorias; y sin la ley de los grandes números y el teorema central del límite no tendríamos ninguna garantía teórica de que, a partir de una muestra finita, podamos aprender algo confiable sobre una población infinita (o, al menos, mucho más grande que la muestra).
+
+\end{document}
