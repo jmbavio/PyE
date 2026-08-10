@@ -1,0 +1,195 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 0: Presentación de la materia}
+\subtitle{Probabilidad y Estadística (5765)}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{18 de agosto}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+% ============================================================
+\section{Bienvenida y objetivos}
+
+\begin{frame}{Bienvenida}
+\begin{center}
+\Large ¡Bienvenidos a Probabilidad y Estadística!
+\end{center}
+\vspace{1em}
+\begin{itemize}
+\item Código 5765 — Área IV, Departamento de Matemática, UNS.
+\item Correlativa cursada: Análisis Matemático II.
+\item Carga horaria: 6 hs. teóricas + 6 hs. prácticas semanales.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Objetivo de la materia}
+\begin{block}{Del programa oficial}
+Que el alumno comprenda y aplique los conceptos básicos de la probabilidad y de la estadística, conectándose con \emph{``el mundo de la aleatoriedad, de la inferencia y de la predicción''}, con fundamentos teóricos sólidos para comprender la utilidad y los límites de la estadística como herramienta en la resolución de problemas y en la toma de decisiones de la vida real.
+\end{block}
+\vspace{1em}
+No es una materia de fórmulas para memorizar: es una materia para aprender a \textbf{pensar bajo incertidumbre}.
+\end{frame}
+
+\begin{frame}{Las 8 unidades del curso}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\begin{enumerate}
+\item Espacios de probabilidad
+\item Variables aleatorias
+\item Vectores aleatorios
+\item Función generadora de momentos
+\end{enumerate}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{enumerate}
+\setcounter{enumi}{4}
+\item Muestras aleatorias y distribuciones
+\item Estimación de parámetros
+\item Prueba de hipótesis
+\item Modelos lineales
+\end{enumerate}
+\end{column}
+\end{columns}
+\vspace{1em}
+\centering 32 clases de teoría en total.
+\end{frame}
+
+\begin{frame}{Bibliografía}
+\textbf{Básica}
+\begin{itemize}
+\item Meyer, P.: \emph{Probabilidad y Aplicaciones Estadísticas}. Addison Wesley Iberoamericana, 1992.
+\item Rohatgi, V.: \emph{Statistical Inference}. John Wiley, 1984.
+\item Walpole, Myers: \emph{Probabilidad y Estadística}. McGraw-Hill, 1992.
+\end{itemize}
+\textbf{De consulta}: Cánovos; Maronna (UNLP); Yohai; Bianco y Martínez (UBA) — disponibles en la web.
+\vspace{0.5em}
+
+\textbf{Software recomendado}: R (\texttt{www.r-project.org}), de uso público.
+\end{frame}
+
+% ============================================================
+\section{Cronograma y modalidad}
+
+\begin{frame}{Días y horarios}
+\begin{itemize}
+\item \textbf{Martes}: teoría — Clase 0 y Clase 1 el martes 18/8, y así sucesivamente.
+\item \textbf{Jueves}: práctica (antes) y teoría.
+\item Horario adicional: a confirmar.
+\end{itemize}
+\vspace{1em}
+\begin{alertblock}{Inicio de clases}
+Martes 18 de agosto.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Material de estudio}
+Cada unidad del curso tiene, en el repositorio de la materia:
+\begin{itemize}
+\item \textbf{Teoría}: las clases en formato de diapositivas (beamer), una por tema.
+\item \textbf{Un apunte de teoría extendido} por unidad: mismo contenido que las clases pero desarrollado en prosa, con más demostraciones y ejemplos, para quien quiera profundizar más allá de lo que da el horario de clase.
+\item \textbf{Práctica}: guías de ejercicios resueltos paso a paso, de uso libre para estudiar.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Asistencia}
+\begin{itemize}
+\item Las clases prácticas \textbf{no tienen asistencia obligatoria}: están para que cada uno practique a su ritmo.
+\item Somos un grupo chico: si un día falta \textbf{todo el curso}, por favor avisen con anticipación.
+\end{itemize}
+\end{frame}
+
+% ============================================================
+\section{Evaluación}
+
+\begin{frame}{Parciales}
+\begin{itemize}
+\item Se toman \textbf{3 parciales} durante el cuatrimestre.
+\item Fechas: a confirmar con la asistente de cátedra.
+\item Cada parcial se aprueba individualmente con \textbf{60 puntos} (sobre 100).
+\item Hay \textbf{un (1) recuperatorio}, al final del cuatrimestre, para los parciales no aprobados.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Condición final}
+\begin{block}{Promoción directa}
+Promedio de los 3 parciales \textbf{mayor a 80} $\Rightarrow$ promociona la materia sin final.
+\end{block}
+\begin{block}{Regular}
+Con los 3 parciales aprobados (60 o más, incluyendo recuperatorio si hizo falta) pero promedio $\le 80$: queda regular y rinde final.
+\end{block}
+\end{frame}
+
+\begin{frame}{Contacto y consultas}
+\begin{itemize}
+\item Profesor: \texttt{jmbavio@yahoo.com.ar}
+\item Asistente de cátedra: (mail a confirmar)
+\item Consultas: a demanda, coordinando por mail.
+\end{itemize}
+\end{frame}
+
+% ============================================================
+\section{Uso de Inteligencia Artificial}
+
+\begin{frame}{Sobre el material del curso}
+\begin{alertblock}{Transparencia sobre el material}
+Gran parte de las clases de teoría, las prácticas resueltas y los apuntes extendidos de este curso fueron elaborados con asistencia de inteligencia artificial (IA), bajo la supervisión y revisión del docente responsable de la cátedra.
+\end{alertblock}
+\begin{itemize}
+\item El contenido fue revisado, pero al ser una cantidad grande de material, \textbf{puede contener errores puntuales} (typos, algún cálculo, alguna definición mal formulada).
+\item Si encontrás algo que no cierra: \textbf{avisá por mail}. Vamos a ir corrigiendo el material a lo largo del cuatrimestre.
+\item El material es un complemento de estudio: no reemplaza la clase ni la bibliografía oficial.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Uso de IA por parte de los alumnos}
+\begin{itemize}
+\item \textbf{Permitido} y \textbf{fomentado} para estudiar y practicar: usarla para entender un tema, revisar un ejercicio, generar problemas adicionales, etc.
+\item \textbf{No permitido durante los parciales.}
+\item Durante el cuatrimestre va a haber \textbf{hackatones y otras actividades} pensadas específicamente para aprender a usar la IA como herramienta de trabajo en probabilidad y estadística.
+\end{itemize}
+\vspace{1em}
+\centering
+\emph{La idea no es prohibir la herramienta, sino aprender a usarla bien.}
+\end{frame}
+
+% ============================================================
+\section{Para arrancar}
+
+\begin{frame}{Resumen}
+\begin{itemize}
+\item 8 unidades, 32 clases, martes y jueves desde el 18/8.
+\item 3 parciales (60 aprueba c/u, recuperatorio único, promedio $>80$ promociona).
+\item Prácticas libres, sin asistencia obligatoria.
+\item Material generado con apoyo de IA y revisado por la cátedra — reporten erratas por mail.
+\item IA permitida para estudiar, prohibida en parciales, protagonista en las hackatones.
+\end{itemize}
+\vspace{1em}
+\begin{center}
+\Large ¡Empezamos! Clase 1: Experimentos y espacio muestral.
+\end{center}
+\end{frame}
+
+\end{document}

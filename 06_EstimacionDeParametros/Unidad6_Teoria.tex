@@ -1,0 +1,1373 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{propiedad}[teorema]{Propiedad}
+\newtheorem{corolario}[teorema]{Corolario}
+\newtheorem{lema}[teorema]{Lema}
+\theoremstyle{definition}
+\newtheorem{definicion}[teorema]{Definición}
+\newtheorem{ejemplo}[teorema]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{observacion}[teorema]{Observación}
+
+\renewcommand{\proofname}{Demostración}
+
+\title{Unidad 6: Estimación de parámetros \\ \large Apunte de teoría}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Estimación puntual}
+
+\subsection{El problema general de la inferencia estadística}
+
+Hasta la Unidad 5 trabajamos suponiendo que la distribución de la población en estudio era completamente conocida: sabíamos, por ejemplo, que cierta variable aleatoria $X$ tenía distribución $N(\mu,\sigma^2)$ con $\mu$ y $\sigma^2$ dados, y a partir de allí calculábamos probabilidades, distribuciones de estadísticos muestrales, etcétera. En la práctica, sin embargo, esto rara vez ocurre: uno conoce (o supone razonablemente) la \emph{forma} de la distribución poblacional —normal, exponencial, Poisson, Bernoulli, etc.— pero \textbf{no} conoce el valor de uno o más de los parámetros que la determinan. Por ejemplo, sabemos que la duración de cierto componente electrónico es razonablemente modelable por una exponencial, pero desconocemos su parámetro $\lambda$; sabemos que la altura de los estudiantes de una carrera sigue aproximadamente una normal, pero desconocemos $\mu$ y $\sigma^2$.
+
+Formalmente, tenemos una variable aleatoria $X$ cuya función de probabilidad puntual o función de densidad $f(x;\theta)$ depende de un parámetro (o vector de parámetros) $\theta$ que pertenece a un conjunto de valores posibles $\Theta$, llamado \textbf{espacio paramétrico}. El objetivo de la \textbf{estimación de parámetros} es, a partir de una muestra aleatoria $X_1, X_2, \dots, X_n$ extraída de esa población, decir algo razonable y cuantificable acerca del verdadero valor de $\theta$.
+
+Existen dos grandes enfoques, que se complementan y que constituyen el contenido de esta unidad:
+
+\begin{itemize}[leftmargin=1.3cm]
+\item la \textbf{estimación puntual}, en la que se propone un único número (una función de la muestra) como "mejor conjetura" del valor de $\theta$;
+\item la \textbf{estimación por intervalos}, en la que se propone un rango de valores plausibles para $\theta$, acompañado de un nivel de confianza que cuantifica la fiabilidad del procedimiento utilizado para construirlo.
+\end{itemize}
+
+Comenzamos por la estimación puntual, que es la base sobre la cual se construye todo lo demás.
+
+\subsection{Estimadores y estimaciones}
+
+\begin{definicion}[Estimador puntual]
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población cuya distribución depende de un parámetro desconocido $\theta \in \Theta$. Un \textbf{estimador puntual} de $\theta$ es un estadístico, es decir, una función de la muestra
+\[
+\widehat\theta = \widehat\theta(X_1,\dots,X_n),
+\]
+que \textbf{no depende de $\theta$} (de otro modo no podría calcularse a partir de datos, ya que $\theta$ es precisamente lo desconocido).
+\end{definicion}
+
+\begin{definicion}[Estimación]
+Cuando la muestra aleatoria toma un valor concreto observado $x_1,\dots,x_n$ (los datos del experimento), el número resultante $\widehat\theta(x_1,\dots,x_n)$ se denomina \textbf{estimación puntual} de $\theta$.
+\end{definicion}
+
+Conviene remarcar la diferencia, sutil pero fundamental, entre estimador y estimación: el \emph{estimador} es una variable aleatoria (una fórmula, una receta que se aplica a la muestra antes de observarla), mientras que la \emph{estimación} es un número fijo, el resultado de aplicar esa fórmula a los datos ya observados. Como $\widehat\theta$ es una variable aleatoria, tiene su propia distribución de probabilidad —llamada \textbf{distribución muestral del estimador}— con su propia media, varianza, etc. Todas las propiedades que estudiaremos en lo que sigue (insesgadez, eficiencia, consistencia) son propiedades de esa distribución muestral, es decir, describen el comportamiento del estimador \emph{antes} de observar los datos, sobre el conjunto (hipotético) de todas las muestras posibles de tamaño $n$.
+
+\begin{ejemplo}[Estimadores usuales]
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población con media $\mu$ y varianza $\sigma^2$ finitas. Algunos estimadores habituales son:
+\begin{itemize}
+\item Para $\mu$: la \textbf{media muestral} $\overline X = \dfrac{1}{n}\sum_{i=1}^n X_i$, o la \textbf{mediana muestral} $\widetilde X$.
+\item Para $\sigma^2$: la \textbf{cuasivarianza muestral} $S^2 = \dfrac{1}{n-1}\sum_{i=1}^n (X_i-\overline X)^2$, o la \textbf{varianza muestral} $\widehat\sigma^2 = \dfrac{1}{n}\sum_{i=1}^n (X_i-\overline X)^2$.
+\item Para una proporción poblacional $p$: si $Y\sim\text{Bi}(n,p)$ cuenta el número de "éxitos" en $n$ ensayos, $\widehat p = Y/n$.
+\end{itemize}
+Es un hecho central de la Estadística que para un mismo parámetro existen, en general, \textbf{varios} estimadores razonables: $\overline X$ y $\widetilde X$ compiten como estimadores de $\mu$; $S^2$ y $\widehat\sigma^2$ compiten como estimadores de $\sigma^2$. Necesitamos entonces criterios objetivos para decidir cuál conviene usar en cada situación. Ese es el hilo conductor de esta primera sección.
+\end{ejemplo}
+
+\subsection{Insesgadez}
+
+El primer criterio, y el más intuitivo, pide que el estimador no tenga una tendencia sistemática a sobreestimar ni a subestimar el parámetro.
+
+\begin{definicion}[Insesgadez]
+Un estimador $\widehat\theta$ de $\theta$ es \textbf{insesgado} (o \emph{centrado}) si
+\[
+E(\widehat\theta) = \theta \qquad \text{para todo } \theta \in \Theta.
+\]
+Se define el \textbf{sesgo} de $\widehat\theta$ como
+\[
+B(\widehat\theta) = E(\widehat\theta) - \theta.
+\]
+Si $B(\widehat\theta)\neq 0$ para algún $\theta\in\Theta$, se dice que $\widehat\theta$ es \textbf{sesgado}.
+\end{definicion}
+
+\begin{observacion}
+La insesgadez es una propiedad \emph{promedio}: dice que si repitiéramos el proceso de muestreo un número muy grande de veces y promediáramos los valores de $\widehat\theta$ obtenidos, ese promedio se acercaría a $\theta$. No dice nada sobre qué tan cerca está una estimación \emph{particular} del verdadero valor; para eso se necesita, además, controlar la variabilidad del estimador (lo que se aborda en la Sección \ref{sec:ecm}).
+\end{observacion}
+
+\begin{ejemplo}[$\overline X$ es insesgado para $\mu$]
+Sea $X_1,\dots,X_n$ m.a.\ de una población con $E(X_i)=\mu$ para todo $i$ (no hace falta suponer normalidad, ni siquiera que las $X_i$ tengan la misma varianza; alcanza con que compartan la misma media). Por linealidad de la esperanza,
+\[
+E(\overline X) = E\left(\frac1n\sum_{i=1}^n X_i\right) = \frac1n\sum_{i=1}^n E(X_i) = \frac1n\cdot n\mu = \mu.
+\]
+Luego $\overline X$ es insesgado para $\mu$, sin importar la forma de la distribución poblacional (siempre que la media exista).
+\end{ejemplo}
+
+\subsubsection*{Por qué la cuasivarianza muestral divide por $n-1$}
+
+El ejemplo más importante e instructivo de esta sección —y uno de los resultados más citados de toda la Estadística elemental— es la razón por la cual el estimador "natural" de la varianza, que promedia los cuadrados de las desviaciones respecto de $\overline X$, debe dividirse por $n-1$ y no por $n$ para resultar insesgado. Antes de probarlo, establecemos una identidad algebraica clave.
+
+\begin{lema}[Identidad de descomposición de la suma de cuadrados]\label{lema:descomp}
+Sean $x_1,\dots,x_n$ números reales cualesquiera, $\overline x = \frac1n\sum x_i$ su promedio, y $\mu$ cualquier número real. Entonces
+\[
+\sum_{i=1}^n (x_i-\mu)^2 = \sum_{i=1}^n (x_i-\overline x)^2 + n(\overline x-\mu)^2.
+\]
+\end{lema}
+
+\begin{proof}
+Escribimos $x_i - \mu = (x_i-\overline x) + (\overline x-\mu)$ y elevamos al cuadrado, sumando sobre $i$:
+\[
+\sum_{i=1}^n (x_i-\mu)^2 = \sum_{i=1}^n \Big[(x_i-\overline x)+(\overline x-\mu)\Big]^2 = \sum_{i=1}^n (x_i-\overline x)^2 + 2(\overline x-\mu)\sum_{i=1}^n (x_i-\overline x) + n(\overline x-\mu)^2.
+\]
+El término del medio se anula porque $\sum_{i=1}^n (x_i-\overline x) = \sum_{i=1}^n x_i - n\overline x = n\overline x - n\overline x = 0$ (la suma de las desviaciones respecto de la media siempre es cero). Queda entonces
+\[
+\sum_{i=1}^n (x_i-\mu)^2 = \sum_{i=1}^n (x_i-\overline x)^2 + n(\overline x-\mu)^2. \qedhere
+\]
+\end{proof}
+
+Esta identidad es puramente algebraica (vale para cualquier lista de números, sean o no la realización de variables aleatorias) y es la base de la descomposición de la variabilidad total que reaparecerá en la Unidad 8 (análisis de varianza y regresión). Ahora la aplicamos a variables aleatorias para obtener el resultado central de esta subsección.
+
+\begin{teorema}[Esperanza de la suma de cuadrados de desviaciones]\label{teo:sumacuad}
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población con media $\mu$ y varianza $\sigma^2<\infty$. Entonces
+\[
+E\left[\sum_{i=1}^n (X_i-\overline X)^2\right] = (n-1)\sigma^2.
+\]
+\end{teorema}
+
+\begin{proof}
+Aplicamos el Lema \ref{lema:descomp} a las variables aleatorias $X_1,\dots,X_n$ (con $\mu$ la verdadera media poblacional):
+\[
+\sum_{i=1}^n (X_i-\mu)^2 = \sum_{i=1}^n (X_i-\overline X)^2 + n(\overline X-\mu)^2.
+\]
+Tomamos esperanza en ambos miembros. Por un lado,
+\[
+E\left[\sum_{i=1}^n (X_i-\mu)^2\right] = \sum_{i=1}^n E\big[(X_i-\mu)^2\big] = \sum_{i=1}^n \mathrm{Var}(X_i) = n\sigma^2,
+\]
+ya que $E[(X_i-\mu)^2]$ es, por definición, la varianza de $X_i$ (aquí usamos que las $X_i$ son idénticamente distribuidas, cada una con varianza $\sigma^2$). Por otro lado,
+\[
+n\, E\big[(\overline X-\mu)^2\big] = n\,\mathrm{Var}(\overline X) = n\cdot\frac{\sigma^2}{n} = \sigma^2,
+\]
+usando que $E(\overline X)=\mu$ (por lo que $E[(\overline X-\mu)^2]=\mathrm{Var}(\overline X)$) y que $\mathrm{Var}(\overline X)=\sigma^2/n$ cuando las observaciones son independientes (resultado ya visto en la Unidad 5). Sustituyendo ambas esperanzas en la identidad,
+\[
+n\sigma^2 = E\left[\sum_{i=1}^n (X_i-\overline X)^2\right] + \sigma^2,
+\]
+de donde
+\[
+E\left[\sum_{i=1}^n (X_i-\overline X)^2\right] = n\sigma^2-\sigma^2 = (n-1)\sigma^2. \qedhere
+\]
+\end{proof}
+
+\begin{corolario}[Insesgadez de $S^2$ y sesgo de $\widehat\sigma^2$]\label{cor:s2}
+Con las hipótesis del Teorema \ref{teo:sumacuad}:
+\begin{enumerate}[label=(\alph*)]
+\item La cuasivarianza muestral $S^2=\dfrac{1}{n-1}\sum_{i=1}^n (X_i-\overline X)^2$ es un estimador \textbf{insesgado} de $\sigma^2$:
+\[
+E(S^2) = \frac{1}{n-1}\,E\left[\sum_{i=1}^n(X_i-\overline X)^2\right] = \frac{1}{n-1}(n-1)\sigma^2 = \sigma^2.
+\]
+\item La varianza muestral $\widehat\sigma^2 = \dfrac1n\sum_{i=1}^n(X_i-\overline X)^2$ es un estimador \textbf{sesgado} de $\sigma^2$:
+\[
+E(\widehat\sigma^2) = \frac1n\,E\left[\sum_{i=1}^n(X_i-\overline X)^2\right] = \frac{n-1}{n}\sigma^2,
+\]
+con sesgo $B(\widehat\sigma^2) = \dfrac{n-1}{n}\sigma^2-\sigma^2 = -\dfrac{\sigma^2}{n}$; es decir, $\widehat\sigma^2$ \textbf{subestima} sistemáticamente a $\sigma^2$, aunque el sesgo tiende a $0$ cuando $n\to\infty$.
+\end{enumerate}
+\end{corolario}
+
+\begin{observacion}[Intuición: grados de libertad]
+Una manera habitual de explicar por qué hace falta "corregir" dividiendo por $n-1$ es la siguiente: para calcular $\sum(X_i-\overline X)^2$ primero debemos estimar $\mu$ mediante $\overline X$, y esa estimación "usa" o "consume" un grado de libertad de los datos —la restricción $\sum_i (X_i-\overline X)=0$ liga a las $n$ desviaciones entre sí, de modo que solo $n-1$ de ellas son libres de variar—. Si conociéramos $\mu$ exactamente y usáramos $\frac1n\sum(X_i-\mu)^2$, este sí sería insesgado (su esperanza es exactamente $\sigma^2$, sin corrección, como se ve en la demostración anterior). El "costo" de no conocer $\mu$ y tener que estimarla con la misma muestra es, precisamente, ese factor $(n-1)/n$.
+\end{observacion}
+
+\begin{ejemplo}[Cálculo numérico]
+Un ingeniero mide el diámetro (en mm) de $n=5$ piezas: $10.2,\ 9.8,\ 10.1,\ 9.9,\ 10.0$. Entonces
+\[
+\overline x = \frac{10.2+9.8+10.1+9.9+10.0}{5} = \frac{50.0}{5} = 10.0,
+\]
+\[
+\sum_{i=1}^5 (x_i-\overline x)^2 = (0.2)^2+(-0.2)^2+(0.1)^2+(-0.1)^2+0^2 = 0.04+0.04+0.01+0.01+0 = 0.10,
+\]
+\[
+s^2 = \frac{0.10}{4} = 0.025 \ \text{mm}^2 \qquad\text{(estimación insesgada de } \sigma^2\text{)},
+\]
+\[
+\widehat\sigma^2 = \frac{0.10}{5} = 0.02 \ \text{mm}^2 = \frac{4}{5}s^2 \qquad\text{(estimación sesgada, factor } (n-1)/n = 4/5\text{)}.
+\]
+La estimación puntual de $\mu$ (por ejemplo, con $\overline X$) es $\overline x = 10.0$ mm.
+\end{ejemplo}
+
+\subsection{Error cuadrático medio}
+\label{sec:ecm}
+
+La insesgadez por sí sola no alcanza para comparar estimadores: un estimador puede ser insesgado pero tener una varianza enorme, con lo cual, aunque "en promedio" acierte, las estimaciones particulares pueden estar muy lejos del verdadero valor. Necesitamos una medida que combine el sesgo con la dispersión del estimador.
+
+\begin{definicion}[Error cuadrático medio]
+El \textbf{error cuadrático medio} (ECM, o en inglés \emph{mean squared error}, MSE) de un estimador $\widehat\theta$ de $\theta$ es
+\[
+\mathrm{ECM}(\widehat\theta) = E\left[(\widehat\theta-\theta)^2\right].
+\]
+Es el valor esperado del cuadrado de la distancia entre el estimador y el verdadero parámetro; mide, en un único número, qué tan "cerca" está en promedio $\widehat\theta$ de $\theta$.
+\end{definicion}
+
+\begin{teorema}[Descomposición del ECM]\label{teo:ecm}
+Para todo estimador $\widehat\theta$ de $\theta$ con varianza finita,
+\[
+\mathrm{ECM}(\widehat\theta) = \mathrm{Var}(\widehat\theta) + \big[B(\widehat\theta)\big]^2,
+\]
+donde $B(\widehat\theta)=E(\widehat\theta)-\theta$ es el sesgo.
+\end{teorema}
+
+\begin{proof}
+Sumamos y restamos $E(\widehat\theta)$ dentro del cuadrado:
+\begin{align*}
+\mathrm{ECM}(\widehat\theta) &= E\left[(\widehat\theta-\theta)^2\right] = E\left[\Big(\widehat\theta - E(\widehat\theta) + E(\widehat\theta)-\theta\Big)^2\right]\\
+&= E\left[\big(\widehat\theta-E(\widehat\theta)\big)^2\right] + 2\big(E(\widehat\theta)-\theta\big)\,E\left[\widehat\theta-E(\widehat\theta)\right] + \big(E(\widehat\theta)-\theta\big)^2.
+\end{align*}
+El primer término es, por definición, $\mathrm{Var}(\widehat\theta)$. El término central se anula, ya que $E[\widehat\theta-E(\widehat\theta)] = E(\widehat\theta)-E(\widehat\theta)=0$. El tercer término es exactamente $B(\widehat\theta)^2$, pues $E(\widehat\theta)-\theta=B(\widehat\theta)$ es una constante (no aleatoria). Por lo tanto,
+\[
+\mathrm{ECM}(\widehat\theta) = \mathrm{Var}(\widehat\theta) + B(\widehat\theta)^2. \qedhere
+\]
+\end{proof}
+
+\begin{observacion}
+Esta descomposición —conocida en el aprendizaje estadístico moderno como el \emph{trade-off sesgo--varianza}— es una de las ideas más fecundas de la Estadística. Dice que el error total de un estimador tiene dos fuentes independientes: cuánto se desvía \emph{en promedio} del parámetro (sesgo) y cuánto varía \emph{alrededor de su propio promedio} (varianza). Si $\widehat\theta$ es insesgado, $B(\widehat\theta)=0$ y $\mathrm{ECM}(\widehat\theta)=\mathrm{Var}(\widehat\theta)$: comparar estimadores insesgados equivale, entonces, a comparar varianzas. Pero, en general, un estimador con algo de sesgo puede tener menor ECM que uno insesgado, si a cambio gana mucho en reducción de varianza. El ECM permite comparar estimadores aunque no todos sean insesgados, y por eso es el criterio más completo de "bondad" de un estimador puntual.
+\end{observacion}
+
+\begin{ejemplo}[$\widehat\sigma^2$ frente a $S^2$: un estimador sesgado con menor ECM]\label{ej:ecm-sigma}
+Comparemos $\widehat\sigma^2=\frac1n\sum(X_i-\overline X)^2$ con $S^2$ como estimadores de $\sigma^2$, suponiendo una población $N(\mu,\sigma^2)$. Recordemos (Unidad 5) que
+\[
+\frac{(n-1)S^2}{\sigma^2}\sim \chi^2_{n-1},
+\]
+y que la varianza de una $\chi^2_{n-1}$ es $2(n-1)$. Por lo tanto
+\[
+\mathrm{Var}\!\left(\frac{(n-1)S^2}{\sigma^2}\right) = 2(n-1) \;\Longrightarrow\; \frac{(n-1)^2}{\sigma^4}\mathrm{Var}(S^2) = 2(n-1) \;\Longrightarrow\; \mathrm{Var}(S^2) = \frac{2\sigma^4}{n-1}.
+\]
+Como $S^2$ es insesgado, $\mathrm{ECM}(S^2)=\mathrm{Var}(S^2)=\dfrac{2\sigma^4}{n-1}$.
+
+Para $\widehat\sigma^2$, usamos que $\widehat\sigma^2 = \frac{n-1}{n}S^2$, de donde
+\[
+\mathrm{Var}(\widehat\sigma^2) = \left(\frac{n-1}{n}\right)^2 \mathrm{Var}(S^2) = \frac{(n-1)^2}{n^2}\cdot\frac{2\sigma^4}{n-1} = \frac{2(n-1)\sigma^4}{n^2}.
+\]
+Por el Corolario \ref{cor:s2}, el sesgo de $\widehat\sigma^2$ es $B(\widehat\sigma^2)=-\sigma^2/n$, de modo que $B(\widehat\sigma^2)^2 = \sigma^4/n^2$. Por el Teorema \ref{teo:ecm},
+\[
+\mathrm{ECM}(\widehat\sigma^2) = \frac{2(n-1)\sigma^4}{n^2} + \frac{\sigma^4}{n^2} = \frac{\sigma^4\big[2(n-1)+1\big]}{n^2} = \frac{(2n-1)\sigma^4}{n^2}.
+\]
+Comparemos ambos ECM. Queremos ver si $\dfrac{2n-1}{n^2} < \dfrac{2}{n-1}$. Multiplicando en cruz por $n^2(n-1)>0$:
+\[
+(2n-1)(n-1) \ \overset{?}{<}\ 2n^2.
+\]
+Desarrollando el lado izquierdo: $(2n-1)(n-1) = 2n^2-2n-n+1 = 2n^2-3n+1$, que es estrictamente menor que $2n^2$ para todo $n\ge 1$ (ya que $-3n+1<0$ para $n\ge 1$). Concluimos que
+\[
+\mathrm{ECM}(\widehat\sigma^2) < \mathrm{ECM}(S^2) \qquad \text{para todo } n\ge 2.
+\]
+Sorprendentemente, el estimador \emph{sesgado} $\widehat\sigma^2$ tiene menor error cuadrático medio que el insesgado $S^2$, para toda población normal y todo tamaño de muestra. Esto ilustra de manera contundente el trade-off sesgo--varianza: $\widehat\sigma^2$ "encoge" ligeramente sus estimaciones hacia $0$, lo que introduce sesgo pero reduce la varianza en una cantidad mayor. Aun así, en la práctica se prefiere casi universalmente $S^2$, por su insesgadez (que simplifica muchas fórmulas posteriores, como las de los intervalos de confianza de la Sección \ref{sec:icvar}) y porque la diferencia entre ambos ECM es de orden $1/n^2$, es decir, despreciable para $n$ moderado o grande.
+\end{ejemplo}
+
+\subsection{Eficiencia relativa y estimador de mínima varianza}
+
+Cuando restringimos la comparación a estimadores insesgados, el ECM se reduce a la varianza, y el criterio natural es preferir el de menor varianza.
+
+\begin{definicion}[Eficiencia relativa]
+Dados dos estimadores insesgados $\widehat\theta_1$ y $\widehat\theta_2$ de un mismo parámetro $\theta$, la \textbf{eficiencia relativa} de $\widehat\theta_1$ respecto de $\widehat\theta_2$ se define como
+\[
+\mathrm{ER}(\widehat\theta_1,\widehat\theta_2) = \frac{\mathrm{Var}(\widehat\theta_2)}{\mathrm{Var}(\widehat\theta_1)}.
+\]
+Si $\mathrm{ER}(\widehat\theta_1,\widehat\theta_2)>1$, decimos que $\widehat\theta_1$ es \textbf{más eficiente} que $\widehat\theta_2$ (tiene menor varianza).
+\end{definicion}
+
+\begin{definicion}[Estimador insesgado de mínima varianza]
+Un estimador $\widehat\theta^*$ de $\theta$ se llama \textbf{estimador insesgado de mínima varianza} (EIMV, o en inglés \emph{UMVUE}) si es insesgado y $\mathrm{Var}(\widehat\theta^*)\le \mathrm{Var}(\widehat\theta)$ para \textbf{todo otro} estimador insesgado $\widehat\theta$ de $\theta$, y para todo valor de $\theta\in\Theta$.
+\end{definicion}
+
+¿Cómo saber si un estimador insesgado ya es "el mejor posible", sin tener que compararlo uno por uno con todos los demás estimadores insesgados imaginables? Un resultado célebre de la teoría estadística da una cota inferior universal para la varianza de \emph{cualquier} estimador insesgado, bajo condiciones de regularidad razonables (esencialmente, que $f(x;\theta)$ sea derivable respecto de $\theta$ y que el soporte de $X$ no dependa de $\theta$).
+
+\begin{teorema}[Cota de Cramér--Rao, sin demostración]
+Bajo condiciones de regularidad, si $\widehat\theta$ es un estimador insesgado de $\theta$ construido a partir de una muestra aleatoria $X_1,\dots,X_n$,
+\[
+\mathrm{Var}(\widehat\theta) \ \ge\ \frac{1}{n\,I(\theta)}, \qquad \text{donde}\quad I(\theta) = -E\left[\frac{\partial^2}{\partial\theta^2}\ln f(X;\theta)\right]
+\]
+es la \textbf{información de Fisher} que aporta una sola observación. Un estimador insesgado cuya varianza \textbf{alcanza} esta cota es, automáticamente, un EIMV.
+\end{teorema}
+
+\begin{ejemplo}[La cota de Cramér--Rao se alcanza para $\widehat p$ en el modelo Bernoulli]
+Sea $X\sim \text{Be}(p)$, con función de probabilidad $f(x;p)=p^x(1-p)^{1-x}$, $x\in\{0,1\}$. Calculemos la información de Fisher que aporta una observación:
+\[
+\ln f(x;p) = x\ln p + (1-x)\ln(1-p),
+\]
+\[
+\frac{\partial}{\partial p}\ln f(x;p) = \frac{x}{p}-\frac{1-x}{1-p}, \qquad \frac{\partial^2}{\partial p^2}\ln f(x;p) = -\frac{x}{p^2}-\frac{1-x}{(1-p)^2}.
+\]
+Tomando esperanza (recordando que $E(X)=p$):
+\[
+I(p) = -E\left[-\frac{X}{p^2}-\frac{1-X}{(1-p)^2}\right] = \frac{p}{p^2}+\frac{1-p}{(1-p)^2} = \frac1p+\frac{1}{1-p} = \frac{(1-p)+p}{p(1-p)} = \frac{1}{p(1-p)}.
+\]
+Luego la cota de Cramér--Rao para un estimador insesgado de $p$ construido con $n$ observaciones es
+\[
+\frac{1}{n\,I(p)} = \frac{p(1-p)}{n}.
+\]
+Pero ya sabemos (Unidad 5) que $\widehat p = \overline X$ es insesgado para $p$ y que $\mathrm{Var}(\widehat p) = \dfrac{p(1-p)}{n}$: ¡la cota se alcanza exactamente! Esto prueba, sin necesidad de comparar con ningún otro estimador, que $\widehat p=\overline X$ es el EIMV de $p$ en el modelo Bernoulli.
+\end{ejemplo}
+
+\begin{ejemplo}[$\overline X$ frente a la mediana muestral en poblaciones normales]
+Sea $X_1,\dots,X_n$ m.a.\ de una población $N(\mu,\sigma^2)$, con $n$ impar. Puede probarse (resultado que excede el alcance de este curso, y que requiere el estudio de la distribución asintótica de estadísticos de orden) que la mediana muestral $\widetilde X$ también es insesgada para $\mu$, con varianza asintótica
+\[
+\mathrm{Var}(\overline X) = \frac{\sigma^2}{n}, \qquad \mathrm{Var}(\widetilde X)\approx \frac{\pi}{2}\cdot\frac{\sigma^2}{n} \approx 1.57\cdot\frac{\sigma^2}{n}.
+\]
+Como $\mathrm{Var}(\overline X)<\mathrm{Var}(\widetilde X)$, la eficiencia relativa de $\overline X$ respecto de $\widetilde X$ es
+\[
+\mathrm{ER}(\overline X,\widetilde X) = \frac{\mathrm{Var}(\widetilde X)}{\mathrm{Var}(\overline X)} \approx 1.57 > 1,
+\]
+es decir, en poblaciones normales $\overline X$ es aproximadamente un $57\%$ más eficiente que $\widetilde X$ para estimar $\mu$. (De hecho, puede probarse que $\overline X$ alcanza la cota de Cramér--Rao en el modelo normal con $\sigma^2$ conocida, por lo que es el EIMV de $\mu$.) Esto no significa que la mediana sea inútil: en poblaciones con colas pesadas o con valores atípicos, la mediana puede ser preferible por ser más \emph{robusta}, aunque pierda eficiencia bajo el modelo normal ideal.
+\end{ejemplo}
+
+\subsection{Comparación de estimadores: un ejemplo completo con el máximo de una uniforme}
+\label{sec:uniforme}
+
+Cerramos esta primera parte con un ejemplo particularmente instructivo, que compara \textbf{dos estimadores genuinamente distintos} de un mismo parámetro y calcula explícitamente el ECM de cada uno, mostrando en un caso concreto todo lo desarrollado hasta acá: sesgo, varianza, ECM y, más adelante (Sección \ref{sec:mv}), su origen como estimadores por método de momentos y por máxima verosimilitud, respectivamente.
+
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $X\sim \text{Uniforme}(0,\theta)$, con $\theta>0$ desconocido, densidad $f(x;\theta)=1/\theta$ para $0<x<\theta$. Consideramos dos estimadores de $\theta$:
+\[
+T_1 = 2\overline X, \qquad T_2 = X_{(n)} = \max(X_1,\dots,X_n).
+\]
+
+\begin{ejemplo}[Estimador $T_1=2\overline X$]
+Como $E(X)=\theta/2$ y $\mathrm{Var}(X)=\theta^2/12$ para $X\sim\text{Unif}(0,\theta)$, tenemos
+\[
+E(T_1) = 2E(\overline X) = 2\cdot\frac{\theta}{2}=\theta \quad\Rightarrow\quad T_1 \text{ es insesgado},
+\]
+\[
+\mathrm{Var}(T_1) = 4\,\mathrm{Var}(\overline X) = 4\cdot\frac{\theta^2/12}{n} = \frac{\theta^2}{3n}.
+\]
+Como $T_1$ es insesgado, $\mathrm{ECM}(T_1)=\mathrm{Var}(T_1) = \dfrac{\theta^2}{3n}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Estimador $T_2=X_{(n)}$]
+La función de distribución de $X_{(n)}$ es $F_{X_{(n)}}(x) = P(X_{(n)}\le x) = P(X_1\le x,\dots,X_n\le x) = \left(\dfrac{x}{\theta}\right)^n$ para $0<x<\theta$ (por independencia). Derivando, la densidad de $X_{(n)}$ es
+\[
+f_{X_{(n)}}(x) = \frac{n x^{n-1}}{\theta^n}, \qquad 0<x<\theta.
+\]
+Calculamos su esperanza:
+\[
+E(X_{(n)}) = \int_0^\theta x\cdot\frac{n x^{n-1}}{\theta^n}\,dx = \frac{n}{\theta^n}\int_0^\theta x^n\,dx = \frac{n}{\theta^n}\cdot\frac{\theta^{n+1}}{n+1} = \frac{n}{n+1}\theta.
+\]
+Luego el sesgo es $B(T_2) = \dfrac{n}{n+1}\theta-\theta = -\dfrac{\theta}{n+1}$: $T_2$ \textbf{subestima} sistemáticamente a $\theta$ (es lógico: el máximo de la muestra rara vez alcanza exactamente el extremo superior del soporte). Para la varianza necesitamos $E(X_{(n)}^2)$:
+\[
+E(X_{(n)}^2) = \int_0^\theta x^2\cdot\frac{n x^{n-1}}{\theta^n}\,dx = \frac{n}{\theta^n}\int_0^\theta x^{n+1}\,dx = \frac{n}{\theta^n}\cdot\frac{\theta^{n+2}}{n+2} = \frac{n}{n+2}\theta^2,
+\]
+\[
+\mathrm{Var}(X_{(n)}) = \frac{n}{n+2}\theta^2 - \left(\frac{n}{n+1}\theta\right)^2 = \theta^2\left[\frac{n}{n+2}-\frac{n^2}{(n+1)^2}\right].
+\]
+Poniendo a común denominador $(n+2)(n+1)^2$, el numerador es
+\[
+n(n+1)^2 - n^2(n+2) = n\big[(n+1)^2-n(n+2)\big] = n\big[n^2+2n+1-n^2-2n\big] = n,
+\]
+de modo que
+\[
+\mathrm{Var}(X_{(n)}) = \frac{n\,\theta^2}{(n+2)(n+1)^2}.
+\]
+Por el Teorema \ref{teo:ecm},
+\[
+\mathrm{ECM}(T_2) = \mathrm{Var}(X_{(n)}) + B(T_2)^2 = \frac{n\theta^2}{(n+2)(n+1)^2} + \frac{\theta^2}{(n+1)^2} = \frac{\theta^2}{(n+1)^2}\left[\frac{n}{n+2}+1\right] = \frac{\theta^2}{(n+1)^2}\cdot\frac{2n+2}{n+2},
+\]
+\[
+\mathrm{ECM}(T_2) = \frac{2\theta^2(n+1)}{(n+1)^2(n+2)} = \frac{2\theta^2}{(n+1)(n+2)}.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[Comparación final]
+Resumiendo:
+\[
+\mathrm{ECM}(T_1) = \frac{\theta^2}{3n}, \qquad \mathrm{ECM}(T_2) = \frac{2\theta^2}{(n+1)(n+2)}.
+\]
+Para $n=1$ ambos coinciden ($T_1=2X_1$, $T_2=X_1$, y ambos dan $\mathrm{ECM}=\theta^2/3$: verificarlo es un buen ejercicio). Pero para $n$ grande, $\mathrm{ECM}(T_1)$ decrece como $1/n$, mientras que $\mathrm{ECM}(T_2)$ decrece como $1/n^2$: el estimador \textbf{sesgado} $T_2=X_{(n)}$ termina siendo enormemente más preciso que el insesgado $T_1=2\overline X$ para muestras moderadas o grandes. Por ejemplo, para $n=20$: $\mathrm{ECM}(T_1)=\theta^2/60\approx 0.0167\,\theta^2$, mientras que $\mathrm{ECM}(T_2)=2\theta^2/(21\cdot 22)=2\theta^2/462\approx 0.00433\,\theta^2$, casi $4$ veces menor. Este es un ejemplo paradigmático —y más extremo que el de la Sección \ref{sec:ecm}— de cómo la insesgadez no debe tomarse como criterio único ni absoluto: hay que mirar siempre el ECM completo. (Como veremos en la Sección \ref{sec:mv}, $T_1$ es el estimador por el método de los momentos y $T_2$ es, esencialmente, el estimador de máxima verosimilitud de $\theta$.)
+\end{ejemplo}
+
+\subsection{Consistencia}
+
+Los criterios anteriores (insesgadez, ECM, eficiencia) evalúan la calidad de un estimador para un tamaño de muestra $n$ fijo. La \textbf{consistencia}, en cambio, es una propiedad \emph{asintótica}: describe qué le pasa a una sucesión de estimadores $\widehat\theta_n$ (uno por cada $n$) a medida que el tamaño de muestra crece indefinidamente. Es razonable exigir, como mínimo, que con cada vez más información el estimador se acerque cada vez más al verdadero valor del parámetro.
+
+\begin{definicion}[Convergencia en probabilidad]
+Una sucesión de variables aleatorias $Y_n$ \textbf{converge en probabilidad} a una constante $c$, y se escribe $Y_n \xrightarrow{P} c$, si para todo $\varepsilon>0$
+\[
+\lim_{n\to\infty} P(|Y_n-c|>\varepsilon) = 0.
+\]
+\end{definicion}
+
+\begin{definicion}[Estimador consistente]
+Una sucesión de estimadores $\widehat\theta_n$ de $\theta$ (uno para cada tamaño muestral $n$) es \textbf{consistente} si $\widehat\theta_n \xrightarrow{P}\theta$, es decir, si
+\[
+\lim_{n\to\infty} P\big(|\widehat\theta_n-\theta|>\varepsilon\big) = 0 \qquad \text{para todo } \varepsilon>0.
+\]
+\end{definicion}
+
+En palabras: por más pequeño que sea el margen de tolerancia $\varepsilon$ que exijamos, la probabilidad de que el estimador se aleje del parámetro más que ese margen se hace tan chica como queramos, a medida que aumentamos el tamaño de la muestra.
+
+\begin{teorema}[Criterio suficiente de consistencia vía el ECM]\label{teo:consistencia}
+Si $\lim_{n\to\infty}\mathrm{ECM}(\widehat\theta_n)=0$, entonces $\widehat\theta_n$ es consistente para $\theta$. En particular, si $\widehat\theta_n$ es insesgado para todo $n$ y $\lim_{n\to\infty}\mathrm{Var}(\widehat\theta_n)=0$, entonces $\widehat\theta_n$ es consistente.
+\end{teorema}
+
+\begin{proof}
+Aplicamos la desigualdad de Chebyshev a la variable aleatoria $\widehat\theta_n-\theta$ (con "media" $E(\widehat\theta_n)-\theta=B(\widehat\theta_n)$, aunque no hace falta usar esa forma; usamos directamente la versión de Markov aplicada a $(\widehat\theta_n-\theta)^2$). Para todo $\varepsilon>0$,
+\[
+P\big(|\widehat\theta_n-\theta|>\varepsilon\big) = P\big((\widehat\theta_n-\theta)^2 > \varepsilon^2\big) \ \le\ \frac{E\big[(\widehat\theta_n-\theta)^2\big]}{\varepsilon^2} = \frac{\mathrm{ECM}(\widehat\theta_n)}{\varepsilon^2},
+\]
+donde la desigualdad es la desigualdad de Markov aplicada a la variable aleatoria no negativa $(\widehat\theta_n-\theta)^2$. Si $\mathrm{ECM}(\widehat\theta_n)\to 0$ cuando $n\to\infty$, el lado derecho tiende a $0$, y como una probabilidad no puede ser negativa, por el teorema del sándwich
+\[
+\lim_{n\to\infty} P\big(|\widehat\theta_n-\theta|>\varepsilon\big) = 0. \qedhere
+\]
+\end{proof}
+
+\begin{ejemplo}[Consistencia de $\overline X$ y de $S^2$]
+Sea $X_1,\dots,X_n$ m.a.\ con $E(X_i)=\mu$, $\mathrm{Var}(X_i)=\sigma^2<\infty$.
+\begin{itemize}
+\item $\overline X$ es insesgado y $\mathrm{Var}(\overline X)=\sigma^2/n \to 0$ cuando $n\to\infty$. Por el Teorema \ref{teo:consistencia}, $\overline X$ es consistente para $\mu$ (este resultado es, de hecho, un caso particular de la Ley de los Grandes Números, ya estudiada en la Unidad 5).
+\item $S^2$ es insesgado, y bajo momentos finitos adecuados (cuarto momento finito) puede probarse que $\mathrm{Var}(S^2)\to 0$ cuando $n\to\infty$. Luego $S^2$ es consistente para $\sigma^2$.
+\end{itemize}
+\end{ejemplo}
+
+\begin{observacion}[Insesgadez y consistencia son propiedades distintas]
+Es un error común pensar que "insesgado" y "consistente" son sinónimos, o que uno implica al otro. No es así: un estimador puede ser sesgado para \emph{todo} $n$ finito y, sin embargo, ser consistente, si su sesgo se desvanece a medida que $n\to\infty$. El ejemplo canónico es $\widehat\sigma^2 = \frac{n-1}{n}S^2$: por el Corolario \ref{cor:s2}, tiene sesgo $B(\widehat\sigma^2)=-\sigma^2/n \to 0$ y, además, $\mathrm{Var}(\widehat\sigma^2) = \left(\frac{n-1}{n}\right)^2\mathrm{Var}(S^2)\to 0$ (por ser $\left(\frac{n-1}{n}\right)^2\to 1$ y $\mathrm{Var}(S^2)\to 0$). Por el Teorema \ref{teo:consistencia}, $\mathrm{ECM}(\widehat\sigma^2)=\mathrm{Var}(\widehat\sigma^2)+B(\widehat\sigma^2)^2\to 0$, luego $\widehat\sigma^2$ es consistente pese a ser sesgado para todo $n$.
+
+Un segundo ejemplo, más extremo, es el estimador $T_2=X_{(n)}$ de la Sección \ref{sec:uniforme}: su sesgo es $-\theta/(n+1)\to 0$ y su ECM es $2\theta^2/[(n+1)(n+2)]\to 0$, ambos a un ritmo de orden $1/n$ y $1/n^2$ respectivamente; por el Teorema \ref{teo:consistencia}, $T_2$ también es consistente, a pesar de estar sesgado para todo $n$ finito y de no ser, en ningún caso, insesgado.
+
+En definitiva: la insesgadez es una propiedad "de muestra finita", mientras que la consistencia es una propiedad "límite". Ambas son deseables, pero independientes entre sí; un buen estimador debería, idealmente, tener bajo sesgo (o sesgo nulo), varianza chica, y ser consistente.
+\end{observacion}
+
+\subsection{Resumen de la Sección 1}
+
+Recapitulando los criterios estudiados para evaluar la calidad de un estimador puntual $\widehat\theta$ de un parámetro $\theta$:
+
+\begin{itemize}[leftmargin=1.3cm]
+\item \textbf{Insesgadez}: $E(\widehat\theta)=\theta$, es decir, sesgo nulo. Se demostró que $S^2$ (con $n-1$) es insesgado para $\sigma^2$, mientras que $\widehat\sigma^2$ (con $n$) tiene sesgo $-\sigma^2/n$.
+\item \textbf{Error cuadrático medio}: $\mathrm{ECM}(\widehat\theta)=\mathrm{Var}(\widehat\theta)+B(\widehat\theta)^2$; combina precisión (varianza) y exactitud (sesgo) en una única medida, y permite comparar estimadores aun cuando alguno sea sesgado.
+\item \textbf{Eficiencia}: entre estimadores insesgados, se prefiere el de menor varianza; la cota de Cramér--Rao da un límite inferior universal a esa varianza, y un estimador que la alcanza es de mínima varianza (EIMV).
+\item \textbf{Consistencia}: $\widehat\theta_n\xrightarrow{P}\theta$ cuando $n\to\infty$; garantiza que, con muestras suficientemente grandes, el estimador se acerca arbitrariamente al parámetro con probabilidad tan alta como se quiera. Es una propiedad distinta e independiente de la insesgadez.
+\end{itemize}
+
+Una pregunta que quedó pendiente es: dado un modelo probabilístico y un parámetro, ¿cómo se \emph{construye}, sistemáticamente, un buen estimador? Ese es el tema de la Sección 2.
+
+\newpage
+\section{Métodos de construcción de estimadores}
+
+En la sección anterior evaluamos estimadores ya propuestos ($\overline X$, $S^2$, $\widehat p$, etc.). Ahora presentamos procedimientos generales y sistemáticos para \emph{construir} estimadores a partir de los datos y del modelo probabilístico supuesto: el método de los momentos, el método de mínimos cuadrados y, el más importante de los tres, el método de máxima verosimilitud.
+
+\subsection{Método de los momentos}
+
+La idea del método de los momentos es antigua y muy intuitiva: si conocemos la forma teórica de los momentos poblacionales (media, varianza, etc.) en función de los parámetros, podemos igualarlos a los momentos muestrales correspondientes y despejar los parámetros.
+
+\begin{definicion}[Momentos poblacionales y muestrales]
+El \textbf{momento poblacional de orden $k$} de una variable aleatoria $X$ es $\mu_k=E(X^k)$. El \textbf{momento muestral de orden $k$}, calculado a partir de una muestra $X_1,\dots,X_n$, es
+\[
+m_k = \frac1n\sum_{i=1}^n X_i^k.
+\]
+\end{definicion}
+
+\begin{definicion}[Estimador por el método de los momentos]
+Si la distribución poblacional depende de $r$ parámetros $\theta_1,\dots,\theta_r$, el \textbf{método de los momentos} consiste en plantear el sistema de $r$ ecuaciones
+\[
+\mu_k(\theta_1,\dots,\theta_r) = m_k, \qquad k=1,\dots,r,
+\]
+igualando los primeros $r$ momentos poblacionales (que son funciones conocidas de los parámetros) con los correspondientes momentos muestrales, y resolver el sistema para $\theta_1,\dots,\theta_r$. Las soluciones $\widehat\theta_1,\dots,\widehat\theta_r$ son los \textbf{estimadores por el método de los momentos}.
+\end{definicion}
+
+\begin{ejemplo}[Método de los momentos para la $\text{Uniforme}(0,\theta)$]
+Sea $X\sim\text{Unif}(0,\theta)$. Como $\mu_1=E(X)=\theta/2$, igualamos a $m_1=\overline X$:
+\[
+\frac{\widehat\theta}{2} = \overline X \;\Longrightarrow\; \widehat\theta_{MM} = 2\overline X.
+\]
+Este es exactamente el estimador $T_1$ estudiado en la Sección \ref{sec:uniforme}: allí vimos que es insesgado pero considerablemente menos eficiente (en términos de ECM) que el estimador de máxima verosimilitud, que calcularemos en breve.
+\end{ejemplo}
+
+\begin{ejemplo}[Método de los momentos para la Normal]
+Sea $X\sim N(\mu,\sigma^2)$. Como $\mu_1=E(X)=\mu$ y $\mu_2=E(X^2)=\mathrm{Var}(X)+E(X)^2=\sigma^2+\mu^2$, el sistema es
+\[
+\widehat\mu = \overline X, \qquad \widehat\sigma^2+\widehat\mu^2 = \frac1n\sum_{i=1}^n X_i^2.
+\]
+Despejando $\widehat\sigma^2$ y usando que $\frac1n\sum X_i^2 - \overline X^2 = \frac1n\sum(X_i-\overline X)^2$ (identidad algebraica elemental), se obtiene
+\[
+\widehat\sigma^2_{MM} = \frac1n\sum_{i=1}^n (X_i-\overline X)^2,
+\]
+que coincide exactamente con la varianza muestral $\widehat\sigma^2$ (sesgada) estudiada en la Sección 1, y —como veremos— también con el estimador de máxima verosimilitud de $\sigma^2$.
+\end{ejemplo}
+
+\begin{observacion}
+El método de los momentos tiene la ventaja de ser sencillo de aplicar (solo requiere conocer los momentos teóricos del modelo, no toda su función de densidad) y de dar, casi siempre, estimadores consistentes. Su desventaja es que, en general, no produce los estimadores más eficientes posibles: como vimos en la Sección \ref{sec:uniforme}, $2\overline X$ tiene un ECM muy superior al del máximo muestral para la uniforme. Por eso, en la práctica, suele usarse sobre todo como punto de partida (valor inicial) para métodos numéricos de máxima verosimilitud, más que como método definitivo de estimación.
+\end{observacion}
+
+\subsection{Método de mínimos cuadrados}
+
+\begin{definicion}[Idea general del método de mínimos cuadrados]
+Dado un conjunto de observaciones $x_1,\dots,x_n$ que, según el modelo supuesto, deberían tener valor esperado $E(X_i)=g(\theta)$ para cierta función conocida $g$ y cierto parámetro (o vector de parámetros) $\theta$, el \textbf{método de mínimos cuadrados (MC)} propone como estimador el valor $\widehat\theta$ que \textbf{minimiza la suma de los cuadrados de los errores} entre los datos observados y los valores predichos por el modelo:
+\[
+\widehat\theta_{MC} = \operatorname*{arg\,min}_{\theta\in\Theta} \ Q(\theta), \qquad Q(\theta) = \sum_{i=1}^n \big(x_i-g(\theta)\big)^2.
+\]
+\end{definicion}
+
+La idea de "elegir el parámetro que minimiza la distancia (al cuadrado) entre lo observado y lo predicho" es extremadamente general: no requiere conocer la distribución completa del modelo, solo la forma de su valor esperado. Por esa razón, el método de mínimos cuadrados es la base de la \textbf{regresión lineal} (Unidad 8), donde $g$ depende, además del parámetro, de variables explicativas observadas, y se minimiza la suma de los residuos al cuadrado entre los valores observados de la variable respuesta y los predichos por el modelo lineal. Aquí presentamos su versión más simple —con $g(\theta)=\theta$ constante— para fijar la idea antes de generalizarla.
+
+\begin{ejemplo}[Mínimos cuadrados para estimar $\mu$]
+Sea $X_1,\dots,X_n$ m.a.\ con $E(X_i)=\mu$ (es decir, $g(\mu)=\mu$). Buscamos el valor $\widehat\mu$ que minimiza
+\[
+Q(\mu) = \sum_{i=1}^n (x_i-\mu)^2.
+\]
+Derivando respecto de $\mu$ e igualando a cero:
+\[
+Q'(\mu) = -2\sum_{i=1}^n (x_i-\mu) = 0 \;\Longrightarrow\; \sum_{i=1}^n x_i = n\mu \;\Longrightarrow\; \widehat\mu = \frac1n\sum_{i=1}^n x_i = \overline x.
+\]
+Como $Q''(\mu)=2n>0$ para todo $\mu$, la función $Q$ es estrictamente convexa y el punto crítico hallado es, en efecto, un mínimo global. \textbf{Conclusión:} el estimador de mínimos cuadrados de $\mu$ coincide con la media muestral $\overline X$. Nótese que esta deducción no usó en ningún momento la distribución de las $X_i$: alcanzó con que $E(X_i)=\mu$. Esta es la esencia del atractivo del método MC: robustez respecto de supuestos distribucionales.
+\end{ejemplo}
+
+\subsection{Función de verosimilitud y método de máxima verosimilitud}
+\label{sec:mv}
+
+El método de \textbf{máxima verosimilitud} (EMV, o en inglés \emph{maximum likelihood estimation}, MLE) es, con diferencia, el procedimiento de estimación más importante y más usado en la práctica estadística, tanto por la naturalidad de su idea como por sus excelentes propiedades asintóticas.
+
+\begin{definicion}[Función de verosimilitud]
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población con función de probabilidad puntual o de densidad $f(x;\theta)$. Dada una muestra observada $x_1,\dots,x_n$, la \textbf{función de verosimilitud} es
+\[
+L(\theta) = L(\theta\mid x_1,\dots,x_n) = \prod_{i=1}^n f(x_i;\theta),
+\]
+considerada como función de $\theta\in\Theta$, \textbf{con los datos $x_1,\dots,x_n$ fijos} (son los ya observados).
+\end{definicion}
+
+\begin{observacion}
+Formalmente, $L(\theta)$ es la misma expresión que la densidad (o probabilidad) conjunta $f(x_1,\dots,x_n;\theta)=\prod_i f(x_i;\theta)$ que usábamos para calcular probabilidades cuando $\theta$ era conocido. La diferencia es puramente de \emph{perspectiva}: antes pensábamos esa expresión como función de los datos $(x_1,\dots,x_n)$, con $\theta$ fijo; ahora la pensamos como función de $\theta$, con los datos fijos (los que efectivamente observamos). $L(\theta)$ mide, informalmente, "qué tan verosímil" (plausible) es cada valor posible de $\theta$ a la luz de los datos observados: valores de $\theta$ que hacen "más probable" haber observado exactamente esos datos reciben un valor más alto de $L$.
+\end{observacion}
+
+\begin{definicion}[Estimador de máxima verosimilitud]
+El \textbf{estimador de máxima verosimilitud} de $\theta$ es el valor $\widehat\theta_{EMV}\in\Theta$ que maximiza la función de verosimilitud:
+\[
+\widehat\theta_{EMV} = \operatorname*{arg\,max}_{\theta\in\Theta} L(\theta).
+\]
+\end{definicion}
+
+Como $L(\theta)$ es un producto de $n$ términos, maximizarla directamente suele ser incómodo. Como la función logaritmo es estrictamente creciente, el valor de $\theta$ que maximiza $L(\theta)$ es exactamente el mismo que maximiza $\ln L(\theta)$; esto motiva trabajar con la \textbf{log-verosimilitud}.
+
+\begin{definicion}[Log-verosimilitud]
+\[
+\ell(\theta) = \ln L(\theta) = \sum_{i=1}^n \ln f(x_i;\theta).
+\]
+\end{definicion}
+
+El logaritmo transforma el producto en una suma, mucho más fácil de derivar. La receta general para hallar el EMV (cuando $\Theta$ es un intervalo abierto y $\ell$ es derivable) es:
+\begin{enumerate}[label=\arabic*)]
+\item Escribir $L(\theta)$ a partir del modelo supuesto.
+\item Tomar $\ell(\theta)=\ln L(\theta)$.
+\item Resolver la \textbf{ecuación de verosimilitud} $\dfrac{d\ell}{d\theta}=0$.
+\item Verificar que la solución hallada es efectivamente un máximo, por ejemplo comprobando que $\ell''(\widehat\theta)<0$, o analizando el signo de $\ell'$ a ambos lados de la solución.
+\end{enumerate}
+
+La Figura \ref{fig:verosim} ilustra la idea: para cada valor posible de $\theta$, $\ell(\theta)$ mide qué tan compatibles son los datos observados con ese valor; el EMV es, geométricamente, el punto más alto de esa curva.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=1]
+\begin{axis}[
+  width=9cm, height=5cm,
+  xlabel={$\theta$}, ylabel={$\ell(\theta)$},
+  ymin=-8, ymax=0.5,
+  xtick=\empty, ytick=\empty,
+  axis lines=middle,
+]
+\addplot[domain=0.05:5,samples=80,thick,blue] {-(x-2)^2/2 - 0.3};
+\draw[dashed] (axis cs:2,-8) -- (axis cs:2,-0.3);
+\node[below] at (axis cs:2,-8) {$\widehat\theta_{EMV}$};
+\end{axis}
+\end{tikzpicture}
+\caption{La log-verosimilitud $\ell(\theta)$ como función de $\theta$, con los datos fijos. El EMV es el argumento que maximiza la curva, donde $\ell'(\widehat\theta)=0$ y $\ell''(\widehat\theta)<0$.}
+\label{fig:verosim}
+\end{figure}
+
+\subsubsection{EMV en modelos discretos}
+
+\begin{ejemplo}[EMV para la distribución Bernoulli]
+Sea $X_1,\dots,X_n$ m.a.\ de $X\sim\text{Be}(p)$, con $f(x;p)=p^x(1-p)^{1-x}$, $x\in\{0,1\}$. La verosimilitud es
+\[
+L(p) = \prod_{i=1}^n p^{x_i}(1-p)^{1-x_i} = p^{\sum x_i}(1-p)^{n-\sum x_i}.
+\]
+Llamando $t=\sum_{i=1}^n x_i$ (el número total de "éxitos" observados),
+\[
+\ell(p) = t\ln p + (n-t)\ln(1-p).
+\]
+Derivando respecto de $p$:
+\[
+\ell'(p) = \frac{t}{p}-\frac{n-t}{1-p}.
+\]
+Igualando a cero: $t(1-p)=(n-t)p \Rightarrow t-tp=np-tp \Rightarrow t=np \Rightarrow \widehat p = \dfrac{t}{n}=\overline x$. Para verificar que es un máximo,
+\[
+\ell''(p) = -\frac{t}{p^2}-\frac{n-t}{(1-p)^2} < 0 \qquad \text{para todo } p\in(0,1) \text{ (si } 0<t<n\text{)},
+\]
+ya que ambos términos son negativos. \textbf{El EMV de $p$ es la proporción muestral} $\widehat p_{EMV}=\overline X$, que coincide con el estimador ya estudiado en la Sección 1 (y con el que alcanza la cota de Cramér--Rao).
+\end{ejemplo}
+
+\begin{ejemplo}[EMV para la distribución de Poisson]
+Sea $X_1,\dots,X_n$ m.a.\ de $X\sim\text{Poisson}(\lambda)$, con $f(x;\lambda)=\dfrac{e^{-\lambda}\lambda^x}{x!}$, $x=0,1,2,\dots$. Entonces
+\[
+L(\lambda) = \prod_{i=1}^n \frac{e^{-\lambda}\lambda^{x_i}}{x_i!} = \frac{e^{-n\lambda}\lambda^{\sum x_i}}{\prod_i x_i!},
+\]
+\[
+\ell(\lambda) = -n\lambda + \Big(\sum_{i=1}^n x_i\Big)\ln\lambda - \ln\Big(\prod_i x_i!\Big).
+\]
+Derivando (el último término no depende de $\lambda$):
+\[
+\ell'(\lambda) = -n+\frac{\sum_i x_i}{\lambda} = 0 \;\Longrightarrow\; \widehat\lambda = \frac1n\sum_{i=1}^n x_i = \overline x.
+\]
+Como $\ell''(\lambda)=-\dfrac{\sum_i x_i}{\lambda^2}<0$ (siempre que algún $x_i>0$), se trata de un máximo. \textbf{El EMV de $\lambda$ es $\overline X$.}
+\end{ejemplo}
+
+\subsubsection{EMV en modelos continuos}
+
+\begin{ejemplo}[EMV para la distribución exponencial]
+Sea $X_1,\dots,X_n$ m.a.\ de $X\sim\text{Exp}(\lambda)$, $f(x;\lambda)=\lambda e^{-\lambda x}$, $x>0$. Entonces
+\[
+L(\lambda) = \prod_{i=1}^n \lambda e^{-\lambda x_i} = \lambda^n e^{-\lambda\sum_i x_i}, \qquad \ell(\lambda) = n\ln\lambda - \lambda\sum_{i=1}^n x_i.
+\]
+\[
+\ell'(\lambda) = \frac{n}{\lambda}-\sum_{i=1}^n x_i = 0 \;\Longrightarrow\; \widehat\lambda = \frac{n}{\sum_{i=1}^n x_i} = \frac{1}{\overline x}.
+\]
+Como $\ell''(\lambda)=-n/\lambda^2<0$, es un máximo. \textbf{El EMV de $\lambda$ es $\widehat\lambda_{EMV}=1/\overline X$.}
+
+Vale la pena notar que este estimador es \textbf{sesgado}: como la función $h(y)=1/y$ es convexa para $y>0$, la desigualdad de Jensen da $E(1/\overline X) > 1/E(\overline X) = \lambda$, de modo que $\widehat\lambda_{EMV}$ tiende, en promedio, a sobreestimar levemente a $\lambda$. Sin embargo, sí es consistente (por la Ley de los Grandes Números, $\overline X\xrightarrow{P}1/\lambda$, y como $h(y)=1/y$ es continua en $1/\lambda\neq 0$, se tiene $1/\overline X \xrightarrow{P} \lambda$).
+\end{ejemplo}
+
+\begin{ejemplo}[EMV para la distribución normal: deducción completa de $\mu$ y $\sigma^2$ simultáneamente]
+Sea $X_1,\dots,X_n$ m.a.\ de $X\sim N(\mu,\sigma^2)$, con ambos parámetros desconocidos. Aquí $\theta=(\mu,\sigma^2)$ es un vector de dos parámetros. La densidad es
+\[
+f(x;\mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right),
+\]
+por lo que la verosimilitud conjunta es
+\[
+L(\mu,\sigma^2) = \prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{(x_i-\mu)^2}{2\sigma^2}\right) = (2\pi\sigma^2)^{-n/2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i=1}^n (x_i-\mu)^2\right).
+\]
+Tomando logaritmo,
+\[
+\ell(\mu,\sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}\sum_{i=1}^n (x_i-\mu)^2.
+\]
+Para maximizar respecto de las dos variables, igualamos a cero las derivadas parciales.
+
+\textbf{Respecto de $\mu$}, con $\sigma^2$ fijo:
+\[
+\frac{\partial \ell}{\partial\mu} = -\frac{1}{2\sigma^2}\cdot 2\sum_{i=1}^n (x_i-\mu)\cdot(-1) = \frac{1}{\sigma^2}\sum_{i=1}^n (x_i-\mu) = 0.
+\]
+Como $\sigma^2>0$, esto equivale a $\sum_i (x_i-\mu)=0$, es decir $\sum_i x_i = n\mu$, de donde
+\[
+\widehat\mu = \frac1n\sum_{i=1}^n x_i = \overline x.
+\]
+
+\textbf{Respecto de $\sigma^2$} (tratándolo como una única variable, digamos $u=\sigma^2$), con $\mu=\widehat\mu$ ya sustituido:
+\[
+\frac{\partial\ell}{\partial \sigma^2} = -\frac{n}{2\sigma^2} + \frac{1}{2\sigma^4}\sum_{i=1}^n (x_i-\mu)^2 = 0.
+\]
+Multiplicando por $2\sigma^4$: $-n\sigma^2+\sum_i(x_i-\mu)^2=0$, de donde
+\[
+\widehat\sigma^2 = \frac1n\sum_{i=1}^n (x_i-\widehat\mu)^2 = \frac1n\sum_{i=1}^n (x_i-\overline x)^2.
+\]
+Puede verificarse, mediante la matriz Hessiana de segundas derivadas parciales evaluada en $(\widehat\mu,\widehat\sigma^2)$, que este punto crítico es efectivamente un máximo (las derivadas segundas $\partial^2\ell/\partial\mu^2<0$ y el determinante de la Hessiana es positivo en el punto crítico).
+\end{ejemplo}
+
+\begin{observacion}[El EMV no siempre es insesgado]
+El EMV de $\sigma^2$ es $\widehat\sigma^2=\frac1n\sum(X_i-\overline X)^2$ (con $n$ en el denominador, \textbf{no} $n-1$): coincide exactamente con el estimador sesgado estudiado en la Sección 1, no con la cuasivarianza insesgada $S^2$. Esto muestra, con un ejemplo central del curso, que el método de máxima verosimilitud \textbf{no garantiza insesgadez}: simplemente busca el valor de $\theta$ más "compatible" con los datos observados, según la verosimilitud, sin ninguna referencia directa al sesgo. En la práctica, cuando se necesita un estimador insesgado de $\sigma^2$, se corrige el EMV multiplicándolo por $n/(n-1)$.
+\end{observacion}
+
+\begin{ejemplo}[EMV en un caso no regular: la distribución Uniforme(0,\texorpdfstring{$\theta$}{theta})]
+Retomamos el modelo $X\sim\text{Unif}(0,\theta)$ de la Sección \ref{sec:uniforme}. Aquí $f(x;\theta)=1/\theta$ para $0<x<\theta$, y $0$ en caso contrario. La verosimilitud es
+\[
+L(\theta) = \prod_{i=1}^n \frac1\theta\, \mathbb{1}_{\{0<x_i<\theta\}} = \frac{1}{\theta^n}\,\mathbb{1}_{\{\theta\ge \max_i x_i\}},
+\]
+ya que la verosimilitud es nula a menos que \textbf{todas} las observaciones satisfagan $x_i<\theta$, lo que equivale a $\theta \ge x_{(n)}=\max_i x_i$. Para $\theta\ge x_{(n)}$, $L(\theta)=\theta^{-n}$ es una función \textbf{estrictamente decreciente} de $\theta$ (no hay ningún punto crítico donde $L'(\theta)=0$: aquí el método de derivar e igualar a cero \textbf{no funciona}, porque el soporte de $f$ depende de $\theta$, violando las condiciones de regularidad). El máximo de $L$ sobre el conjunto factible $\theta\ge x_{(n)}$ se alcanza, entonces, en el valor más chico permitido:
+\[
+\widehat\theta_{EMV} = x_{(n)} = \max(x_1,\dots,x_n).
+\]
+Este es exactamente el estimador $T_2$ estudiado en la Sección \ref{sec:uniforme}, cuyo ECM resultó muy inferior al del estimador por momentos $T_1=2\overline X$. Este ejemplo es valioso porque muestra que la "receta" de derivar e igualar a cero no es universal: cuando el soporte del modelo depende del parámetro, el máximo de la verosimilitud puede estar en la frontera del dominio factible.
+\end{ejemplo}
+
+\subsection{Propiedad de invarianza del EMV}
+
+Una de las propiedades más útiles del método de máxima verosimilitud es que se comporta bien frente a reparametrizaciones o frente al interés en funciones del parámetro original.
+
+\begin{propiedad}[Invarianza del EMV]
+Si $\widehat\theta$ es el EMV de $\theta$ y $g:\Theta\to\mathbb{R}$ es una función (más generalmente, si $g$ no es inyectiva se usa la verosimilitud perfilada, pero en el caso más simple basta con que $g$ sea inyectiva, o incluso cualquier función medible en la formulación moderna), entonces $g(\widehat\theta)$ es el EMV de $g(\theta)$.
+\end{propiedad}
+
+\begin{ejemplo}
+Como el EMV de $\sigma^2$ es $\widehat\sigma^2=\frac1n\sum(x_i-\overline x)^2$, por invarianza el EMV del desvío estándar $\sigma=\sqrt{\sigma^2}$ (aquí $g(u)=\sqrt u$) es
+\[
+\widehat\sigma_{EMV} = \sqrt{\widehat\sigma^2} = \sqrt{\frac1n\sum_{i=1}^n (x_i-\overline x)^2}.
+\]
+De manera análoga, en el modelo Poisson, si nos interesa estimar $g(\lambda)=P(X=0)=e^{-\lambda}$ (la probabilidad de no observar ningún evento), por invarianza el EMV es simplemente
+\[
+\widehat{g}_{EMV} = e^{-\widehat\lambda_{EMV}} = e^{-\overline x}.
+\]
+La propiedad de invarianza evita tener que rehacer todo el proceso de maximización de la verosimilitud cada vez que cambiamos de parametrización o que nos interesa una función del parámetro original: basta con "aplicar la función" al EMV ya obtenido.
+\end{ejemplo}
+
+\subsection{Propiedades asintóticas del EMV (mención)}
+
+Bajo condiciones de regularidad razonables sobre el modelo (esencialmente, las mismas que garantizan la validez de la cota de Cramér--Rao), el estimador de máxima verosimilitud goza de tres propiedades asintóticas notables, que explican por qué es el método preferido en la mayoría de las aplicaciones estadísticas modernas. No las demostraremos (exceden ampliamente el nivel de este curso, y requieren herramientas de análisis matemático y teoría de la probabilidad más avanzadas), pero es importante conocer sus enunciados:
+
+\begin{itemize}[leftmargin=1.3cm]
+\item \textbf{Consistencia}: $\widehat\theta_{EMV}\xrightarrow{P}\theta$ cuando $n\to\infty$.
+\item \textbf{Eficiencia asintótica}: la varianza de $\widehat\theta_{EMV}$ se aproxima, para $n$ grande, a la cota de Cramér--Rao $1/(nI(\theta))$; en ese sentido, asintóticamente no existe estimador insesgado "mejor".
+\item \textbf{Normalidad asintótica}: para $n$ grande,
+\[
+\widehat\theta_{EMV} \ \overset{\text{aprox}}{\sim}\ N\left(\theta,\ \frac{1}{nI(\theta)}\right).
+\]
+\end{itemize}
+
+Esta última propiedad es, en la práctica, extremadamente valiosa: permite construir intervalos de confianza aproximados y realizar pruebas de hipótesis para \emph{cualquier} parámetro estimado por máxima verosimilitud, aun cuando no dispongamos de una fórmula exacta como la distribución $t$ para la media normal, simplemente usando la aproximación normal con la varianza dada por el inverso de la información de Fisher. Este es, precisamente, el mecanismo detrás de muchos procedimientos de inferencia en modelos más complejos (regresión logística, modelos de conteo, etc.) que se estudian en cursos posteriores.
+
+\subsection{Comparación entre los tres métodos}
+
+\begin{center}
+\small
+\begin{tabular}{p{3cm}p{5.3cm}p{5.3cm}}
+\toprule
+\textbf{Método} & \textbf{Idea} & \textbf{Observaciones} \\
+\midrule
+Momentos & Iguala momentos muestrales con momentos poblacionales teóricos. & Simple de aplicar; requiere solo los momentos, no la distribución completa; en general, menos eficiente. \\
+Mínimos cuadrados & Minimiza la suma de distancias al cuadrado entre datos y valores predichos por el modelo de la media. & No requiere conocer la distribución completa; base de la regresión lineal (Unidad 8). \\
+Máxima verosimilitud & Maximiza la probabilidad (o densidad) conjunta de haber observado los datos, en función de $\theta$. & Requiere conocer la distribución completa; buenas propiedades asintóticas (consistencia, eficiencia, normalidad); invariante frente a reparametrizaciones. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Para el modelo normal con media constante, los tres métodos coinciden en that $\widehat\mu = \overline X$. En general, sin embargo, pueden dar estimadores distintos —como ilustra el ejemplo de la $\text{Uniforme}(0,\theta)$, donde momentos da $2\overline X$ y máxima verosimilitud da $X_{(n)}$—, y en esos casos la elección entre métodos suele resolverse comparando el ECM, tal como hicimos en la Sección \ref{sec:uniforme}.
+
+\subsection{Ejemplo numérico integrador}
+
+\begin{ejemplo}
+Se registra el número de llamados que recibe un \emph{call center} por minuto, durante $n=8$ minutos, asumiendo $X\sim\text{Poisson}(\lambda)$:
+\[
+3,\ 5,\ 2,\ 4,\ 3,\ 6,\ 4,\ 5.
+\]
+Como el EMV de $\lambda$ en el modelo Poisson es $\widehat\lambda=\overline X$,
+\[
+\sum_{i=1}^8 x_i = 3+5+2+4+3+6+4+5 = 32, \qquad \widehat\lambda_{EMV} = \overline x = \frac{32}{8}=4.
+\]
+\textbf{Estimación de máxima verosimilitud:} $\widehat\lambda=4$ llamados por minuto en promedio. Si además interesara $g(\lambda)=P(X=0)=e^{-\lambda}$ (probabilidad de no recibir ningún llamado en un minuto dado), por invarianza,
+\[
+\widehat g_{EMV} = e^{-\widehat\lambda} = e^{-4}\approx 0.0183,
+\]
+es decir, se estima en apenas un $1.83\%$ la probabilidad de un minuto sin llamados. Como comparación, el estimador de $\lambda$ por el método de los momentos coincide en este caso con el EMV (ambos igualan $E(X)=\lambda$ a $\overline X$), ya que para la Poisson el primer momento determina completamente al parámetro.
+\end{ejemplo}
+
+\newpage
+\section{Intervalos de confianza para la media y para una proporción}
+
+\subsection{De la estimación puntual a la estimación por intervalos}
+
+Una estimación puntual, por ejemplo $\overline x=24.3$, no comunica por sí sola qué tan confiable es esa aproximación. Dos muestras distintas, extraídas de la misma población, dan en general dos valores distintos de $\overline x$; si el tamaño de muestra es chico o la variabilidad poblacional es grande, la estimación puntual puede estar bastante lejos del verdadero $\mu$. La \textbf{estimación por intervalos} resuelve esta limitación proponiendo, en lugar de un único número, un \emph{rango} de valores plausibles, junto con una medida de la confiabilidad del procedimiento usado para construirlo.
+
+\begin{definicion}[Intervalo de confianza]
+Un \textbf{intervalo de confianza} (IC) de nivel $1-\alpha$ para un parámetro $\theta$ es un intervalo aleatorio $(L_1,L_2)$, construido a partir de la muestra $X_1,\dots,X_n$ (es decir, $L_1=L_1(X_1,\dots,X_n)$ y $L_2=L_2(X_1,\dots,X_n)$ son estadísticos), tal que
+\[
+P(L_1<\theta<L_2) = 1-\alpha.
+\]
+Al número $1-\alpha$ se lo llama \textbf{nivel} (o \textbf{coeficiente}) \textbf{de confianza}, típicamente $90\%$, $95\%$ o $99\%$; a $\alpha$ se lo llama \textbf{nivel de significación}.
+\end{definicion}
+
+\subsection{Interpretación frecuentista correcta}
+
+Esta es, posiblemente, la definición peor comprendida de todo el curso, y merece una discusión cuidadosa.
+
+\begin{observacion}[Interpretación correcta]
+Antes de observar la muestra, el intervalo $(L_1,L_2)$ es \textbf{aleatorio} (sus extremos son estadísticos, funciones de la muestra) y $\theta$ es una constante \textbf{fija}, aunque desconocida. La afirmación matemáticamente correcta es entonces sobre el \emph{procedimiento}, no sobre un intervalo particular ya calculado:
+
+\begin{quote}
+\emph{"Si repitiéramos el proceso de muestreo un número muy grande de veces, y en cada repetición construyéramos el intervalo de confianza siguiendo el mismo procedimiento, aproximadamente el $(1-\alpha)\cdot 100\%$ de esos intervalos contendría al verdadero valor (fijo) de $\theta$."}
+\end{quote}
+\end{observacion}
+
+\begin{observacion}[El error de interpretación más común]
+Una vez que la muestra fue observada y se calculó el intervalo con datos concretos, por ejemplo $(23.1,\ 25.5)$, ya \textbf{no} tiene sentido decir "la probabilidad de que $\mu$ esté en $(23.1,25.5)$ es del $95\%$". Ese enunciado trata a $\mu$ como si fuera aleatorio (¿está o no está dentro de un intervalo fijo?) y al intervalo como si fuera fijo; pero en el enfoque frecuentista es exactamente al revés: $\mu$ es una constante fija (desconocida, pero no aleatoria) y el intervalo numérico ya calculado, $(23.1,25.5)$, también es un número fijo. La expresión "$\mu \in (23.1,25.5)$" es entonces una proposición que es verdadera o falsa —no hay nada aleatorio en juego una vez fijados ambos—, y por lo tanto no tiene sentido asignarle una "probabilidad" del $95\%$.
+
+Lo correcto es decir: \emph{"tenemos un $95\%$ de confianza en que $\mu$ está en $(23.1,25.5)$"}, entendiendo esa afirmación como una referencia a la fiabilidad del \textbf{procedimiento} utilizado (que acierta el $95\%$ de las veces en el largo plazo), y no como una probabilidad atribuida al intervalo particular obtenido.
+\end{observacion}
+
+La Figura \ref{fig:muchosIC} ilustra esta idea: si se repite muchas veces el proceso de muestreo y, en cada caso, se construye el IC del $95\%$ correspondiente, aproximadamente $95$ de cada $100$ intervalos contendrán a la verdadera $\mu$ (representada por la línea vertical), y aproximadamente $5$ de cada $100$ no la contendrán —pero, dado un único intervalo ya calculado, no podemos saber si es uno de los que "acertó" o uno de los que "falló".
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[thick] (0,-0.5) -- (0,8.5) node[above] {$\mu$};
+\foreach \y/\a/\b/\hit in {
+  8/-1.3/1.6/1, 7.3/-0.8/2.1/1, 6.6/-1.9/0.9/1, 5.9/-1.1/1.7/1,
+  5.2/0.3/3.0/0, 4.5/-1.6/1.1/1, 3.8/-1.0/1.9/1, 3.1/-1.4/1.3/1,
+  2.4/-0.9/2.2/1, 1.7/0.5/3.2/0, 1.0/-1.7/0.8/1, 0.3/-1.2/1.5/1}
+  {
+   \ifnum\hit=1
+     \draw[blue,thick] (\a,\y) -- (\b,\y);
+   \else
+     \draw[red,thick] (\a,\y) -- (\b,\y);
+   \fi
+  }
+\node[right] at (3.5,8) {\footnotesize contiene a $\mu$ (azul)};
+\node[right] at (3.5,5.2) {\footnotesize no contiene a $\mu$ (rojo)};
+\end{tikzpicture}
+\caption{Simulación conceptual de $12$ intervalos de confianza del $95\%$, construidos a partir de $12$ muestras distintas de la misma población. La mayoría (en este dibujo, $10$ de $12$) contiene a la verdadera $\mu$; en el largo plazo, la proporción de intervalos que la contienen se aproxima a $95\%$.}
+\label{fig:muchosIC}
+\end{figure}
+
+\subsection{El método del pivote}
+
+La mayoría de los intervalos de confianza de esta unidad se construyen con la misma estrategia general.
+
+\begin{definicion}[Cantidad pivotal]
+Una \textbf{cantidad pivotal} (o simplemente \emph{pivote}) para $\theta$ es una función $Q=Q(\widehat\theta,\theta)$ del estimador y del parámetro cuya distribución de probabilidad \textbf{no depende de $\theta$} (ni de ningún otro parámetro desconocido).
+\end{definicion}
+
+El procedimiento general es: (1) hallar una cantidad pivotal $Q$ con distribución conocida; (2) usando esa distribución, hallar valores críticos $q_1,q_2$ tales que $P(q_1<Q<q_2)=1-\alpha$; (3) despejar algebraicamente $\theta$ de la desigualdad $q_1<Q(\widehat\theta,\theta)<q_2$, para obtener un intervalo $(L_1,L_2)$ que verifica exactamente la Definición de intervalo de confianza. Aplicamos esta estrategia, paso a paso, a los distintos parámetros de interés.
+
+\subsection{IC para la media poblacional con \texorpdfstring{$\sigma^2$}{sigma\texttwosuperior} conocida}
+
+\begin{teorema}[Distribución de $\overline X$]
+Si $X_1,\dots,X_n$ es m.a.\ de una población $N(\mu,\sigma^2)$, entonces (por ser combinación lineal de normales independientes, Unidad 5)
+\[
+\overline X \sim N\left(\mu,\ \frac{\sigma^2}{n}\right), \qquad\text{equivalentemente}\qquad Z=\frac{\overline X-\mu}{\sigma/\sqrt n}\sim N(0,1).
+\]
+Si la población no es normal pero $n$ es suficientemente grande, el Teorema Central del Límite garantiza que esta misma distribución vale de manera aproximada.
+\end{teorema}
+
+Esta $Z$ es la cantidad pivotal que buscamos: depende del parámetro de interés $\mu$ y del estimador $\overline X$, y su distribución (normal estándar) no depende de $\mu$ ni de $\sigma$.
+
+\begin{teorema}[IC para $\mu$, $\sigma^2$ conocida]\label{teo:icmuconocida}
+Con las hipótesis anteriores, un intervalo de confianza de nivel $1-\alpha$ para $\mu$ es
+\[
+IC(\mu;1-\alpha) = \left(\overline x - z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \ \overline x+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right),
+\]
+donde $z_{\alpha/2}$ es el valor tal que $P(Z>z_{\alpha/2})=\alpha/2$ para $Z\sim N(0,1)$.
+\end{teorema}
+
+\begin{proof}
+Como $Z\sim N(0,1)$, por simetría de la densidad normal alrededor de $0$ se tiene, para el valor crítico $z_{\alpha/2}$ que deja área $\alpha/2$ en cada cola,
+\[
+P(-z_{\alpha/2}<Z<z_{\alpha/2}) = 1-\alpha.
+\]
+Sustituyendo $Z=\dfrac{\overline X-\mu}{\sigma/\sqrt n}$,
+\[
+P\left(-z_{\alpha/2} < \frac{\overline X-\mu}{\sigma/\sqrt n} < z_{\alpha/2}\right) = 1-\alpha.
+\]
+Multiplicamos toda la desigualdad por $\sigma/\sqrt n>0$ (no cambia el sentido de las desigualdades, por ser positivo):
+\[
+P\left(-z_{\alpha/2}\frac{\sigma}{\sqrt n} < \overline X-\mu < z_{\alpha/2}\frac{\sigma}{\sqrt n}\right) = 1-\alpha.
+\]
+Restamos $\overline X$ en los tres términos:
+\[
+P\left(-\overline X-z_{\alpha/2}\frac{\sigma}{\sqrt n} < -\mu < -\overline X+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right) = 1-\alpha,
+\]
+y multiplicando por $-1$ (lo que invierte el sentido de ambas desigualdades):
+\[
+P\left(\overline X - z_{\alpha/2}\frac{\sigma}{\sqrt n} < \mu < \overline X+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right) = 1-\alpha. \qedhere
+\]
+\end{proof}
+
+\begin{observacion}
+Al número $E=z_{\alpha/2}\dfrac{\sigma}{\sqrt n}$ se lo llama \textbf{margen de error}. El intervalo tiene la forma general \emph{estimador puntual $\pm$ margen de error}, y es simétrico alrededor de $\overline x$. Se observan dos efectos importantes:
+\begin{itemize}
+\item A mayor tamaño de muestra $n$, menor es $E$ (el intervalo se angosta), ya que $\sqrt n$ aparece en el denominador.
+\item A mayor nivel de confianza exigido $1-\alpha$, mayor es $z_{\alpha/2}$ y, por lo tanto, mayor es $E$ (el intervalo se ensancha): hay un compromiso ineludible entre confianza y precisión, para un $n$ fijo.
+\end{itemize}
+Los valores de $z_{\alpha/2}$ más usados son: $1-\alpha=0.90\Rightarrow z_{\alpha/2}=1.645$; $1-\alpha=0.95\Rightarrow z_{\alpha/2}=1.96$; $1-\alpha=0.99\Rightarrow z_{\alpha/2}=2.576$.
+\end{observacion}
+
+\begin{ejemplo}
+El tiempo de secado (en minutos) de una pintura industrial tiene, según estudios previos, un desvío estándar poblacional conocido $\sigma=2.5$ min. Se toma una muestra de $n=36$ piezas pintadas y se obtiene $\overline x=45.2$ min. Hallar un IC del $95\%$ para el tiempo medio de secado $\mu$.
+
+\textbf{Solución.} $z_{\alpha/2}=z_{0.025}=1.96$.
+\[
+E = z_{\alpha/2}\frac{\sigma}{\sqrt n} = 1.96\cdot\frac{2.5}{\sqrt{36}} = 1.96\cdot\frac{2.5}{6} \approx 0.8167.
+\]
+\[
+IC(\mu;0.95) = (45.2-0.82,\ 45.2+0.82) = (44.38,\ 46.02)\ \text{minutos.}
+\]
+Con un $95\%$ de confianza, el tiempo medio poblacional de secado está entre $44.38$ y $46.02$ minutos.
+\end{ejemplo}
+
+\begin{observacion}[Intervalos de confianza unilaterales]
+En algunas aplicaciones interesa acotar $\mu$ solamente por arriba o solamente por abajo (por ejemplo, garantizar que una resistencia mínima supere cierto umbral, sin importar cuán alta pueda llegar a ser). En esos casos se construyen \textbf{intervalos de confianza unilaterales}, reemplazando $z_{\alpha/2}$ por $z_\alpha$ (todo el error $\alpha$ se concentra en una sola cola):
+\[
+\left(\overline x - z_\alpha\frac{\sigma}{\sqrt n},\ +\infty\right) \qquad\text{o bien}\qquad \left(-\infty,\ \overline x+z_\alpha\frac{\sigma}{\sqrt n}\right),
+\]
+según se busque una cota inferior o superior de confianza $1-\alpha$ para $\mu$, respectivamente. El razonamiento de la demostración es idéntico, partiendo de $P(Z<z_\alpha)=1-\alpha$ o $P(Z>-z_\alpha)=1-\alpha$ en lugar de la versión bilateral.
+\end{observacion}
+
+\subsection{IC para la media poblacional con \texorpdfstring{$\sigma^2$}{sigma\texttwosuperior} desconocida}
+
+En la práctica, $\sigma^2$ casi nunca se conoce de antemano: si no conocemos $\mu$, es aún menos razonable suponer conocida a $\sigma^2$. La idea natural es reemplazar $\sigma$ por su estimador insesgado $S$ en la fórmula anterior, pero esta sustitución cambia la distribución del pivote: ya no es exactamente normal estándar, sino $t$ de Student.
+
+\begin{teorema}[Distribución $t$ de Student del pivote]
+Si $X_1,\dots,X_n$ es m.a.\ de una población $N(\mu,\sigma^2)$, entonces
+\[
+T = \frac{\overline X-\mu}{S/\sqrt n} \sim t_{n-1} \qquad \text{(distribución $t$ de Student con $n-1$ grados de libertad).}
+\]
+\end{teorema}
+
+\begin{observacion}[Por qué cambia la distribución]
+Recordemos (Unidad 5) que la distribución $t$ de Student con $k$ grados de libertad se define como el cociente
+\[
+T = \frac{Z}{\sqrt{W/k}}, \qquad Z\sim N(0,1),\quad W\sim \chi^2_k, \quad Z \text{ y } W \text{ independientes.}
+\]
+En nuestro caso, $Z=\dfrac{\overline X-\mu}{\sigma/\sqrt n}\sim N(0,1)$ y, por un resultado ya visto (Unidad 5), $W=\dfrac{(n-1)S^2}{\sigma^2}\sim \chi^2_{n-1}$, siendo además $\overline X$ y $S^2$ independientes cuando la población es normal. Formando el cociente $Z/\sqrt{W/(n-1)}$ y simplificando el factor $\sigma$ (que se cancela algebraicamente entre numerador y denominador):
+\[
+\frac{Z}{\sqrt{W/(n-1)}} = \frac{(\overline X-\mu)/(\sigma/\sqrt n)}{\sqrt{S^2/\sigma^2}} = \frac{\overline X-\mu}{S/\sqrt n} = T,
+\]
+que es, por definición, una $t_{n-1}$. Intuitivamente, la distribución $t$ tiene colas más pesadas que la normal estándar porque, al no conocer $\sigma$ y tener que estimarla con $S$, se introduce una fuente adicional de variabilidad (la propia variabilidad de $S$ de muestra a muestra) que la normal no captura.
+\end{observacion}
+
+\begin{teorema}[IC para $\mu$, $\sigma^2$ desconocida]
+Un intervalo de confianza de nivel $1-\alpha$ para $\mu$, cuando $\sigma^2$ es desconocida y la población es (aproximadamente) normal, es
+\[
+IC(\mu;1-\alpha) = \left(\overline x - t_{n-1,\,\alpha/2}\frac{s}{\sqrt n},\ \ \overline x+t_{n-1,\,\alpha/2}\frac{s}{\sqrt n}\right),
+\]
+donde $t_{n-1,\alpha/2}$ es el valor tal que $P(T>t_{n-1,\alpha/2})=\alpha/2$, con $T\sim t_{n-1}$.
+\end{teorema}
+
+\begin{proof}
+Idéntica a la demostración del Teorema \ref{teo:icmuconocida}, partiendo de $P(-t_{n-1,\alpha/2}<T<t_{n-1,\alpha/2})=1-\alpha$ (por simetría de la distribución $t$ alrededor de $0$) y despejando $\mu$ del mismo modo, reemplazando $\sigma/\sqrt n$ por $S/\sqrt n$ y $z_{\alpha/2}$ por $t_{n-1,\alpha/2}$.
+\end{proof}
+
+\begin{observacion}
+Para $n$ grande (en la práctica, se suele usar como regla informal $n>30$), la distribución $t_{n-1}$ se aproxima cada vez más a la $N(0,1)$, de modo que $t_{n-1,\alpha/2}\approx z_{\alpha/2}$. Por eso, con muestras grandes, es habitual aproximar usando directamente $z_{\alpha/2}$ aun cuando $\sigma$ sea desconocida (reemplazada por $s$). Con muestras chicas, en cambio, es indispensable usar los valores exactos de la tabla $t$, pues la aproximación normal subestimaría la verdadera variabilidad.
+\end{observacion}
+
+\begin{ejemplo}
+Se mide el contenido de nicotina (en mg) de $n=10$ cigarrillos de una determinada marca, obteniéndose $\overline x=1.85$ mg y $s=0.24$ mg. Suponiendo que la población es aproximadamente normal, construir un IC del $95\%$ para el contenido medio de nicotina $\mu$.
+
+\textbf{Solución.} Grados de libertad: $n-1=9$. De la tabla $t$: $t_{9,\,0.025}=2.262$.
+\[
+E = t_{9,0.025}\cdot\frac{s}{\sqrt n} = 2.262\cdot\frac{0.24}{\sqrt{10}} \approx 2.262\cdot 0.0759 \approx 0.1717.
+\]
+\[
+IC(\mu;0.95) = (1.85-0.172,\ 1.85+0.172) = (1.678,\ 2.022)\ \text{mg.}
+\]
+Con un $95\%$ de confianza, el contenido medio de nicotina poblacional está entre $1.678$ y $2.022$ mg.
+\end{ejemplo}
+
+\begin{ejemplo}[Efecto del nivel de confianza]
+Con $\sigma=2.5$ conocido, $\overline x=45.2$, $n=36$, comparemos el ancho del IC para tres niveles de confianza distintos:
+\[
+90\%:\ E=1.645\cdot\tfrac{2.5}{6}\approx 0.685; \qquad 95\%:\ E=1.96\cdot\tfrac{2.5}{6}\approx 0.817; \qquad 99\%:\ E=2.576\cdot\tfrac{2.5}{6}\approx 1.073.
+\]
+A igual tamaño de muestra, a mayor nivel de confianza exigido el intervalo resulta necesariamente más ancho: es el precio de tener más certeza en el procedimiento.
+\end{ejemplo}
+
+\subsection{IC para una proporción poblacional}
+
+\begin{definicion}[Contexto]
+Sea $Y$ el número de "éxitos" observados en $n$ ensayos Bernoulli independientes con probabilidad de éxito $p$, es decir $Y\sim\text{Bi}(n,p)$. El estimador puntual natural de $p$ es $\widehat p=Y/n$, la proporción muestral.
+\end{definicion}
+
+\begin{teorema}[Aproximación normal para $\widehat p$]
+Para $n$ suficientemente grande (regla práctica habitual: $n\widehat p\ge 5$ y $n(1-\widehat p)\ge 5$), por el Teorema Central del Límite (aplicado a $Y$ como suma de $n$ variables Bernoulli independientes),
+\[
+Z = \frac{\widehat p-p}{\sqrt{p(1-p)/n}} \ \overset{\text{aprox}}{\sim}\ N(0,1).
+\]
+\end{teorema}
+
+El problema práctico es que, para calcular el error estándar $\sqrt{p(1-p)/n}$, necesitaríamos conocer $p$, que es justamente lo que queremos estimar. La solución habitual es reemplazar $p(1-p)$ por su estimación $\widehat p(1-\widehat p)$ en el denominador —una aproximación adicional, válida asintóticamente— antes de despejar el intervalo.
+
+\begin{teorema}[IC para una proporción]
+Un intervalo de confianza aproximado de nivel $1-\alpha$ para $p$ es
+\[
+IC(p;1-\alpha) = \left(\widehat p - z_{\alpha/2}\sqrt{\frac{\widehat p(1-\widehat p)}{n}},\ \ \widehat p+z_{\alpha/2}\sqrt{\frac{\widehat p(1-\widehat p)}{n}}\right).
+\]
+\end{teorema}
+
+\begin{proof}
+Análoga a la demostración del Teorema \ref{teo:icmuconocida}: partiendo de $P(-z_{\alpha/2}<Z<z_{\alpha/2})=1-\alpha$ con $Z=\dfrac{\widehat p-p}{\sqrt{\widehat p(1-\widehat p)/n}}$ (tras la sustitución mencionada), y despejando $p$ mediante las mismas operaciones algebraicas.
+\end{proof}
+
+\begin{ejemplo}
+En una encuesta a $n=400$ personas de una ciudad, $136$ declaran estar a favor de una nueva ordenanza municipal. Construir un IC del $90\%$ para la verdadera proporción $p$ de la población a favor.
+
+\textbf{Solución.} $\widehat p = 136/400=0.34$. Verificamos la condición de aplicabilidad: $n\widehat p=136\ge 5$ y $n(1-\widehat p)=264\ge 5$, de modo que la aproximación normal es adecuada.
+
+Con $z_{\alpha/2}=z_{0.05}=1.645$:
+\[
+\sqrt{\frac{\widehat p(1-\widehat p)}{n}} = \sqrt{\frac{0.34\cdot 0.66}{400}} = \sqrt{\frac{0.2244}{400}} = \sqrt{0.000561}\approx 0.02368,
+\]
+\[
+E = 1.645\cdot 0.02368 \approx 0.0390, \qquad IC(p;0.90) = (0.34-0.039,\ 0.34+0.039) = (0.301,\ 0.379).
+\]
+Con un $90\%$ de confianza, entre el $30.1\%$ y el $37.9\%$ de la población está a favor de la ordenanza.
+\end{ejemplo}
+
+\begin{observacion}[Corrección por continuidad, mención]
+Como $\widehat p$ proviene de una variable discreta ($Y\sim\text{Bi}(n,p)$) que se aproxima por una distribución continua, algunos textos incorporan una \textbf{corrección por continuidad} de $\pm \frac{1}{2n}$ al margen de error, para mejorar la aproximación en muestras moderadas. En este curso trabajaremos siempre con la versión sin corrección, por ser la más difundida y la que se ajusta bien cuando $n$ es razonablemente grande.
+\end{observacion}
+
+\subsection{Determinación del tamaño de muestra}
+
+Una pregunta habitual, previa a la recolección de datos, es: ¿cuántas observaciones se necesitan para garantizar un margen de error $E$ prefijado, con un nivel de confianza $1-\alpha$ dado? La respuesta se obtiene despejando $n$ de la fórmula del margen de error.
+
+\begin{propiedad}[Tamaño de muestra para la media]
+Como $E=z_{\alpha/2}\dfrac{\sigma}{\sqrt n}$, despejando
+\[
+\sqrt n = \frac{z_{\alpha/2}\,\sigma}{E} \quad\Longrightarrow\quad n = \left(\frac{z_{\alpha/2}\,\sigma}{E}\right)^2,
+\]
+redondeando siempre hacia \textbf{arriba} al entero más próximo (para garantizar que el margen de error real no supere al deseado, un tamaño de muestra ligeramente mayor nunca perjudica).
+\end{propiedad}
+
+\begin{propiedad}[Tamaño de muestra para una proporción]
+Análogamente, de $E=z_{\alpha/2}\sqrt{\widehat p(1-\widehat p)/n}$,
+\[
+n = \left(\frac{z_{\alpha/2}}{E}\right)^2 \widehat p(1-\widehat p).
+\]
+Si no se dispone de una estimación previa de $p$ (por ejemplo, de un estudio piloto), se usa el valor \textbf{más conservador} $\widehat p=0.5$, ya que la función $p(1-p)$ se maximiza en $p=0.5$ (puede verificarse derivando $h(p)=p(1-p)$ e igualando a cero: $h'(p)=1-2p=0 \Rightarrow p=0.5$, y $h''(p)=-2<0$, confirmando que es un máximo), garantizando así el tamaño de muestra suficiente sin importar el verdadero valor de $p$.
+\end{propiedad}
+
+\begin{ejemplo}
+¿Qué tamaño de muestra $n$ se necesita para estimar el tiempo medio de secado, con $\sigma=2.5$ min conocido, exigiendo un margen de error $E=0.5$ min al $95\%$ de confianza?
+\[
+n = \left(\frac{1.96\cdot 2.5}{0.5}\right)^2 = (9.8)^2 = 96.04 \;\Longrightarrow\; n=97 \text{ (redondeando hacia arriba).}
+\]
+\end{ejemplo}
+
+\begin{ejemplo}
+Se desea estimar la proporción de votantes a favor de un candidato, con un margen de error de a lo sumo $E=0.03$ (tres puntos porcentuales) y $95\%$ de confianza, sin disponer de información previa sobre $p$. Usando el caso más conservador $\widehat p=0.5$:
+\[
+n = \left(\frac{1.96}{0.03}\right)^2 (0.5)(0.5) = (65.33)^2\cdot 0.25 \approx 4268.4\cdot 0.25 \approx 1067.1 \;\Longrightarrow\; n = 1068.
+\]
+Este valor —del orden de mil encuestados— es, no por casualidad, muy similar al tamaño muestral típico de las encuestas de opinión pública que reportan un "margen de error de $\pm 3$ puntos".
+\end{ejemplo}
+
+\newpage
+\section{Intervalos de confianza para la varianza y para dos poblaciones}
+\label{sec:icvar}
+
+\subsection{IC para la varianza poblacional}
+
+Cuando el interés recae sobre la variabilidad de una población normal —por ejemplo, controlar que la dispersión de un proceso de fabricación no exceda cierto umbral— necesitamos un intervalo de confianza para $\sigma^2$.
+
+\begin{teorema}[Recordatorio, Unidad 5]
+Si $X_1,\dots,X_n$ es m.a.\ de una población $N(\mu,\sigma^2)$, con $\mu$ y $\sigma^2$ ambas desconocidas,
+\[
+W = \frac{(n-1)S^2}{\sigma^2} \sim \chi^2_{n-1}.
+\]
+\end{teorema}
+
+Esta $W$ depende de $\sigma^2$ (el parámetro de interés) y de $S^2$ (el estimador), y su distribución $\chi^2_{n-1}$ no depende de $\sigma^2$: es, entonces, la cantidad pivotal adecuada. A diferencia de la $Z$ y la $T$, sin embargo, la distribución $\chi^2$ \textbf{no es simétrica} (solo toma valores positivos y tiene asimetría hacia la derecha), por lo que no alcanza con un único valor crítico: necesitamos \textbf{dos} valores distintos, uno para cada cola.
+
+\begin{definicion}[Valores críticos de la $\chi^2$]
+Se definen $\chi^2_{n-1,\,1-\alpha/2}$ y $\chi^2_{n-1,\,\alpha/2}$ como los valores tales que, para $W\sim\chi^2_{n-1}$,
+\[
+P(W<\chi^2_{n-1,1-\alpha/2}) = \alpha/2, \qquad P(W>\chi^2_{n-1,\alpha/2}) = \alpha/2,
+\]
+de modo que $P(\chi^2_{n-1,1-\alpha/2} < W < \chi^2_{n-1,\alpha/2}) = 1-\alpha$.
+\end{definicion}
+
+\begin{teorema}[IC para $\sigma^2$]
+Un intervalo de confianza de nivel $1-\alpha$ para $\sigma^2$ es
+\[
+IC(\sigma^2;1-\alpha) = \left(\frac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}},\ \ \frac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}\right).
+\]
+\end{teorema}
+
+\begin{proof}
+Partimos de
+\[
+P\left(\chi^2_{n-1,1-\alpha/2} < \frac{(n-1)S^2}{\sigma^2} < \chi^2_{n-1,\alpha/2}\right) = 1-\alpha.
+\]
+A diferencia de los casos anteriores, ahora el parámetro $\sigma^2$ aparece en el \textbf{denominador}, por lo que al despejarlo debemos invertir las tres fracciones, lo cual invierte el sentido de las desigualdades (para números positivos, si $a<b$ entonces $1/a>1/b$). Invertimos cada término de la desigualdad:
+\[
+\frac{1}{\chi^2_{n-1,\alpha/2}} < \frac{\sigma^2}{(n-1)S^2} < \frac{1}{\chi^2_{n-1,1-\alpha/2}}.
+\]
+Multiplicando los tres términos por $(n-1)S^2>0$:
+\[
+\frac{(n-1)S^2}{\chi^2_{n-1,\alpha/2}} < \sigma^2 < \frac{(n-1)S^2}{\chi^2_{n-1,1-\alpha/2}},
+\]
+de donde
+\[
+P\left(\frac{(n-1)S^2}{\chi^2_{n-1,\alpha/2}} < \sigma^2 < \frac{(n-1)S^2}{\chi^2_{n-1,1-\alpha/2}}\right) = 1-\alpha. \qedhere
+\]
+\end{proof}
+
+\begin{observacion}[IC para el desvío estándar]
+Como la función raíz cuadrada es estrictamente creciente en los reales positivos, tomar raíz cuadrada a ambos extremos de un intervalo de confianza para $\sigma^2$ produce un intervalo de confianza \textbf{del mismo nivel} $1-\alpha$ para $\sigma$:
+\[
+IC(\sigma;1-\alpha) = \left(\sqrt{\frac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}}},\ \ \sqrt{\frac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}}\right).
+\]
+(Esta es, en esencia, otra manifestación de la propiedad de invarianza frente a transformaciones monótonas: si $P(L_1<\sigma^2<L_2)=1-\alpha$ y $g$ es estrictamente creciente, entonces $P(g(L_1)<g(\sigma^2)<g(L_2))=1-\alpha$.)
+\end{observacion}
+
+\begin{ejemplo}
+Un fabricante controla la variabilidad del contenido de botellas de gaseosa (en ml). En una muestra de $n=15$ botellas se obtuvo $s^2=4.2$ ml$^2$. Construir un IC del $95\%$ para $\sigma^2$.
+
+\textbf{Solución.} $n-1=14$. De la tabla $\chi^2$: $\chi^2_{14,0.025}=26.119$, $\chi^2_{14,0.975}=5.629$.
+\[
+IC(\sigma^2;0.95) = \left(\frac{14\cdot 4.2}{26.119},\ \frac{14\cdot 4.2}{5.629}\right) = \left(\frac{58.8}{26.119},\ \frac{58.8}{5.629}\right) \approx (2.251,\ 10.447)\ \text{ml}^2.
+\]
+Tomando raíz cuadrada, $IC(\sigma;0.95)\approx(1.500,\ 3.232)$ ml.
+\end{ejemplo}
+
+\begin{observacion}[Sobre la asimetría de la $\chi^2$]
+Como la distribución $\chi^2_{n-1}$ no es simétrica alrededor de ningún valor central, el valor que deja área $\alpha/2$ a la izquierda ($\chi^2_{n-1,1-\alpha/2}$) \textbf{no} coincide, ni en magnitud ni de ninguna otra forma sencilla, con el que deja área $\alpha/2$ a la derecha ($\chi^2_{n-1,\alpha/2}$); a diferencia de lo que ocurre con la normal o la $t$, donde por simetría bastaba un solo valor crítico ($z_{\alpha/2}$ o $t_{n-1,\alpha/2}$) porque el otro extremo era automáticamente su opuesto. Por esta razón, al trabajar con la $\chi^2$ siempre hay que consultar \textbf{ambos} valores en la tabla, y el intervalo resultante para $\sigma^2$, a diferencia de los intervalos para $\mu$ o $p$, \textbf{no es simétrico} alrededor de la estimación puntual $s^2$ (compárese, en el ejemplo anterior, que $s^2=4.2$ no queda en el punto medio de $(2.251,10.447)$, sino desplazado hacia la izquierda).
+\end{observacion}
+
+\subsection{IC para diferencia de medias: varianzas conocidas}
+
+\begin{definicion}[Contexto general de dos poblaciones]
+Muchas preguntas de interés involucran \textbf{comparar} dos poblaciones —dos proveedores, dos métodos de fabricación, un grupo antes y después de un tratamiento—. Se toman dos muestras \textbf{independientes}:
+\[
+X_1,\dots,X_{n_1} \text{ m.a.\ de } N(\mu_1,\sigma_1^2), \qquad Y_1,\dots,Y_{n_2} \text{ m.a.\ de } N(\mu_2,\sigma_2^2),
+\]
+independientes entre sí. El parámetro de interés es la diferencia $\mu_1-\mu_2$, estimada puntualmente por $\overline X-\overline Y$.
+\end{definicion}
+
+\begin{teorema}[Caso $\sigma_1^2,\sigma_2^2$ conocidas]
+Como $\overline X$ y $\overline Y$ son independientes (por serlo las dos muestras), y cada una es normal,
+\[
+\overline X-\overline Y \sim N\left(\mu_1-\mu_2,\ \frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}\right),
+\]
+usando que la varianza de una diferencia de variables independientes es la \textbf{suma} de las varianzas. En consecuencia,
+\[
+Z = \frac{(\overline X-\overline Y)-(\mu_1-\mu_2)}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}} \sim N(0,1).
+\]
+\end{teorema}
+
+\begin{teorema}[IC para $\mu_1-\mu_2$, varianzas conocidas]
+\[
+IC(\mu_1-\mu_2;1-\alpha) = (\overline x-\overline y) \pm z_{\alpha/2}\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}.
+\]
+\end{teorema}
+
+\begin{proof}
+Idéntica en estructura a la del Teorema \ref{teo:icmuconocida}, partiendo de $P(-z_{\alpha/2}<Z<z_{\alpha/2})=1-\alpha$ y despejando $\mu_1-\mu_2$.
+\end{proof}
+
+\begin{ejemplo}
+Dos máquinas llenan bolsas de cemento. Por control histórico se sabe que $\sigma_1=1.2$ kg y $\sigma_2=1.5$ kg. Se toman muestras independientes: $n_1=40$, $\overline x=50.4$ kg; $n_2=35$, $\overline y=49.8$ kg. Hallar un IC del $95\%$ para $\mu_1-\mu_2$.
+
+\textbf{Solución.} $z_{0.025}=1.96$.
+\[
+\sqrt{\frac{1.2^2}{40}+\frac{1.5^2}{35}} = \sqrt{0.036+0.0643} = \sqrt{0.1003}\approx 0.3167,
+\]
+\[
+IC = (50.4-49.8)\pm 1.96(0.3167) = 0.6\pm 0.6207 = (-0.021,\ 1.221)\ \text{kg}.
+\]
+Como el intervalo contiene al $0$, no hay evidencia suficiente, al nivel de confianza del $95\%$, de una diferencia real entre las medias de llenado de ambas máquinas. (Esta observación —si el $0$ queda o no dentro del intervalo— anticipa la lógica de las pruebas de hipótesis que se estudiarán en la Unidad 7, como se retoma en las Observaciones finales.)
+\end{ejemplo}
+
+\subsection{IC para diferencia de medias: varianzas desconocidas e iguales (estimador combinado)}
+
+Cuando $\sigma_1^2$ y $\sigma_2^2$ son desconocidas pero es razonable suponer que son \textbf{iguales} (esto puede evaluarse, de hecho, con el intervalo de confianza para el cociente de varianzas de la Sección \ref{sec:cocientevar}), conviene combinar la información de ambas muestras en un único estimador de la varianza común.
+
+\begin{definicion}[Varianza combinada, \emph{pooled}]
+Bajo el supuesto $\sigma_1^2=\sigma_2^2=\sigma^2$ (desconocida), se define la \textbf{varianza combinada} (o \emph{pooled}) como
+\[
+S_p^2 = \frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{n_1+n_2-2}.
+\]
+\end{definicion}
+
+\begin{observacion}[Por qué esta fórmula]
+$S_p^2$ es un promedio ponderado de $S_1^2$ y $S_2^2$, con pesos proporcionales a los respectivos grados de libertad $n_1-1$ y $n_2-1$. Es fácil verificar que $S_p^2$ es insesgado para $\sigma^2$: como $E(S_1^2)=E(S_2^2)=\sigma^2$,
+\[
+E(S_p^2) = \frac{(n_1-1)\sigma^2+(n_2-1)\sigma^2}{n_1+n_2-2} = \frac{(n_1+n_2-2)\sigma^2}{n_1+n_2-2} = \sigma^2.
+\]
+Además, bajo normalidad e independencia entre las dos muestras, $(n_1-1)S_1^2/\sigma^2\sim\chi^2_{n_1-1}$ y $(n_2-1)S_2^2/\sigma^2\sim\chi^2_{n_2-1}$ son independientes entre sí; como la suma de dos variables $\chi^2$ independientes es también $\chi^2$, con grados de libertad que se suman (propiedad ya vista en la Unidad 5),
+\[
+\frac{(n_1-1)S_1^2+(n_2-1)S_2^2}{\sigma^2} = \frac{(n_1+n_2-2)S_p^2}{\sigma^2} \sim \chi^2_{n_1+n_2-2}.
+\]
+\end{observacion}
+
+\begin{teorema}
+Bajo los supuestos anteriores,
+\[
+T = \frac{(\overline X-\overline Y)-(\mu_1-\mu_2)}{S_p\sqrt{\dfrac1{n_1}+\dfrac1{n_2}}} \sim t_{n_1+n_2-2}.
+\]
+\end{teorema}
+
+\begin{observacion}[Idea de la demostración]
+El numerador, estandarizado por el verdadero $\sigma$ (no por $S_p$), es $Z=\dfrac{(\overline X-\overline Y)-(\mu_1-\mu_2)}{\sigma\sqrt{1/n_1+1/n_2}}\sim N(0,1)$, independiente de $W=(n_1+n_2-2)S_p^2/\sigma^2\sim\chi^2_{n_1+n_2-2}$ (la independencia entre las medias y las varianzas muestrales, dentro de cada población, se hereda a la combinación por la independencia entre ambas muestras). Formando el cociente $Z/\sqrt{W/(n_1+n_2-2)}$ y cancelando el factor $\sigma$ —exactamente como en la deducción de la $T$ para una población, Sección 3— se recupera la expresión del enunciado, que por definición sigue una $t_{n_1+n_2-2}$.
+\end{observacion}
+
+\begin{teorema}[IC para $\mu_1-\mu_2$, varianzas desconocidas e iguales]
+\[
+IC(\mu_1-\mu_2;1-\alpha) = (\overline x-\overline y) \pm t_{n_1+n_2-2,\,\alpha/2}\; s_p\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}.
+\]
+\end{teorema}
+
+\begin{ejemplo}
+Se comparan los rendimientos (km/l) de dos modelos de auto. Modelo A: $n_1=12$, $\overline x=15.4$, $s_1=1.1$. Modelo B: $n_2=10$, $\overline y=14.6$, $s_2=1.3$. Suponiendo varianzas poblacionales iguales, hallar un IC del $90\%$ para $\mu_1-\mu_2$.
+
+\textbf{Solución.}
+\[
+s_p^2 = \frac{(11)(1.1)^2+(9)(1.3)^2}{12+10-2} = \frac{11(1.21)+9(1.69)}{20} = \frac{13.31+15.21}{20} = \frac{28.52}{20}=1.426, \qquad s_p\approx 1.194.
+\]
+Grados de libertad: $20$. De tabla $t$: $t_{20,0.05}=1.725$.
+\[
+s_p\sqrt{\frac{1}{12}+\frac{1}{10}} = 1.194\sqrt{0.0833+0.1} = 1.194\sqrt{0.1833} \approx 1.194(0.4281)\approx 0.5112.
+\]
+\[
+IC = (15.4-14.6)\pm 1.725(0.5112) = 0.8\pm 0.882 = (-0.082,\ 1.682)\ \text{km/l}.
+\]
+Nuevamente el intervalo incluye al $0$: al $90\%$ de confianza, no puede afirmarse que exista una diferencia real de rendimiento entre ambos modelos.
+\end{ejemplo}
+
+\begin{observacion}[Cómo decidir qué procedimiento usar]
+Antes de comparar dos medias, conviene hacerse, en orden, las siguientes preguntas:
+\begin{enumerate}[label=\arabic*)]
+\item ¿Las dos muestras están \textbf{relacionadas} (los mismos sujetos o unidades medidos dos veces, o pares naturalmente asociados)? Si la respuesta es sí, corresponde el procedimiento de \textbf{muestras apareadas} (Sección \ref{sec:apareadas}), y no debe tratarse a los datos como si fueran independientes.
+\item Si las muestras son independientes: ¿se conocen $\sigma_1^2$ y $\sigma_2^2$? Si sí, se usa el pivote $Z$.
+\item Si las muestras son independientes y las varianzas son desconocidas: ¿es razonable suponer $\sigma_1^2=\sigma_2^2$ (por ejemplo, a partir de conocimiento del proceso, o verificándolo con el IC para el cociente de varianzas de la Sección \ref{sec:cocientevar})? Si sí, se usa el pivote $T$ con varianza combinada. (Cuando no es razonable suponer varianzas iguales, existen versiones con grados de libertad ajustados —la corrección de Welch--Satterthwaite—, que exceden el alcance de este curso.)
+\end{enumerate}
+Elegir mal el procedimiento —por ejemplo, tratar datos apareados como si fueran dos muestras independientes— produce, en general, intervalos de confianza válidos pero innecesariamente anchos, ya que se ignora la correlación positiva entre pares de observaciones relacionadas, perdiendo precisión.
+\end{observacion}
+
+\subsection{Muestras apareadas}
+\label{sec:apareadas}
+
+Cuando las dos series de observaciones \textbf{no son independientes} —por ejemplo, mediciones antes y después de un tratamiento sobre los mismos sujetos, o mediciones con dos instrumentos distintos sobre las mismas piezas— el enfoque de la Sección anterior no es válido, porque supone independencia entre ambas muestras. En cambio, se trabaja directamente con las \textbf{diferencias individuales}.
+
+\begin{definicion}[Muestra de diferencias]
+Sean $(X_1,Y_1),\dots,(X_n,Y_n)$ pares de observaciones relacionadas (mismo tamaño de muestra $n$ para ambos grupos, por construcción). Se definen las diferencias
+\[
+D_i = X_i-Y_i, \qquad i=1,\dots,n,
+\]
+que se tratan como una única muestra aleatoria de una población con media $\mu_D=\mu_1-\mu_2$ y varianza $\sigma_D^2$.
+\end{definicion}
+
+\begin{teorema}[IC para $\mu_D$]
+\[
+IC(\mu_D;1-\alpha) = \overline d \pm t_{n-1,\,\alpha/2}\,\frac{s_D}{\sqrt n},
+\]
+donde $\overline d$ y $s_D$ son, respectivamente, la media y el desvío muestral (cuasidesvío) de las diferencias $d_i=x_i-y_i$.
+\end{teorema}
+
+\begin{proof}
+Al reducir el problema a una única muestra $D_1,\dots,D_n$, el resultado es exactamente el Teorema del IC para la media con varianza desconocida (Sección 3), aplicado a la variable $D$ en lugar de $X$.
+\end{proof}
+
+\begin{observacion}[Por qué conviene aparear cuando corresponde]
+Al restar $D_i=X_i-Y_i$, se elimina la variabilidad propia de cada individuo (por ejemplo, la presión arterial "de base" de cada paciente, que varía naturalmente de persona a persona) y queda únicamente la variabilidad del \textbf{efecto} de interés (el cambio provocado por el tratamiento). Esto suele reducir sustancialmente $\sigma_D^2$ en comparación con $\sigma_1^2+\sigma_2^2$ (la varianza que tendría $\overline X-\overline Y$ si erróneamente se tratara a las muestras como independientes), produciendo intervalos de confianza considerablemente más angostos y, por lo tanto, más informativos, siempre que exista de hecho una correlación positiva entre $X_i$ e $Y_i$.
+\end{observacion}
+
+\begin{ejemplo}
+Se mide la presión arterial sistólica de $6$ pacientes antes y después de un tratamiento:
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+Paciente & 1 & 2 & 3 & 4 & 5 & 6 \\
+\midrule
+Antes & 150 & 142 & 160 & 155 & 148 & 152 \\
+Después & 138 & 136 & 150 & 148 & 140 & 147 \\
+\midrule
+$d_i$ (antes$-$después) & 12 & 6 & 10 & 7 & 8 & 5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\[
+\overline d = \frac{12+6+10+7+8+5}{6} = \frac{48}{6}=8,
+\]
+\[
+s_D^2 = \frac{1}{5}\sum_{i=1}^6 (d_i-8)^2 = \frac{16+4+4+1+0+9}{5}=\frac{34}{5}=6.8, \qquad s_D\approx 2.608.
+\]
+Grados de libertad: $5$. De tabla $t$: $t_{5,0.025}=2.571$ (IC del $95\%$).
+\[
+IC(\mu_D;0.95) = 8 \pm 2.571\cdot\frac{2.608}{\sqrt 6} = 8\pm 2.571(1.0648) \approx 8\pm 2.738 = (5.262,\ 10.738).
+\]
+Como el intervalo \textbf{no} incluye al $0$ (y además está enteramente por encima de $0$), hay evidencia, al $95\%$ de confianza, de que el tratamiento reduce efectivamente la presión arterial sistólica.
+\end{ejemplo}
+
+\subsection{IC para el cociente de varianzas}
+\label{sec:cocientevar}
+
+Para comparar la \textbf{variabilidad} de dos poblaciones normales —por ejemplo, para decidir si es razonable el supuesto de varianzas iguales usado en la Sección anterior— se construye un intervalo de confianza para el cociente $\sigma_1^2/\sigma_2^2$.
+
+\begin{teorema}[Recordatorio, Unidad 5]
+Sean $X_1,\dots,X_{n_1}$ m.a.\ de $N(\mu_1,\sigma_1^2)$ y $Y_1,\dots,Y_{n_2}$ m.a.\ de $N(\mu_2,\sigma_2^2)$, independientes entre sí. Entonces
+\[
+F = \frac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2} \sim F_{n_1-1,\,n_2-1} \qquad \text{(distribución $F$ de Snedecor).}
+\]
+\end{teorema}
+
+\begin{observacion}[Origen de la distribución $F$]
+Recordemos que la distribución $F_{k_1,k_2}$ se define como el cociente de dos variables $\chi^2$ independientes, cada una dividida por sus grados de libertad: $F=\dfrac{W_1/k_1}{W_2/k_2}$, con $W_1\sim\chi^2_{k_1}$, $W_2\sim\chi^2_{k_2}$ independientes. Aquí $W_1=(n_1-1)S_1^2/\sigma_1^2\sim\chi^2_{n_1-1}$ y $W_2=(n_2-1)S_2^2/\sigma_2^2\sim\chi^2_{n_2-1}$, independientes por serlo las dos muestras; el cociente $\dfrac{W_1/(n_1-1)}{W_2/(n_2-1)}$ es exactamente $\dfrac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2}$, tras cancelar los factores $(n_1-1)$ y $(n_2-1)$.
+\end{observacion}
+
+\begin{teorema}[IC para el cociente de varianzas]
+\[
+IC\left(\frac{\sigma_1^2}{\sigma_2^2};1-\alpha\right) = \left(\frac{s_1^2}{s_2^2}\cdot\frac{1}{F_{n_1-1,n_2-1,\,\alpha/2}},\ \ \frac{s_1^2}{s_2^2}\cdot\frac{1}{F_{n_1-1,n_2-1,\,1-\alpha/2}}\right).
+\]
+\end{teorema}
+
+\begin{proof}
+Partimos de $P\big(F_{n_1-1,n_2-1,\,1-\alpha/2} < F < F_{n_1-1,n_2-1,\,\alpha/2}\big)=1-\alpha$, es decir,
+\[
+P\left(F_{n_1-1,n_2-1,1-\alpha/2} < \frac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2} < F_{n_1-1,n_2-1,\alpha/2}\right) = 1-\alpha.
+\]
+Reescribimos el cociente central como $\dfrac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2} = \dfrac{S_1^2}{S_2^2}\cdot\dfrac{\sigma_2^2}{\sigma_1^2} = \dfrac{S_1^2/S_2^2}{\sigma_1^2/\sigma_2^2}$. Igual que en el caso de la $\chi^2$, el parámetro de interés $\sigma_1^2/\sigma_2^2$ queda en el denominador, por lo que al despejarlo invertimos las desigualdades:
+\[
+\frac{1}{F_{n_1-1,n_2-1,\alpha/2}} < \frac{\sigma_1^2/\sigma_2^2}{S_1^2/S_2^2} < \frac{1}{F_{n_1-1,n_2-1,1-\alpha/2}},
+\]
+y multiplicando por $S_1^2/S_2^2>0$,
+\[
+\frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{n_1-1,n_2-1,\alpha/2}} < \frac{\sigma_1^2}{\sigma_2^2} < \frac{S_1^2}{S_2^2}\cdot\frac{1}{F_{n_1-1,n_2-1,1-\alpha/2}}. \qedhere
+\]
+\end{proof}
+
+\begin{observacion}[Tablas de una sola cola]
+Las tablas de la distribución $F$ suelen tabular solamente colas superiores (valores $F_{k_1,k_2,\alpha}$ pequeños de $\alpha$), por lo que para obtener $F_{n_1-1,n_2-1,\,1-\alpha/2}$ se recurre a la identidad
+\[
+F_{k_1,k_2,\,1-\alpha/2} = \frac{1}{F_{k_2,k_1,\,\alpha/2}},
+\]
+que se deduce del hecho de que si $F\sim F_{k_1,k_2}$, entonces $1/F\sim F_{k_2,k_1}$ (intercambiando el rol de numerador y denominador en la definición de la $F$ como cociente de $\chi^2$'s).
+\end{observacion}
+
+\begin{ejemplo}
+Dos líneas de producción: $n_1=10$, $s_1^2=6.4$; $n_2=8$, $s_2^2=3.2$. Hallar un IC del $90\%$ para $\sigma_1^2/\sigma_2^2$.
+
+\textbf{Solución.} Grados de libertad: $(9,7)$. De tabla $F$: $F_{9,7,0.05}=3.68$, y
+\[
+F_{9,7,0.95} = \frac{1}{F_{7,9,0.05}} = \frac{1}{3.29} \approx 0.304.
+\]
+\[
+IC = \left(\frac{6.4}{3.2}\cdot\frac{1}{3.68},\ \frac{6.4}{3.2}\cdot\frac{1}{0.304}\right) = \left(\frac{2}{3.68},\ \frac{2}{0.304}\right) \approx (0.543,\ 6.579).
+\]
+Como el intervalo incluye al valor $1$ (que correspondería a $\sigma_1^2=\sigma_2^2$), no hay evidencia, al $90\%$ de confianza, de que las varianzas de las dos líneas de producción sean distintas. Esto justificaría, en un análisis posterior, suponer varianzas iguales y usar el procedimiento de varianza combinada de la Sección anterior para comparar las medias.
+\end{ejemplo}
+
+\subsection{Tabla resumen de todos los intervalos de confianza vistos}
+
+\begin{center}
+\small
+\begin{tabular}{p{2.6cm}p{4.6cm}p{7cm}}
+\toprule
+\textbf{Parámetro} & \textbf{Condición} & \textbf{Intervalo de confianza} \\
+\midrule
+$\mu$ & $\sigma^2$ conocida (o $n$ grande) & $\overline x \pm z_{\alpha/2}\dfrac{\sigma}{\sqrt n}$ \\[1.4ex]
+$\mu$ & $\sigma^2$ desconocida & $\overline x \pm t_{n-1,\alpha/2}\dfrac{s}{\sqrt n}$ \\[1.4ex]
+$p$ & $n$ grande ($n\widehat p\ge 5$, $n(1-\widehat p)\ge 5$) & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\widehat p)}{n}}$ \\[1.4ex]
+$\sigma^2$ & población normal & $\left(\dfrac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}},\ \dfrac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}\right)$ \\[1.8ex]
+$\sigma$ & población normal & $\left(\sqrt{\dfrac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}}},\ \sqrt{\dfrac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}}\right)$ \\[1.8ex]
+$\mu_1-\mu_2$ & muestras indep., $\sigma_1^2,\sigma_2^2$ conocidas & $(\overline x-\overline y)\pm z_{\alpha/2}\sqrt{\dfrac{\sigma_1^2}{n_1}+\dfrac{\sigma_2^2}{n_2}}$ \\[1.8ex]
+$\mu_1-\mu_2$ & muestras indep., varianzas desc.\ e iguales & $(\overline x-\overline y)\pm t_{n_1+n_2-2,\alpha/2}\,s_p\sqrt{\dfrac1{n_1}+\dfrac1{n_2}}$ \\[1.8ex]
+$\mu_D=\mu_1-\mu_2$ & muestras apareadas & $\overline d \pm t_{n-1,\alpha/2}\dfrac{s_D}{\sqrt n}$ \\[1.4ex]
+$\sigma_1^2/\sigma_2^2$ & dos poblaciones normales indep. & $\left(\dfrac{s_1^2}{s_2^2 F_{n_1-1,n_2-1,\alpha/2}},\ \dfrac{s_1^2}{s_2^2 F_{n_1-1,n_2-1,1-\alpha/2}}\right)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Observaciones adicionales}
+
+Cerramos este apunte con algunas reflexiones que conectan lo estudiado en esta unidad con lo que viene a continuación en la materia.
+
+\begin{observacion}[De la estimación a la prueba de hipótesis]
+En la Unidad 7 se introducirá formalmente la \textbf{prueba de hipótesis}, el otro gran pilar de la inferencia estadística clásica junto con la estimación. Alĺı, en lugar de preguntar "¿cuál es un rango plausible de valores para $\theta$?", se parte de una \textbf{afirmación concreta} sobre el parámetro —una hipótesis nula $H_0:\theta=\theta_0$— y se evalúa si la evidencia muestral es lo suficientemente fuerte como para rechazarla en favor de una hipótesis alternativa $H_1$.
+
+Aunque a primera vista parecen dos problemas distintos, existe una \textbf{dualidad exacta} entre los intervalos de confianza construidos en esta unidad y las pruebas de hipótesis bilaterales que se estudiarán en la próxima: para un nivel de significación $\alpha$ fijo,
+\[
+H_0:\theta=\theta_0 \text{ se rechaza al nivel } \alpha \quad\Longleftrightarrow\quad \theta_0 \notin IC(\theta;1-\alpha).
+\]
+Es decir, un intervalo de confianza del $(1-\alpha)\cdot 100\%$ puede pensarse, equivalentemente, como el \textbf{conjunto de todos los valores $\theta_0$ que \emph{no} serían rechazados} por una prueba de hipótesis bilateral al nivel $\alpha$, usando la misma muestra. Ya usamos esta idea de manera informal en varios de los ejemplos anteriores: cuando observamos que el IC para $\mu_1-\mu_2$ contenía al $0$ (bolsas de cemento, rendimiento de autos), estábamos anticipando que una prueba de hipótesis $H_0:\mu_1=\mu_2$ no se rechazaría al mismo nivel de confianza; cuando el IC para las diferencias apareadas no contenía al $0$ (presión arterial), anticipábamos el rechazo de $H_0:\mu_D=0$. Este vínculo —desarrollado con rigor en la Unidad 7— es una de las razones por las cuales muchos textos y buena parte de la práctica estadística moderna recomiendan reportar siempre un intervalo de confianza además de (o incluso en lugar de) un simple resultado de "rechaza / no rechaza" de una prueba de hipótesis: el intervalo aporta, de un solo vistazo, tanto la conclusión de la prueba como una medida de la magnitud y precisión del efecto estimado.
+\end{observacion}
+
+\begin{observacion}[Sobre los métodos de estimación y su alcance]
+Los tres métodos de construcción de estimadores presentados en la Sección 2 —momentos, mínimos cuadrados y máxima verosimilitud— no agotan el repertorio de la Estadística moderna, pero constituyen su núcleo clásico y son la base sobre la que se apoyan métodos más avanzados. El método de mínimos cuadrados se generalizará ampliamente en la Unidad 8, al estudiar la regresión lineal simple y múltiple, donde el parámetro de interés ya no es un único número sino un vector de coeficientes que describe cómo una variable respuesta depende de una o más variables explicativas. El método de máxima verosimilitud, por su parte, es la piedra angular de gran parte de la Estadística inferencial contemporánea —desde los modelos lineales generalizados hasta buena parte del aprendizaje automático supervisado— precisamente por las propiedades asintóticas mencionadas en la Sección \ref{sec:mv}: consistencia, eficiencia asintótica y normalidad asintótica, que permiten construir intervalos de confianza y pruebas de hipótesis aproximadas para prácticamente cualquier modelo paramétrico, aun cuando —a diferencia de los casos vistos en esta unidad— no se disponga de una distribución exacta y conocida para el estimador.
+\end{observacion}
+
+\begin{observacion}[Validez de los supuestos]
+Es importante remarcar que todas las fórmulas exactas de esta unidad (las que involucran las distribuciones $t$, $\chi^2$ y $F$) suponen \textbf{normalidad de la población}. Cuando este supuesto no es razonable pero el tamaño de muestra es grande, muchos de los procedimientos siguen siendo válidos de manera aproximada gracias al Teorema Central del Límite (en particular, los intervalos para medias y para proporciones); en cambio, el intervalo para $\sigma^2$ basado en la $\chi^2$ es considerablemente más sensible a desvíos de la normalidad, y su uso con poblaciones marcadamente no normales requiere más cuidado (o técnicas alternativas, como métodos de remuestreo tipo \emph{bootstrap}, que exceden el alcance de este curso pero que el estudiante interesado puede explorar por su cuenta). Verificar la plausibilidad de los supuestos del modelo —mediante gráficos descriptivos, como los estudiados en unidades anteriores, o pruebas de bondad de ajuste que se mencionarán en la Unidad 7— es, en la práctica profesional, un paso tan importante como el cálculo mismo del intervalo o de la prueba.
+\end{observacion}
+
+\end{document}

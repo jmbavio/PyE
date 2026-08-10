@@ -1,0 +1,1169 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{propiedad}[teorema]{Propiedad}
+\newtheorem{corolario}[teorema]{Corolario}
+\newtheorem{lema}[teorema]{Lema}
+\theoremstyle{definition}
+\newtheorem{definicion}[teorema]{Definición}
+\newtheorem{ejemplo}[teorema]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{observacion}[teorema]{Observación}
+
+\renewcommand{\proofname}{Demostración}
+
+\title{Unidad 3: Vectores aleatorios \\ \large Apunte de teoría}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Distribución conjunta de vectores aleatorios}
+
+\subsection{Motivación y definición de vector aleatorio}
+
+Hasta ahora hemos estudiado variables aleatorias de a una: dado un experimento aleatorio, definíamos una función $X:\Omega\to\mathbb{R}$ y describíamos su comportamiento mediante $F_X$, $p_X$ o $f_X$. Sin embargo, la gran mayoría de los experimentos de interés real producen \emph{simultáneamente} varias cantidades numéricas relacionadas entre sí, y es precisamente esa relación lo que suele resultar más informativo que cada variable por separado.
+
+Pensemos en algunos ejemplos:
+\begin{itemize}
+\item El peso $X$ y la altura $Y$ de una persona elegida al azar de una población: ambas cantidades tienden a crecer juntas, y esa asociación es justamente lo que permite, por ejemplo, construir tablas de índice de masa corporal.
+\item El tiempo de vida $X$ de un componente electrónico y la temperatura $Y$ a la que opera: sabemos, por experiencia, que temperaturas más altas suelen acortar la vida útil, y cuantificar esa relación es el objetivo de un estudio de confiabilidad.
+\item El número de clientes $X$ que llega a una caja de un supermercado y el número $Y$ que llega a otra caja, durante el mismo intervalo de tiempo: aquí podríamos sospechar que $X$ e $Y$ son, en cambio, esencialmente independientes.
+\item En una muestra aleatoria $X_1,\dots,X_n$ de una población, la media muestral $\bar X$ y la varianza muestral $S^2$ son funciones del mismo vector aleatorio $(X_1,\dots,X_n)$, y su relación conjunta (que resultará ser de independencia, en el caso normal) es la piedra angular de toda la inferencia estadística que se estudiará en las Unidades 5 a 8.
+\end{itemize}
+
+En todos los casos, no alcanza con conocer las distribuciones marginales de $X$ y de $Y$ por separado: dos pares de variables pueden tener exactamente las mismas distribuciones individuales y comportarse de manera completamente distinta en conjunto (una con fuerte asociación, la otra independiente). Se necesita, entonces, un objeto matemático que capture el comportamiento \emph{conjunto} del par (o de la tupla) de variables. Ese objeto es el vector aleatorio.
+
+\begin{definicion}[Vector aleatorio]
+Dado un espacio de probabilidad $(\Omega,\mathcal A, P)$, un \textbf{vector aleatorio} $n$-dimensional es una función
+\[
+\mathbf X = (X_1,\dots,X_n): \Omega \longrightarrow \mathbb R^n
+\]
+tal que, para todo $(x_1,\dots,x_n)\in\mathbb R^n$, el conjunto
+\[
+\{\omega\in\Omega : X_1(\omega)\le x_1,\ \dots,\ X_n(\omega)\le x_n\}
+\]
+es un evento, es decir, pertenece a $\mathcal A$.
+\end{definicion}
+
+La condición de medibilidad es exactamente la que garantiza que expresiones como $P(X_1\le x_1,\dots,X_n\le x_n)$ tengan sentido: sin ella no podríamos ni siquiera preguntarnos por la probabilidad de que el vector caiga en una región dada. En la práctica, del mismo modo que ocurría con las variables aleatorias univariadas, esta condición técnica se cumple automáticamente para (casi) cualquier función construida a partir de un experimento real, y no volveremos a preocuparnos por ella explícitamente. Nos concentraremos, en cambio, en el caso $n=2$, que es el que permite visualizar geométricamente todos los conceptos (en el plano $xy$); las definiciones y resultados se extienden de manera literal a $n$ variables, como se detalla en la Sección \ref{sec:extension-n}.
+
+Es importante remarcar que un vector aleatorio no es simplemente ``una lista de variables aleatorias'': es una \emph{única} función definida sobre el mismo espacio muestral $\Omega$. Esto es lo que permite que $X$ e $Y$ estén correlacionadas: ambas dependen del mismo resultado elemental $\omega$, y por lo tanto el valor de una da información sobre el valor de la otra.
+
+\subsection{Función de distribución conjunta}
+
+Así como la función de distribución acumulada $F_X(x) = P(X\le x)$ describe completamente la distribución de una variable aleatoria univariada, existe un análogo bidimensional que describe completamente el comportamiento conjunto de $(X,Y)$.
+
+\begin{definicion}[Función de distribución conjunta]
+La \textbf{función de distribución conjunta} (o función de distribución acumulada conjunta) del vector aleatorio $(X,Y)$ es la función $F_{X,Y}:\mathbb R^2\to[0,1]$ dada por
+\[
+F_{X,Y}(x,y) = P(X\le x,\ Y\le y), \qquad (x,y)\in\mathbb R^2.
+\]
+\end{definicion}
+
+Notemos que la coma dentro de la probabilidad indica intersección de eventos: $P(X\le x, Y\le y) = P(\{X\le x\}\cap\{Y\le y\})$. Geométricamente, $F_{X,Y}(x,y)$ es la probabilidad de que el punto aleatorio $(X,Y)$ caiga en el cuadrante ``suroeste'' con vértice en $(x,y)$, es decir, en la región $(-\infty,x]\times(-\infty,y]$.
+
+\begin{propiedad}[Propiedades básicas de $F_{X,Y}$]\label{prop:propiedadesF}
+Toda función de distribución conjunta satisface:
+\begin{enumerate}[label=(\roman*)]
+\item $0\le F_{X,Y}(x,y)\le 1$ para todo $(x,y)$.
+\item \textbf{Monotonía en cada variable:} si $x_1\le x_2$ entonces $F_{X,Y}(x_1,y)\le F_{X,Y}(x_2,y)$ para todo $y$; análogamente en la segunda coordenada.
+\item \textbf{Comportamiento en el infinito:}
+\[
+\lim_{x\to+\infty,\ y\to+\infty} F_{X,Y}(x,y) = 1, \qquad \lim_{x\to-\infty} F_{X,Y}(x,y) = 0 = \lim_{y\to-\infty} F_{X,Y}(x,y),
+\]
+esta última para todo valor fijo de la otra variable.
+\item \textbf{Continuidad a derecha} en cada variable: $\lim_{h\to0^+} F_{X,Y}(x+h,y) = F_{X,Y}(x,y)$, y análogamente en $y$.
+\item \textbf{Marginales a partir de $F_{X,Y}$:}
+\[
+\lim_{y\to+\infty} F_{X,Y}(x,y) = F_X(x), \qquad \lim_{x\to+\infty} F_{X,Y}(x,y) = F_Y(y).
+\]
+\end{enumerate}
+\end{propiedad}
+
+\begin{proof}
+La propiedad (i) es inmediata porque $F_{X,Y}(x,y)$ es la probabilidad de un evento. Para (ii), si $x_1\le x_2$ entonces $\{X\le x_1, Y\le y\}\subset\{X\le x_2, Y\le y\}$ (como eventos), y la monotonía de la probabilidad respecto de la inclusión da la desigualdad. El razonamiento es idéntico en la segunda variable.
+
+Para (iii), tomemos una sucesión $x_n\uparrow+\infty$, $y_n\uparrow+\infty$. Los eventos $A_n=\{X\le x_n, Y\le y_n\}$ forman una sucesión creciente (por (ii)) cuya unión es $\Omega$ (todo resultado tiene coordenadas finitas), de modo que por continuidad de la probabilidad, $P(A_n)\to P(\Omega)=1$. El límite cuando $x\to-\infty$ (con $y$ fijo) se obtiene de forma análoga: los eventos $\{X\le x_n, Y\le y\}$ decrecen hacia el conjunto vacío cuando $x_n\downarrow-\infty$, y la continuidad de $P$ da el límite $0$.
+
+La propiedad (iv) se demuestra igual que en el caso univariado, usando continuidad de $P$ sobre sucesiones decrecientes de eventos que convergen a $\{X\le x, Y\le y\}$.
+
+Para (v), los eventos $\{X\le x, Y\le y_n\}$ con $y_n\uparrow+\infty$ crecen hacia $\{X\le x\}$, de donde $F_{X,Y}(x,y_n)\to P(X\le x)=F_X(x)$ por continuidad de $P$. Análogamente para $F_Y$.
+\end{proof}
+
+Estas cinco propiedades son \emph{necesarias} para que una función sea una función de distribución conjunta válida, pero \textbf{no son suficientes}. Falta una condición adicional, específica del caso bidimensional, que no tiene análogo en una sola variable: la probabilidad de cualquier rectángulo debe ser no negativa.
+
+\begin{propiedad}[Probabilidad de un rectángulo]\label{prop:rectangulo}
+Para $a<b$ y $c<d$,
+\[
+P(a<X\le b,\ c<Y\le d) = F_{X,Y}(b,d) - F_{X,Y}(a,d) - F_{X,Y}(b,c) + F_{X,Y}(a,c).
+\]
+\end{propiedad}
+
+\begin{proof}
+Por inclusión-exclusión sobre los eventos $B=\{X\le b, Y\le d\}$, $A_1 = \{X\le a, Y\le d\}$ y $A_2 = \{X\le b, Y\le c\}$: el evento $\{a<X\le b, c<Y\le d\}$ se obtiene del rectángulo grande $B$ quitándole la ``banda'' izquierda $A_1$ y la ``banda'' inferior $A_2$; pero al hacerlo restamos dos veces la esquina común $A_1\cap A_2=\{X\le a, Y\le c\}$, así que hay que sumarla de nuevo:
+\[
+\{a<X\le b,\, c<Y\le d\} = B \setminus (A_1\cup A_2),
+\]
+y como $A_1, A_2\subset B$,
+\[
+P(B\setminus(A_1\cup A_2)) = P(B) - P(A_1\cup A_2) = P(B) - P(A_1)-P(A_2)+P(A_1\cap A_2).
+\]
+Reemplazando cada probabilidad por el valor de $F_{X,Y}$ correspondiente se obtiene la fórmula enunciada.
+\end{proof}
+
+\begin{observacion}[La condición de Fréchet]
+Como toda probabilidad, la cantidad calculada en la Propiedad \ref{prop:rectangulo} debe ser siempre \textbf{no negativa}, cualesquiera sean $a<b$ y $c<d$. Esta condición —a veces llamada condición de Fréchet o de ``segunda diferencia mixta no negativa''— es estrictamente más fuerte que pedir que $F_{X,Y}$ sea no decreciente en cada variable por separado: existen funciones que son monótonas en cada coordenada, continuas a derecha, con límites correctos en el infinito, y que sin embargo asignan probabilidad negativa a algún rectángulo, por lo que no pueden ser funciones de distribución conjunta de ningún vector aleatorio. En otras palabras, para verificar que una función candidata $F$ es efectivamente una función de distribución conjunta, no basta con chequear las propiedades (i)-(iv) de la Propiedad \ref{prop:propiedadesF}: hay que verificar además que toda diferencia mixta como la de arriba sea no negativa.
+\end{observacion}
+
+\subsection{Vectores aleatorios discretos: función de probabilidad conjunta}
+
+Cuando $X$ toma valores en un conjunto numerable $\{x_1,x_2,\dots\}$ e $Y$ en $\{y_1,y_2,\dots\}$, decimos que $(X,Y)$ es un vector aleatorio discreto, y en lugar de trabajar con $F_{X,Y}$ conviene trabajar con la función de probabilidad conjunta, que es mucho más manejable y suele presentarse como una tabla de doble entrada.
+
+\begin{definicion}[Función de probabilidad conjunta]
+La \textbf{función de probabilidad conjunta} de un vector aleatorio discreto $(X,Y)$ es
+\[
+p_{X,Y}(x_i,y_j) = P(X=x_i,\ Y=y_j), \qquad i,j=1,2,\dots
+\]
+\end{definicion}
+
+\begin{propiedad}
+\begin{enumerate}[label=(\roman*)]
+\item $p_{X,Y}(x_i,y_j)\ge 0$ para todo $i,j$.
+\item $\displaystyle\sum_i\sum_j p_{X,Y}(x_i,y_j) = 1$.
+\item Para cualquier región $A\subset\mathbb R^2$,
+\[
+P\big((X,Y)\in A\big) = \sum_{(x_i,y_j)\in A} p_{X,Y}(x_i,y_j).
+\]
+\end{enumerate}
+\end{propiedad}
+
+La demostración de (ii) es simplemente que los eventos $\{X=x_i, Y=y_j\}$, para todos los pares $(i,j)$, forman una partición numerable de $\Omega$, y (iii) es la definición de probabilidad de un evento discreto como suma de las probabilidades de los resultados que lo componen, aplicada al evento $\{(X,Y)\in A\}$.
+
+\begin{ejemplo}[Máximo y suma en el lanzamiento de dos dados]\label{ej:dados}
+Se lanzan dos dados equilibrados. Sea $X$ el máximo de los dos valores obtenidos e $Y$ la suma de ambos. La tabla completa de $p_{X,Y}$ (en unidades de $1/36$) es:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c|cccccc}
+\toprule
+$Y\backslash X$ & 1 & 2 & 3 & 4 & 5 & 6 \\
+\midrule
+2  & 1 & 0 & 0 & 0 & 0 & 0 \\
+3  & 0 & 2 & 0 & 0 & 0 & 0 \\
+4  & 0 & 1 & 2 & 0 & 0 & 0 \\
+5  & 0 & 0 & 2 & 2 & 0 & 0 \\
+6  & 0 & 0 & 1 & 2 & 2 & 0 \\
+7  & 0 & 0 & 0 & 2 & 2 & 2 \\
+8  & 0 & 0 & 0 & 1 & 2 & 2 \\
+9  & 0 & 0 & 0 & 0 & 2 & 2 \\
+10 & 0 & 0 & 0 & 0 & 1 & 2 \\
+11 & 0 & 0 & 0 & 0 & 0 & 2 \\
+12 & 0 & 0 & 0 & 0 & 0 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Por ejemplo, $p_{X,Y}(2,3) = P(X=2,Y=3) = P(\{(1,2),(2,1)\})/36 = 2/36$, pues esos son los únicos pares ordenados de resultados de los dos dados cuyo máximo es $2$ y cuya suma es $3$. Del mismo modo, $p_{X,Y}(6,7)=2/36$ (los pares $(1,6)$ y $(6,1)$), mientras que $p_{X,Y}(6,12)=1/36$ (solo el par $(6,6)$). Puede verificarse que la suma de las $36$ entradas no nulas de la tabla es efectivamente $36/36=1$.
+
+Calculemos, a modo de ilustración, $P(X\le 3, Y\le 6)$: sumando todas las entradas de la tabla con $x_i\le 3$ e $y_j\le 6$,
+\[
+P(X\le3,Y\le6) = \frac{1+2+1+2+2+1}{36} = \frac{9}{36} = \frac14.
+\]
+Este cálculo es exactamente $P((X,Y)\in A)$ con $A=\{(x,y):x\le3,\,y\le6\}$, sumando $p_{X,Y}$ sobre todos los puntos del soporte que caen en $A$.
+\end{ejemplo}
+
+\begin{ejemplo}[Extracción sin reposición]\label{ej:urna-sinreposicion}
+Una urna contiene $3$ bolillas rojas y $2$ blancas. Se extraen $2$ bolillas al azar, \emph{sin reposición}. Para $i=1,2$, sea $X_i=1$ si la $i$-ésima bolilla extraída es roja, y $X_i=0$ en caso contrario. Hallemos la función de probabilidad conjunta de $(X_1,X_2)$.
+
+Usando la regla del producto (probabilidad condicional):
+\[
+P(X_1=1,X_2=1) = \frac{3}{5}\cdot\frac{2}{4} = \frac{6}{20}=\frac{3}{10}, \qquad
+P(X_1=1,X_2=0) = \frac{3}{5}\cdot\frac{2}{4} = \frac{3}{10},
+\]
+\[
+P(X_1=0,X_2=1) = \frac{2}{5}\cdot\frac{3}{4} = \frac{3}{10}, \qquad
+P(X_1=0,X_2=0) = \frac{2}{5}\cdot\frac{1}{4} = \frac{1}{10}.
+\]
+Se verifica que las cuatro probabilidades suman $1$. Este ejemplo, sencillo en apariencia, será clave en la Sección \ref{sec:independencia} para ilustrar que $X_1$ y $X_2$ \emph{no} son independientes, a pesar de que marginalmente ambas son Bernoulli$(3/5)$: el muestreo sin reposición introduce una dependencia natural entre las extracciones.
+\end{ejemplo}
+
+\subsection{Vectores aleatorios continuos: densidad conjunta}
+
+Cuando $(X,Y)$ puede tomar cualquier valor real en una región del plano (no numerable), en lugar de una tabla se necesita una función de densidad de dos variables.
+
+\begin{definicion}[Densidad conjunta]
+El vector $(X,Y)$ es \textbf{conjuntamente continuo} si existe una función $f_{X,Y}:\mathbb R^2\to\mathbb R$, llamada \textbf{densidad conjunta}, tal que
+\[
+F_{X,Y}(x,y) = \int_{-\infty}^x\int_{-\infty}^y f_{X,Y}(u,v)\,dv\,du, \qquad \forall (x,y)\in\mathbb R^2.
+\]
+\end{definicion}
+
+\begin{propiedad}
+\begin{enumerate}[label=(\roman*)]
+\item $f_{X,Y}(x,y)\ge0$ para todo $(x,y)$.
+\item $\displaystyle\int_{-\infty}^{\infty}\int_{-\infty}^{\infty} f_{X,Y}(x,y)\,dx\,dy = 1$.
+\item En los puntos donde $F_{X,Y}$ es de clase $C^2$, $\displaystyle f_{X,Y}(x,y) = \frac{\partial^2 F_{X,Y}}{\partial x\,\partial y}(x,y)$.
+\item Para cualquier región (medible) $A\subset\mathbb R^2$,
+\[
+P\big((X,Y)\in A\big) = \iint_A f_{X,Y}(x,y)\,dx\,dy.
+\]
+\end{enumerate}
+\end{propiedad}
+
+La propiedad (iv) generaliza la fórmula de la Propiedad \ref{prop:rectangulo}: en el caso continuo, la probabilidad de cualquier región razonable se calcula como el volumen bajo la superficie $z=f_{X,Y}(x,y)$ sobre esa región, tal como $P(a<X<b)=\int_a^b f_X(x)\,dx$ era, en una dimensión, el área bajo la curva. Esta interpretación geométrica —$f_{X,Y}$ como una ``montaña'' sobre el plano $xy$, y la probabilidad como el volumen encerrado— es extremadamente útil para razonar sobre problemas de vectores aleatorios continuos.
+
+\begin{ejemplo}[Densidad uniforme sobre un rectángulo]\label{ej:densidad-uniforme}
+Sea
+\[
+f_{X,Y}(x,y) = \begin{cases} c & 0<x<2,\ 0<y<1 \\ 0 & \text{en otro caso.}\end{cases}
+\]
+\textbf{a)} Hallar $c$. \quad \textbf{b)} Calcular $P(X<1,\,Y<1/2)$. \quad \textbf{c)} Calcular $P(X+Y<1)$.
+
+\emph{Resolución.} \textbf{a)} Como $f_{X,Y}$ debe integrar $1$ sobre el rectángulo de área $2\times1=2$,
+\[
+\int_0^2\int_0^1 c\,dy\,dx = 2c=1 \implies c=\frac12.
+\]
+\textbf{b)}
+\[
+P\left(X<1,\,Y<\tfrac12\right) = \int_0^1\int_0^{1/2}\tfrac12\,dy\,dx = \int_0^1\tfrac14\,dx=\tfrac14.
+\]
+\textbf{c)} La región $\{x+y<1\}$ dentro del rectángulo $(0,2)\times(0,1)$ es el triángulo con vértices $(0,0)$, $(1,0)$ y $(0,1)$ (pues para $x\ge1$ ya no hay valores de $y\in(0,1)$ con $x+y<1$):
+\[
+P(X+Y<1) = \int_0^1\int_0^{1-x} \tfrac12\,dy\,dx = \int_0^1 \tfrac12(1-x)\,dx = \tfrac12\left[x-\tfrac{x^2}{2}\right]_0^1 = \tfrac12\cdot\tfrac12=\tfrac14.
+\]
+Este último ítem ilustra que, aunque la densidad sea constante (uniforme), la probabilidad de una región no rectangular exige identificar cuidadosamente los límites de integración de la región.
+\end{ejemplo}
+
+\begin{ejemplo}[Densidad conjunta no uniforme]\label{ej:densidad-xy}
+Sea $f_{X,Y}(x,y)=k(x+y)$ para $0\le x\le1$, $0\le y\le1$, y $0$ en otro caso. \textbf{a)} Hallar $k$. \textbf{b)} Calcular $P(X>Y)$.
+
+\emph{Resolución.} \textbf{a)}
+\[
+\int_0^1\int_0^1 k(x+y)\,dy\,dx = k\int_0^1\left(x+\tfrac12\right)dx = k\left(\tfrac12+\tfrac12\right)=k=1 \implies k=1.
+\]
+\textbf{b)} La región $\{x>y\}$ dentro del cuadrado unitario es el triángulo inferior:
+\[
+P(X>Y) = \int_0^1\int_0^x (x+y)\,dy\,dx = \int_0^1\left(x^2+\tfrac{x^2}{2}\right)dx = \int_0^1\tfrac{3x^2}{2}\,dx=\tfrac12.
+\]
+Este resultado es razonable por simetría: la densidad $f_{X,Y}(x,y)=x+y$ es simétrica respecto de la diagonal $x=y$ (es decir, $f_{X,Y}(x,y)=f_{X,Y}(y,x)$), de modo que $P(X>Y)=P(Y>X)$, y como $P(X=Y)=0$ (la diagonal tiene área nula), ambas probabilidades deben valer $1/2$.
+\end{ejemplo}
+
+\begin{ejemplo}[Densidad sobre un triángulo]\label{ej:densidad-triangulo}
+Sea $f_{X,Y}(x,y) = 8xy$ para $0<x<y<1$, y $0$ en otro caso. Verifiquemos que es una densidad válida y calculemos $P(X<1/2)$.
+
+El soporte es el triángulo $\{0<x<y<1\}$, es decir, la mitad del cuadrado unitario por encima de la diagonal. Integrando primero en $x$ (de $0$ a $y$) y luego en $y$:
+\[
+\int_0^1\int_0^y 8xy\,dx\,dy = \int_0^1 8y\cdot\frac{y^2}{2}\,dy = \int_0^1 4y^3\,dy = 1,
+\]
+de modo que efectivamente integra $1$. Para $P(X<1/2)$ conviene describir la región $\{x<1/2\}\cap\{0<x<y<1\}$ integrando primero en $y$ (de $x$ a $1$) para $x$ entre $0$ y $1/2$:
+\[
+P(X<\tfrac12) = \int_0^{1/2}\int_x^1 8xy\,dy\,dx = \int_0^{1/2} 8x\cdot\frac{1-x^2}{2}\,dx = \int_0^{1/2}(4x-4x^3)\,dx = \left[2x^2-x^4\right]_0^{1/2} = \tfrac12-\tfrac{1}{16}=\tfrac{7}{16}.
+\]
+Este ejemplo será retomado en la Sección \ref{sec:independencia}: como el soporte no es un rectángulo (un producto cartesiano de intervalos), $X$ e $Y$ no pueden ser independientes, sin importar qué forma tenga la fórmula de $f_{X,Y}$.
+\end{ejemplo}
+
+\subsection{Distribuciones marginales}
+
+Dado un vector aleatorio $(X,Y)$, siempre es posible recuperar la distribución de cada componente por separado a partir de la distribución conjunta: estas se llaman distribuciones \textbf{marginales}, porque históricamente se calculaban sumando los valores de una tabla conjunta ``hacia el margen'' de la tabla.
+
+\begin{definicion}[Marginales — caso discreto]
+Si $(X,Y)$ es discreto con función de probabilidad conjunta $p_{X,Y}$, las funciones de probabilidad marginales son
+\[
+p_X(x_i) = P(X=x_i) = \sum_j p_{X,Y}(x_i,y_j), \qquad p_Y(y_j) = P(Y=y_j) = \sum_i p_{X,Y}(x_i,y_j).
+\]
+\end{definicion}
+
+La justificación es simplemente la ley de probabilidad total: el evento $\{X=x_i\}$ es la unión disjunta de los eventos $\{X=x_i, Y=y_j\}$ sobre todos los valores $y_j$ posibles de $Y$, de modo que su probabilidad es la suma de las probabilidades de esa partición.
+
+\begin{definicion}[Marginales — caso continuo]
+Si $(X,Y)$ es conjuntamente continuo con densidad $f_{X,Y}$, las densidades marginales son
+\[
+f_X(x) = \int_{-\infty}^{\infty} f_{X,Y}(x,y)\,dy, \qquad f_Y(y) = \int_{-\infty}^{\infty} f_{X,Y}(x,y)\,dx.
+\]
+\end{definicion}
+
+Aquí la justificación es análoga: derivando $F_X(x) = \lim_{y\to\infty}F_{X,Y}(x,y) = \int_{-\infty}^x\left(\int_{-\infty}^\infty f_{X,Y}(u,y)\,dy\right)du$ respecto de $x$ se obtiene exactamente la fórmula de arriba, por el Teorema Fundamental del Cálculo.
+
+\begin{ejemplo}[Marginales en el Ejemplo \ref{ej:dados}]
+Retomando la tabla del máximo $X$ y la suma $Y$ de dos dados, la marginal de $X$ se obtiene sumando cada columna:
+\[
+p_X(1)=\tfrac{1}{36}, \quad p_X(2)=\tfrac{3}{36}, \quad p_X(3)=\tfrac{5}{36}, \quad p_X(4)=\tfrac{7}{36}, \quad p_X(5)=\tfrac{9}{36}, \quad p_X(6)=\tfrac{11}{36}.
+\]
+En general, $p_X(k) = P(\max\le k) - P(\max\le k-1) = \dfrac{k^2-(k-1)^2}{36}=\dfrac{2k-1}{36}$, lo que reproduce los valores hallados. Puede verificarse que $\sum_{k=1}^6 p_X(k) = \frac{1+3+5+7+9+11}{36}=\frac{36}{36}=1$.
+\end{ejemplo}
+
+\begin{ejemplo}[Marginal continua, Ejemplo \ref{ej:densidad-xy}]
+Para $f_{X,Y}(x,y)=x+y$ en $[0,1]^2$,
+\[
+f_X(x) = \int_0^1 (x+y)\,dy = x+\tfrac12, \qquad 0\le x\le1,
+\]
+y $f_X(x)=0$ fuera de $[0,1]$. Se verifica que $\int_0^1(x+\tfrac12)\,dx=\tfrac12+\tfrac12=1$. Por simetría de la fórmula, $f_Y(y)=y+\tfrac12$ en $[0,1]$.
+\end{ejemplo}
+
+\begin{observacion}[La conjunta determina las marginales, pero no al revés]\label{obs:noalreves}
+Las fórmulas anteriores muestran que la distribución conjunta \textbf{determina completamente} a ambas marginales. Sin embargo, la afirmación recíproca es \textbf{falsa}: existen infinitos vectores aleatorios distintos con las mismas dos marginales pero distinta estructura de dependencia interna. Por ejemplo, si $U,V\sim U(0,1)$ son independientes, el vector $(U,V)$ tiene ambas marginales $U(0,1)$; pero también el vector $(U,U)$ (es decir, $X=U$, $Y=U$, perfectamente dependientes) tiene ambas marginales $U(0,1)$, ¡y sin embargo su comportamiento conjunto es radicalmente distinto! Esta observación —que la información conjunta es estrictamente más rica que la suma de las marginales— es la que motiva el estudio de las distribuciones condicionales y de la independencia en la Sección \ref{sec:condicionales}, y reaparecerá de forma más sofisticada en la Unidad 4 al estudiar la covarianza y la correlación.
+\end{observacion}
+
+\subsection{Extensión a $n$ variables aleatorias}\label{sec:extension-n}
+
+Todo lo desarrollado en esta sección se extiende, palabra por palabra, a un vector aleatorio $(X_1,\dots,X_n)$ de $n$ componentes:
+
+\begin{itemize}
+\item \textbf{Función de distribución conjunta:} $F(x_1,\dots,x_n) = P(X_1\le x_1,\dots,X_n\le x_n)$, con propiedades análogas de monotonía, límites y continuidad a derecha en cada coordenada.
+\item \textbf{Caso discreto:} $p(x_1,\dots,x_n) = P(X_1=x_1,\dots,X_n=x_n)$, no negativa y de suma $1$ sobre todo el soporte.
+\item \textbf{Caso continuo:} una densidad $f(x_1,\dots,x_n)\ge0$ tal que $\displaystyle\int\cdots\int_{\mathbb R^n} f = 1$, y $P((X_1,\dots,X_n)\in A) = \int\cdots\int_A f$.
+\item \textbf{Marginales:} se obtienen sumando o integrando respecto de las variables que se quieren ``eliminar''. Por ejemplo, si $(X_1,X_2,X_3)$ tiene densidad $f(x_1,x_2,x_3)$, la densidad marginal \emph{conjunta} del subvector $(X_1,X_2)$ es
+\[
+f_{X_1,X_2}(x_1,x_2) = \int_{-\infty}^{\infty} f(x_1,x_2,x_3)\,dx_3,
+\]
+y, si se desea, se puede seguir marginando para obtener $f_{X_1}(x_1) = \int\int f(x_1,x_2,x_3)\,dx_2\,dx_3$.
+\end{itemize}
+
+Este marco general es el que se usará, en particular, en la Sección \ref{sec:muestreo} para estudiar muestras aleatorias $(X_1,\dots,X_n)$ de tamaño arbitrario.
+
+\section{Distribuciones condicionales e independencia}\label{sec:condicionales}
+
+\subsection{Distribución condicional: caso discreto}
+
+Una de las preguntas más naturales que uno puede hacerse sobre un vector aleatorio $(X,Y)$ es: si observamos que $Y$ tomó un valor específico $y_j$, ¿cómo se actualiza nuestro conocimiento sobre $X$? La respuesta es la distribución condicional, que no es más que la probabilidad condicional de eventos, aplicada a los eventos $\{X=x_i\}$ y $\{Y=y_j\}$.
+
+Recordemos que, para eventos $A,B$ con $P(B)>0$, la probabilidad condicional se define como $P(A\mid B) = P(A\cap B)/P(B)$. Tomando $A=\{X=x_i\}$ y $B=\{Y=y_j\}$ obtenemos la siguiente definición.
+
+\begin{definicion}[Función de probabilidad condicional]
+Si $(X,Y)$ es un vector aleatorio discreto con función de probabilidad conjunta $p_{X,Y}$ y marginal $p_Y(y_j)>0$, la \textbf{función de probabilidad condicional} de $X$ dado $Y=y_j$ es
+\[
+p_{X\mid Y}(x_i\mid y_j) = P(X=x_i\mid Y=y_j) = \frac{p_{X,Y}(x_i,y_j)}{p_Y(y_j)}.
+\]
+\end{definicion}
+
+\begin{propiedad}
+Para $y_j$ fijo con $p_Y(y_j)>0$, la función $x_i\mapsto p_{X\mid Y}(x_i\mid y_j)$ es una función de probabilidad legítima sobre los valores posibles de $X$:
+\[
+p_{X\mid Y}(x_i\mid y_j)\ge0 \quad\text{para todo } i, \qquad \sum_i p_{X\mid Y}(x_i\mid y_j) = 1.
+\]
+\end{propiedad}
+
+\begin{proof}
+La no negatividad es inmediata porque es cociente de dos números no negativos. Para la suma,
+\[
+\sum_i p_{X\mid Y}(x_i\mid y_j) = \sum_i \frac{p_{X,Y}(x_i,y_j)}{p_Y(y_j)} = \frac{1}{p_Y(y_j)}\sum_i p_{X,Y}(x_i,y_j) = \frac{p_Y(y_j)}{p_Y(y_j)} = 1,
+\]
+usando la definición de marginal en el numerador de la última fracción.
+\end{proof}
+
+\begin{ejemplo}\label{ej:condicional-moneda}
+Se lanza una moneda equilibrada $3$ veces. Sea $X$ el número de caras en los primeros $2$ lanzamientos e $Y$ el número total de caras en los $3$ lanzamientos. La tabla conjunta (en unidades de $1/8$) es:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{c|cccc}
+\toprule
+$X\backslash Y$ & 0 & 1 & 2 & 3 \\
+\midrule
+0 & 1 & 1 & 0 & 0 \\
+1 & 0 & 2 & 2 & 0 \\
+2 & 0 & 0 & 1 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Hallemos la distribución condicional de $X$ dado $Y=2$. Primero, $p_Y(2)=(0+2+1)/8=3/8$. Luego,
+\[
+p_{X\mid Y}(0\mid 2)=\frac{0/8}{3/8}=0, \qquad p_{X\mid Y}(1\mid 2)=\frac{2/8}{3/8}=\frac23, \qquad p_{X\mid Y}(2\mid 2)=\frac{1/8}{3/8}=\frac13,
+\]
+y en efecto $0+\tfrac23+\tfrac13=1$. La interpretación es intuitiva: si ya sabemos que en total salieron $2$ caras en los $3$ lanzamientos, es más probable ($2/3$) que exactamente $1$ de esas dos caras haya ocurrido en los dos primeros lanzamientos (y la otra en el tercero), que las $2$ ($1/3$, lo que exigiría que el tercer lanzamiento fuese ceca).
+
+Comparemos esto con la marginal (\emph{no} condicionada) de $X$: $p_X(0)=2/8$, $p_X(1)=4/8$, $p_X(2)=2/8$. La distribución condicional $p_{X\mid Y}(\cdot\mid2)$ es notablemente distinta de la marginal $p_X$ — en particular, $p_{X\mid Y}(0\mid2)=0$ mientras que $p_X(0)=1/4$—, lo cual confirma que $X$ e $Y$ están fuertemente relacionadas (no son independientes), algo que retomaremos en la Sección \ref{sec:independencia}.
+\end{ejemplo}
+
+\begin{ejemplo}[Continuación del Ejemplo \ref{ej:urna-sinreposicion}]
+Con la urna de $3$ rojas y $2$ blancas, calculemos $P(X_2=1\mid X_1=1)$, es decir, la probabilidad de que la segunda bolilla sea roja dado que la primera lo fue. Usando la tabla conjunta ya calculada y $p_{X_1}(1)=P(X_1=1)=3/5$:
+\[
+P(X_2=1\mid X_1=1) = \frac{p_{X_1,X_2}(1,1)}{p_{X_1}(1)} = \frac{3/10}{3/5} = \frac{3}{10}\cdot\frac{5}{3}=\frac12.
+\]
+Este valor coincide, por supuesto, con el que obtendríamos directamente pensando el problema con probabilidad condicional ``a mano'' (quedan $2$ rojas de $4$ bolillas tras retirar una roja), pero aquí lo obtuvimos de manera puramente mecánica a partir de la tabla conjunta, lo que ilustra la utilidad del formalismo cuando los cálculos directos se vuelven más complicados.
+\end{ejemplo}
+
+\subsection{Distribución condicional: caso continuo}
+
+En el caso continuo no podemos condicionar directamente al evento $\{Y=y\}$, porque $P(Y=y)=0$ para todo $y$ (el cociente $0/0$ no está definido). Sin embargo, existe una manera rigurosa de definir la densidad condicional como un límite, que conduce exactamente a la fórmula análoga del caso discreto.
+
+Consideremos el evento $\{Y\in(y,y+h]\}$, con $h>0$ pequeño, cuya probabilidad es aproximadamente $f_Y(y)\,h$ para $h$ chico. Definimos
+\[
+P(X\le x \mid Y\in(y,y+h]) = \frac{P(X\le x,\, Y\in(y,y+h])}{P(Y\in(y,y+h])} = \frac{\int_{-\infty}^x \int_y^{y+h} f_{X,Y}(u,v)\,dv\,du}{\int_y^{y+h} f_Y(v)\,dv}.
+\]
+Cuando $h\to0^+$, el numerador se comporta como $h\int_{-\infty}^x f_{X,Y}(u,y)\,du$ y el denominador como $h\,f_Y(y)$ (aproximando ambas integrales internas por el valor del integrando en $v=y$, multiplicado por la longitud $h$ del intervalo), de modo que el cociente converge a
+\[
+\int_{-\infty}^x \frac{f_{X,Y}(u,y)}{f_Y(y)}\,du.
+\]
+Esto sugiere, correctamente, definir la densidad condicional como sigue.
+
+\begin{definicion}[Densidad condicional]
+Si $(X,Y)$ es conjuntamente continuo con densidad $f_{X,Y}$ y $f_Y(y)>0$, la \textbf{densidad condicional} de $X$ dado $Y=y$ es
+\[
+f_{X\mid Y}(x\mid y) = \frac{f_{X,Y}(x,y)}{f_Y(y)}.
+\]
+\end{definicion}
+
+\begin{propiedad}
+Para cada $y$ fijo con $f_Y(y)>0$, $f_{X\mid Y}(x\mid y)\ge0$ para todo $x$, y $\displaystyle\int_{-\infty}^{\infty} f_{X\mid Y}(x\mid y)\,dx=1$, de modo que $f_{X\mid Y}(\cdot\mid y)$ es efectivamente una densidad de probabilidad (univariada) sobre $x$, para cada valor fijo de $y$.
+\end{propiedad}
+
+Una vez obtenida la densidad condicional, las probabilidades condicionales se calculan exactamente como con cualquier densidad univariada:
+\[
+P(a<X<b\mid Y=y) = \int_a^b f_{X\mid Y}(x\mid y)\,dx.
+\]
+
+\begin{ejemplo}\label{ej:condicional-continua}
+Retomando $f_{X,Y}(x,y)=x+y$ en $[0,1]^2$ (Ejemplo \ref{ej:densidad-xy}), y usando que $f_Y(y)=y+\tfrac12$ para $0\le y\le1$, la densidad condicional de $X$ dado $Y=y$ es, para $0\le x\le1$,
+\[
+f_{X\mid Y}(x\mid y) = \frac{x+y}{y+\tfrac12}.
+\]
+En particular, con $y=\tfrac12$: $f_{X\mid Y}(x\mid\tfrac12) = \dfrac{x+\tfrac12}{1}=x+\tfrac12$ (¡coincide con $f_X(x)$, pero esto es una casualidad de este valor particular de $y$, no una propiedad general!). Calculemos
+\[
+P\left(X<\tfrac12\,\middle|\,Y=\tfrac12\right) = \int_0^{1/2}\left(x+\tfrac12\right)dx = \left[\tfrac{x^2}{2}+\tfrac{x}{2}\right]_0^{1/2} = \tfrac18+\tfrac14=\tfrac38.
+\]
+Comparemos con la probabilidad marginal (no condicionada) $P(X<\tfrac12) = \int_0^{1/2}(x+\tfrac12)\,dx = \tfrac18+\tfrac14=\tfrac38$: en este caso particular ambas coinciden numéricamente porque $y=1/2$ es, casualmente, el valor donde $f_{X\mid Y}(\cdot\mid y)$ coincide con $f_X$; para otros valores de $y$ los resultados difieren, como puede comprobar el lector calculando, por ejemplo, $P(X<\tfrac12\mid Y=1) = \int_0^{1/2}\frac{x+1}{3/2}\,dx = \frac{2}{3}\left[\frac{x^2}{2}+x\right]_0^{1/2} = \frac23\left(\frac18+\frac12\right)=\frac{2}{3}\cdot\frac58=\frac{5}{12}\ne\frac38$.
+\end{ejemplo}
+
+\subsection{Esperanza condicional}
+
+\begin{definicion}[Esperanza condicional]
+\begin{align*}
+\text{(caso discreto)}\quad & E[X\mid Y=y_j] = \sum_i x_i\, p_{X\mid Y}(x_i\mid y_j), \\
+\text{(caso continuo)}\quad & E[X\mid Y=y] = \int_{-\infty}^{\infty} x\, f_{X\mid Y}(x\mid y)\,dx,
+\end{align*}
+siempre que la suma o la integral converjan absolutamente.
+\end{definicion}
+
+$E[X\mid Y=y]$ es el valor esperado de $X$ una vez que se conoce el valor exacto de $Y$; es, en cierto sentido, la ``mejor predicción'' de $X$ disponible una vez observado $Y=y$ (en el sentido de minimizar el error cuadrático medio, hecho que se estudiará con más detalle al tratar regresión). Como función de $y$, $g(y)=E[X\mid Y=y]$ se llama \textbf{función de regresión} de $X$ sobre $Y$, y es la base conceptual de los modelos de regresión que se estudian en cursos posteriores de estadística.
+
+\begin{ejemplo}
+En el Ejemplo \ref{ej:condicional-continua}, $E[X\mid Y=\tfrac12] = \int_0^1 x\left(x+\tfrac12\right)dx = \tfrac13+\tfrac14=\tfrac{7}{12}\approx0.583$, ligeramente por encima de $E[X]=\int_0^1 x(x+\tfrac12)dx$... espera, calculemos también la esperanza marginal para comparar: $E[X] = \int_0^1 x\left(x+\tfrac12\right)dx = \tfrac13+\tfrac14=\tfrac{7}{12}$. En este caso particular, nuevamente por la coincidencia numérica de $y=1/2$, ambos valores coinciden.
+\end{ejemplo}
+
+\begin{propiedad}[Esperanza total]\label{prop:esperanza-total}
+\[
+E[X] = E\big[E[X\mid Y]\big],
+\]
+es decir, promediando la función de regresión $g(Y)=E[X\mid Y]$ respecto de la distribución de $Y$ se recupera la esperanza (marginal, no condicionada) de $X$. En el caso continuo esto significa
+\[
+E[X] = \int_{-\infty}^\infty E[X\mid Y=y]\, f_Y(y)\, dy.
+\]
+\end{propiedad}
+
+\begin{proof}
+En el caso continuo,
+\[
+\int_{-\infty}^\infty E[X\mid Y=y]\,f_Y(y)\,dy = \int_{-\infty}^\infty\left(\int_{-\infty}^\infty x\,f_{X\mid Y}(x\mid y)\,dx\right)f_Y(y)\,dy = \int\int x\,\frac{f_{X,Y}(x,y)}{f_Y(y)}\,f_Y(y)\,dx\,dy,
+\]
+y cancelando $f_Y(y)$ (donde es positivo) y reordenando la integral doble,
+\[
+= \int_{-\infty}^\infty x\left(\int_{-\infty}^\infty f_{X,Y}(x,y)\,dy\right)dx = \int_{-\infty}^\infty x\, f_X(x)\,dx = E[X].
+\]
+El caso discreto es idéntico, reemplazando integrales por sumas.
+\end{proof}
+
+Este resultado, conocido como \textbf{ley de la esperanza total} (o de las esperanzas iteradas), es una herramienta muy poderosa: en muchos problemas resulta mucho más fácil calcular primero $E[X\mid Y=y]$ (condicionando sobre información parcial) y luego promediar sobre $Y$, que calcular $E[X]$ directamente. Un resultado análogo, la \emph{ley de la varianza total}, $\operatorname{Var}(X) = E[\operatorname{Var}(X\mid Y)] + \operatorname{Var}(E[X\mid Y])$, se estudiará con más detalle en la Unidad 4, pero conviene tenerlo presente desde ahora como una extensión natural de esta idea.
+
+\subsection{Independencia de variables aleatorias}\label{sec:independencia}
+
+\begin{definicion}[Independencia]
+Las variables aleatorias $X$ e $Y$ son \textbf{independientes} si, para todo $x,y\in\mathbb R$,
+\[
+F_{X,Y}(x,y) = F_X(x)\cdot F_Y(y).
+\]
+\end{definicion}
+
+Esta es la definición formal, válida siempre (discreto, continuo, o ninguno de los dos). En la práctica casi nunca se verifica con la función de distribución acumulada, sino con las siguientes caracterizaciones equivalentes, mucho más manejables.
+
+\begin{propiedad}[Caracterizaciones equivalentes]\label{prop:caracterizaciones-independencia}
+\begin{itemize}
+\item \textbf{Caso discreto:} $X$ e $Y$ son independientes si y solo si $p_{X,Y}(x_i,y_j) = p_X(x_i)\,p_Y(y_j)$ para todo $i,j$.
+\item \textbf{Caso continuo:} $X$ e $Y$ son independientes si y solo si $f_{X,Y}(x,y) = f_X(x)\,f_Y(y)$ para todo $(x,y)$, salvo eventualmente en un conjunto de medida nula.
+\end{itemize}
+\end{propiedad}
+
+\begin{observacion}[Consecuencia sobre las condicionales]
+Si $X$ e $Y$ son independientes, entonces la distribución condicional de $X$ dado $Y=y$ \textbf{no depende de $y$}: en el caso continuo, $f_{X\mid Y}(x\mid y) = \dfrac{f_{X,Y}(x,y)}{f_Y(y)} = \dfrac{f_X(x)f_Y(y)}{f_Y(y)} = f_X(x)$, y análogamente en el caso discreto. Esta es, de hecho, la forma más intuitiva de entender la independencia: conocer el valor de $Y$ no aporta ninguna información sobre $X$, ni cambia en absoluto su distribución (ni su esperanza condicional: $E[X\mid Y=y]=E[X]$ para todo $y$).
+\end{observacion}
+
+En el caso continuo existe un criterio práctico muy útil, que combina la factorización de la densidad con una condición \emph{geométrica} sobre el soporte, y que suele ser la fuente de errores más comunes de quienes recién aprenden el tema.
+
+\begin{propiedad}[Criterio práctico de factorización]\label{prop:criterio-factorizacion}
+$X$ e $Y$ (conjuntamente continuas) son independientes si y solo si $f_{X,Y}(x,y)$ se puede escribir como
+\[
+f_{X,Y}(x,y) = g(x)\,h(x)
+\]
+\end{propiedad}
+
+Antes de continuar, hay que corregir un error de tipeo deliberado en la fórmula anterior para insistir en el punto correcto: la factorización debe ser
+\[
+f_{X,Y}(x,y) = g(x)\,h(y)
+\]
+para ciertas funciones $g,h\ge0$ (no necesariamente densidades), \textbf{y además} el soporte $\{(x,y): f_{X,Y}(x,y)>0\}$ debe ser un rectángulo (posiblemente infinito), es decir, un conjunto de la forma $\{(x,y): a<x<b,\ c<y<d\}$ que \emph{no dependa} de la otra variable.
+
+\begin{observacion}[Por qué ambas condiciones son necesarias]
+Si el soporte no es un producto cartesiano —por ejemplo, si es un triángulo como $\{0<x<y<1\}$ del Ejemplo \ref{ej:densidad-triangulo}— entonces $X$ e $Y$ \textbf{no pueden} ser independientes, incluso si la fórmula de $f_{X,Y}$ ``se ve factorizada''. La razón es la siguiente: si el soporte no es rectangular, el rango posible de $x$ depende del valor de $y$ (y viceversa), de modo que saber el valor de $Y$ sí aporta información sobre los valores posibles de $X$, lo cual contradice la independencia. Formalmente, si $f_{X,Y}(x,y)=g(x)h(y)$ pero el soporte es, digamos, $\{0<x<y<1\}$, entonces $f_X(x) = h_1(x)\int_x^1 h(y)\,dy$ depende de $x$ de una manera que, multiplicada por $f_Y(y)$, no reproduce $g(x)h(y)$ en general (el límite de integración $x$ ``mezcla'' las dos variables). Recíprocamente, si el soporte es un rectángulo pero la fórmula no factoriza como producto de una función de $x$ por una función de $y$ —como en el Ejemplo \ref{ej:densidad-xy}, con $f_{X,Y}(x,y)=x+y$ sobre el cuadrado $[0,1]^2$— tampoco hay independencia, a pesar de que el soporte sí es un rectángulo.
+\end{observacion}
+
+\begin{ejemplo}[Verificación de independencia: caso negativo]
+Retomando $f_{X,Y}(x,y)=x+y$ en $[0,1]^2$: ya calculamos $f_X(x)=x+\tfrac12$ y $f_Y(y)=y+\tfrac12$ en $[0,1]$. El producto de las marginales es
+\[
+f_X(x)\,f_Y(y) = \left(x+\tfrac12\right)\left(y+\tfrac12\right) = xy+\tfrac{x}{2}+\tfrac{y}{2}+\tfrac14,
+\]
+que no coincide con $f_{X,Y}(x,y)=x+y$ (por ejemplo, en $(x,y)=(0,0)$: $f_{X,Y}=0$ pero $f_Xf_Y=1/4$). Por lo tanto, $X$ e $Y$ \textbf{no son independientes}, a pesar de que el soporte sí es un rectángulo (el cuadrado $[0,1]^2$): la fórmula $x+y$ simplemente no se puede escribir como producto de una función de $x$ por una de $y$.
+\end{ejemplo}
+
+\begin{ejemplo}[Verificación de independencia: caso positivo]
+Sea $f_{X,Y}(x,y)=6e^{-2x}e^{-3y}$ para $x>0,y>0$ (y $0$ en otro caso). El soporte $\{x>0\}\times\{y>0\}$ es un producto cartesiano (un rectángulo infinito), y
+\[
+f_{X,Y}(x,y) = \underbrace{2e^{-2x}}_{g(x)}\cdot\underbrace{3e^{-3y}}_{h(y)}.
+\]
+Como $\int_0^\infty 2e^{-2x}\,dx=1$ y $\int_0^\infty 3e^{-3y}\,dy=1$, tanto $g$ como $h$ son ya densidades de probabilidad (exponenciales), y por lo tanto $f_X(x)=g(x)=2e^{-2x}$ (es decir, $X\sim\text{Exp}(2)$), $f_Y(y)=h(y)=3e^{-3y}$ (es decir, $Y\sim\text{Exp}(3)$), y se concluye que $X$ e $Y$ son \textbf{independientes}.
+\end{ejemplo}
+
+\begin{ejemplo}[Independencia en el caso discreto: dados independientes]
+Se lanzan dos dados equilibrados de forma independiente. Sea $X$ el resultado del primero e $Y$ el del segundo. Por construcción física del experimento, $p_{X,Y}(i,j) = \tfrac{1}{36}$ para todo $i,j\in\{1,\dots,6\}$, mientras que $p_X(i)=p_Y(j)=\tfrac16$. Como
+\[
+p_{X,Y}(i,j) = \frac{1}{36} = \frac16\cdot\frac16 = p_X(i)\,p_Y(j) \qquad \forall i,j,
+\]
+se confirma la independencia, y en particular $P(X=3,Y=5)=\tfrac16\cdot\tfrac16=\tfrac{1}{36}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Ejemplo \ref{ej:urna-sinreposicion} revisitado: dependencia por muestreo sin reposición]
+En el Ejemplo \ref{ej:urna-sinreposicion} (extracción sin reposición de una urna con $3$ rojas y $2$ blancas), marginalmente $P(X_1=1)=3/5$ y $P(X_2=1)=3/5$ (por simetría, cada posición tiene la misma probabilidad marginal de resultar roja). Si $X_1$ y $X_2$ fueran independientes, deberíamos tener $P(X_1=1,X_2=1)=\left(\tfrac35\right)^2=\tfrac{9}{25}=\tfrac{18}{50}$. Sin embargo, ya calculamos $P(X_1=1,X_2=1)=\tfrac{3}{10}=\tfrac{15}{50}\ne\tfrac{18}{50}$. Por lo tanto, $X_1$ y $X_2$ \textbf{no son independientes}: el muestreo sin reposición hace que extraer una roja en el primer intento disminuya la proporción de rojas disponibles para el segundo, generando una dependencia negativa entre ambos indicadores. (Si el muestreo fuera \emph{con} reposición, en cambio, $X_1$ y $X_2$ sí serían independientes, ambas Bernoulli$(3/5)$.)
+\end{ejemplo}
+
+\subsection{Independencia y covarianza: un contraejemplo importante}\label{sec:contraejemplo}
+
+Es tentador pensar que dos variables aleatorias son independientes si y solo si no están ``correlacionadas''. Esta intuición es \textbf{parcialmente correcta pero engañosa}, y merece una discusión cuidadosa, aunque el estudio detallado de la covarianza y la correlación corresponda formalmente a la Unidad 4. Recordemos que la covarianza entre $X$ e $Y$ se define como
+\[
+\operatorname{Cov}(X,Y) = E[(X-E[X])(Y-E[Y])] = E[XY]-E[X]E[Y].
+\]
+
+\begin{propiedad}
+Si $X$ e $Y$ son independientes, entonces $E[XY]=E[X]E[Y]$, y por lo tanto $\operatorname{Cov}(X,Y)=0$.
+\end{propiedad}
+
+\begin{proof}
+En el caso continuo,
+\[
+E[XY] = \int\int xy\, f_{X,Y}(x,y)\,dx\,dy = \int\int xy\, f_X(x)f_Y(y)\,dx\,dy = \left(\int x f_X(x)\,dx\right)\left(\int y f_Y(y)\,dy\right) = E[X]E[Y],
+\]
+usando la factorización de la Propiedad \ref{prop:caracterizaciones-independencia} y separando la integral doble en producto de integrales simples. El caso discreto es análogo, con sumas en lugar de integrales.
+\end{proof}
+
+Es crucial entender que \textbf{la recíproca de esta propiedad es falsa}: existen pares de variables aleatorias con covarianza (y correlación) exactamente igual a cero, que sin embargo son \emph{fuertemente} dependientes —incluso, como en el siguiente ejemplo, una es una función determinística de la otra—.
+
+\begin{ejemplo}[Dependencia perfecta con covarianza nula]\label{ej:contraejemplo-covarianza}
+Sea $X\sim U(-1,1)$ (uniforme en el intervalo $(-1,1)$, con densidad $f_X(x)=\tfrac12$ en ese intervalo), y definamos $Y=X^2$. Claramente $Y$ es una función determinística de $X$: conocer $X$ determina exactamente el valor de $Y$ (aunque, al revés, conocer $Y=y$ solo nos dice que $X=\sqrt y$ o $X=-\sqrt y$, sin determinar el signo). Este es el caso más extremo posible de dependencia entre dos variables. Sin embargo, calculemos la covarianza:
+\[
+E[X] = \int_{-1}^1 x\cdot\tfrac12\,dx = 0 \qquad\text{(por simetría, la integral de una función impar en un intervalo simétrico).}
+\]
+\[
+E[XY] = E[X\cdot X^2] = E[X^3] = \int_{-1}^1 x^3\cdot\tfrac12\,dx = 0 \qquad\text{(nuevamente, integrando de una función impar).}
+\]
+Por lo tanto,
+\[
+\operatorname{Cov}(X,Y) = E[XY]-E[X]E[Y] = 0 - 0\cdot E[Y] = 0.
+\]
+A pesar de esta covarianza nula, $X$ e $Y$ claramente \textbf{no son independientes}: por ejemplo, $P(Y<\tfrac14 \mid X=\tfrac34) = P(\left(\tfrac34\right)^2<\tfrac14) = P(\tfrac{9}{16}<\tfrac14)=0$, mientras que $P(Y<\tfrac14) = P(-\tfrac12<X<\tfrac12)=\tfrac12\ne 0$: saber el valor exacto de $X$ cambia radicalmente (de hecho, colapsa por completo) la distribución de $Y$.
+\end{ejemplo}
+
+\begin{observacion}[Independencia vs. incorrelación]
+Este ejemplo ilustra un hecho central en probabilidad y estadística, que se retomará con más profundidad en la Unidad 4:
+\[
+\text{independencia} \ \Longrightarrow\ \operatorname{Cov}(X,Y)=0, \qquad\text{pero}\qquad \operatorname{Cov}(X,Y)=0 \ \not\Longrightarrow\ \text{independencia}.
+\]
+La covarianza (y el coeficiente de correlación $\rho$ que se construye a partir de ella) solo detecta relaciones \textbf{lineales} entre $X$ e $Y$: el Ejemplo \ref{ej:contraejemplo-covarianza} tiene una relación cuadrática perfecta, que la covarianza es ``ciega'' a detectar porque, en promedio, la tendencia creciente de $Y$ para $x>0$ se cancela exactamente con la tendencia decreciente para $x<0$. Existe, no obstante, un caso especial muy importante donde la implicación recíproca sí es válida: si $(X,Y)$ tiene distribución \textbf{normal bivariada} (que se estudiará en la Sección \ref{sec:muestreo}), entonces $\operatorname{Cov}(X,Y)=0$ si y solo si $X$ e $Y$ son independientes. Esta propiedad especial de la familia normal es una de las razones por las cuales dicha distribución es tan conveniente para trabajar analíticamente.
+\end{observacion}
+
+\subsection{Independencia de $n$ variables}
+
+\begin{definicion}[Independencia mutua]
+Las variables $X_1,\dots,X_n$ son \textbf{mutuamente independientes} si, para todo $(x_1,\dots,x_n)\in\mathbb R^n$,
+\[
+F(x_1,\dots,x_n) = F_{X_1}(x_1)\cdots F_{X_n}(x_n),
+\]
+o, equivalentemente, si la función de probabilidad (o densidad) conjunta factoriza como producto de las $n$ marginales:
+\[
+p(x_1,\dots,x_n) = \prod_{i=1}^n p_{X_i}(x_i) \qquad \text{o} \qquad f(x_1,\dots,x_n) = \prod_{i=1}^n f_{X_i}(x_i).
+\]
+\end{definicion}
+
+Cuando además todas las $X_i$ tienen la misma distribución, decimos que forman una muestra \textbf{independiente e idénticamente distribuida} (i.i.d.), el modelo probabilístico estándar de una muestra aleatoria simple, que será la base de toda la Unidad 5 en adelante.
+
+\begin{observacion}[Independencia de a pares vs. independencia mutua]
+Es un error común (y una trampa frecuente en los exámenes) suponer que si cada par $X_i,X_j$ ($i\ne j$) es independiente, entonces las $n$ variables son mutuamente independientes. Esto es \textbf{falso} en general. El contraejemplo clásico: sean $X,Y$ dos lanzamientos independientes de una moneda equilibrada, codificados como $\pm1$, y sea $Z=XY$. Puede verificarse que $X,Y,Z$ son independientes \emph{de a pares} (cada par de ellas efectivamente lo es), pero \textbf{no} son mutuamente independientes, ya que $Z$ queda completamente determinado por $X$ e $Y$ juntas (de hecho $P(Z=1\mid X=1,Y=1)=1\ne P(Z=1)=1/2$). Este ejemplo, atribuido a Bernstein, es una advertencia importante: la independencia mutua es una condición estrictamente más fuerte que la independencia de a pares, y es la que realmente se necesita para la mayoría de los resultados de esta unidad (convolución de más de dos variables, propiedad reproductiva de la chi-cuadrado, etc.).
+\end{observacion}
+
+\section{Funciones de variables aleatorias}\label{sec:funciones}
+
+\subsection{Planteamiento general: el método de la función de distribución}
+
+Dado un vector aleatorio $(X,Y)$ con distribución conjunta conocida, y una función $g:\mathbb R^2\to\mathbb R$, nos interesa determinar la distribución de la nueva variable aleatoria
+\[
+Z = g(X,Y).
+\]
+El método más general —aunque no siempre el más directo— consiste en calcular la función de distribución de $Z$ integrando la densidad conjunta sobre la región del plano donde $g(x,y)\le z$:
+\[
+F_Z(z) = P\big(g(X,Y)\le z\big) = \iint_{\{(x,y)\,:\,g(x,y)\le z\}} f_{X,Y}(x,y)\,dx\,dy,
+\]
+y luego derivando respecto de $z$ para obtener la densidad $f_Z(z)=F_Z'(z)$ en los puntos donde $F_Z$ resulta derivable. Este método funciona siempre (para cualquier $g$ razonable), pero en muchos casos de interés —sumas, máximos y mínimos, cocientes— existen atajos específicos que evitan tener que replantear la integral doble cada vez. Estudiaremos tres de ellos: la \textbf{convolución} (para sumas de independientes), las fórmulas para \textbf{máximo y mínimo} (estadísticos de orden), y el método del \textbf{jacobiano} (para sistemas de transformaciones biyectivas).
+
+\subsection{Suma de variables independientes: convolución}
+
+\begin{teorema}[Convolución discreta]\label{teo:convolucion-discreta}
+Si $X$ e $Y$ son independientes, discretas, con valores enteros, y $Z=X+Y$, entonces
+\[
+p_Z(z) = P(X+Y=z) = \sum_k p_X(k)\,p_Y(z-k).
+\]
+\end{teorema}
+
+\begin{proof}
+El evento $\{X+Y=z\}$ puede escribirse como la unión disjunta $\bigcup_k \{X=k,\,Y=z-k\}$, sobre todos los enteros posibles $k$ (disjunta porque para cada $\omega$ hay a lo sumo un valor de $k$ tal que $X(\omega)=k$). Por aditividad numerable de la probabilidad y luego usando la independencia de $X$ e $Y$,
+\[
+P(X+Y=z) = \sum_k P(X=k,\,Y=z-k) = \sum_k p_X(k)\,p_Y(z-k). \qedhere
+\]
+\end{proof}
+
+\begin{ejemplo}[Suma de binomiales con el mismo $p$]
+Sean $X\sim\text{Bin}(2,p)$ e $Y\sim\text{Bin}(3,p)$ independientes. Mostremos que $Z=X+Y\sim\text{Bin}(5,p)$, calculando en particular $p_Z(2)$. Con $q=1-p$, $p_X(k)=\binom2k p^kq^{2-k}$ y $p_Y(k)=\binom3k p^kq^{3-k}$:
+\[
+p_Z(2) = \sum_{k=0}^2 p_X(k)\,p_Y(2-k) = q^2\cdot3pq^2 + 2pq\cdot3p^2q + p^2\cdot q^3 = (3+6+1)p^2q^3 = 10p^2q^3,
+\]
+que coincide con $\binom52p^2q^3=10p^2q^3$, el valor que da directamente $\text{Bin}(5,p)$. En general, para $0\le z\le5$,
+\[
+p_Z(z) = \sum_{k=0}^z \binom2k p^kq^{2-k}\binom{3}{z-k}p^{z-k}q^{3-z+k} = p^zq^{5-z}\sum_{k=0}^z\binom2k\binom{3}{z-k} = \binom5z p^zq^{5-z},
+\]
+usando la identidad de Vandermonde $\sum_k\binom{m}{k}\binom{n}{z-k}=\binom{m+n}{z}$. Así, $Z\sim\text{Bin}(5,p)$. Este resultado se generaliza: la suma de $\text{Bin}(m,p)$ y $\text{Bin}(n,p)$ independientes (mismo $p$) es $\text{Bin}(m+n,p)$, lo cual también puede verse directamente contando éxitos en $m+n$ ensayos Bernoulli$(p)$ independientes.
+\end{ejemplo}
+
+\begin{teorema}[Convolución continua]\label{teo:convolucion-continua}
+Si $X$ e $Y$ son independientes y conjuntamente continuas, y $Z=X+Y$, entonces
+\[
+f_Z(z) = \int_{-\infty}^{\infty} f_X(x)\,f_Y(z-x)\,dx.
+\]
+\end{teorema}
+
+\begin{proof}
+\[
+F_Z(z) = P(X+Y\le z) = \iint_{\{x+y\le z\}} f_X(x)f_Y(y)\,dx\,dy = \int_{-\infty}^{\infty} f_X(x)\left(\int_{-\infty}^{z-x} f_Y(y)\,dy\right) dx,
+\]
+donde usamos la independencia para factorizar la densidad conjunta, y describimos la región $\{x+y\le z\}$ fijando $x$ e integrando $y$ hasta $z-x$. Derivando respecto de $z$ bajo el signo integral (regla de Leibniz, válida bajo condiciones de regularidad que se satisfacen para densidades):
+\[
+f_Z(z) = \frac{d}{dz}F_Z(z) = \int_{-\infty}^{\infty} f_X(x)\,\frac{\partial}{\partial z}\left(\int_{-\infty}^{z-x}f_Y(y)\,dy\right)dx = \int_{-\infty}^{\infty} f_X(x)\,f_Y(z-x)\,dx. \qedhere
+\]
+\end{proof}
+
+\begin{ejemplo}[Suma de uniformes: la distribución triangular]\label{ej:suma-uniformes}
+Sean $X,Y\sim U(0,1)$ independientes. Hallemos la densidad de $Z=X+Y$. Como $f_X(x)=1$ en $(0,1)$ y $f_Y(y)=1$ en $(0,1)$, la convolución exige simultáneamente $0<x<1$ y $0<z-x<1$, es decir $\max(0,z-1)<x<\min(1,z)$:
+\begin{itemize}
+\item Si $0\le z\le1$: $x\in(0,z)$, un intervalo de longitud $z$, luego $f_Z(z)=z$.
+\item Si $1<z\le2$: $x\in(z-1,1)$, de longitud $2-z$, luego $f_Z(z)=2-z$.
+\item Fuera de $[0,2]$: $f_Z(z)=0$.
+\end{itemize}
+Resulta la conocida distribución \textbf{triangular} en $[0,2]$, con pico (moda) en $z=1$ y $f_Z(1)=1$. Puede verificarse que $\int_0^1 z\,dz+\int_1^2(2-z)\,dz = \tfrac12+\tfrac12=1$, como corresponde.
+\end{ejemplo}
+
+\begin{ejemplo}[Suma de exponenciales: aparición de la Gamma]\label{ej:suma-exponenciales}
+Sean $X,Y\sim\text{Exp}(\lambda)$ independientes, con $f_X(x)=\lambda e^{-\lambda x}$ para $x>0$. Para $z>0$, la convolución requiere $0<x<z$ (de modo que también $z-x>0$):
+\[
+f_Z(z) = \int_0^z \lambda e^{-\lambda x}\cdot\lambda e^{-\lambda(z-x)}\,dx = \lambda^2 e^{-\lambda z}\int_0^z dx = \lambda^2 z\,e^{-\lambda z}, \qquad z>0.
+\]
+Esta es la densidad \textbf{Gamma}$(2,\lambda)$. Más en general, puede demostrarse por inducción (usando repetidamente el Teorema \ref{teo:convolucion-continua}, o el Lema \ref{lema:convolucion-gamma} de la Sección \ref{sec:muestreo}) que la suma de $n$ exponenciales$(\lambda)$ independientes tiene distribución Gamma$(n,\lambda)$, con densidad
+\[
+f(x) = \frac{\lambda^n}{(n-1)!}\,x^{n-1}e^{-\lambda x}, \qquad x>0.
+\]
+Este resultado es la base del llamado proceso de Poisson: el tiempo de espera hasta el $n$-ésimo evento de un proceso de Poisson de tasa $\lambda$ (donde los tiempos entre eventos consecutivos son exponenciales$(\lambda)$ independientes) tiene distribución Gamma$(n,\lambda)$.
+\end{ejemplo}
+
+\begin{propiedad}[Suma de normales independientes]\label{prop:suma-normales}
+Si $X\sim N(\mu_1,\sigma_1^2)$ e $Y\sim N(\mu_2,\sigma_2^2)$ son independientes, entonces
+\[
+Z=X+Y \sim N(\mu_1+\mu_2,\ \sigma_1^2+\sigma_2^2).
+\]
+\end{propiedad}
+
+Esta propiedad —llamada \textbf{propiedad reproductiva} de la normal— puede demostrarse aplicando el Teorema \ref{teo:convolucion-continua} y completando cuadrados en el exponente resultante (un cálculo algo largo pero directo), o, de manera mucho más elegante, usando la función generadora de momentos: $M_Z(t) = M_X(t)M_Y(t) = e^{\mu_1t+\sigma_1^2t^2/2}\cdot e^{\mu_2t+\sigma_2^2t^2/2} = e^{(\mu_1+\mu_2)t + (\sigma_1^2+\sigma_2^2)t^2/2}$, que es exactamente la función generadora de momentos de una $N(\mu_1+\mu_2,\sigma_1^2+\sigma_2^2)$; por el teorema de unicidad de la función generadora de momentos, se concluye la distribución de $Z$. Esta propiedad reproductiva es absolutamente central para todo lo que sigue: es la razón por la cual la media muestral $\bar X$ de una muestra normal vuelve a ser normal, y es también el punto de partida para construir la distribución chi-cuadrado en la Sección \ref{sec:muestreo}.
+
+\subsection{Estadísticos de orden: máximo y mínimo}
+
+\begin{teorema}[Distribución del máximo]\label{teo:maximo}
+Si $X_1,\dots,X_n$ son independientes, con funciones de distribución $F_1,\dots,F_n$ respectivamente, y $M=\max(X_1,\dots,X_n)$, entonces
+\[
+F_M(m) = P(M\le m) = \prod_{i=1}^n F_i(m).
+\]
+\end{teorema}
+
+\begin{proof}
+El evento $\{M\le m\}$ ocurre si y solo si \textbf{todas} las variables son menores o iguales que $m$ (el máximo de una colección es $\le m$ exactamente cuando ninguna de ellas supera a $m$):
+\[
+\{M\le m\} = \{X_1\le m\}\cap\{X_2\le m\}\cap\cdots\cap\{X_n\le m\}.
+\]
+Por independencia, la probabilidad de la intersección es el producto de las probabilidades individuales, lo que da la fórmula enunciada.
+\end{proof}
+
+\begin{teorema}[Distribución del mínimo]\label{teo:minimo}
+En las mismas condiciones, con $m^*=\min(X_1,\dots,X_n)$,
+\[
+F_{m^*}(t) = 1-\prod_{i=1}^n\big(1-F_i(t)\big).
+\]
+\end{teorema}
+
+\begin{proof}
+Análogamente, el mínimo supera a $t$ si y solo si \textbf{todas} las variables lo superan:
+\[
+\{m^*>t\} = \{X_1>t\}\cap\cdots\cap\{X_n>t\},
+\]
+y por independencia $P(m^*>t) = \prod_i P(X_i>t) = \prod_i(1-F_i(t))$, de donde $F_{m^*}(t) = 1-P(m^*>t) = 1-\prod_i(1-F_i(t))$.
+\end{proof}
+
+\begin{ejemplo}[Mínimo de exponenciales i.i.d.: confiabilidad de sistemas en serie]\label{ej:minimo-exponenciales}
+Sean $X_1,X_2,X_3$ i.i.d. Exp$(\lambda)$, con $F_i(t)=1-e^{-\lambda t}$ para $t>0$. Hallemos la densidad del mínimo $m^*=\min(X_1,X_2,X_3)$:
+\[
+F_{m^*}(t) = 1-\big(1-(1-e^{-\lambda t})\big)^3 = 1-\big(e^{-\lambda t}\big)^3 = 1-e^{-3\lambda t}, \qquad t>0.
+\]
+Derivando, $f_{m^*}(t)=3\lambda e^{-3\lambda t}$, es decir, $m^*\sim\text{Exp}(3\lambda)$. Más en general, el mínimo de $n$ exponenciales independientes Exp$(\lambda_i)$ (no necesariamente idénticas) es exponencial con parámetro $\sum_i\lambda_i$, ya que $\prod_i(1-F_i(t)) = \prod_i e^{-\lambda_i t} = e^{-(\sum_i\lambda_i)t}$. Esta propiedad se usa constantemente en confiabilidad: si un sistema en \textbf{serie} está compuesto por $n$ componentes independientes con tiempos de falla exponenciales, el sistema completo falla apenas falla el primer componente, por lo que su tiempo de vida es el mínimo de las $n$ vidas individuales, nuevamente exponencial.
+\end{ejemplo}
+
+\subsection{El $k$-ésimo estadístico de orden}
+
+Las fórmulas para el máximo y el mínimo son casos particulares (los extremos) de un resultado más general sobre los llamados \emph{estadísticos de orden}. Si $X_1,\dots,X_n$ es una muestra i.i.d. con función de distribución $F$ y densidad $f$, y ordenamos los valores observados de menor a mayor como
+\[
+X_{(1)} \le X_{(2)} \le \cdots \le X_{(n)},
+\]
+al $k$-ésimo valor de esta lista ordenada se lo llama $k$-ésimo \textbf{estadístico de orden}. Claramente $X_{(1)}=\min(X_1,\dots,X_n)$ y $X_{(n)}=\max(X_1,\dots,X_n)$, casos ya vistos. Los estadísticos de orden intermedios —en particular la \textbf{mediana muestral}— son de gran importancia práctica en estadística descriptiva e inferencia no paramétrica.
+
+\begin{propiedad}[Densidad del $k$-ésimo estadístico de orden]\label{prop:orden-k}
+Si $X_1,\dots,X_n$ son i.i.d. continuas con densidad $f$ y distribución $F$, la densidad de $X_{(k)}$ es
+\[
+f_{X_{(k)}}(x) = \frac{n!}{(k-1)!\,(n-k)!}\, [F(x)]^{k-1}\,[1-F(x)]^{n-k}\, f(x).
+\]
+\end{propiedad}
+
+\emph{Idea de la demostración.} Para que $X_{(k)}$ tome un valor en un entorno infinitesimal $(x,x+dx)$, se necesita que, de las $n$ observaciones, exactamente $k-1$ caigan por debajo de $x$ (cada una con ``probabilidad'' $F(x)$), exactamente una caiga en el entorno $(x,x+dx)$ (con probabilidad aproximada $f(x)\,dx$), y las $n-k$ restantes caigan por encima de $x$ (cada una con probabilidad $1-F(x)$). El número de maneras de asignar estos tres roles (``antes'', ``en el medio'', ``después'') a las $n$ observaciones es precisamente el coeficiente multinomial $\dfrac{n!}{(k-1)!\,1!\,(n-k)!}$ —la misma combinatoria que aparece en la función de probabilidad multinomial de la Sección \ref{sec:muestreo}—, de donde
+\[
+P(x<X_{(k)}<x+dx) \approx \frac{n!}{(k-1)!\,(n-k)!}\, [F(x)]^{k-1}\,[1-F(x)]^{n-k}\, f(x)\,dx,
+\]
+y dividiendo por $dx$ se obtiene la densidad enunciada. Una demostración completamente rigurosa parte de calcular primero $F_{X_{(k)}}(x) = P(X_{(k)}\le x) = \sum_{j=k}^n \binom nj [F(x)]^j[1-F(x)]^{n-j}$ (la probabilidad de que al menos $k$ de las $n$ observaciones sean $\le x$, un evento binomial) y derivar respecto de $x$, telescopando la suma.
+
+\begin{observacion}
+Con $k=n$, la fórmula da $f_{X_{(n)}}(x) = n[F(x)]^{n-1}f(x)$, que coincide con la derivada de $F_M(m)=[F(m)]^n$ del Teorema \ref{teo:maximo} (caso i.i.d.). Con $k=1$, da $f_{X_{(1)}}(x) = n[1-F(x)]^{n-1}f(x)$, que coincide con la derivada de $F_{m^*}(t) = 1-[1-F(t)]^n$ del Teorema \ref{teo:minimo}. Este cotejo confirma la consistencia de la fórmula general con los dos casos particulares ya estudiados.
+\end{observacion}
+
+\subsection{Cambio de variable bidimensional: el método del jacobiano}
+
+Cuando se necesita la distribución conjunta de dos nuevas variables $(Z,W)$ obtenidas como funciones de $(X,Y)$ mediante una transformación biyectiva, el método más eficiente es el cambio de variable con jacobiano, análogo bidimensional de la fórmula de cambio de variable en una integral simple.
+
+\begin{definicion}[Jacobiano de la transformación]
+Sea $(X,Y)$ con densidad conjunta $f_{X,Y}$, y sea la transformación
+\[
+(Z,W) = \big(g_1(X,Y),\, g_2(X,Y)\big)
+\]
+biyectiva de un abierto $D\subset\mathbb R^2$ (donde $f_{X,Y}>0$) sobre su imagen, con inversa $x=h_1(z,w)$, $y=h_2(z,w)$ de clase $C^1$. El \textbf{jacobiano} de la transformación inversa es
+\[
+J(z,w) = \det\begin{pmatrix} \dfrac{\partial h_1}{\partial z} & \dfrac{\partial h_1}{\partial w} \\[2mm] \dfrac{\partial h_2}{\partial z} & \dfrac{\partial h_2}{\partial w}\end{pmatrix}.
+\]
+\end{definicion}
+
+\begin{teorema}[Densidad conjunta transformada]\label{teo:jacobiano}
+Bajo las hipótesis anteriores,
+\[
+f_{Z,W}(z,w) = f_{X,Y}\big(h_1(z,w),h_2(z,w)\big)\cdot |J(z,w)|
+\]
+para $(z,w)$ en la imagen de la transformación, y $f_{Z,W}(z,w)=0$ en otro caso.
+\end{teorema}
+
+La idea de la demostración es la misma que en el cambio de variable de integrales múltiples del Análisis Matemático: para cualquier región $A$ en el espacio $(z,w)$,
+\[
+P((Z,W)\in A) = P((X,Y)\in T^{-1}(A)) = \iint_{T^{-1}(A)} f_{X,Y}(x,y)\,dx\,dy = \iint_A f_{X,Y}(h_1(z,w),h_2(z,w))\,|J(z,w)|\,dz\,dw,
+\]
+donde la última igualdad es exactamente la fórmula de cambio de variable en integrales dobles; como esto vale para toda región $A$, el integrando debe coincidir con $f_{Z,W}(z,w)$.
+
+En la práctica, cuando solo interesa la distribución de una única función $Z=g_1(X,Y)$ (y no de un par), se introduce una segunda variable \textbf{auxiliar} $W=g_2(X,Y)$ —típicamente, la más simple posible, como $W=X$ o $W=Y$— únicamente para poder invertir el sistema y aplicar el Teorema \ref{teo:jacobiano}; luego se recupera la marginal de interés integrando $f_{Z,W}$ respecto de $w$. Esta técnica es frecuentemente más cómoda que la convolución para combinaciones no lineales como cocientes o productos.
+
+\begin{ejemplo}[Cociente de exponenciales]\label{ej:cociente-jacobiano}
+Sean $X,Y\sim\text{Exp}(1)$ independientes. Hallemos la densidad de $Z=X/Y$.
+
+Introducimos la variable auxiliar $W=Y$. El sistema $z=x/y$, $w=y$ tiene inversa $x=zw$, $y=w$, con jacobiano
+\[
+J = \det\begin{pmatrix} w & z \\ 0 & 1\end{pmatrix} = w.
+\]
+Como $f_{X,Y}(x,y)=e^{-x}e^{-y}$ para $x,y>0$ (por independencia), y la transformación lleva $\{x>0,y>0\}$ sobre $\{z>0,w>0\}$:
+\[
+f_{Z,W}(z,w) = e^{-zw}e^{-w}\,|w| = w\,e^{-w(z+1)}, \qquad z>0,\ w>0.
+\]
+Integrando respecto de $w$ (reconociendo, salvo constante, una densidad Gamma$(2,z+1)$):
+\[
+f_Z(z) = \int_0^\infty w\,e^{-w(z+1)}\,dw = \frac{1}{(z+1)^2}, \qquad z>0,
+\]
+usando que $\int_0^\infty w\,e^{-aw}\,dw = 1/a^2$ para $a>0$. Verifiquemos que es una densidad válida:
+\[
+\int_0^\infty \frac{dz}{(z+1)^2} = \left[-\frac{1}{z+1}\right]_0^\infty = 0-(-1)=1. \quad\checkmark
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[Suma vía jacobiano, como verificación cruzada]\label{ej:suma-jacobiano}
+Verifiquemos, usando el método del jacobiano, el resultado del Ejemplo \ref{ej:suma-uniformes} (suma de dos uniformes $U(0,1)$ independientes). Sea $Z=X+Y$, y tomemos como auxiliar $W=X$. La inversa es $x=w$, $y=z-w$, con jacobiano
+\[
+J = \det\begin{pmatrix}\dfrac{\partial x}{\partial z} & \dfrac{\partial x}{\partial w} \\ \dfrac{\partial y}{\partial z} & \dfrac{\partial y}{\partial w}\end{pmatrix} = \det\begin{pmatrix} 0 & 1 \\ 1 & -1\end{pmatrix} = -1, \qquad |J|=1.
+\]
+Como $f_{X,Y}(x,y)=1$ en $(0,1)^2$, tenemos $f_{Z,W}(z,w) = f_{X,Y}(w,z-w)\cdot1$, que vale $1$ cuando $0<w<1$ y $0<z-w<1$ (es decir, $\max(0,z-1)<w<\min(1,z)$), y $0$ en otro caso. Integrando respecto de $w$ para obtener $f_Z(z)$ se obtiene exactamente la longitud del intervalo $(\max(0,z-1),\min(1,z))$, que reproduce la distribución triangular ya hallada: $f_Z(z)=z$ para $0\le z\le1$ y $f_Z(z)=2-z$ para $1<z\le2$. Este ejemplo confirma que el método del jacobiano, con la elección adecuada de variable auxiliar, reproduce (y generaliza) la fórmula de convolución.
+\end{ejemplo}
+
+\begin{observacion}
+El método del jacobiano es especialmente valioso para cocientes, productos, y transformaciones lineales o no lineales en general, donde la convolución directa —pensada específicamente para sumas— no se aplica de forma inmediata. Es también la herramienta que se usará en la Sección \ref{sec:muestreo} para deducir formalmente la densidad de la distribución $t$ de Student a partir de sus componentes normal y chi-cuadrado.
+\end{observacion}
+
+\section{Distribuciones asociadas al muestreo}\label{sec:muestreo}
+
+\subsection{Introducción: por qué necesitamos nuevas distribuciones}
+
+En las Unidades 5 a 8 trabajaremos con \textbf{muestras aleatorias} $X_1,\dots,X_n$ (típicamente i.i.d.) y con \textbf{estadísticos} calculados a partir de ellas: la media muestral $\bar X = \tfrac1n\sum_i X_i$, la varianza muestral $S^2=\tfrac{1}{n-1}\sum_i(X_i-\bar X)^2$, cocientes de varianzas de dos muestras, conteos por categorías, etc. Cuando la población de origen es normal, estos estadísticos —que son, en definitiva, \emph{funciones de variables aleatorias}, en el sentido estudiado en la Sección \ref{sec:funciones}— tienen distribuciones exactas que, si bien no son normales, se derivan de ella de forma precisa usando exactamente las herramientas de esta unidad: la propiedad reproductiva de la suma de normales (Propiedad \ref{prop:suma-normales}), la convolución, y el método del jacobiano.
+
+Las protagonistas de esta sección son:
+\begin{itemize}
+\item La distribución \textbf{chi-cuadrado} ($\chi^2$): base de la varianza muestral y de las pruebas de bondad de ajuste.
+\item La distribución \textbf{$t$ de Student}: inferencia sobre la media poblacional cuando la varianza es desconocida (el caso más frecuente en la práctica).
+\item La distribución \textbf{$F$ de Snedecor}: comparación de varianzas, y base del análisis de varianza (ANOVA).
+\item Las distribuciones \textbf{multinomial} y \textbf{normal multivariada}: generalizaciones a más de una categoría o más de una dimensión.
+\end{itemize}
+Todas ellas son funciones de variables aleatorias normales independientes; por eso pertenecen naturalmente a esta unidad, y no a la de inferencia propiamente dicha, donde solamente se las \emph{utilizará}.
+
+\subsection{Distribución chi-cuadrado}
+
+\begin{definicion}[Chi-cuadrado con $n$ grados de libertad]
+Si $Z_1,\dots,Z_n$ son variables aleatorias independientes, cada una con distribución $N(0,1)$, la variable
+\[
+\chi^2 = Z_1^2+Z_2^2+\cdots+Z_n^2
+\]
+tiene distribución \textbf{chi-cuadrado con $n$ grados de libertad}, y se denota $\chi^2\sim\chi_n^2$.
+\end{definicion}
+
+\begin{propiedad}[Caso $n=1$]\label{prop:chi-uno}
+Si $Z\sim N(0,1)$, entonces $Y=Z^2\sim\chi_1^2$ tiene densidad
+\[
+f_Y(y) = \frac{1}{\sqrt{2\pi y}}\,e^{-y/2}, \qquad y>0.
+\]
+\end{propiedad}
+
+\begin{proof}
+Aplicamos el método de la función de distribución (Sección \ref{sec:funciones}). Para $y>0$,
+\[
+F_Y(y) = P(Z^2\le y) = P(-\sqrt y\le Z\le \sqrt y) = \Phi(\sqrt y)-\Phi(-\sqrt y) = 2\Phi(\sqrt y)-1,
+\]
+usando la simetría $\Phi(-\sqrt y)=1-\Phi(\sqrt y)$ de la normal estándar. Derivando respecto de $y$ (regla de la cadena, con $\varphi$ la densidad de $N(0,1)$):
+\[
+f_Y(y) = 2\,\varphi(\sqrt y)\cdot\frac{1}{2\sqrt y} = \frac{\varphi(\sqrt y)}{\sqrt y} = \frac{1}{\sqrt y}\cdot\frac{1}{\sqrt{2\pi}}e^{-y/2} = \frac{1}{\sqrt{2\pi y}}\,e^{-y/2}, \qquad y>0. \qedhere
+\]
+\end{proof}
+
+Esta densidad coincide con la de una distribución \textbf{Gamma} de parámetros de forma $1/2$ y escala $2$ (equivalentemente, tasa $1/2$): recordando que la densidad Gamma de forma $k$ y escala $\theta$ es $f(x) = \dfrac{x^{k-1}e^{-x/\theta}}{\Gamma(k)\theta^k}$, con $k=1/2$, $\theta=2$ y usando $\Gamma(1/2)=\sqrt\pi$:
+\[
+f(x) = \frac{x^{-1/2}e^{-x/2}}{\sqrt\pi\cdot\sqrt2} = \frac{1}{\sqrt{2\pi x}}e^{-x/2},
+\]
+que efectivamente coincide con la fórmula de la Propiedad \ref{prop:chi-uno}. Esta identificación —$\chi_1^2 = \text{Gamma}(1/2,2)$— es la clave para obtener, mediante convolución, la densidad general de $\chi_n^2$.
+
+\begin{lema}[Convolución de distribuciones Gamma con igual escala]\label{lema:convolucion-gamma}
+Si $U\sim\text{Gamma}(k_1,\theta)$ y $V\sim\text{Gamma}(k_2,\theta)$ son independientes (misma escala $\theta$), entonces $U+V\sim\text{Gamma}(k_1+k_2,\theta)$.
+\end{lema}
+
+\begin{proof}
+Por el Teorema \ref{teo:convolucion-continua} de convolución continua, para $z>0$,
+\[
+f_{U+V}(z) = \int_0^z \frac{x^{k_1-1}e^{-x/\theta}}{\Gamma(k_1)\theta^{k_1}}\cdot\frac{(z-x)^{k_2-1}e^{-(z-x)/\theta}}{\Gamma(k_2)\theta^{k_2}}\,dx = \frac{e^{-z/\theta}}{\Gamma(k_1)\Gamma(k_2)\theta^{k_1+k_2}}\int_0^z x^{k_1-1}(z-x)^{k_2-1}\,dx.
+\]
+En la última integral hacemos el cambio de variable $x=zu$ (con $u\in(0,1)$, $dx=z\,du$):
+\[
+\int_0^z x^{k_1-1}(z-x)^{k_2-1}\,dx = \int_0^1 (zu)^{k_1-1}(z(1-u))^{k_2-1}z\,du = z^{k_1+k_2-1}\int_0^1 u^{k_1-1}(1-u)^{k_2-1}\,du = z^{k_1+k_2-1}\,B(k_1,k_2),
+\]
+donde $B(k_1,k_2)=\Gamma(k_1)\Gamma(k_2)/\Gamma(k_1+k_2)$ es la función Beta. Sustituyendo,
+\[
+f_{U+V}(z) = \frac{e^{-z/\theta}}{\Gamma(k_1)\Gamma(k_2)\theta^{k_1+k_2}}\cdot z^{k_1+k_2-1}\cdot\frac{\Gamma(k_1)\Gamma(k_2)}{\Gamma(k_1+k_2)} = \frac{z^{k_1+k_2-1}e^{-z/\theta}}{\Gamma(k_1+k_2)\theta^{k_1+k_2}},
+\]
+que es exactamente la densidad Gamma$(k_1+k_2,\theta)$.
+\end{proof}
+
+\begin{teorema}[Densidad de $\chi_n^2$]\label{teo:densidad-chi}
+Para todo entero $n\ge1$,
+\[
+f(x) = \frac{1}{2^{n/2}\,\Gamma(n/2)}\,x^{n/2-1}e^{-x/2}, \qquad x>0,
+\]
+es decir, $\chi_n^2 = \text{Gamma}(n/2,2)$.
+\end{teorema}
+
+\begin{proof}
+Por definición, $\chi_n^2$ es la suma de $n$ copias independientes de $\chi_1^2=\text{Gamma}(1/2,2)$. Aplicando el Lema \ref{lema:convolucion-gamma} de forma inductiva ($n-1$ veces), la suma de $n$ variables Gamma$(1/2,2)$ independientes es Gamma$(n/2,2)$, cuya densidad, reemplazando $k=n/2$ y $\theta=2$ en la fórmula general, es
+\[
+f(x) = \frac{x^{n/2-1}e^{-x/2}}{\Gamma(n/2)\,2^{n/2}},
+\]
+como se quería demostrar.
+\end{proof}
+
+\begin{propiedad}[Momentos y propiedad reproductiva]\label{prop:chi-momentos}
+Si $\chi^2\sim\chi_n^2$, entonces $E[\chi^2]=n$ y $\operatorname{Var}(\chi^2)=2n$. Además, si $U\sim\chi_m^2$ y $V\sim\chi_n^2$ son independientes, $U+V\sim\chi_{m+n}^2$ (propiedad reproductiva).
+\end{propiedad}
+
+\begin{proof}
+Como $\chi_n^2=\text{Gamma}(n/2,2)$, y para una Gamma$(k,\theta)$ genérica se tiene $E=k\theta$ y $\operatorname{Var}=k\theta^2$ (resultado ya conocido de la Unidad 2), con $k=n/2,\theta=2$: $E[\chi_n^2] = \tfrac{n}{2}\cdot2=n$ y $\operatorname{Var}(\chi_n^2)=\tfrac{n}{2}\cdot4=2n$.
+
+Para la propiedad reproductiva, si $U=Z_1^2+\cdots+Z_m^2$ (con $Z_1,\dots,Z_m$ i.i.d. $N(0,1)$) y $V=W_1^2+\cdots+W_n^2$ (con $W_1,\dots,W_n$ i.i.d. $N(0,1)$, independientes de las anteriores), entonces los $m+n$ sumandos $Z_1,\dots,Z_m,W_1,\dots,W_n$ son, en conjunto, $m+n$ variables $N(0,1)$ mutuamente independientes, y
+\[
+U+V = Z_1^2+\cdots+Z_m^2+W_1^2+\cdots+W_n^2
+\]
+es, por definición, la suma de $m+n$ cuadrados de normales estándar independientes, es decir, $U+V\sim\chi_{m+n}^2$. (Alternativamente, esto también se sigue de aplicar el Lema \ref{lema:convolucion-gamma} con $k_1=m/2$, $k_2=n/2$.)
+\end{proof}
+
+\begin{ejemplo}
+Sean $Z_1,Z_2,Z_3\sim N(0,1)$ independientes. Sean $U=Z_1^2+Z_2^2\sim\chi_2^2$ y $V=Z_3^2\sim\chi_1^2$. Como $U$ y $V$ son funciones de conjuntos disjuntos de variables independientes, $U$ y $V$ son independientes entre sí, y por la propiedad reproductiva $U+V=Z_1^2+Z_2^2+Z_3^2\sim\chi_3^2$, con $E[U+V]=3$ y $\operatorname{Var}(U+V)=2\cdot3=6$.
+\end{ejemplo}
+
+\begin{observacion}[Relevancia para la varianza muestral]
+Si $X_1,\dots,X_n$ es una muestra aleatoria de una población $N(\mu,\sigma^2)$, se demuestra (típicamente en la Unidad 5, usando precisamente el método del jacobiano de la Sección \ref{sec:funciones} aplicado a una transformación ortogonal de $n$ variables) que la varianza muestral $S^2 = \tfrac{1}{n-1}\sum_{i=1}^n(X_i-\bar X)^2$ satisface
+\[
+\frac{(n-1)S^2}{\sigma^2} \sim \chi_{n-1}^2,
+\]
+y que además esta cantidad resulta \textbf{independiente} de $\bar X$ (un hecho nada evidente, específico de la población normal). Este resultado es la puerta de entrada a los intervalos de confianza y pruebas de hipótesis sobre $\sigma^2$, y es también el ingrediente que falta para construir la distribución $t$ de Student de la siguiente subsección.
+\end{observacion}
+
+\subsection{Distribución \emph{t} de Student}
+
+\begin{definicion}[$t$ de Student con $n$ grados de libertad]
+Si $Z\sim N(0,1)$ y $U\sim\chi_n^2$ son \textbf{independientes}, la variable
+\[
+T = \frac{Z}{\sqrt{U/n}}
+\]
+tiene distribución \textbf{$t$ de Student con $n$ grados de libertad}, denotada $T\sim t_n$.
+\end{definicion}
+
+\begin{teorema}[Densidad de la $t$ de Student]\label{teo:densidad-t}
+\[
+f(t) = \frac{\Gamma\left(\frac{n+1}{2}\right)}{\sqrt{n\pi}\,\Gamma\left(\frac n2\right)}\left(1+\frac{t^2}{n}\right)^{-\frac{n+1}{2}}, \qquad t\in\mathbb R.
+\]
+\end{teorema}
+
+\begin{proof}
+Usamos el método del jacobiano (Sección \ref{sec:funciones}) con variable auxiliar $W=U$. La transformación es $t=z/\sqrt{u/n}$, $w=u$, con inversa $z=t\sqrt{w/n}$, $u=w$. El jacobiano es
+\[
+J = \det\begin{pmatrix}\dfrac{\partial z}{\partial t} & \dfrac{\partial z}{\partial w} \\[2mm] \dfrac{\partial u}{\partial t} & \dfrac{\partial u}{\partial w}\end{pmatrix} = \det\begin{pmatrix} \sqrt{w/n} & \dfrac{t}{2\sqrt{nw}} \\[2mm] 0 & 1\end{pmatrix} = \sqrt{w/n}.
+\]
+Como $Z$ y $U$ son independientes, con $f_Z(z)=\tfrac{1}{\sqrt{2\pi}}e^{-z^2/2}$ y $f_U(u) = \tfrac{1}{2^{n/2}\Gamma(n/2)}u^{n/2-1}e^{-u/2}$ (Teorema \ref{teo:densidad-chi}):
+\[
+f_{T,W}(t,w) = f_Z\!\left(t\sqrt{w/n}\right) f_U(w)\,\sqrt{w/n} = \frac{1}{\sqrt{2\pi}}\,e^{-\frac{t^2w}{2n}}\cdot\frac{w^{n/2-1}e^{-w/2}}{2^{n/2}\Gamma(n/2)}\cdot\sqrt{\frac{w}{n}}, \quad w>0,
+\]
+que, agrupando potencias de $w$ y exponenciales, se escribe como
+\[
+f_{T,W}(t,w) = \frac{1}{\sqrt{2\pi n}\,2^{n/2}\Gamma(n/2)}\; w^{\frac{n-1}{2}}\, e^{-\frac{w}{2}\left(1+\frac{t^2}{n}\right)}.
+\]
+Para obtener $f_T(t)$ integramos respecto de $w\in(0,\infty)$. Con $a=1+t^2/n$, la integral $\int_0^\infty w^{\frac{n+1}{2}-1}e^{-aw/2}\,dw$ es (salvo constantes) una integral Gamma, y su valor es $\Gamma\!\left(\frac{n+1}{2}\right)\left(\frac2a\right)^{\frac{n+1}{2}}$. Sustituyendo:
+\[
+f_T(t) = \frac{1}{\sqrt{2\pi n}\,2^{n/2}\Gamma(n/2)}\cdot\Gamma\!\left(\frac{n+1}{2}\right)\cdot 2^{\frac{n+1}{2}}\, a^{-\frac{n+1}{2}}.
+\]
+Simplificando las potencias de $2$: $2^{\frac{n+1}{2}}/2^{n/2} = 2^{1/2}$, y por lo tanto $2^{1/2}/\sqrt{2\pi n} = 1/\sqrt{\pi n}$. Se obtiene
+\[
+f_T(t) = \frac{\Gamma\!\left(\frac{n+1}{2}\right)}{\sqrt{n\pi}\,\Gamma\!\left(\frac n2\right)}\left(1+\frac{t^2}{n}\right)^{-\frac{n+1}{2}},
+\]
+como se quería demostrar.
+\end{proof}
+
+\begin{propiedad}[Propiedades de la $t$ de Student]
+\begin{itemize}
+\item La densidad es simétrica respecto de $0$ (pues depende de $t$ solo a través de $t^2$), con forma de campana similar a la $N(0,1)$, pero con \textbf{colas más pesadas} (decaen polinomialmente, como $|t|^{-(n+1)}$, en vez de exponencialmente).
+\item $E[T]=0$ para $n>1$ (no existe, por falta de convergencia absoluta, si $n=1$: en ese caso $t_1$ es la distribución de Cauchy estándar).
+\item $\operatorname{Var}(T) = \dfrac{n}{n-2}$ para $n>2$, siempre estrictamente mayor que $1=\operatorname{Var}(N(0,1))$.
+\item Cuando $n\to\infty$, $t_n$ converge en distribución a $N(0,1)$: intuitivamente, $U/n\to1$ en probabilidad (por la ley de los grandes números, ya que $U/n$ es un promedio de $n$ cuadrados de normales estándar, cada uno con esperanza $1$), de modo que $T=Z/\sqrt{U/n}\to Z$.
+\end{itemize}
+\end{propiedad}
+
+\begin{observacion}[Uso típico en inferencia]
+Si $X_1,\dots,X_n$ es una muestra $N(\mu,\sigma^2)$ con $\sigma^2$ \textbf{desconocida}, puede probarse (combinando la normalidad de $\bar X$, la distribución $\chi_{n-1}^2$ de $(n-1)S^2/\sigma^2$, y la independencia entre $\bar X$ y $S^2$ mencionada más arriba) que
+\[
+T = \frac{\bar X-\mu}{S/\sqrt n} = \frac{\dfrac{\bar X-\mu}{\sigma/\sqrt n}}{\sqrt{\dfrac{(n-1)S^2/\sigma^2}{n-1}}} \sim t_{n-1},
+\]
+que es exactamente de la forma $Z/\sqrt{U/(n-1)}$ con $Z=\frac{\bar X-\mu}{\sigma/\sqrt n}\sim N(0,1)$ y $U=(n-1)S^2/\sigma^2\sim\chi_{n-1}^2$, independientes. Esto permite construir intervalos de confianza y pruebas de hipótesis para $\mu$ sin necesidad de conocer $\sigma^2$: es la base de los llamados tests $t$, que se estudiarán en detalle en las Unidades 6 y 7.
+\end{observacion}
+
+\begin{ejemplo}
+Sean $Z\sim N(0,1)$ y $U\sim\chi_9^2$ independientes, y $T=Z/\sqrt{U/9}$. Entonces $T\sim t_9$, con
+\[
+\operatorname{Var}(T) = \frac{9}{9-2} = \frac97 \approx 1.286,
+\]
+mayor que $\operatorname{Var}(Z)=1$. Esta mayor dispersión refleja la incertidumbre adicional que introduce estimar la escala a partir de $U$ (en la práctica, a partir de $S^2$) en lugar de conocerla exactamente, tal como sugiere la intuición: al reemplazar $\sigma$ (conocido) por $S$ (estimado a partir de la muestra), agregamos una fuente extra de variabilidad al estadístico.
+\end{ejemplo}
+
+\subsection{Distribución \emph{F} de Snedecor}
+
+\begin{definicion}[$F$ de Snedecor]
+Si $U\sim\chi_m^2$ y $V\sim\chi_n^2$ son \textbf{independientes}, la variable
+\[
+F = \frac{U/m}{V/n}
+\]
+tiene distribución \textbf{$F$ de Snedecor con $m$ y $n$ grados de libertad} (numerador y denominador, respectivamente), denotada $F\sim F_{m,n}$.
+\end{definicion}
+
+\begin{observacion}[Densidad, por completitud]
+Aplicando el mismo método del jacobiano usado para la $t$ de Student (con variable auxiliar $W=V$, y luego integrando $w$ fuera), se obtiene
+\[
+f(x) = \frac{\Gamma\!\left(\frac{m+n}{2}\right)}{\Gamma\!\left(\frac m2\right)\Gamma\!\left(\frac n2\right)}\left(\frac mn\right)^{m/2} \frac{x^{\frac m2-1}}{\left(1+\frac mn x\right)^{\frac{m+n}{2}}}, \qquad x>0,
+\]
+cuya deducción detallada se deja como ejercicio (es formalmente análoga a la demostración del Teorema \ref{teo:densidad-t}, partiendo de las densidades independientes de $U\sim\chi_m^2$ y $V\sim\chi_n^2$). No será necesario memorizar esta fórmula: en la práctica se trabaja con tablas o software.
+\end{observacion}
+
+\begin{propiedad}[Propiedades de la $F$ de Snedecor]
+\begin{itemize}
+\item $F$ toma valores estrictamente positivos, con densidad asimétrica a derecha (cola larga hacia valores grandes).
+\item Si $F\sim F_{m,n}$, entonces $1/F\sim F_{n,m}$: se invierten los grados de libertad al invertir el cociente, hecho inmediato de la definición ya que $1/F=(V/n)/(U/m)$.
+\item \textbf{Relación con la $t$ de Student:} si $T\sim t_n$, entonces $T^2\sim F_{1,n}$.
+\end{itemize}
+\end{propiedad}
+
+\begin{teorema}
+Si $T\sim t_n$, entonces $T^2\sim F_{1,n}$.
+\end{teorema}
+
+\begin{proof}
+Si $T=Z/\sqrt{U/n}$ con $Z\sim N(0,1)$ y $U\sim\chi_n^2$ independientes, entonces
+\[
+T^2 = \frac{Z^2}{U/n} = \frac{Z^2/1}{U/n}.
+\]
+Por la Propiedad \ref{prop:chi-uno}, $Z^2\sim\chi_1^2$, y $Z^2$ es independiente de $U$ porque $Z$ lo es (una función de $Z$ solamente sigue siendo independiente de $U$). Por lo tanto, $T^2$ tiene exactamente la forma $(Z^2/1)/(U/n)$ de un cociente de dos chi-cuadrados independientes divididos por sus respectivos grados de libertad, con $m=1$ y $n=n$: por definición, $T^2\sim F_{1,n}$.
+\end{proof}
+
+\begin{ejemplo}
+Dos muestras independientes, de tamaños $n_1=10$ y $n_2=15$, provienen de poblaciones normales con igual varianza $\sigma^2$. Sean $S_1^2$ y $S_2^2$ las varianzas muestrales respectivas. Sabemos que $\dfrac{(n_1-1)S_1^2}{\sigma^2}\sim\chi_9^2$ y $\dfrac{(n_2-1)S_2^2}{\sigma^2}\sim\chi_{14}^2$, independientes entre sí (por provenir de muestras independientes). Entonces
+\[
+F = \frac{\dfrac{(n_1-1)S_1^2}{\sigma^2}\Big/9}{\dfrac{(n_2-1)S_2^2}{\sigma^2}\Big/14} = \frac{S_1^2}{S_2^2} \sim F_{9,14},
+\]
+ya que los factores $\sigma^2$ se cancelan en numerador y denominador. Este resultado es la base de las pruebas de igualdad de varianzas entre dos poblaciones normales, y del análisis de varianza (ANOVA), donde se comparan varias fuentes de variabilidad mediante cocientes de este tipo.
+\end{ejemplo}
+
+\subsection{Distribución multinomial}
+
+\begin{definicion}[Multinomial]
+Se repite $n$ veces, de manera independiente, un experimento con $k$ resultados posibles $A_1,\dots,A_k$ mutuamente excluyentes, con probabilidades respectivas $p_1,\dots,p_k$ (con $\sum_{j=1}^k p_j=1$). Sea $X_j$ el número de veces que ocurre $A_j$ en las $n$ repeticiones. El vector $(X_1,\dots,X_k)$ tiene distribución \textbf{multinomial}, con función de probabilidad conjunta
+\[
+P(X_1=x_1,\dots,X_k=x_k) = \frac{n!}{x_1!\,x_2!\cdots x_k!}\,p_1^{x_1}p_2^{x_2}\cdots p_k^{x_k},
+\]
+para enteros $x_1,\dots,x_k\ge0$ con $x_1+\cdots+x_k=n$.
+\end{definicion}
+
+La distribución multinomial es la generalización natural de la binomial ($k=2$: ``éxito'' o ``fracaso'') a más de dos categorías. Cada componente $X_j$, marginalmente, es $\text{Bin}(n,p_j)$ (basta pensar en la categoría $A_j$ frente a ``no $A_j$'', lo cual reduce el experimento a un esquema binomial).
+
+\begin{propiedad}[Covarianza entre componentes]\label{prop:cov-multinomial}
+Si $(X_1,\dots,X_k)$ es multinomial$(n;p_1,\dots,p_k)$, entonces, para $i\ne j$,
+\[
+\operatorname{Cov}(X_i,X_j) = -n\,p_i\,p_j.
+\]
+\end{propiedad}
+
+\begin{proof}[Idea de la demostración]
+Escribamos $X_i = \sum_{r=1}^n I_r^{(i)}$, donde $I_r^{(i)}$ es el indicador de que el $r$-ésimo ensayo cae en la categoría $A_i$, y análogamente $X_j=\sum_{s=1}^n I_s^{(j)}$. Como $I_r^{(i)}$ e $I_s^{(j)}$ son independientes cuando $r\ne s$ (ensayos distintos e independientes), y para $r=s$ tenemos $I_r^{(i)}I_r^{(j)}=0$ (un mismo ensayo no puede caer simultáneamente en dos categorías distintas), se obtiene, tras desarrollar $\operatorname{Cov}\!\left(\sum_r I_r^{(i)},\sum_s I_s^{(j)}\right)=\sum_{r,s}\operatorname{Cov}(I_r^{(i)},I_s^{(j)})$, que los términos con $r\ne s$ se anulan (independencia) y los $n$ términos con $r=s$ aportan cada uno $\operatorname{Cov}(I_r^{(i)},I_r^{(j)}) = E[I_r^{(i)}I_r^{(j)}]-E[I_r^{(i)}]E[I_r^{(j)}] = 0-p_ip_j=-p_ip_j$. Sumando los $n$ términos se obtiene $\operatorname{Cov}(X_i,X_j)=-np_ip_j$.
+\end{proof}
+
+El signo negativo es intuitivo: como el número total de observaciones $n$ está fijo, si $X_i$ resulta inusualmente grande, necesariamente queda ``menos margen'' para las demás categorías, incluyendo $A_j$; de ahí la covarianza negativa entre cualquier par de componentes distintas. Esta es otra manifestación —esta vez explícita y calculable— del fenómeno de dependencia sin independencia que discutimos en la Sección \ref{sec:contraejemplo}.
+
+\begin{ejemplo}
+Una urna contiene bolillas rojas ($40\%$), verdes ($35\%$) y azules ($25\%$). Se extraen $5$ bolillas con reposición (para que los ensayos sean independientes). ¿Cuál es la probabilidad de obtener exactamente $2$ rojas, $2$ verdes y $1$ azul?
+
+Con $n=5$, $p_1=0.40$, $p_2=0.35$, $p_3=0.25$, $x_1=2,x_2=2,x_3=1$:
+\[
+P(2,2,1) = \frac{5!}{2!\,2!\,1!}(0.40)^2(0.35)^2(0.25)^1 = 30\times0.16\times0.1225\times0.25 \approx 0.147.
+\]
+Como complemento, calculemos la covarianza entre el número de rojas y el número de verdes: $\operatorname{Cov}(X_1,X_2) = -5(0.40)(0.35) = -0.70$, un valor negativo, consistente con la intuición anterior.
+\end{ejemplo}
+
+\subsection{Distribución normal multivariada}
+
+\begin{definicion}[Normal bivariada]
+$(X,Y)$ tiene distribución \textbf{normal bivariada} con parámetros $\mu_X,\mu_Y\in\mathbb R$, $\sigma_X,\sigma_Y>0$ y coeficiente de correlación $\rho\in(-1,1)$ si su densidad conjunta es
+\[
+f(x,y) = \frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho^2}} \exp\left\{-\frac{1}{2(1-\rho^2)}\left[\frac{(x-\mu_X)^2}{\sigma_X^2} - \frac{2\rho(x-\mu_X)(y-\mu_Y)}{\sigma_X\sigma_Y} + \frac{(y-\mu_Y)^2}{\sigma_Y^2}\right]\right\}.
+\]
+\end{definicion}
+
+\begin{propiedad}[Las marginales de la normal bivariada son normales]\label{prop:marginal-normal-bivariada}
+Si $(X,Y)$ es normal bivariada con los parámetros anteriores, entonces $X\sim N(\mu_X,\sigma_X^2)$.
+\end{propiedad}
+
+\begin{proof}[Idea de la demostración]
+Se completa el cuadrado en $y$ dentro del corchete del exponente. Escribiendo $u=\frac{x-\mu_X}{\sigma_X}$, $v=\frac{y-\mu_Y}{\sigma_Y}$, el corchete es $u^2-2\rho uv+v^2 = (v-\rho u)^2+(1-\rho^2)u^2$. Sustituyendo,
+\[
+f(x,y) = \frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho^2}}\exp\left\{-\frac{u^2}{2}\right\}\exp\left\{-\frac{(v-\rho u)^2}{2(1-\rho^2)}\right\}.
+\]
+Integrando en $y$ (equivalentemente en $v$, con $dy=\sigma_Y\,dv$), el segundo factor exponencial —como función de $v$, para $u$ fijo— es, salvo constante, la densidad de una $N(\rho u,\,1-\rho^2)$, que integra $\sqrt{2\pi(1-\rho^2)}$. Se obtiene entonces
+\[
+f_X(x) = \int_{-\infty}^{\infty} f(x,y)\,dy = \frac{1}{2\pi\sigma_X\sqrt{1-\rho^2}}\, e^{-u^2/2}\cdot\sigma_Y\sqrt{2\pi(1-\rho^2)} = \frac{1}{\sqrt{2\pi}\,\sigma_X}\,e^{-u^2/2} = \frac{1}{\sqrt{2\pi}\,\sigma_X}\,e^{-\frac{(x-\mu_X)^2}{2\sigma_X^2}},
+\]
+que es exactamente la densidad $N(\mu_X,\sigma_X^2)$.
+\end{proof}
+
+\begin{propiedad}[Otras propiedades de la normal bivariada]
+\begin{itemize}
+\item El parámetro $\rho$ es exactamente el coeficiente de correlación entre $X$ e $Y$.
+\item \textbf{Caso especial crucial:} si $\rho=0$, la densidad conjunta factoriza como
+\[
+f(x,y) = \left[\frac{1}{\sqrt{2\pi}\sigma_X}e^{-\frac{(x-\mu_X)^2}{2\sigma_X^2}}\right]\left[\frac{1}{\sqrt{2\pi}\sigma_Y}e^{-\frac{(y-\mu_Y)^2}{2\sigma_Y^2}}\right] = f_X(x)\,f_Y(y),
+\]
+sobre el soporte $\mathbb R^2$ (un rectángulo infinito), de modo que $X$ e $Y$ resultan \textbf{independientes}. Este es el caso especial mencionado en la Observación posterior al Ejemplo \ref{ej:contraejemplo-covarianza}: para el vector normal bivariado, incorrelación equivale a independencia, algo que \textbf{no} ocurre para vectores aleatorios arbitrarios.
+\item Toda combinación lineal $aX+bY$ (con $a,b$ constantes) es normal univariada.
+\item Las distribuciones condicionales $f_{X\mid Y}(x\mid y)$ también son normales (con media y varianza que dependen linealmente de $y$ y de $\rho$), lo cual es la base formal de la recta de regresión lineal que se estudia en cursos de correlación y regresión.
+\end{itemize}
+\end{propiedad}
+
+\begin{definicion}[Vector normal multivariado $N_n(\boldsymbol\mu,\Sigma)$]
+En notación matricial, un vector $\mathbf X=(X_1,\dots,X_n)$ tiene distribución \textbf{normal multivariada} con vector de medias $\boldsymbol\mu=(\mu_1,\dots,\mu_n)$ y matriz de covarianzas $\Sigma$ (simétrica, definida positiva, con $\Sigma_{ii}=\operatorname{Var}(X_i)$ y $\Sigma_{ij}=\operatorname{Cov}(X_i,X_j)$) si su densidad conjunta es
+\[
+f(\mathbf x) = \frac{1}{(2\pi)^{n/2}\,|\Sigma|^{1/2}}\exp\left\{-\tfrac12(\mathbf x-\boldsymbol\mu)^{\mathsf T}\Sigma^{-1}(\mathbf x-\boldsymbol\mu)\right\}, \qquad \mathbf x\in\mathbb R^n.
+\]
+\end{definicion}
+
+Para $n=2$, con $\Sigma = \begin{pmatrix}\sigma_X^2 & \rho\sigma_X\sigma_Y\\ \rho\sigma_X\sigma_Y & \sigma_Y^2\end{pmatrix}$, se puede verificar (calculando explícitamente $\Sigma^{-1}$ y $|\Sigma|=\sigma_X^2\sigma_Y^2(1-\rho^2)$) que esta fórmula matricial se reduce exactamente a la densidad bivariada escrita más arriba, lo cual confirma que ambas formulaciones son consistentes.
+
+\begin{observacion}[Por qué es tan importante]
+La familia normal multivariada hereda, en $n$ dimensiones, todas las propiedades notables del caso bivariado: sus marginales (de cualquier subconjunto de coordenadas) son normales (multivariadas de menor dimensión), toda combinación lineal $\sum_i a_iX_i$ es normal univariada, y la incorrelación entre componentes ($\Sigma_{ij}=0$) equivale a su independencia. Esta última propiedad es la que permite, por ejemplo, afirmar que en una muestra $N(\mu,\sigma^2)$ los residuos $X_i-\bar X$ (que resultan conjuntamente normales) son independientes de $\bar X$, hecho que mencionamos sin demostrar al hablar de la distribución $\chi_{n-1}^2$ de $(n-1)S^2/\sigma^2$. La familia multinormal es, además, central en \textbf{Regresión y correlación} y en el \textbf{Análisis Multivariado}: aparece naturalmente al modelar $k$ mediciones correlacionadas (por ejemplo, distintas variables económicas, biométricas o de calidad de un proceso industrial), y sustenta buena parte de la inferencia estadística clásica, incluyendo el análisis de componentes principales y los modelos lineales generales.
+\end{observacion}
+
+\section{Observaciones adicionales}
+
+Cerramos este apunte con una reflexión sobre el lugar que ocupa la Unidad 3 dentro de la materia. A primera vista, temas como la convolución, el jacobiano o la distribución $F$ de Snedecor pueden parecer ejercicios técnicos aislados. En realidad, constituyen la \textbf{maquinaria matemática} que hace posible casi todo lo que se estudiará en las Unidades 5 a 8 (Estimación puntual, Estimación por intervalos, Pruebas de hipótesis, y Regresión y correlación). Repasemos, uno por uno, por qué:
+
+\begin{itemize}
+\item \textbf{Distribuciones marginales y condicionales.} Todo estimador (la media muestral, la proporción muestral, la varianza muestral) es una función de un vector aleatorio $(X_1,\dots,X_n)$. Para estudiar sus propiedades —¿es insesgado? ¿cuál es su varianza? ¿cómo se comporta condicionado a otra información?— es indispensable el marco conceptual desarrollado en la Sección \ref{sec:condicionales}: la esperanza condicional, en particular, es la base formal del concepto de \emph{suficiencia estadística} y de los estimadores de máxima verosimilitud condicional que se estudian en cursos más avanzados.
+
+\item \textbf{Independencia.} El supuesto de que $X_1,\dots,X_n$ son independientes (muestra aleatoria simple) es la hipótesis estructural sobre la que se construye absolutamente toda la inferencia estadística clásica. Sin el concepto riguroso de independencia desarrollado en la Sección \ref{sec:independencia} —y sin el contraejemplo de la Sección \ref{sec:contraejemplo}, que nos recuerda que la ausencia de correlación no basta— no podríamos justificar por qué, por ejemplo, la varianza de $\bar X$ es $\sigma^2/n$ y no una expresión más complicada que involucre covarianzas cruzadas.
+
+\item \textbf{Convolución, máximo, mínimo y jacobiano.} Estas técnicas son exactamente las que se usan para deducir la distribución exacta de \emph{cualquier} estadístico muestral. La distribución de la suma (convolución) explica por qué $\bar X$ es normal cuando la población lo es; la distribución del mínimo y el máximo son el punto de partida de la estadística de valores extremos (usada, por ejemplo, en hidrología o en gestión de riesgos financieros); y el método del jacobiano es la herramienta técnica que permite demostrar rigurosamente la distribución conjunta de $(\bar X, S^2)$ en el muestreo normal, un resultado que en la Unidad 5 se toma como dado, pero que aquí hemos visto cómo se construye paso a paso.
+
+\item \textbf{Chi-cuadrado, $t$ de Student y $F$ de Snedecor.} Estas tres distribuciones son, literalmente, la base de la inferencia estadística paramétrica clásica:
+\begin{itemize}
+\item La $\chi^2$ aparece en los intervalos de confianza y pruebas de hipótesis para una varianza poblacional, en las pruebas de bondad de ajuste (¿los datos siguen tal distribución?) y en las pruebas de independencia en tablas de contingencia (que usan, precisamente, la distribución multinomial de la Sección \ref{sec:muestreo}).
+\item La $t$ de Student es la distribución de referencia para casi todo intervalo de confianza y prueba de hipótesis sobre una media poblacional cuando —como ocurre casi siempre en la práctica— la varianza poblacional es desconocida.
+\item La $F$ de Snedecor permite comparar las varianzas de dos poblaciones, y es el fundamento matemático del Análisis de Varianza (ANOVA), la herramienta central para comparar tres o más medias poblacionales simultáneamente, que se estudia típicamente al final de la materia o en cursos posteriores.
+\end{itemize}
+
+\item \textbf{Multinomial y normal multivariada.} La multinomial generaliza la binomial a más de dos categorías y es indispensable para el análisis de datos categóricos (tablas de contingencia, pruebas de bondad de ajuste con varias clases). La normal multivariada, por su parte, es el modelo probabilístico subyacente a la regresión lineal múltiple y al análisis de varias variables simultáneas: cuando en la Unidad 8 se estudie la recta de regresión y el coeficiente de correlación muestral, el modelo formal detrás de esas técnicas es, precisamente, el vector normal bivariado presentado aquí.
+\end{itemize}
+
+En definitiva, la Unidad 3 no es un paréntesis técnico entre la teoría de probabilidad (Unidades 1 y 2) y la inferencia estadística (Unidades 5 a 8): es el \textbf{puente} que conecta ambos mundos. Cada resultado de esta unidad —desde la definición más elemental de distribución conjunta hasta la construcción de la $t$ de Student— responde, en el fondo, a una única pregunta que reaparecerá una y otra vez en lo que resta de la materia: \emph{si conocemos la distribución poblacional, ¿qué podemos decir, con precisión matemática, sobre la distribución de un estadístico calculado a partir de una muestra?} Dominar las herramientas de esta unidad —marginales, condicionales, independencia, convolución, jacobiano, y las distribuciones derivadas de la normal— es, por lo tanto, el requisito indispensable para entender \emph{por qué} funcionan los métodos de inferencia estadística, y no solamente \emph{cómo} aplicarlos mecánicamente.
+
+\end{document}

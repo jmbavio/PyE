@@ -1,0 +1,1281 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{propiedad}[teorema]{Propiedad}
+\newtheorem{corolario}[teorema]{Corolario}
+\newtheorem{lema}[teorema]{Lema}
+\theoremstyle{definition}
+\newtheorem{definicion}[teorema]{Definición}
+\newtheorem{ejemplo}[teorema]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{observacion}[teorema]{Observación}
+\renewcommand{\proofname}{Demostración}
+
+\title{Unidad 1: Espacios de probabilidad \\ \large Apunte de teoría}
+\author{Probabilidad y Estadística (5765) \\ Universidad Nacional del Sur}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Experimentos aleatorios, espacio muestral y sucesos}
+
+\subsection{Experimentos determinísticos y experimentos aleatorios}
+
+Toda la teoría que se desarrolla en este curso parte de una distinción elemental pero fundamental: la que existe entre los \emph{experimentos determinísticos} y los \emph{experimentos aleatorios}.
+
+\begin{definicion}[Experimento determinístico]
+Un experimento es \textbf{determinístico} si, repitiéndolo en condiciones esencialmente idénticas, el resultado es siempre el mismo, o bien puede predecirse con certeza a partir de las condiciones iniciales y de las leyes que gobiernan el fenómeno.
+\end{definicion}
+
+Ejemplos típicos son calentar agua a presión atmosférica normal hasta $100\,^\circ\text{C}$ (siempre hierve), dejar caer un cuerpo desde una altura $h$ en el vacío (el tiempo de caída se obtiene exactamente de $t=\sqrt{2h/g}$), o calcular el interés compuesto de un capital colocado a una tasa fija. En todos estos casos, conocer las condiciones iniciales con precisión suficiente permite anticipar el resultado sin margen de incertidumbre: el modelo matemático adecuado es una función o un sistema de ecuaciones, no una distribución de probabilidad.
+
+\begin{definicion}[Experimento aleatorio]
+Un experimento es \textbf{aleatorio} (o no determinístico) si, aun repitiéndolo en condiciones esencialmente idénticas, no es posible predecir con certeza cuál será el resultado de un ensayo particular, aunque sí se puede describir de antemano el conjunto de \emph{todos} los resultados posibles.
+\end{definicion}
+
+Son experimentos aleatorios: lanzar una moneda y observar la cara superior; lanzar un dado y anotar el número obtenido; contar la cantidad de artículos defectuosos en un lote de producción; medir el tiempo de vida útil de una lámpara; registrar cuántos clientes llegan a una caja de banco en una hora; extraer una carta de un mazo y observar su palo. En cada uno de ellos existe incertidumbre acerca del resultado individual, pero al mismo tiempo existe una estructura: sabemos, antes de realizar el experimento, cuál es el abanico completo de resultados posibles.
+
+Conviene señalar que la frontera entre determinismo y aleatoriedad no es siempre absoluta ni depende únicamente del fenómeno físico en sí, sino también de nuestra capacidad (o interés) de modelarlo con el detalle necesario. El resultado del lanzamiento de una moneda está, en principio, determinado por las leyes de la mecánica clásica (velocidad inicial, torque, condiciones del aire, características de la superficie de aterrizaje); sin embargo, la sensibilidad extrema del resultado a variaciones minúsculas en las condiciones iniciales —y la imposibilidad práctica de medirlas con la precisión requerida— hace que, a los fines prácticos, tratemos a la moneda como un experimento aleatorio. Este es precisamente el punto de partida conceptual de la probabilidad como disciplina: no pretende predecir el resultado de un ensayo aislado, sino modelar matemáticamente la \emph{regularidad estadística} que emerge cuando el experimento se repite un número grande de veces bajo las mismas condiciones. Esa regularidad —constatada empíricamente desde los trabajos de Jakob Bernoulli en el siglo XVII y posteriormente formalizada por Karl Pearson y otros mediante experimentos masivos de lanzamiento de moneda— es la que la teoría axiomática busca capturar con rigor matemático, tal como veremos en la Sección~2.
+
+\subsection{Espacio muestral}
+
+El primer paso para modelar matemáticamente un experimento aleatorio es especificar, de manera exhaustiva y sin ambigüedades, cuáles son todos sus resultados posibles.
+
+\begin{definicion}[Espacio muestral]
+El \textbf{espacio muestral} asociado a un experimento aleatorio $\mathcal{E}$ es el conjunto de todos los resultados posibles del experimento. Se denota habitualmente $\Omega$ (o también $S$). Cada elemento $\omega \in \Omega$ se llama \textbf{punto muestral} o \textbf{resultado elemental}.
+\end{definicion}
+
+La elección de $\Omega$ no es única: depende de qué aspecto del experimento nos interesa registrar. Por ejemplo, al lanzar dos monedas podemos tomar como espacio muestral el conjunto de los pares ordenados de caras y secas, $\{(c,c),(c,s),(s,c),(s,s)\}$, si nos interesa distinguir qué moneda mostró cada cara; o bien, si solo nos interesa el número total de caras obtenidas, podríamos trabajar con $\{0,1,2\}$. Ambas elecciones son legítimas, pero conducen a espacios de probabilidad distintos (en el segundo caso, además, los resultados no son equiprobables, como se verá más adelante). Es responsabilidad de quien modela el fenómeno elegir el espacio muestral adecuado al problema que quiere resolver.
+
+Según su cardinalidad, los espacios muestrales se clasifican en tres tipos:
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Finito}: $\Omega$ tiene un número finito de elementos, $\Omega=\{\omega_1,\omega_2,\dots,\omega_N\}$.
+\item \textbf{Infinito numerable}: $\Omega$ puede ponerse en correspondencia biunívoca con $\mathbb{N}$, de modo que sus elementos pueden listarse (aunque la lista no termine nunca) como $\omega_1,\omega_2,\omega_3,\dots$
+\item \textbf{Continuo (no numerable)}: $\Omega$ se identifica con un intervalo de $\mathbb{R}$, con $\mathbb{R}^n$, o con una región de $\mathbb{R}^n$; no puede ponerse en correspondencia biunívoca con $\mathbb{N}$.
+\end{itemize}
+
+\begin{ejemplo}[Espacio muestral finito]
+Al lanzar un dado equilibrado una vez y registrar el número que queda hacia arriba,
+\[
+\Omega = \{1,2,3,4,5,6\}, \qquad |\Omega| = 6.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[Espacio muestral finito]
+Al lanzar dos monedas y registrar el resultado de cada una en el orden en que se lanzan,
+\[
+\Omega = \{(c,c),\,(c,s),\,(s,c),\,(s,s)\}, \qquad |\Omega|=4.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[Espacio muestral infinito numerable]
+Se lanza una moneda repetidamente hasta obtener la primera cara, y se registra el número de lanzamientos necesarios. El resultado puede ser cualquier entero positivo, sin cota superior a priori (aunque en la práctica sea extremadamente improbable necesitar, digamos, cien lanzamientos):
+\[
+\Omega = \{1,2,3,\dots\} = \mathbb{N}.
+\]
+Este espacio es numerable porque, precisamente, ya está indexado por los naturales.
+\end{ejemplo}
+
+\begin{ejemplo}[Espacio muestral continuo]
+Se mide el tiempo de vida útil, en horas, de una lámpara hasta que se quema. En principio cualquier número real no negativo es un resultado posible:
+\[
+\Omega = [0,+\infty).
+\]
+Otro ejemplo continuo es medir el diámetro de una pieza mecánica fabricada en torno a una medida nominal: $\Omega$ podría ser un intervalo $(d_0-\varepsilon,\, d_0+\varepsilon)$.
+\end{ejemplo}
+
+\begin{observacion}
+La clasificación entre espacio finito/numerable y espacio continuo no es meramente estética: tiene consecuencias matemáticas profundas. En los dos primeros casos alcanza, típicamente, con asignar una probabilidad a cada punto muestral y sumar; en el caso continuo, la probabilidad de un punto muestral aislado suele ser cero, y es necesario recurrir a densidades e integrales, tema que se desarrollará en unidades posteriores al introducir las variables aleatorias continuas.
+\end{observacion}
+
+\subsection{Sucesos}
+
+Una vez fijado el espacio muestral, el objeto de interés no suele ser un resultado individual sino una \emph{propiedad} que puede verificarse o no según cuál sea el resultado obtenido: por ejemplo, ``salió un número par'', ``la pieza es defectuosa'', ``el tiempo de vida superó las 100 horas''. Estas propiedades se formalizan como subconjuntos del espacio muestral.
+
+\begin{definicion}[Suceso]
+Un \textbf{suceso} (o \textbf{evento}) es un subconjunto $A \subseteq \Omega$. Decimos que el suceso $A$ \textbf{ocurre} en un ensayo del experimento si el resultado obtenido $\omega$ pertenece a $A$, es decir, si $\omega \in A$.
+\end{definicion}
+
+Hay tres sucesos especiales que aparecen en todo espacio muestral:
+
+\begin{itemize}[leftmargin=2em]
+\item El \textbf{suceso seguro} es el propio $\Omega$: como todo resultado posible pertenece a $\Omega$, este suceso ocurre siempre, en cualquier ensayo.
+\item El \textbf{suceso imposible} es el conjunto vacío $\varnothing$: como ningún resultado pertenece a él, nunca ocurre.
+\item Un \textbf{suceso elemental} es un subconjunto de $\Omega$ formado por un único punto muestral, $\{\omega\}$. No debe confundirse el punto muestral $\omega$ (un elemento de $\Omega$) con el suceso elemental $\{\omega\}$ (un subconjunto de $\Omega$, cuyo único elemento es $\omega$): son objetos matemáticos de naturaleza distinta, aunque estrechamente relacionados.
+\end{itemize}
+
+\begin{ejemplo}
+Sea $\mathcal{E}$: ``lanzar un dado'', con $\Omega=\{1,2,3,4,5,6\}$. El suceso $A$: ``sale un número par'' es
+\[
+A = \{2,4,6\} \subseteq \Omega.
+\]
+El suceso $B$: ``sale un número mayor que 4'' es $B=\{5,6\}$. El suceso elemental correspondiente al resultado $3$ es $\{3\}$.
+\end{ejemplo}
+
+\subsection{Operaciones entre sucesos}
+
+Puesto que los sucesos son subconjuntos de $\Omega$, es natural combinarlos mediante las operaciones usuales de la teoría de conjuntos, que en este contexto adquieren una interpretación probabilística directa.
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Unión}, $A \cup B = \{\omega \in \Omega : \omega \in A \text{ o } \omega \in B\}$: ocurre si ocurre $A$, o $B$, o ambos simultáneamente. Es el suceso ``al menos uno de los dos ocurre''.
+\item \textbf{Intersección}, $A \cap B = \{\omega \in \Omega : \omega \in A \text{ y } \omega \in B\}$: ocurre si ocurren simultáneamente $A$ y $B$.
+\item \textbf{Complemento}, $A^c = \Omega \setminus A = \{\omega \in \Omega : \omega \notin A\}$ (también notado $\overline{A}$): ocurre exactamente cuando no ocurre $A$.
+\item \textbf{Diferencia}, $A \setminus B = \{\omega \in A : \omega \notin B\} = A \cap B^c$: ocurre si ocurre $A$ pero no ocurre $B$.
+\item \textbf{Diferencia simétrica}, $A \triangle B = (A\setminus B)\cup(B\setminus A) = (A\cup B)\setminus(A\cap B)$: ocurre si ocurre exactamente uno de los dos sucesos (``uno u otro, pero no ambos'').
+\end{itemize}
+
+Estas operaciones se visualizan de manera intuitiva mediante diagramas de Venn.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+% Union
+\begin{scope}
+\draw (0,0) rectangle (3.4,2.6);
+\node at (0.25,2.35) {\footnotesize $\Omega$};
+\begin{scope}
+\clip (0,0) rectangle (3.4,2.6);
+\fill[blue!25] (1.15,1.3) circle (0.9);
+\fill[blue!25] (2.25,1.3) circle (0.9);
+\end{scope}
+\draw (1.15,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $A$};
+\draw (2.25,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $B$};
+\node at (1.7,-0.55) {\footnotesize $A \cup B$};
+\end{scope}
+% Interseccion
+\begin{scope}[xshift=4.2cm]
+\draw (0,0) rectangle (3.4,2.6);
+\node at (0.25,2.35) {\footnotesize $\Omega$};
+\begin{scope}
+\clip (1.15,1.3) circle (0.9);
+\fill[blue!45] (2.25,1.3) circle (0.9);
+\end{scope}
+\draw (1.15,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $A$};
+\draw (2.25,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $B$};
+\node at (1.7,-0.55) {\footnotesize $A \cap B$};
+\end{scope}
+% Complemento
+\begin{scope}[xshift=8.4cm]
+\draw (0,0) rectangle (3.4,2.6);
+\begin{scope}
+\clip (0,0) rectangle (3.4,2.6);
+\fill[blue!25] (0,0) rectangle (3.4,2.6);
+\fill[white] (1.7,1.3) circle (0.9);
+\end{scope}
+\draw (0,0) rectangle (3.4,2.6);
+\draw (1.7,1.3) circle (0.9) node{\footnotesize $A$};
+\node at (1.7,-0.55) {\footnotesize $A^c$};
+\end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+% Diferencia A menos B
+\begin{scope}
+\draw (0,0) rectangle (3.4,2.6);
+\node at (0.25,2.35) {\footnotesize $\Omega$};
+\begin{scope}
+\clip (1.15,1.3) circle (0.9);
+\fill[white] (2.25,1.3) circle (0.9);
+\fill[blue!35] (0,0) rectangle (3.4,2.6);
+\end{scope}
+\draw (1.15,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $A$};
+\draw (2.25,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $B$};
+\node at (1.7,-0.55) {\footnotesize $A \setminus B$};
+\end{scope}
+% Diferencia simetrica
+\begin{scope}[xshift=4.2cm]
+\draw (0,0) rectangle (3.4,2.6);
+\node at (0.25,2.35) {\footnotesize $\Omega$};
+\begin{scope}
+\clip (0,0) rectangle (3.4,2.6);
+\fill[blue!35] (1.15,1.3) circle (0.9);
+\fill[blue!35] (2.25,1.3) circle (0.9);
+\end{scope}
+\begin{scope}
+\clip (1.15,1.3) circle (0.9);
+\fill[white] (2.25,1.3) circle (0.9);
+\end{scope}
+\begin{scope}
+\clip (2.25,1.3) circle (0.9);
+\fill[white] (1.15,1.3) circle (0.9);
+\end{scope}
+\draw (1.15,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $A$};
+\draw (2.25,1.3) circle (0.9) node[below=0.85cm]{\footnotesize $B$};
+\node at (1.7,-0.55) {\footnotesize $A \triangle B$};
+\end{scope}
+% mutuamente excluyentes
+\begin{scope}[xshift=8.4cm]
+\draw (0,0) rectangle (3.4,2.6);
+\node at (0.25,2.35) {\footnotesize $\Omega$};
+\draw[fill=blue!25] (0.85,1.3) circle (0.7) node{\footnotesize $A$};
+\draw[fill=blue!25] (2.55,1.3) circle (0.7) node{\footnotesize $B$};
+\node at (1.7,-0.55) {\footnotesize $A \cap B = \varnothing$};
+\end{scope}
+\end{tikzpicture}
+\end{center}
+
+\begin{definicion}[Sucesos mutuamente excluyentes]
+Dos sucesos $A$ y $B$ son \textbf{mutuamente excluyentes} (también llamados incompatibles o disjuntos) si
+\[
+A \cap B = \varnothing,
+\]
+es decir, si no pueden ocurrir simultáneamente en un mismo ensayo del experimento.
+\end{definicion}
+
+\begin{ejemplo}
+Al lanzar un dado, $A=\{1,2\}$ (``sale 1 o 2'') y $B=\{5,6\}$ (``sale 5 o 6'') son mutuamente excluyentes, pues $A \cap B = \varnothing$: en un mismo lanzamiento no puede salir simultáneamente un número de $A$ y uno de $B$.
+\end{ejemplo}
+
+Un caso particular muy importante de familia de sucesos mutuamente excluyentes es el de una \emph{partición} de $\Omega$.
+
+\begin{definicion}[Sistema completo de sucesos]
+Una familia $\{A_1,A_2,\dots,A_n\}$ de sucesos es un \textbf{sistema completo de sucesos} (o una \textbf{partición} de $\Omega$) si:
+\begin{enumerate}
+\item $A_i \cap A_j = \varnothing$ para todo $i \neq j$ (son mutuamente excluyentes dos a dos), y
+\item $\displaystyle\bigcup_{i=1}^{n} A_i = \Omega$ (son exhaustivos: cubren todo el espacio muestral).
+\end{enumerate}
+\end{definicion}
+
+Esta noción, aparentemente sencilla, será el ingrediente central del teorema de la probabilidad total y del teorema de Bayes, que se desarrollan en la Sección~4: cualquier suceso $A$ puede descomponerse, ``recortándolo'' con las piezas de una partición, en una unión disjunta de trozos más manejables.
+
+\subsection{Propiedades algebraicas de las operaciones entre sucesos}
+
+Las operaciones entre sucesos satisfacen las mismas leyes algebraicas que las operaciones entre conjuntos arbitrarios. Las enunciamos aquí porque se usan constantemente en las demostraciones de las secciones siguientes.
+
+\begin{propiedad}[Conmutatividad]
+$A\cup B = B\cup A$ y $A\cap B = B\cap A$.
+\end{propiedad}
+
+\begin{propiedad}[Asociatividad]
+$(A\cup B)\cup C = A\cup(B\cup C)$ y $(A\cap B)\cap C = A\cap(B\cap C)$. Esto permite escribir $A\cup B\cup C$ y $A\cap B\cap C$ sin ambigüedad, y en general $\bigcup_{i=1}^n A_i$, $\bigcap_{i=1}^n A_i$.
+\end{propiedad}
+
+\begin{propiedad}[Distributividad]
+\[
+A\cap(B\cup C)=(A\cap B)\cup(A\cap C), \qquad A\cup(B\cap C)=(A\cup B)\cap(A\cup C).
+\]
+\end{propiedad}
+
+\begin{propiedad}[Elemento neutro y absorbente]
+\[
+A\cup \varnothing = A, \qquad A\cap \varnothing = \varnothing, \qquad A\cup \Omega = \Omega, \qquad A\cap \Omega = A.
+\]
+\end{propiedad}
+
+\begin{propiedad}[Leyes de De Morgan]
+\[
+(A\cup B)^c = A^c \cap B^c, \qquad (A\cap B)^c = A^c \cup B^c.
+\]
+\end{propiedad}
+
+\begin{proof}
+Demostramos la primera igualdad por doble inclusión; la segunda es análoga (o se deduce de la primera aplicándola a $A^c$ y $B^c$ y complementando ambos miembros).
+
+($\subseteq$) Sea $\omega \in (A\cup B)^c$. Entonces $\omega \notin A\cup B$, es decir, $\omega$ no pertenece ni a $A$ ni a $B$. Luego $\omega \in A^c$ y $\omega \in B^c$, de donde $\omega \in A^c \cap B^c$.
+
+($\supseteq$) Sea $\omega \in A^c \cap B^c$. Entonces $\omega \notin A$ y $\omega \notin B$, luego $\omega \notin A \cup B$, es decir $\omega \in (A\cup B)^c$.
+
+Como ambas inclusiones valen, $(A\cup B)^c = A^c \cap B^c$.
+\end{proof}
+
+Las leyes de De Morgan son extremadamente útiles en probabilidad: permiten traducir enunciados sobre ``no ocurre ni $A$ ni $B$'' en enunciados sobre intersecciones de complementos, y viceversa, lo cual simplifica muchos cálculos, como se verá en la Sección~2.
+
+\subsection{Álgebra y \texorpdfstring{$\sigma$}{sigma}-álgebra de sucesos}
+
+Hasta aquí hemos tratado a los sucesos simplemente como subconjuntos cualesquiera de $\Omega$. Cuando $\Omega$ es finito o infinito numerable, en general no hay inconveniente en considerar como sucesos a \emph{todos} los subconjuntos de $\Omega$. Sin embargo, cuando $\Omega$ es no numerable (por ejemplo, $\Omega=\mathbb{R}$), existen razones técnicas profundas —vinculadas a la teoría de la medida— por las cuales no es posible, en general, asignar de manera consistente una probabilidad a \emph{todos} los subconjuntos de $\Omega$ sin caer en contradicciones. Por ello se distingue, dentro de $\mathcal{P}(\Omega)$ (el conjunto de partes de $\Omega$, es decir, la familia de todos los subconjuntos posibles), una subfamilia $\mathcal{A}$ de subconjuntos ``bien portados'', a los que sí se les podrá asignar probabilidad. Esta subfamilia debe tener una estructura mínima de cierre bajo las operaciones lógicas naturales (negación, unión), que es lo que formaliza la noción de álgebra.
+
+\begin{definicion}[Álgebra de sucesos]
+Dado un espacio muestral $\Omega$, una familia $\mathcal{A}$ de subconjuntos de $\Omega$ es un \textbf{álgebra de sucesos} si satisface:
+\begin{enumerate}
+\item $\Omega \in \mathcal{A}$.
+\item Si $A \in \mathcal{A}$, entonces $A^c \in \mathcal{A}$ (cerrada bajo complemento).
+\item Si $A, B \in \mathcal{A}$, entonces $A \cup B \in \mathcal{A}$ (cerrada bajo unión finita).
+\end{enumerate}
+\end{definicion}
+
+\begin{definicion}[$\sigma$-álgebra de sucesos]
+Si además la familia $\mathcal{A}$ es cerrada bajo \textbf{uniones numerables}, es decir,
+\[
+A_1, A_2, A_3, \dots \in \mathcal{A} \;\Longrightarrow\; \bigcup_{i=1}^{\infty} A_i \in \mathcal{A},
+\]
+se dice que $\mathcal{A}$ es una \textbf{$\sigma$-álgebra} (o álgebra de Borel) de sucesos.
+\end{definicion}
+
+La $\sigma$-álgebra es, precisamente, la estructura sobre la cual se definirá en la Sección~2 la función de probabilidad. Necesitamos cierre bajo uniones \emph{numerables} (y no solo finitas) porque el tercer axioma de Kolmogorov ($\sigma$-aditividad) involucra sucesiones infinitas de sucesos, y para que la expresión $P\left(\bigcup_{i=1}^\infty A_i\right)$ tenga sentido, ese conjunto infinito debe, en primer lugar, pertenecer a la familia sobre la que $P$ está definida.
+
+\begin{observacion}
+Cuando $\Omega$ es finito o infinito numerable, se suele tomar directamente $\mathcal{A} = \mathcal{P}(\Omega)$, el conjunto de \emph{todos} los subconjuntos de $\Omega$, que automáticamente resulta ser una $\sigma$-álgebra (es fácil verificar que satisface los cuatro requisitos anteriores). Este es el caso que trabajaremos casi exclusivamente en este curso introductorio. Cuando $\Omega$ es no numerable —por ejemplo $\Omega = \mathbb{R}$— se trabaja habitualmente con la $\sigma$-álgebra de Borel, generada por los intervalos, que no coincide con $\mathcal{P}(\mathbb{R})$; este tecnicismo excede el alcance de este curso pero es bueno tenerlo presente para cursos posteriores de probabilidad más avanzados.
+\end{observacion}
+
+De los tres axiomas que definen un álgebra se deducen otras propiedades de cierre, que resultan útiles en la práctica.
+
+\begin{propiedad}
+Si $\mathcal{A}$ es un álgebra de sucesos sobre $\Omega$, entonces:
+\begin{enumerate}[label=(\alph*)]
+\item $\varnothing \in \mathcal{A}$.
+\item Si $A,B\in\mathcal{A}$, entonces $A\cap B \in \mathcal{A}$.
+\item Si $A,B \in \mathcal{A}$, entonces $A\setminus B \in \mathcal{A}$.
+\item Por inducción, $\mathcal{A}$ es cerrada bajo uniones e intersecciones finitas de cualquier cantidad (finita) de sucesos.
+\end{enumerate}
+\end{propiedad}
+
+\begin{proof}
+\begin{enumerate}[label=(\alph*)]
+\item Por el axioma 1, $\Omega \in \mathcal{A}$; por el axioma 2 (cierre bajo complemento), $\Omega^c \in \mathcal{A}$; y $\Omega^c = \varnothing$. Luego $\varnothing \in \mathcal{A}$.
+\item Como $A,B\in\mathcal{A}$, por el axioma 2 se tiene $A^c, B^c \in \mathcal{A}$; por el axioma 3, $A^c \cup B^c \in \mathcal{A}$; nuevamente por el axioma 2, $(A^c\cup B^c)^c \in \mathcal{A}$. Por la ley de De Morgan, $(A^c\cup B^c)^c = A\cap B$. Luego $A\cap B \in \mathcal{A}$.
+\item Como $B \in \mathcal{A}$, por el axioma 2, $B^c \in \mathcal{A}$; por el ítem (b) recién probado, $A\cap B^c \in \mathcal{A}$; y $A\cap B^c = A\setminus B$ por definición de diferencia. Luego $A\setminus B \in \mathcal{A}$.
+\item Se procede por inducción sobre la cantidad de conjuntos, usando el axioma 3 (para uniones) o el ítem (b) (para intersecciones) en el paso inductivo.
+\end{enumerate}
+\end{proof}
+
+En definitiva, el álgebra (o $\sigma$-álgebra) de sucesos $\mathcal{A}$ es la colección de subconjuntos de $\Omega$ a los que vamos a poder asignarle una probabilidad de manera consistente. Es, junto con $\Omega$, el segundo de los tres ingredientes de un \emph{espacio de probabilidad} $(\Omega, \mathcal{A}, P)$, noción que se introduce formalmente en la Sección~2.
+
+\subsection{Ejemplo integrador}
+
+\begin{ejemplo}
+Se extraen, sin reposición, dos artículos de un lote que contiene piezas \textbf{buenas} (B) y \textbf{defectuosas} (D), y se registra el estado de cada una en el orden de extracción.
+
+El espacio muestral es
+\[
+\Omega = \{BB,\ BD,\ DB,\ DD\}.
+\]
+Consideremos los sucesos:
+\begin{itemize}
+\item $A$: ``la primera pieza extraída es defectuosa'', es decir $A = \{DB, DD\}$.
+\item $C$: ``al menos una pieza es defectuosa'', es decir $C = \{BD, DB, DD\}$.
+\end{itemize}
+Calculamos algunas combinaciones:
+\begin{itemize}
+\item $A \cap C = \{DB,DD\} = A$, ya que $A \subseteq C$ (si la primera es defectuosa, automáticamente hay al menos una defectuosa).
+\item $A \cup C = \{BD,DB,DD\} = C$.
+\item $C^c = \{BB\}$: ``ninguna pieza es defectuosa''.
+\item $A \setminus C = \varnothing$ (pues $A\subseteq C$), mientras que $C\setminus A = \{BD\}$.
+\item $A$ y $\{BB\}$ son mutuamente excluyentes, ya que $A \cap \{BB\} = \varnothing$.
+\item La familia $\{A, \{BD\}, \{BB\}\}$ \emph{no} es un sistema completo de sucesos, porque si bien cubre todo $\Omega$ ($A\cup\{BD\}\cup\{BB\}=\Omega$), tampoco hace falta verificar exclusión mutua entre pares distintos ya definidos por partición natural; en cambio, $\{A, C\setminus A, \{BB\}\} = \{\{DB,DD\}, \{BD\}, \{BB\}\}$ sí es una partición de $\Omega$ en tres piezas disjuntas y exhaustivas.
+\end{itemize}
+Este ejemplo ilustra cómo, a partir de un espacio muestral concreto, se construyen sucesos como subconjuntos y se opera con ellos usando las reglas de conjuntos recién demostradas.
+\end{ejemplo}
+
+\newpage
+\section{Definiciones de probabilidad y axiomática de Kolmogorov}
+
+\subsection{Tres nociones intuitivas de probabilidad}
+
+Antes de introducir la axiomática moderna, es instructivo repasar las ideas intuitivas que, históricamente, dieron origen al concepto de probabilidad. Estas nociones no son mutuamente excluyentes ni rivales: cada una resulta natural en distintos contextos, y la teoría axiomática las engloba a todas como casos particulares (o compatibles) de un mismo marco formal.
+
+\subsubsection{Probabilidad clásica (definición de Laplace)}
+
+\begin{definicion}[Probabilidad clásica]
+Si un experimento aleatorio tiene un número finito $N$ de resultados posibles, todos ellos igualmente verosímiles (equiprobables), y $n_A$ de ellos son favorables a la ocurrencia del suceso $A$, entonces
+\[
+P(A) = \frac{n_A}{N} = \frac{\text{número de casos favorables a } A}{\text{número de casos posibles}}.
+\]
+\end{definicion}
+
+Esta definición, atribuida a Pierre-Simon Laplace (1814), se aplica \emph{antes} de realizar el experimento (es una probabilidad ``a priori''), y su validez descansa en un supuesto de simetría: que exista alguna razón física o estructural (un dado bien balanceado, una moneda honesta, una urna bien mezclada) para considerar a todos los resultados elementales igualmente posibles. Cuando ese supuesto es razonable, la definición clásica resulta extremadamente útil y da lugar, precisamente, al análisis combinatorio que se desarrolla en la Sección~3: el problema de calcular $P(A)$ se reduce a un problema de \emph{conteo} de $n_A$ y $N$.
+
+La definición clásica tiene, sin embargo, una debilidad lógica que conviene señalar: apela a la idea de resultados ``igualmente verosímiles'', pero ``igualmente verosímil'' es, en el fondo, sinónimo de ``igualmente probable''. Hay entonces una circularidad latente: se define probabilidad en términos de equiprobabilidad, que es a su vez una noción de probabilidad. Esta observación —lejos de ser una mera curiosidad filosófica— es una de las razones históricas que impulsaron la búsqueda de una axiomática que no dependiera de supuestos de simetría.
+
+\subsubsection{Probabilidad frecuencial (a posteriori)}
+
+\begin{definicion}[Frecuencia relativa]
+Si un experimento aleatorio se repite $n$ veces en condiciones idénticas e independientes, y un suceso $A$ ocurre en $n_A$ de esas repeticiones, la \textbf{frecuencia relativa} de $A$ en esas $n$ repeticiones es
+\[
+f_r(A) = \frac{n_A}{n}.
+\]
+\end{definicion}
+
+La \textbf{ley empírica del azar} (también llamada, de manera informal, regularidad estadística) es la observación empírica de que, a medida que $n$ crece indefinidamente, la frecuencia relativa $f_r(A)$ tiende a estabilizarse en torno a un valor constante, que se interpreta como $P(A)$. Esta regularidad fue constatada experimentalmente en los siglos XVIII y XIX (los propios experimentos de lanzamiento de monedas de Buffon y, más tarde, de Pearson, con miles de repeticiones, mostraron que la frecuencia relativa de ``cara'' se estabiliza cerca de $0{,}5$) y constituye el fundamento intuitivo de la \emph{interpretación frecuencial} de la probabilidad, adoptada especialmente en la estadística aplicada. Retomaremos esta idea, con mayor detalle numérico, en la Sección~3, y se formalizará rigurosamente más adelante en el curso mediante la Ley de los Grandes Números.
+
+\subsubsection{Probabilidad subjetiva}
+
+La \textbf{probabilidad subjetiva} es el grado de creencia personal de un individuo (o de un agente racional) respecto de la ocurrencia de un suceso, basado en la información y experiencia disponibles, y no necesariamente vinculado a la posibilidad de repetir el experimento. Se usa, por ejemplo, cuando un banco evalúa el riesgo de otorgar un crédito a un solicitante particular (un evento que, por su propia naturaleza, no es repetible en condiciones idénticas), cuando un médico estima la probabilidad de que un paciente concreto tenga determinada enfermedad antes de recibir los resultados de un estudio, o en el contexto de apuestas. Esta interpretación, desarrollada especialmente por Bruno de Finetti y Leonard Savage en el siglo XX, exige coherencia interna (que las creencias numéricas asignadas no den lugar a apuestas con pérdida segura), pero no requiere ni simetría ni repetibilidad.
+
+\begin{observacion}
+Ninguna de las tres nociones anteriores constituye, por sí sola, una definición matemática rigurosa y universalmente aplicable de probabilidad: la clásica requiere equiprobabilidad (y encierra cierta circularidad conceptual), la frecuencial requiere un límite empírico que en la práctica nunca se puede verificar exactamente (no se puede repetir un experimento infinitas veces), y la subjetiva depende del sujeto que la formula. La resolución de este problema llegó en 1933, cuando el matemático ruso Andréi Kolmogórov propuso una \textbf{axiomática} que no define ``qué es'' la probabilidad en términos filosóficos, sino que establece qué \textbf{propiedades matemáticas} debe cumplir cualquier función que merezca llamarse probabilidad, dejando abierta la interpretación (clásica, frecuencial o subjetiva) según el contexto de aplicación.
+\end{observacion}
+
+\subsection{Axiomas de Kolmogorov}
+
+\begin{definicion}[Espacio de probabilidad]
+Un \textbf{espacio de probabilidad} es una terna $(\Omega, \mathcal{A}, P)$ donde:
+\begin{itemize}
+\item $\Omega$ es el espacio muestral (conjunto fundamental) del experimento aleatorio,
+\item $\mathcal{A}$ es una $\sigma$-álgebra de subconjuntos de $\Omega$ (la familia de sucesos a los que se les asignará probabilidad),
+\item $P: \mathcal{A} \to \mathbb{R}$ es una función, llamada \textbf{probabilidad}, que satisface los tres axiomas de Kolmogorov enunciados a continuación.
+\end{itemize}
+\end{definicion}
+
+\begin{definicion}[Axiomas de Kolmogorov]\leavevmode
+\begin{description}
+\item[Axioma 1 (No negatividad).] $P(A) \geq 0$ para todo $A \in \mathcal{A}$.
+\item[Axioma 2 (Normalización).] $P(\Omega) = 1$.
+\item[Axioma 3 ($\sigma$-aditividad).] Si $A_1, A_2, A_3, \dots \in \mathcal{A}$ son sucesos mutuamente excluyentes dos a dos ($A_i \cap A_j = \varnothing$ para todo $i \neq j$), entonces
+\[
+P\left(\bigcup_{i=1}^{\infty} A_i\right) = \sum_{i=1}^{\infty} P(A_i).
+\]
+\end{description}
+\end{definicion}
+
+\begin{observacion}
+Cuando $\Omega$ es finito, basta pedir \textbf{aditividad finita} (si $A\cap B=\varnothing$ entonces $P(A\cup B)=P(A)+P(B)$) en lugar de $\sigma$-aditividad, ya que en ese caso no hay sucesiones infinitas de conjuntos disjuntos no vacíos posibles. Sin embargo, la versión numerable (Axioma 3, tal como está enunciado) es estrictamente necesaria para tratar con rigor los espacios infinitos —numerables o continuos— que aparecerán en unidades posteriores del curso, y por eso se adopta como axioma general.
+\end{observacion}
+
+Es instructivo verificar que las tres nociones intuitivas de la subsección anterior son consistentes con esta axiomática. La probabilidad clásica de Laplace, $P(A)=n_A/N$, satisface trivialmente los tres axiomas: es no negativa (cociente de enteros no negativos), $P(\Omega)=N/N=1$, y es aditiva sobre sucesos disjuntos porque el conteo de elementos de una unión disjunta es la suma de los conteos. La frecuencia relativa $f_r(A)=n_A/n$, para $n$ fijo, también los satisface: es no negativa, $f_r(\Omega)=n/n=1$, y si $A\cap B=\varnothing$ entonces el número de ensayos en que ocurre $A\cup B$ es la suma de los que ocurre $A$ más los que ocurre $B$ (no puede haber solapamiento), de modo que $f_r(A\cup B)=f_r(A)+f_r(B)$. Los axiomas de Kolmogorov son, en este sentido, la destilación de las propiedades matemáticas mínimas que \emph{cualquier} noción razonable de probabilidad —sea cual sea su interpretación filosófica— debe satisfacer. La axiomática no prescribe \emph{cómo} calcular $P(A)$ en una situación concreta (eso depende del modelo elegido: clásico, frecuencial o subjetivo), sino qué \emph{estructura matemática} debe respetar siempre ese cálculo.
+
+\subsection{Propiedades derivadas de los axiomas}
+
+A partir de únicamente los tres axiomas, sin apelar a ninguna interpretación intuitiva, se deduce una batería de propiedades que se usan constantemente en los cálculos de probabilidad. Las presentamos con sus demostraciones completas.
+
+\begin{teorema}[Probabilidad del suceso imposible]
+$P(\varnothing) = 0$.
+\end{teorema}
+
+\begin{proof}
+Consideremos la sucesión de sucesos $A_1=\Omega,\ A_2=\varnothing,\ A_3=\varnothing,\dots$, es decir $A_i=\varnothing$ para todo $i\geq 2$. Estos sucesos son mutuamente excluyentes dos a dos: en efecto, $\Omega \cap \varnothing = \varnothing$ y $\varnothing\cap\varnothing=\varnothing$. Además, su unión es
+\[
+\bigcup_{i=1}^{\infty} A_i = \Omega \cup \varnothing \cup \varnothing \cup \cdots = \Omega.
+\]
+Por el Axioma 3 ($\sigma$-aditividad),
+\[
+P(\Omega) = P(A_1) + \sum_{i=2}^{\infty} P(A_i) = P(\Omega) + \sum_{i=2}^{\infty} P(\varnothing).
+\]
+Como $P(\Omega)=1$ es un número finito, restando $P(\Omega)$ a ambos miembros se obtiene $\sum_{i=2}^\infty P(\varnothing) = 0$. Esta es una serie de términos todos iguales a $P(\varnothing) \geq 0$ (por el Axioma 1); la única manera de que una serie de términos no negativos, todos iguales, sume cero es que cada término sea cero. Por lo tanto $P(\varnothing)=0$.
+\end{proof}
+
+\begin{teorema}[Aditividad finita]
+Si $A, B \in \mathcal{A}$ con $A \cap B = \varnothing$, entonces $P(A\cup B) = P(A)+P(B)$. Más en general, si $A_1,\dots,A_n$ son mutuamente excluyentes dos a dos, entonces $P\left(\bigcup_{i=1}^n A_i\right) = \sum_{i=1}^n P(A_i)$.
+\end{teorema}
+
+\begin{proof}
+Tomamos $A_1=A,\ A_2=B$, y $A_i=\varnothing$ para $i\geq 3$ en el Axioma 3. Como $A\cap B=\varnothing$ y $\varnothing$ es disjunto de todo conjunto, la sucesión completa $A_1,A_2,A_3,\dots$ es mutuamente excluyente dos a dos, y su unión es $A\cup B$. Por $\sigma$-aditividad,
+\[
+P(A\cup B) = P(A)+P(B)+\sum_{i=3}^\infty P(\varnothing) = P(A)+P(B)+0 = P(A)+P(B),
+\]
+usando el teorema anterior. El caso de $n$ sucesos se obtiene de manera idéntica, completando la sucesión con infinitos conjuntos vacíos a partir del lugar $n+1$.
+\end{proof}
+
+\begin{teorema}[Probabilidad del complemento]
+Para todo $A \in \mathcal{A}$, $\; P(A^c) = 1 - P(A)$.
+\end{teorema}
+
+\begin{proof}
+Los sucesos $A$ y $A^c$ son mutuamente excluyentes ($A \cap A^c = \varnothing$) y su unión es $A \cup A^c = \Omega$. Por aditividad finita y el Axioma 2,
+\[
+P(A) + P(A^c) = P(A\cup A^c) = P(\Omega) = 1,
+\]
+de donde, despejando, $P(A^c) = 1-P(A)$.
+\end{proof}
+
+\begin{teorema}[Monotonía]
+Si $A \subseteq B$ (con $A,B\in\mathcal{A}$), entonces $P(A) \leq P(B)$. Más precisamente, $P(B\setminus A) = P(B)-P(A)$.
+\end{teorema}
+
+\begin{proof}
+Como $A \subseteq B$, todo elemento de $B$ está en $A$ o en $B\setminus A$, y estos dos conjuntos son disjuntos; es decir, podemos escribir $B$ como una unión disjunta:
+\[
+B = A \cup (B\setminus A), \qquad A \cap (B\setminus A) = \varnothing.
+\]
+Por aditividad finita, $P(B) = P(A) + P(B\setminus A)$. Por el Axioma 1, $P(B\setminus A)\geq 0$, de donde $P(B) \geq P(A)$. Despejando de la igualdad anterior, $P(B\setminus A)=P(B)-P(A)$.
+\end{proof}
+
+\begin{corolario}
+Para todo $A \in \mathcal{A}$ se cumple $0 \leq P(A) \leq 1$.
+\end{corolario}
+
+\begin{proof}
+Como $\varnothing \subseteq A \subseteq \Omega$ para cualquier suceso $A$, la monotonía da $P(\varnothing) \leq P(A) \leq P(\Omega)$, es decir, $0 \leq P(A) \leq 1$.
+\end{proof}
+
+\begin{teorema}[Regla de la suma, o inclusión-exclusión para dos sucesos]
+Para $A, B \in \mathcal{A}$ cualesquiera (no necesariamente disjuntos):
+\[
+P(A \cup B) = P(A) + P(B) - P(A \cap B).
+\]
+\end{teorema}
+
+\begin{proof}
+Descomponemos $A\cup B$ en tres piezas disjuntas dos a dos:
+\[
+A\cup B = (A\setminus B) \;\cup\; (A\cap B) \;\cup\; (B\setminus A).
+\]
+En efecto, todo elemento de $A\cup B$ pertenece a exactamente una de estas tres categorías (solo a $A$, a ambos, o solo a $B$), y las tres son disjuntas entre sí. Por aditividad finita (extendida a tres sucesos disjuntos):
+\[
+P(A\cup B) = P(A\setminus B) + P(A\cap B) + P(B\setminus A).
+\]
+Por el teorema de monotonía, tomando $A\cap B \subseteq A$, se tiene $P(A\setminus B) = P(A) - P(A\cap B)$; análogamente, tomando $A\cap B \subseteq B$, se tiene $P(B\setminus A)=P(B)-P(A\cap B)$. Sustituyendo:
+\[
+P(A\cup B) = \big[P(A)-P(A\cap B)\big] + P(A\cap B) + \big[P(B)-P(A\cap B)\big] = P(A)+P(B)-P(A\cap B). \qedhere
+\]
+\end{proof}
+
+Este resultado admite una generalización a tres sucesos, conocida como fórmula de \textbf{inclusión-exclusión}, que resulta muy útil en la práctica y que demostramos a continuación en detalle.
+
+\begin{teorema}[Inclusión-exclusión para tres sucesos]
+Para $A,B,C \in \mathcal{A}$ cualesquiera:
+\[
+P(A\cup B\cup C) = P(A)+P(B)+P(C) - P(A\cap B) - P(A\cap C) - P(B\cap C) + P(A\cap B\cap C).
+\]
+\end{teorema}
+
+\begin{proof}
+Aplicamos la regla de la suma para dos sucesos, tratando a $A\cup B$ como un único suceso y aplicándola dos veces. Primero,
+\[
+P\big((A\cup B)\cup C\big) = P(A\cup B) + P(C) - P\big((A\cup B)\cap C\big).
+\]
+Por la distributividad de la intersección respecto de la unión, $(A\cup B)\cap C = (A\cap C)\cup(B\cap C)$. Aplicando nuevamente la regla de la suma a este último par de sucesos:
+\[
+P\big((A\cap C)\cup(B\cap C)\big) = P(A\cap C)+P(B\cap C) - P\big((A\cap C)\cap(B\cap C)\big).
+\]
+Observando que $(A\cap C)\cap(B\cap C) = A\cap B\cap C$, obtenemos
+\[
+P\big((A\cup B)\cap C\big) = P(A\cap C)+P(B\cap C) - P(A\cap B\cap C).
+\]
+Sustituyendo en la primera igualdad, y usando además $P(A\cup B) = P(A)+P(B)-P(A\cap B)$ (regla de la suma para dos sucesos):
+\begin{align*}
+P(A\cup B\cup C) &= \big[P(A)+P(B)-P(A\cap B)\big] + P(C) - \big[P(A\cap C)+P(B\cap C) - P(A\cap B\cap C)\big] \\
+&= P(A)+P(B)+P(C) - P(A\cap B) - P(A\cap C) - P(B\cap C) + P(A\cap B\cap C). \qedhere
+\end{align*}
+\end{proof}
+
+\begin{observacion}
+El patrón que se observa —sumar las probabilidades individuales, restar las intersecciones de a pares, sumar la intersección de los tres— se generaliza a $n$ sucesos cualesquiera $A_1,\dots,A_n$ mediante la fórmula general de inclusión-exclusión:
+\[
+P\left(\bigcup_{i=1}^n A_i\right) = \sum_{i=1}^n P(A_i) - \sum_{i<j} P(A_i\cap A_j) + \sum_{i<j<k} P(A_i\cap A_j\cap A_k) - \cdots + (-1)^{n+1} P(A_1\cap\cdots\cap A_n),
+\]
+que se demuestra por inducción sobre $n$, exactamente con el mismo procedimiento empleado arriba para pasar de dos a tres sucesos. Esta generalización, si bien excede lo que se necesita habitualmente en este curso, es la herramienta de conteo probabilístico detrás de problemas clásicos como el del desarreglo (\emph{derangement}, o problema de las cartas mal repartidas).
+\end{observacion}
+
+\begin{teorema}[Subaditividad]
+Para $A,B \in \mathcal{A}$: $\; P(A\cup B) \leq P(A) + P(B)$. Más en general, para $A_1,\dots,A_n \in \mathcal{A}$ cualesquiera (no necesariamente disjuntos),
+\[
+P\left(\bigcup_{i=1}^n A_i\right) \leq \sum_{i=1}^n P(A_i).
+\]
+\end{teorema}
+
+\begin{proof}
+El caso de dos sucesos se sigue inmediatamente de la regla de la suma, ya que $P(A\cap B) \geq 0$ por el Axioma 1:
+\[
+P(A\cup B) = P(A)+P(B)-P(A\cap B) \leq P(A)+P(B).
+\]
+El caso general se prueba por inducción sobre $n$, aplicando el caso de dos sucesos a $\bigcup_{i=1}^{n-1}A_i$ y $A_n$.
+\end{proof}
+
+\begin{teorema}[Continuidad de la probabilidad]
+Sea $A_1 \subseteq A_2 \subseteq A_3 \subseteq \cdots$ una sucesión creciente de sucesos en $\mathcal{A}$. Entonces
+\[
+P\left(\bigcup_{i=1}^{\infty} A_i\right) = \lim_{n\to\infty} P(A_n).
+\]
+\end{teorema}
+
+\begin{proof}[Idea de la demostración]
+Se definen los ``anillos'' disjuntos $D_1=A_1$ y $D_i = A_i \setminus A_{i-1}$ para $i\geq 2$. Por construcción, los $D_i$ son mutuamente excluyentes dos a dos y $\bigcup_{i=1}^n D_i = A_n$ para todo $n$, así como $\bigcup_{i=1}^\infty D_i = \bigcup_{i=1}^\infty A_i$. Aplicando el Axioma 3 a la familia $\{D_i\}$,
+\[
+P\left(\bigcup_{i=1}^\infty A_i\right) = P\left(\bigcup_{i=1}^\infty D_i\right) = \sum_{i=1}^\infty P(D_i) = \lim_{n\to\infty}\sum_{i=1}^n P(D_i) = \lim_{n\to\infty} P(A_n),
+\]
+donde en el último paso se usó aditividad finita para escribir $\sum_{i=1}^n P(D_i) = P(A_n)$. Esta propiedad es consecuencia directa del Axioma 3 y resulta esencial en el tratamiento riguroso de espacios de probabilidad infinitos, que se retomará en unidades posteriores.
+\end{proof}
+
+\subsection{Ejemplos numéricos}
+
+\begin{ejemplo}
+En un club deportivo, el $60\%$ de los socios practica natación ($A$), el $50\%$ practica tenis ($B$) y el $30\%$ practica ambos deportes. Se elige un socio al azar. Calcular la probabilidad de que:
+\begin{enumerate}
+\item practique al menos uno de los dos deportes;
+\item no practique ninguno de los dos;
+\item practique natación pero no tenis;
+\item practique exactamente uno de los dos deportes (no ambos).
+\end{enumerate}
+\end{ejemplo}
+
+\textbf{Resolución.} Los datos son $P(A)=0{,}6$, $P(B)=0{,}5$, $P(A\cap B)=0{,}3$.
+\begin{enumerate}
+\item Por la regla de la suma, $P(A\cup B) = 0{,}6+0{,}5-0{,}3 = 0{,}8$.
+\item Por la ley de De Morgan y el teorema del complemento, $P(A^c\cap B^c)=P((A\cup B)^c) = 1-P(A\cup B) = 1-0{,}8 = 0{,}2$.
+\item Por monotonía, $P(A\setminus B) = P(A)-P(A\cap B) = 0{,}6-0{,}3 = 0{,}3$.
+\item El suceso ``exactamente uno de los dos'' es la diferencia simétrica $A \triangle B = (A\setminus B)\cup(B\setminus A)$, unión de dos conjuntos disjuntos. Ya sabemos $P(A\setminus B)=0{,}3$; análogamente $P(B\setminus A) = P(B)-P(A\cap B) = 0{,}5-0{,}3=0{,}2$. Luego $P(A\triangle B) = 0{,}3+0{,}2 = 0{,}5$.
+\end{enumerate}
+
+\begin{ejemplo}
+Sean $A,B,C\in\mathcal{A}$ con $P(A)=0{,}3$, $P(B)=0{,}4$, $P(C)=0{,}2$, mutuamente excluyentes dos a dos. Calcular $P(A\cup B\cup C)$ y $P\big((A\cup B\cup C)^c\big)$.
+\end{ejemplo}
+
+\textbf{Resolución.} Al ser mutuamente excluyentes dos a dos, todas las intersecciones de a pares (y la triple) son vacías, de modo que la fórmula de inclusión-exclusión se reduce a la aditividad finita:
+\[
+P(A\cup B\cup C) = P(A)+P(B)+P(C) = 0{,}3+0{,}4+0{,}2 = 0{,}9.
+\]
+Por complemento, $P\big((A\cup B\cup C)^c\big) = 1 - 0{,}9 = 0{,}1$.
+
+\begin{ejemplo}
+Se sabe que $P(A)=0{,}45$ y $P(A\cup B) = 0{,}70$, y que $A$ y $B$ son sucesos mutuamente excluyentes. Hallar $P(B)$ y $P(A^c \cap B^c)$.
+\end{ejemplo}
+
+\textbf{Resolución.} Como $A\cap B=\varnothing$, la aditividad finita da $P(A\cup B) = P(A)+P(B)$, luego
+\[
+P(B) = P(A\cup B)-P(A) = 0{,}70-0{,}45 = 0{,}25.
+\]
+Por De Morgan, $A^c\cap B^c = (A\cup B)^c$, entonces
+\[
+P(A^c\cap B^c) = 1-P(A\cup B) = 1-0{,}70=0{,}30.
+\]
+
+\begin{ejemplo}
+De una fábrica de componentes electrónicos se sabe que el $12\%$ de las piezas tiene un defecto de tipo $X$, el $8\%$ tiene un defecto de tipo $Y$, el $15\%$ tiene un defecto de tipo $Z$, el $3\%$ tiene defectos $X$ e $Y$ simultáneamente, el $4\%$ tiene $X$ y $Z$, el $2\%$ tiene $Y$ y $Z$, y el $1\%$ tiene los tres defectos. ¿Qué porcentaje de piezas tiene al menos un defecto?
+\end{ejemplo}
+
+\textbf{Resolución.} Aplicamos inclusión-exclusión para tres sucesos con $P(X)=0{,}12$, $P(Y)=0{,}08$, $P(Z)=0{,}15$, $P(X\cap Y)=0{,}03$, $P(X\cap Z)=0{,}04$, $P(Y\cap Z)=0{,}02$, $P(X\cap Y\cap Z)=0{,}01$:
+\[
+P(X\cup Y\cup Z) = 0{,}12+0{,}08+0{,}15 - 0{,}03-0{,}04-0{,}02 + 0{,}01 = 0{,}27.
+\]
+Es decir, el $27\%$ de las piezas presenta al menos uno de los tres defectos.
+
+\newpage
+\section{Análisis combinatorio}
+
+\subsection{Espacios equiprobables y regla de Laplace}
+
+Como vimos en la Sección~2, la definición clásica de probabilidad se aplica cuando el espacio muestral es finito y todos sus resultados son igualmente verosímiles.
+
+\begin{definicion}[Espacio equiprobable]
+Un espacio muestral finito $\Omega=\{\omega_1,\dots,\omega_N\}$ es \textbf{equiprobable} si todos sus sucesos elementales tienen la misma probabilidad:
+\[
+P(\{\omega_1\}) = P(\{\omega_2\}) = \cdots = P(\{\omega_N\}) = \frac{1}{N}.
+\]
+\end{definicion}
+
+\begin{teorema}[Regla de Laplace]
+En un espacio equiprobable, para cualquier suceso $A\subseteq\Omega$ con $|A|=n_A$ elementos,
+\[
+P(A) = \frac{n_A}{N} = \frac{\text{número de casos favorables a } A}{\text{número de casos posibles}}.
+\]
+\end{teorema}
+
+\begin{proof}
+$A$ puede escribirse como unión disjunta de sus $n_A$ sucesos elementales: $A = \{\omega_{i_1}\} \cup \{\omega_{i_2}\} \cup \cdots \cup \{\omega_{i_{n_A}}\}$. Por aditividad finita,
+\[
+P(A) = \sum_{k=1}^{n_A} P(\{\omega_{i_k}\}) = n_A \cdot \frac{1}{N} = \frac{n_A}{N}. \qedhere
+\]
+\end{proof}
+
+El problema práctico que surge inmediatamente es que aplicar la regla de Laplace exige \textbf{contar} exactamente $n_A$ y $N$, y cuando $\Omega$ es grande —lo cual es la regla más que la excepción— hacerlo por enumeración directa es inviable. El \textbf{análisis combinatorio} es precisamente el conjunto de técnicas sistemáticas para contar sin enumerar.
+
+\subsection{Principio multiplicativo}
+
+\begin{definicion}[Principio multiplicativo, o principio fundamental del conteo]
+Si una operación (o elección) $1$ puede realizarse de $n_1$ formas distintas, y para \emph{cada} una de esas formas una operación $2$ puede realizarse de $n_2$ formas, y así sucesivamente hasta una operación $k$ que, para cada combinación de las anteriores, puede realizarse de $n_k$ formas, entonces el número total de formas de realizar la secuencia completa de las $k$ operaciones es
+\[
+n_1 \cdot n_2 \cdots n_k.
+\]
+\end{definicion}
+
+Este principio, aparentemente elemental, es el ladrillo fundamental sobre el cual se construyen todas las fórmulas de conteo que siguen: permutaciones, variaciones y combinaciones no son más que aplicaciones ingeniosas —y a veces disfrazadas de una división por simetrías— del principio multiplicativo.
+
+\begin{ejemplo}
+Un menú de restaurante ofrece 4 entradas, 3 platos principales y 2 postres. El número de menús completos distintos (una opción de cada categoría) es
+\[
+4 \times 3 \times 2 = 24.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}
+Las patentes de auto en cierto formato usan 3 letras (de un alfabeto de 26) seguidas de 3 dígitos (de 0 a 9), sin restricciones de repetición. El número total de patentes posibles es
+\[
+26^3 \times 10^3 = 17\,576 \times 1000 = 17\,576\,000.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}
+¿Cuántos números de tres cifras (entre 100 y 999) tienen sus tres dígitos distintos?
+\end{ejemplo}
+
+\textbf{Resolución.} El primer dígito no puede ser $0$ (para que el número tenga efectivamente tres cifras): hay 9 posibilidades ($1$ a $9$). El segundo dígito puede ser cualquiera de los $10$ dígitos, excepto el ya usado en el primer lugar: 9 posibilidades. El tercero debe diferir de los dos anteriores: 8 posibilidades. Por el principio multiplicativo:
+\[
+9\times 9 \times 8 = 648.
+\]
+
+\subsection{Permutaciones}
+
+\begin{definicion}[Permutación simple]
+Una \textbf{permutación} de $n$ objetos distintos es un ordenamiento (una secuencia, donde importa el orden) de todos ellos. El número de permutaciones posibles de $n$ objetos es
+\[
+P_n = n! = n\cdot(n-1)\cdots 2\cdot 1, \qquad \text{con la convención } 0! := 1.
+\]
+\end{definicion}
+
+\begin{proof}[Justificación]
+Para construir un ordenamiento, elegimos qué objeto va en el primer lugar ($n$ posibilidades), luego qué objeto va en el segundo lugar entre los $n-1$ restantes ($n-1$ posibilidades), y así sucesivamente, hasta el último lugar, para el cual solo queda $1$ objeto disponible. Por el principio multiplicativo, el número total de ordenamientos es $n\cdot(n-1)\cdots 2\cdot 1 = n!$.
+\end{proof}
+
+\begin{ejemplo}
+¿De cuántas maneras se pueden ordenar 5 libros distintos en un estante? $5! = 120$.
+\end{ejemplo}
+
+\begin{ejemplo}[Permutaciones circulares — tema adicional]
+¿De cuántas maneras distintas pueden sentarse 6 personas alrededor de una mesa redonda, si solo importan las posiciones relativas (es decir, se consideran equivalentes las distribuciones que difieren por una rotación de la mesa)?
+\end{ejemplo}
+
+\textbf{Resolución.} Si las $6! = 720$ permutaciones lineales de las personas correspondieran todas a disposiciones circulares distintas, estaríamos sobrecontando: cada disposición circular da lugar a $6$ permutaciones lineales distintas según en qué lugar de la fila ``cortemos'' el círculo (es decir, según a qué persona fijemos como punto de partida). Como cada configuración circular fue contada exactamente $6$ veces entre las $720$ permutaciones lineales, el número de disposiciones circulares distinguibles es
+\[
+\frac{6!}{6} = \frac{720}{6} = 120 = 5!.
+\]
+En general, el número de permutaciones circulares de $n$ objetos distintos es $(n-1)!$. Este es un ejemplo instructivo de una técnica de conteo muy usada: contar ``de más'' de manera sistemática y luego dividir por el factor de sobrecontéo, la misma idea que reaparecerá al vincular variaciones con combinaciones.
+
+\begin{definicion}[Permutaciones con repetición]
+Si se dispone de $n$ objetos, de los cuales $n_1$ son de un primer tipo (indistinguibles entre sí), $n_2$ de un segundo tipo, \dots, $n_k$ de un $k$-ésimo tipo, con $n_1+n_2+\cdots+n_k=n$, el número de ordenamientos \textbf{distinguibles} de los $n$ objetos es
+\[
+\frac{n!}{n_1!\,n_2! \cdots n_k!}.
+\]
+\end{definicion}
+
+\begin{proof}[Justificación]
+Si los $n$ objetos fueran todos distinguibles entre sí, habría $n!$ ordenamientos. Pero como los $n_1$ objetos del primer tipo son en realidad indistinguibles, cada ordenamiento ``distinguible'' corresponde a $n_1!$ permutaciones de esos objetos entre sí que dan el mismo resultado visible; análogamente para los demás tipos. Por el principio multiplicativo, cada configuración distinguible fue contada $n_1!\,n_2!\cdots n_k!$ veces dentro de las $n!$ permutaciones totales. Dividiendo, el número de ordenamientos distinguibles es $n!/(n_1!\,n_2!\cdots n_k!)$.
+\end{proof}
+
+\begin{ejemplo}
+¿Cuántas ``palabras'' distintas (con o sin sentido) se pueden formar reordenando todas las letras de \textsc{ESTADISTICA}?
+\end{ejemplo}
+
+\textbf{Resolución.} La palabra tiene 11 letras, con las siguientes repeticiones: E(1), S(2), T(2), A(2), D(1), I(2), C(1) —nótese $1+2+2+2+1+2+1=11$. El número de anagramas distintos es
+\[
+\frac{11!}{1!\,2!\,2!\,2!\,1!\,2!\,1!} = \frac{39\,916\,800}{16} = 2\,494\,800.
+\]
+
+\subsection{Variaciones (arreglos)}
+
+En muchas situaciones no queremos ordenar \emph{todos} los objetos disponibles, sino seleccionar y ordenar solo una parte de ellos.
+
+\begin{definicion}[Variaciones sin repetición]
+Una \textbf{variación} de $n$ objetos distintos tomados de a $r$ (con $0\leq r\leq n$) es una selección \textbf{ordenada} de $r$ de esos objetos, sin repetirlos. Su número es
+\[
+V_{n,r} = n(n-1)(n-2)\cdots(n-r+1) = \frac{n!}{(n-r)!}.
+\]
+\end{definicion}
+
+\begin{proof}[Justificación]
+El primer objeto de la secuencia se elige entre los $n$ disponibles; el segundo, entre los $n-1$ restantes (no puede repetirse el ya elegido); y así sucesivamente hasta el $r$-ésimo, para el cual quedan $n-(r-1) = n-r+1$ objetos disponibles. Por el principio multiplicativo, $V_{n,r} = n(n-1)\cdots(n-r+1)$, que se reescribe como $n!/(n-r)!$ multiplicando y dividiendo por $(n-r)!$.
+\end{proof}
+
+\begin{ejemplo}
+En una carrera de 8 caballos, ¿de cuántas formas distintas se pueden ocupar los tres primeros puestos (oro, plata y bronce)?
+\[
+V_{8,3} = \frac{8!}{5!} = 8\times7\times6 = 336.
+\]
+\end{ejemplo}
+
+\begin{definicion}[Variaciones con repetición]
+Si los objetos pueden repetirse libremente en la selección ordenada, el número de secuencias ordenadas de longitud $r$ que pueden formarse a partir de un conjunto de $n$ objetos distintos es
+\[
+n^r.
+\]
+\end{definicion}
+
+\begin{proof}[Justificación]
+Cada una de las $r$ posiciones de la secuencia puede llenarse, de manera independiente de las demás, con cualquiera de los $n$ objetos disponibles (no hay restricción de no repetición). Por el principio multiplicativo, $\underbrace{n\times n\times\cdots\times n}_{r \text{ veces}} = n^r$.
+\end{proof}
+
+\begin{ejemplo}
+Claves numéricas de 4 dígitos (cada uno entre 0 y 9), con repetición permitida (por ejemplo, ``0000'' o ``1111'' son claves válidas): hay $10^4 = 10\,000$ claves posibles.
+\end{ejemplo}
+
+\subsection{Combinaciones y el coeficiente binomial}
+
+Cuando el orden de la selección no importa —solo interesa \emph{qué} elementos quedaron seleccionados—, hablamos de combinaciones.
+
+\begin{definicion}[Combinación]
+Una \textbf{combinación} de $n$ objetos distintos tomados de a $r$ es una selección \textbf{no ordenada} (es decir, un subconjunto) de $r$ de esos $n$ objetos. Su número se denota
+\[
+C_{n,r} = \binom{n}{r} = \frac{n!}{r!\,(n-r)!},
+\]
+y se lee ``$n$ sobre $r$'' o ``coeficiente binomial de $n$ y $r$''.
+\end{definicion}
+
+\begin{proof}[Justificación (relación entre variaciones y combinaciones)]
+Cada combinación de $r$ objetos (un subconjunto de tamaño $r$) da lugar exactamente a $r!$ variaciones distintas: todas las formas de ordenar esos $r$ objetos entre sí. Como toda variación se obtiene de esta manera a partir de exactamente una combinación, se tiene
+\[
+V_{n,r} = \binom{n}{r} \cdot r!,
+\]
+y despejando,
+\[
+\binom{n}{r} = \frac{V_{n,r}}{r!} = \frac{1}{r!}\cdot\frac{n!}{(n-r)!} = \frac{n!}{r!(n-r)!}. \qedhere
+\]
+\end{proof}
+
+\begin{ejemplo}
+¿Cuántos comités de 3 personas se pueden formar a partir de un grupo de 10, si el orden dentro del comité no importa (no hay roles distintos)?
+\[
+\binom{10}{3} = \frac{10!}{3!\,7!} = \frac{10\cdot 9\cdot 8}{3\cdot 2\cdot 1} = 120.
+\]
+\end{ejemplo}
+
+\begin{propiedad}[Propiedades del coeficiente binomial]
+\[
+\binom{n}{0}=\binom{n}{n}=1, \qquad \binom{n}{r}=\binom{n}{n-r}, \qquad \binom{n}{r}=\binom{n-1}{r-1}+\binom{n-1}{r} \quad (\text{relación de Pascal}).
+\]
+\end{propiedad}
+
+\begin{proof}
+Las dos primeras se verifican directamente en la fórmula $\binom{n}{r}=n!/(r!(n-r)!)$: para $r=0$ o $r=n$ el cociente vale $1$, y la simetría $\binom{n}{r}=\binom{n}{n-r}$ es evidente al intercambiar $r$ por $n-r$ en la fórmula. La relación de Pascal se demuestra de manera combinatoria (sin cálculo algebraico): $\binom{n}{r}$ cuenta los subconjuntos de tamaño $r$ de un conjunto de $n$ elementos $\{x_1,\dots,x_n\}$. Fijemos el elemento $x_n$ y clasifiquemos los subconjuntos de tamaño $r$ según si contienen o no a $x_n$: los que \emph{sí} lo contienen se obtienen eligiendo los $r-1$ elementos restantes entre los otros $n-1$, lo cual da $\binom{n-1}{r-1}$ subconjuntos; los que \emph{no} lo contienen se obtienen eligiendo los $r$ elementos entre los otros $n-1$, lo cual da $\binom{n-1}{r}$ subconjuntos. Como estas dos categorías son disjuntas y exhaustivas, $\binom{n}{r}=\binom{n-1}{r-1}+\binom{n-1}{r}$.
+\end{proof}
+
+Esta relación de Pascal es la que genera el conocido \emph{triángulo de Pascal}, en el que cada entrada es la suma de las dos que tiene inmediatamente arriba.
+
+\begin{teorema}[Binomio de Newton]
+Para todo $n \in \mathbb{N}$ y todo par de números reales (o complejos) $a,b$,
+\[
+(a+b)^n = \sum_{r=0}^{n} \binom{n}{r} a^{n-r} b^r.
+\]
+\end{teorema}
+
+\begin{proof}
+Escribimos $(a+b)^n = (a+b)(a+b)\cdots(a+b)$, producto de $n$ factores idénticos. Al desarrollar este producto (aplicando la propiedad distributiva reiteradamente), cada término del desarrollo se obtiene eligiendo, de cada uno de los $n$ factores $(a+b)$, o bien la letra $a$ o bien la letra $b$, y multiplicando las $n$ elecciones. Un término particular con $a^{n-r}b^r$ (es decir, con $b$ elegida en exactamente $r$ de los $n$ factores, y $a$ en los $n-r$ restantes) aparece tantas veces como maneras haya de elegir \emph{cuáles} $r$ de los $n$ factores aportan la $b$: eso es, precisamente, $\binom{n}{r}$. Sumando sobre todos los valores posibles de $r$ (de $0$ a $n$) se obtiene la fórmula del enunciado.
+\end{proof}
+
+\begin{observacion}
+El binomio de Newton explica por qué $\binom{n}{r}$ se llama ``coeficiente binomial'': es literalmente el coeficiente que multiplica a $a^{n-r}b^r$ en el desarrollo de $(a+b)^n$. Tomando $a=b=1$ se obtiene la identidad $\sum_{r=0}^n \binom{n}{r} = 2^n$, que tiene una lectura combinatoria directa: es el número total de subconjuntos de un conjunto de $n$ elementos (sumando los subconjuntos de cada tamaño posible $r=0,1,\dots,n$), coincidiendo con el hecho conocido de que $|\mathcal{P}(\Omega)|=2^{|\Omega|}$.
+\end{observacion}
+
+\begin{observacion}[Cuándo usar variaciones y cuándo combinaciones]
+Frente a un problema de conteo conviene primero hacerse la pregunta: ¿importa el \textbf{orden} en que se seleccionan o disponen los objetos? Si la respuesta es sí (por ejemplo, distinguir quién llega primero, segundo y tercero en una carrera, o formar una palabra donde el orden de las letras cambia el resultado), corresponde usar variaciones o permutaciones. Si la respuesta es no (solo importa \emph{qué} conjunto de objetos quedó seleccionado, sin roles diferenciados, como al armar un comité o elegir una mano de cartas), corresponde usar combinaciones.
+\end{observacion}
+
+\subsection{La paradoja del cumpleaños — un ejemplo enriquecedor}
+
+Como aplicación no trivial —y sorprendente— del principio multiplicativo y de la regla de Laplace, consideramos el célebre problema del cumpleaños.
+
+\begin{ejemplo}[Paradoja del cumpleaños]
+En un grupo de $n$ personas elegidas al azar (suponiendo que los 365 días del año son igualmente probables como fecha de nacimiento de cada persona, ignorando años bisiestos, y que los cumpleaños de las distintas personas son independientes entre sí), ¿cuál es la probabilidad de que al menos dos personas del grupo cumplan años el mismo día?
+\end{ejemplo}
+
+\textbf{Resolución.} Es mucho más simple calcular primero la probabilidad del suceso complementario, $A^c$: ``todas las $n$ personas tienen cumpleaños en fechas distintas''.
+
+El espacio muestral consiste en asignar a cada una de las $n$ personas un día del año entre $365$ posibles; como distintas personas pueden compartir fecha, se trata de una variación con repetición: hay $365^n$ asignaciones posibles igualmente verosímiles (casos posibles, $N=365^n$).
+
+Los casos favorables a $A^c$ (todas las fechas distintas) corresponden a asignar a las $n$ personas $n$ fechas \emph{distintas} y ordenadas (importa a qué persona corresponde cada fecha): eso es una variación sin repetición de $365$ elementos tomados de a $n$,
+\[
+n_{A^c} = V_{365,n} = 365\cdot 364 \cdots (365-n+1) = \frac{365!}{(365-n)!}.
+\]
+Por la regla de Laplace,
+\[
+P(A^c) = \frac{365\cdot 364 \cdots (365-n+1)}{365^n} = \prod_{k=0}^{n-1}\left(1-\frac{k}{365}\right),
+\]
+y por lo tanto
+\[
+P(A) = 1-P(A^c) = 1 - \prod_{k=0}^{n-1}\left(1-\frac{k}{365}\right).
+\]
+
+Calculando numéricamente para algunos valores de $n$:
+\begin{center}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+$n$ & 10 & 23 & 50 \\
+\midrule
+$P(A)$ & $\approx 0{,}117$ & $\approx 0{,}507$ & $\approx 0{,}970$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Lo llamativo —lo que le da el nombre de ``paradoja'' a este resultado, aunque no hay ninguna contradicción lógica, solo una fuerte violación de la intuición— es que con apenas $23$ personas la probabilidad de que \emph{al menos dos} compartan cumpleaños ya supera el $50\%$, y con $50$ personas es prácticamente segura ($97\%$). La intuición ingenua suele comparar $n$ con $365$ y esperar que se necesiten cientos de personas; el error de esa intuición es no advertir que lo que hay que comparar no es ``personas versus días'', sino el número de \textbf{pares} de personas, que crece como $\binom{n}{2}=n(n-1)/2$: con apenas $23$ personas ya hay $\binom{23}{2}=253$ pares distintos que podrían coincidir, un número comparable a los $365$ días disponibles.
+
+\subsection{Ejemplos aplicados de combinatoria}
+
+\begin{ejemplo}
+De un mazo de 40 cartas españolas (4 palos de 10 cartas cada uno), se extraen 5 cartas al azar sin reposición. Calcular la probabilidad de que las 5 cartas sean del mismo palo.
+\end{ejemplo}
+
+\textbf{Resolución.} Casos posibles (el orden de extracción no importa): $N = \binom{40}{5} = 658\,008$. Casos favorables: elegir primero un palo (4 formas) y luego 5 cartas de ese palo entre las 10 disponibles:
+\[
+n_A = \binom{4}{1}\binom{10}{5} = 4 \times 252 = 1008, \qquad P(A) = \frac{1008}{658\,008} \approx 0{,}00153.
+\]
+
+\begin{ejemplo}
+Se lanzan 3 dados equilibrados. Calcular la probabilidad de que la suma de los puntos sea igual a 10.
+\end{ejemplo}
+
+\textbf{Resolución.} Casos posibles (ternas ordenadas, con repetición): $N = 6^3 = 216$. Buscamos las ternas $(a,b,c)$ con $a,b,c\in\{1,\dots,6\}$ tales que $a+b+c=10$. Enumerando los multiconjuntos $\{a,b,c\}$ que suman 10:
+\[
+\{1,3,6\}, \{1,4,5\}, \{2,2,6\}, \{2,3,5\}, \{2,4,4\}, \{3,3,4\}.
+\]
+Los tres primeros (con valores todos distintos) admiten $3!=6$ ordenamientos cada uno: $3\times 6=18$. Los tres últimos (con un valor repetido) admiten $3!/2!=3$ ordenamientos cada uno: $3\times 3=9$. En total,
+\[
+n_A = 18+9=27, \qquad P(A) = \frac{27}{216} = \frac{1}{8} = 0{,}125.
+\]
+
+\begin{ejemplo}
+Un lote contiene 50 artículos, de los cuales 5 son defectuosos. Se seleccionan al azar 4 artículos sin reposición para inspección. Calcular la probabilidad de que exactamente 1 de los 4 seleccionados sea defectuoso.
+\end{ejemplo}
+
+\textbf{Resolución (esquema hipergeométrico).} Casos posibles: $N=\binom{50}{4} = 230\,300$. Casos favorables: elegir 1 defectuoso entre los 5, y 3 buenos entre los 45 restantes:
+\[
+n_A = \binom{5}{1}\binom{45}{3} = 5 \times 14\,190 = 70\,950, \qquad P(A) = \frac{70\,950}{230\,300} \approx 0{,}3081.
+\]
+Este esquema de conteo —combinar $\binom{\text{favorables}}{k}\binom{\text{desfavorables}}{n-k}$ sobre $\binom{\text{total}}{n}$— es el que subyace a la distribución hipergeométrica, que se estudiará formalmente como distribución de una variable aleatoria discreta en la Unidad~2.
+
+\begin{ejemplo}
+Una urna contiene 4 bolillas rojas y 6 blancas. Se extraen 2 bolillas al azar. Comparar $P(\text{ambas rojas})$ en dos esquemas de muestreo: (a) sin reposición, y (b) con reposición.
+\end{ejemplo}
+
+\textbf{Resolución.} (a) Sin reposición:
+\[
+P(\text{ambas rojas}) = \frac{\binom{4}{2}}{\binom{10}{2}} = \frac{6}{45} = \frac{2}{15}\approx 0{,}1333,
+\]
+lo cual coincide, aplicando el principio multiplicativo directamente sobre proporciones sucesivas, con $\dfrac{4}{10}\cdot\dfrac{3}{9} = \dfrac{12}{90}=\dfrac{2}{15}$.
+
+(b) Con reposición, cada extracción es independiente de la anterior (la composición de la urna no cambia):
+\[
+P(\text{ambas rojas}) = \frac{4}{10}\cdot\frac{4}{10} = \frac{16}{100} = 0{,}16.
+\]
+
+Con reposición, la probabilidad de repetir el color favorable resulta mayor que sin reposición, porque en el muestreo sin reposición la extracción de una bolilla roja ``empobrece'' la urna en bolillas rojas para la extracción siguiente, mientras que con reposición la composición de la urna se mantiene siempre igual.
+
+\subsection{Frecuencias relativas y ley empírica del azar}
+
+Cerramos esta sección retomando, con mayor precisión, la noción de frecuencia relativa introducida en la Sección~2, y su relación con los axiomas de Kolmogorov.
+
+\begin{propiedad}
+Si un experimento aleatorio se repite $n$ veces en condiciones idénticas e independientes, la frecuencia relativa $f_r(A)=n_A/n$ (para $n$ fijo) satisface:
+\begin{itemize}
+\item $0 \leq f_r(A) \leq 1$ para todo suceso $A$.
+\item $f_r(\Omega) = 1$.
+\item Si $A\cap B=\varnothing$, entonces $f_r(A\cup B) = f_r(A)+f_r(B)$.
+\end{itemize}
+Es decir, para cada $n$ fijo, $f_r$ satisface exactamente los mismos axiomas que una función de probabilidad sobre el espacio muestral $\Omega$.
+\end{propiedad}
+
+Esta observación explica, desde la propia axiomática, por qué la frecuencia relativa es un candidato natural para \emph{estimar} $P(A)$ en la práctica: para cada tamaño de muestra $n$, $f_r$ es en sí misma una probabilidad legítima (satisface los axiomas), y la \textbf{ley empírica del azar} —constatada empíricamente desde los estudios de Jakob Bernoulli y, más tarde, en los experimentos masivos de lanzamiento de moneda de Karl Pearson (miles de repeticiones)— establece que, a medida que $n\to\infty$, $f_r(A)$ tiende a estabilizarse en torno a un valor constante que identificamos con $P(A)$. Esta observación empírica se formalizará con total rigor matemático más adelante en el curso, bajo el nombre de \emph{Ley de los Grandes Números}, una vez que se disponga del aparato de variables aleatorias y esperanza.
+
+\newpage
+\section{Probabilidad condicional, independencia y teoremas de Bayes}
+
+\subsection{Motivación y definición de probabilidad condicional}
+
+\begin{ejemplo}[Motivación]
+Se lanza un dado equilibrado. Sea $A$: ``sale un número par'' y $B$: ``sale un número mayor que 3''. Sabemos que $P(A)=1/2$. Pero si nos informan que \emph{ya ocurrió} $B$ (es decir, sabemos que el resultado fue 4, 5 o 6, aunque no cuál exactamente), ¿cómo debería actualizarse la probabilidad de $A$ a la luz de esta información?
+\end{ejemplo}
+
+La idea intuitiva es que, al saber que ocurrió $B=\{4,5,6\}$, el espacio muestral ``efectivo'' se reduce de $\Omega=\{1,\dots,6\}$ a $B$: ya no consideramos posibles los resultados $1,2,3$. Dentro de este nuevo espacio reducido, los resultados favorables a $A$ son los que están tanto en $A$ como en $B$, es decir $A\cap B = \{4,6\}$. La nueva probabilidad de $A$, condicionada a que ocurrió $B$, resulta entonces
+\[
+\frac{|A\cap B|}{|B|} = \frac{2}{3},
+\]
+un valor distinto de $P(A)=1/2$: la información de que ocurrió $B$ modificó nuestra evaluación de la probabilidad de $A$. Esta idea intuitiva —restringir el espacio muestral al suceso condicionante y contar dentro de él— motiva la definición formal siguiente.
+
+\begin{definicion}[Probabilidad condicional]
+Sean $A, B \in \mathcal{A}$ con $P(B) > 0$. La \textbf{probabilidad condicional} de $A$ dado $B$ se define como
+\[
+P(A \mid B) = \frac{P(A \cap B)}{P(B)}.
+\]
+\end{definicion}
+
+Verifiquemos que esta definición formal reproduce el cálculo intuitivo del ejemplo motivador: $P(A\cap B) = P(\{4,6\}) = 2/6$ y $P(B) = 3/6$, de modo que
+\[
+P(A\mid B) = \frac{2/6}{3/6} = \frac{2}{3},
+\]
+que efectivamente coincide con el valor obtenido por conteo directo.
+
+\begin{teorema}
+Fijado $B \in \mathcal{A}$ con $P(B)>0$, la función $Q: \mathcal{A} \to \mathbb{R}$ dada por $Q(A) = P(A\mid B)$ satisface los tres axiomas de Kolmogorov sobre $\mathcal{A}$; es decir, $P(\cdot\mid B)$ es en sí misma una función de probabilidad.
+\end{teorema}
+
+\begin{proof}
+\begin{description}
+\item[Axioma 1.] Para todo $A\in\mathcal{A}$, $P(A\cap B)\geq 0$ y $P(B)>0$, luego $Q(A) = P(A\cap B)/P(B) \geq 0$.
+\item[Axioma 2.] $Q(\Omega) = P(\Omega\cap B)/P(B) = P(B)/P(B) = 1$, pues $\Omega\cap B = B$.
+\item[Axioma 3.] Sean $A_1,A_2,\dots \in \mathcal{A}$ mutuamente excluyentes dos a dos. Entonces los conjuntos $A_i\cap B$ también son mutuamente excluyentes dos a dos (si $A_i\cap A_j=\varnothing$, entonces a fortiori $(A_i\cap B)\cap(A_j\cap B) \subseteq A_i\cap A_j=\varnothing$), y además $\left(\bigcup_i A_i\right)\cap B = \bigcup_i (A_i\cap B)$ por distributividad. Usando la $\sigma$-aditividad de $P$:
+\[
+Q\left(\bigcup_i A_i\right) = \frac{P\left(\left(\bigcup_i A_i\right)\cap B\right)}{P(B)} = \frac{P\left(\bigcup_i (A_i\cap B)\right)}{P(B)} = \frac{\sum_i P(A_i\cap B)}{P(B)} = \sum_i \frac{P(A_i\cap B)}{P(B)} = \sum_i Q(A_i). \qedhere
+\]
+\end{description}
+\end{proof}
+
+\begin{corolario}
+Como $P(\cdot\mid B)$ es una probabilidad, le son aplicables \emph{todas} las propiedades derivadas de los axiomas demostradas en la Sección~2: en particular,
+\[
+P(\varnothing\mid B)=0, \quad P(A^c\mid B)=1-P(A\mid B), \quad P(A_1\cup A_2 \mid B) = P(A_1\mid B)+P(A_2\mid B) \text{ si } A_1\cap A_2=\varnothing,
+\]
+y también la monotonía y la regla de la suma condicional, entre otras. Adicionalmente, se verifican con facilidad, directamente de la definición, dos casos particulares útiles: si $A \subseteq B$, entonces $P(A\mid B) = P(A)/P(B)$ (pues $A\cap B=A$); y si $B \subseteq A$, entonces $P(A \mid B) = 1$ (pues $A\cap B=B$).
+\end{corolario}
+
+\subsection{Regla del producto}
+
+Invirtiendo algebraicamente la definición de probabilidad condicional se obtiene una fórmula que permite calcular la probabilidad de una intersección de sucesos a partir de probabilidades condicionales, que suele ser más natural de estimar en secuencias de experimentos.
+
+\begin{teorema}[Regla del producto]
+Si $P(B) > 0$, entonces
+\[
+P(A \cap B) = P(B)\cdot P(A\mid B).
+\]
+Simétricamente, si $P(A)>0$, entonces $P(A\cap B) = P(A) \cdot P(B\mid A)$.
+\end{teorema}
+
+\begin{proof}
+Se despeja directamente de la definición: $P(A\mid B) = P(A\cap B)/P(B)$ implica, multiplicando ambos miembros por $P(B)$, que $P(A\cap B) = P(B)\,P(A\mid B)$. La versión simétrica se obtiene intercambiando los roles de $A$ y $B$ en la definición de probabilidad condicional.
+\end{proof}
+
+Esta regla se extiende, por inducción, a un número arbitrario de sucesos, lo cual resulta muy útil para modelar experimentos secuenciales (por ejemplo, extracciones sucesivas de una urna sin reposición).
+
+\begin{teorema}[Regla del producto generalizada]
+Sean $A_1,\dots,A_n \in \mathcal{A}$ tales que $P(A_1\cap A_2 \cap \cdots \cap A_{n-1}) > 0$. Entonces
+\[
+P(A_1\cap A_2\cap\cdots\cap A_n) = P(A_1)\,P(A_2\mid A_1)\,P(A_3\mid A_1\cap A_2)\cdots P(A_n \mid A_1\cap\cdots\cap A_{n-1}).
+\]
+\end{teorema}
+
+\begin{proof}
+Procedemos por inducción sobre $n$. Para $n=2$, el enunciado es exactamente la regla del producto ya demostrada. Supongamos que la fórmula vale para $n-1$ sucesos, es decir,
+\[
+P(A_1\cap\cdots\cap A_{n-1}) = P(A_1)\,P(A_2\mid A_1)\cdots P(A_{n-1}\mid A_1\cap\cdots\cap A_{n-2}).
+\]
+Aplicando la regla del producto (caso base) a los dos sucesos $C := A_1\cap\cdots\cap A_{n-1}$ y $A_n$ (nótese que $P(C)>0$ por hipótesis):
+\[
+P(C\cap A_n) = P(C)\cdot P(A_n\mid C) = P(A_1\cap\cdots\cap A_{n-1}) \cdot P(A_n\mid A_1\cap\cdots\cap A_{n-1}).
+\]
+Sustituyendo la hipótesis inductiva en el primer factor se obtiene exactamente la fórmula del enunciado para $n$ sucesos. Por inducción, la fórmula vale para todo $n\geq 2$.
+\end{proof}
+
+\begin{ejemplo}
+Una urna contiene 5 bolillas rojas y 3 negras. Se extraen 3 bolillas sucesivamente, \textbf{sin reposición}. Calcular la probabilidad de que las tres sean rojas.
+\end{ejemplo}
+
+\textbf{Resolución.} Sea $A_i$: ``la $i$-ésima extracción es roja''. Por la regla del producto generalizada,
+\[
+P(A_1\cap A_2\cap A_3) = P(A_1)\cdot P(A_2\mid A_1)\cdot P(A_3\mid A_1\cap A_2).
+\]
+Como no hay reposición, la composición de la urna cambia en cada paso: $P(A_1) = \frac{5}{8}$; dado que la primera fue roja, quedan 4 rojas y 3 negras (7 en total), $P(A_2\mid A_1) = \frac{4}{7}$; dado que las dos primeras fueron rojas, quedan 3 rojas y 3 negras (6 en total), $P(A_3\mid A_1\cap A_2) = \frac{3}{6}$. Entonces
+\[
+P(A_1\cap A_2\cap A_3) = \frac{5}{8}\cdot\frac{4}{7}\cdot\frac{3}{6} = \frac{60}{336} = \frac{5}{28} \approx 0{,}1786.
+\]
+
+\subsection{Independencia estocástica}
+
+\begin{definicion}[Independencia de dos sucesos]
+Dos sucesos $A, B \in \mathcal{A}$ son \textbf{estocásticamente independientes} (o simplemente independientes) si
+\[
+P(A\cap B) = P(A)\cdot P(B).
+\]
+\end{definicion}
+
+\begin{propiedad}
+Si $P(B)>0$, la independencia de $A$ y $B$ equivale a $P(A\mid B) = P(A)$. Análogamente, si $P(A)>0$, equivale a $P(B\mid A)=P(B)$.
+\end{propiedad}
+
+\begin{proof}
+Si $P(A\cap B)=P(A)P(B)$, entonces $P(A\mid B) = P(A\cap B)/P(B) = P(A)P(B)/P(B) = P(A)$. Recíprocamente, si $P(A\mid B)=P(A)$, entonces por la regla del producto $P(A\cap B) = P(B)P(A\mid B) = P(B)P(A)$. La equivalencia con $P(B\mid A)=P(B)$ es análoga, intercambiando los roles.
+\end{proof}
+
+Esta equivalencia clarifica el significado intuitivo de la independencia: saber que ocurrió $B$ no modifica en absoluto la probabilidad (la ``creencia'') acerca de la ocurrencia de $A$, y viceversa.
+
+\begin{observacion}[Independencia no es lo mismo que exclusión mutua]
+Es un error conceptual frecuente confundir independencia con exclusión mutua; son, de hecho, nociones casi opuestas cuando ambos sucesos tienen probabilidad positiva. Si $A$ y $B$ son mutuamente excluyentes ($A\cap B=\varnothing$) y $P(A)>0$, $P(B)>0$, entonces
+\[
+P(A\cap B) = P(\varnothing) = 0 \neq P(A)\cdot P(B) > 0,
+\]
+por lo que $A$ y $B$ son, en tal caso, \textbf{dependientes}: saber que ocurrió $A$ nos dice con certeza que $B$ no ocurrió (pues son excluyentes), lo cual es información sumamente relevante sobre $B$. Es decir, la exclusión mutua es una forma extrema de \emph{dependencia} (negativa), no de independencia.
+\end{observacion}
+
+La noción de independencia se extiende de manera natural, aunque con un cuidado importante, a más de dos sucesos.
+
+\begin{definicion}[Independencia de a pares]
+Los sucesos $A_1,\dots,A_n$ son \textbf{independientes de a pares} si $P(A_i\cap A_j)=P(A_i)P(A_j)$ para todo par de índices $i\neq j$.
+\end{definicion}
+
+\begin{definicion}[Independencia mutua (o conjunta)]
+Los sucesos $A_1,\dots,A_n$ son \textbf{mutuamente independientes} si para \emph{todo} subconjunto de índices $\{i_1,\dots,i_k\}\subseteq\{1,\dots,n\}$, con $2\leq k\leq n$, se cumple
+\[
+P(A_{i_1}\cap A_{i_2}\cap \cdots \cap A_{i_k}) = P(A_{i_1})\,P(A_{i_2})\cdots P(A_{i_k}).
+\]
+\end{definicion}
+
+La independencia mutua es una condición \emph{estrictamente más fuerte} que la independencia de a pares: exige que la factorización de probabilidades valga no solo para cada par, sino para \emph{cualquier} subcolección de los sucesos (tríos, cuartetos, etc., hasta la totalidad). El siguiente ejemplo clásico muestra que la implicación no puede invertirse: existen familias de sucesos independientes de a pares que no son mutuamente independientes.
+
+\begin{ejemplo}[Independencia de a pares sin independencia mutua]
+Se lanzan dos monedas equilibradas. Definimos los sucesos:
+\begin{itemize}
+\item $A$: ``sale cara en la primera moneda'',
+\item $B$: ``sale cara en la segunda moneda'',
+\item $C$: ``las dos monedas muestran el mismo resultado''.
+\end{itemize}
+\end{ejemplo}
+
+\textbf{Resolución.} El espacio muestral es $\Omega=\{cc,cs,sc,ss\}$, con cada resultado de probabilidad $1/4$ (equiprobable). Los sucesos son $A=\{cc,cs\}$, $B=\{cc,sc\}$, $C=\{cc,ss\}$, cada uno con $P(A)=P(B)=P(C)=1/2$.
+
+Verificamos independencia de a pares:
+\[
+P(A\cap B) = P(\{cc\}) = \tfrac14 = \tfrac12\cdot\tfrac12=P(A)P(B) \quad\checkmark
+\]
+\[
+P(A\cap C) = P(\{cc\}) = \tfrac14 = P(A)P(C) \quad\checkmark, \qquad P(B\cap C) = P(\{cc\}) = \tfrac14 = P(B)P(C) \quad\checkmark
+\]
+Los tres pares son, efectivamente, independientes. Sin embargo, al examinar la intersección triple:
+\[
+P(A\cap B\cap C) = P(\{cc\}) = \tfrac14 \;\neq\; \tfrac12\cdot\tfrac12\cdot\tfrac12 = \tfrac18.
+\]
+Por lo tanto $A$, $B$ y $C$ \textbf{no} son mutuamente independientes, a pesar de serlo de a pares. La razón intuitiva es reveladora: conocer $A$ y $B$ simultáneamente determina \emph{completamente} a $C$ (si las dos monedas muestran cara, necesariamente ``ambas monedas coinciden'' es cierto), de modo que $C$ no es independiente del par $(A,B)$ tomado en conjunto, aun cuando lo sea de cada uno por separado. Este ejemplo muestra que, para verificar independencia mutua de varios sucesos, es indispensable comprobar la factorización para \emph{todas} las subfamilias, no solo para los pares.
+
+\subsection{Teorema de la probabilidad total}
+
+Retomamos la noción de sistema completo de sucesos (partición de $\Omega$) introducida en la Sección~1, agregando ahora la condición de que cada pieza de la partición tenga probabilidad positiva.
+
+\begin{definicion}
+$\{B_1,\dots,B_n\}$ es un \textbf{sistema completo de sucesos} respecto de $(\Omega,\mathcal{A},P)$ si:
+\begin{enumerate}
+\item $B_i \cap B_j = \varnothing$ para todo $i\neq j$,
+\item $\displaystyle\bigcup_{i=1}^n B_i = \Omega$,
+\item $P(B_i) > 0$ para todo $i=1,\dots,n$.
+\end{enumerate}
+\end{definicion}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+\draw (0,0) rectangle (7,3);
+\node at (0.4,2.7) {\footnotesize $\Omega$};
+\draw (1.4,0) -- (1.4,3);
+\draw (3.0,0) -- (3.0,3);
+\draw (4.3,0) -- (4.3,3);
+\draw (5.7,0) -- (5.7,3);
+\node at (0.7,1.5) {\footnotesize $B_1$};
+\node at (2.2,1.5) {\footnotesize $B_2$};
+\node at (3.65,1.5) {\footnotesize $B_3$};
+\node at (5.0,1.5) {\footnotesize $\cdots$};
+\node at (6.35,1.5) {\footnotesize $B_n$};
+\draw[thick] (2.5,0.6) ellipse (2.3 and 0.9);
+\node at (2.5,-0.4) {\footnotesize $A$};
+\end{tikzpicture}
+\end{center}
+
+La idea geométrica que ilustra el diagrama es clara: el suceso $A$ (la elipse) queda ``recortado'' por las piezas de la partición $\{B_1,\dots,B_n\}$ en trozos disjuntos $A\cap B_1, A\cap B_2,\dots, A\cap B_n$, algunos de los cuales pueden ser vacíos. Esta descomposición es la clave de la demostración siguiente.
+
+\begin{teorema}[Teorema de la probabilidad total]
+Sea $\{B_1,\dots,B_n\}$ un sistema completo de sucesos y $A \in \mathcal{A}$ un suceso cualquiera. Entonces
+\[
+P(A) = \sum_{i=1}^{n} P(B_i)\, P(A\mid B_i).
+\]
+\end{teorema}
+
+\begin{proof}
+Como $\{B_i\}_{i=1}^n$ particiona a $\Omega$, también particiona a $A$: usando $A=A\cap\Omega$ y distributividad,
+\[
+A = A \cap \Omega = A \cap \left(\bigcup_{i=1}^n B_i\right) = \bigcup_{i=1}^n (A \cap B_i).
+\]
+Los conjuntos $A\cap B_i$ son disjuntos dos a dos: si $i\neq j$, $(A\cap B_i)\cap(A\cap B_j) \subseteq B_i\cap B_j = \varnothing$. Por aditividad finita,
+\[
+P(A) = \sum_{i=1}^n P(A\cap B_i).
+\]
+Como cada $P(B_i)>0$, aplicamos la regla del producto a cada término, $P(A\cap B_i) = P(B_i)P(A\mid B_i)$, y sustituyendo se obtiene
+\[
+P(A) = \sum_{i=1}^n P(B_i)\,P(A\mid B_i). \qedhere
+\]
+\end{proof}
+
+\begin{ejemplo}
+Una fábrica recibe piezas de tres proveedores: el proveedor 1 provee el $50\%$ de las piezas, el proveedor 2 el $30\%$ y el proveedor 3 el $20\%$. Las proporciones de piezas defectuosas son, respectivamente, $2\%$, $5\%$ y $3\%$. Se elige una pieza al azar del stock total. ¿Cuál es la probabilidad de que sea defectuosa?
+\end{ejemplo}
+
+\textbf{Resolución.} Sea $B_i$: ``la pieza proviene del proveedor $i$'' ($i=1,2,3$), que forma un sistema completo de sucesos con $P(B_1)=0{,}5$, $P(B_2)=0{,}3$, $P(B_3)=0{,}2$. Sea $D$: ``la pieza es defectuosa'', con $P(D\mid B_1)=0{,}02$, $P(D\mid B_2)=0{,}05$, $P(D\mid B_3)=0{,}03$. Por el teorema de la probabilidad total:
+\[
+P(D) = 0{,}5(0{,}02)+0{,}3(0{,}05)+0{,}2(0{,}03) = 0{,}01+0{,}015+0{,}006 = 0{,}031.
+\]
+Es decir, la probabilidad de que una pieza tomada al azar del stock total sea defectuosa es del $3{,}1\%$, un promedio ponderado de las tasas de defecto de cada proveedor, con pesos dados por la proporción de piezas que aporta cada uno.
+
+\subsection{Teorema de Bayes}
+
+El teorema de Bayes resuelve un problema inverso al de la probabilidad total: en lugar de conocer las ``causas'' y preguntar por el ``efecto'', se observa el efecto y se pregunta por la probabilidad de cada posible causa.
+
+\begin{teorema}[Teorema de Bayes]
+Sea $\{B_1,\dots,B_n\}$ un sistema completo de sucesos y $A\in\mathcal{A}$ un suceso con $P(A)>0$. Entonces, para cada $j=1,\dots,n$,
+\[
+P(B_j \mid A) = \frac{P(B_j)\,P(A\mid B_j)}{\displaystyle\sum_{i=1}^{n} P(B_i)\,P(A\mid B_i)}.
+\]
+\end{teorema}
+
+\begin{proof}
+Por definición de probabilidad condicional y luego por la regla del producto aplicada a $B_j$ y $A$:
+\[
+P(B_j\mid A) = \frac{P(B_j\cap A)}{P(A)} = \frac{P(B_j)\,P(A\mid B_j)}{P(A)}.
+\]
+El numerador es exactamente la regla del producto. Para el denominador, reescribimos $P(A)$ usando el teorema de la probabilidad total (aplicable porque $\{B_i\}$ es un sistema completo de sucesos):
+\[
+P(A) = \sum_{i=1}^n P(B_i)\,P(A\mid B_i).
+\]
+Sustituyendo esta expresión en el denominador de la fórmula anterior se obtiene exactamente la fórmula de Bayes del enunciado.
+\end{proof}
+
+\begin{observacion}[Interpretación: a priori y a posteriori]
+En la fórmula de Bayes conviene distinguir tres tipos de probabilidades, con una lectura causal intuitiva:
+\begin{itemize}
+\item $P(B_j)$ es la probabilidad \textbf{a priori} de la ``causa'' $B_j$: lo que sabíamos (o suponíamos) sobre $B_j$ \emph{antes} de observar el efecto $A$.
+\item $P(A\mid B_j)$ es la \textbf{verosimilitud} del efecto $A$ dado que la causa fue $B_j$: usualmente más fácil de estimar (por ejemplo, a partir de datos históricos o especificaciones técnicas conocidas).
+\item $P(B_j\mid A)$ es la probabilidad \textbf{a posteriori} de la causa $B_j$, una vez que se observó (se condicionó en) el efecto $A$: es, generalmente, la cantidad que realmente interesa conocer, pero que no es directamente observable ni tabulada.
+\end{itemize}
+El teorema de Bayes permite, en definitiva, ``invertir'' el sentido de la condicionalidad: partiendo de lo que es fácil de medir ($P(A\mid B_j)$, la probabilidad del efecto dada la causa) se llega a lo que realmente interesa saber ($P(B_j\mid A)$, la probabilidad de la causa dado el efecto observado).
+\end{observacion}
+
+\begin{ejemplo}[Continuación del ejemplo de control de calidad]
+Retomando el ejemplo anterior: si se elige una pieza al azar del stock total y resulta \textbf{defectuosa}, ¿cuál es la probabilidad de que provenga del proveedor 2?
+\end{ejemplo}
+
+\textbf{Resolución.} Ya calculamos $P(D) = 0{,}031$. Por el teorema de Bayes:
+\[
+P(B_2\mid D) = \frac{P(B_2)\,P(D\mid B_2)}{P(D)} = \frac{0{,}3 \times 0{,}05}{0{,}031} = \frac{0{,}015}{0{,}031} \approx 0{,}4839.
+\]
+Es decir: aunque el proveedor 2 aporta solamente el $30\%$ de las piezas del stock total, si sabemos que la pieza elegida resultó defectuosa, la probabilidad de que provenga de ese proveedor sube a casi el $48{,}4\%$, prácticamente la mitad. Esto tiene sentido: el proveedor 2 es el que tiene la mayor tasa de piezas defectuosas ($5\%$), de modo que, condicionado a observar un defecto, se ``sospecha'' desproporcionadamente de él en relación con su participación en el stock.
+
+\subsection{Falsos positivos en tests diagnósticos — un ejemplo enriquecedor}
+
+Uno de los usos más importantes —y más contraintuitivos— del teorema de Bayes aparece en la interpretación de tests diagnósticos médicos, y merece un análisis detallado.
+
+\begin{ejemplo}[Diagnóstico médico]
+Una enfermedad afecta al $1\%$ de la población (prevalencia). Existe un test diagnóstico con \textbf{sensibilidad} del $95\%$ (es decir, detecta correctamente al $95\%$ de los verdaderos enfermos: $P(T^+\mid E)=0{,}95$) y \textbf{especificidad} del $90\%$ (da negativo correctamente en el $90\%$ de los sanos: $P(T^-\mid E^c)=0{,}90$). Si una persona elegida al azar de la población se somete al test y da \textbf{positivo}, ¿cuál es la probabilidad de que efectivamente esté enferma?
+\end{ejemplo}
+
+\textbf{Resolución.} Sea $E$: ``la persona está enferma'', con complemento $E^c$: ``está sana''; $T^+$: ``el test da positivo''. El sistema completo de sucesos es $\{E,E^c\}$, con
+\[
+P(E)=0{,}01, \qquad P(E^c)=0{,}99, \qquad P(T^+\mid E) = 0{,}95, \qquad P(T^+\mid E^c) = 1-P(T^-\mid E^c) = 1-0{,}90 = 0{,}10.
+\]
+Nótese que la última igualdad usa el teorema del complemento (aplicado a la probabilidad condicional $P(\cdot\mid E^c)$, que como vimos también satisface los axiomas de Kolmogorov): la probabilidad de un \emph{falso positivo} en una persona sana es el complemento de la especificidad.
+
+Por el teorema de la probabilidad total,
+\[
+P(T^+) = P(E)P(T^+\mid E) + P(E^c)P(T^+\mid E^c) = 0{,}01(0{,}95) + 0{,}99(0{,}10) = 0{,}0095+0{,}099 = 0{,}1085.
+\]
+Por el teorema de Bayes,
+\[
+P(E\mid T^+) = \frac{P(E)\,P(T^+\mid E)}{P(T^+)} = \frac{0{,}01 \times 0{,}95}{0{,}1085} = \frac{0{,}0095}{0{,}1085} \approx 0{,}0876.
+\]
+
+El resultado es marcadamente contraintuitivo: a pesar de que el test tiene una sensibilidad relativamente alta ($95\%$), dado un resultado positivo la probabilidad de que la persona esté \emph{realmente} enferma es de apenas el $8{,}76\%$. Esto se explica del siguiente modo: como la enfermedad es poco frecuente en la población ($1\%$ de prevalencia), el grupo de personas sanas es enorme ($99\%$); aun con una especificidad razonablemente buena ($90\%$), ese grupo tan numeroso genera, en términos absolutos, muchos más falsos positivos ($0{,}099$ de la población total) que verdaderos positivos entre los pocos enfermos reales ($0{,}0095$ de la población total). Concretamente, de cada $1085$ personas que dan positivo (por cada $10\,000$ testeadas, aproximadamente), solo alrededor de $95$ están realmente enfermas, y las restantes $990$ son falsos positivos.
+
+\begin{observacion}
+Este ejemplo ilustra una moraleja fundamental del teorema de Bayes: la probabilidad a posteriori $P(E\mid T^+)$ depende críticamente de la probabilidad a priori $P(E)$ (la prevalencia de la enfermedad), y no únicamente de la calidad intrínseca del test (su sensibilidad y especificidad). Un mismo test, aplicado a una población de mayor prevalencia (por ejemplo, un grupo de pacientes ya derivados por presentar síntomas compatibles, en lugar de la población general), arrojaría un valor predictivo positivo mucho más alto. Este fenómeno —conocido en la literatura médica y estadística como la importancia de la prevalencia en la interpretación de tests diagnósticos— es una de las razones por las cuales, en la práctica clínica, un resultado positivo aislado en un test de tamizaje sobre población general rara vez se toma como diagnóstico definitivo, sino que se complementa con pruebas confirmatorias adicionales que, en términos bayesianos, permiten actualizar nuevamente la probabilidad a posteriori usando esta última como nueva probabilidad a priori.
+\end{observacion}
+
+\section{Para seguir pensando}
+
+Concluimos esta unidad con dos observaciones que conectan lo desarrollado aquí con los contenidos de las unidades siguientes del curso.
+
+\begin{observacion}[De los sucesos a las variables aleatorias]
+A lo largo de esta unidad trabajamos con sucesos como subconjuntos abstractos de $\Omega$, definidos habitualmente en palabras (``sale un número par'', ``la pieza es defectuosa''). En la Unidad~2 se introduce la noción de \textbf{variable aleatoria}, que es esencialmente una función $X:\Omega\to\mathbb{R}$ que asigna un número real a cada resultado del experimento. Esta idea permite reformular sucesos de interés como conjuntos de la forma $\{\omega\in\Omega : X(\omega)\in B\}$ para $B\subseteq\mathbb{R}$ (por ejemplo, $\{X=k\}$ o $\{X\leq x\}$), y de ese modo trasladar toda la maquinaria desarrollada aquí —espacio de probabilidad, axiomas de Kolmogorov, probabilidad condicional— al estudio de funciones de distribución, esperanza y varianza. En particular, el esquema hipergeométrico y las distribuciones basadas en combinatoria que aparecieron en la Sección~3 (extracciones de una urna sin reposición, defectuosos en un lote) son, precisamente, los primeros ejemplos de variables aleatorias discretas que se formalizarán con nombre propio (distribución binomial, hipergeométrica, de Poisson, etc.) en la próxima unidad.
+\end{observacion}
+
+\begin{observacion}[El teorema de Bayes como motor de la inferencia estadística]
+El teorema de Bayes, más allá de su uso como herramienta de cálculo dentro de esta unidad, anticipa una de las grandes corrientes de pensamiento de la estadística inferencial: la \textbf{estadística bayesiana}, en la que los parámetros desconocidos de un modelo se tratan como si fueran, ellos mismos, sucesos o variables aleatorias con una distribución a priori, que se actualiza a una distribución a posteriori a la luz de los datos observados, exactamente con la misma lógica —causa desconocida, efecto observado— que empleamos en el ejemplo del diagnóstico médico. Aun en el enfoque más tradicional (frecuentista) que se privilegiará en gran parte de este curso, la intuición de ``actualizar probabilidades a la luz de nueva información'' seguirá apareciendo, por ejemplo, al estudiar estimación de parámetros e intervalos de confianza. Vale la pena, entonces, retener de esta unidad no solo las fórmulas, sino la idea conceptual de que la probabilidad condicional formaliza matemáticamente el proceso de aprender a partir de la evidencia.
+\end{observacion}
+
+\end{document}
