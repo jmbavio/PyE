@@ -1,0 +1,967 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, trees, backgrounds}
+
+\deftranslation[to=spanish]{Definition}{Definición}
+\deftranslation[to=spanish]{Example}{Ejemplo}
+
+\title[Prob. y Estadística]{Apéndice: Guía Visual de Gráficos Estadísticos}
+\subtitle{40 Tipos de Gráficos para Estadística Descriptiva}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos del Apéndice}
+\small
+\begin{columns}[t]
+\begin{column}{0.5\textwidth}
+\begin{enumerate}
+\item Gráfico de Barras Simple
+\item Gráfico de Barras Agrupadas
+\item Gráfico de Barras Apiladas
+\item Gráfico de Barras 100\% Apiladas
+\item Gráfico de Divergencia
+\item Histogramas
+\item Polígono de Frecuencias
+\item Ojiva / Curva Acumulativa
+\item Gráfico de Líneas
+\item Gráfico de Áreas Apiladas
+\item Gráfico de Dispersión
+\item Gráfico de Burbujas
+\item Gráfico de Sectores / Pie
+\item Gráfico de Donas
+\item Diagrama de Caja (Boxplot)
+\item Gráfico de Violín
+\item Diagrama de Tallo y Hojas
+\item Mapa de Calor (Heatmap)
+\item Gráfico de Radar / Araña
+\item Gráfico Treemap
+\end{enumerate}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{enumerate}
+\setcounter{enumi}{20}
+\item Gráfico de Sankey
+\item Diagrama de Paradas / Waterfall
+\item Gráfico de Pirámide Poblacional
+\item Cartograma
+\item Mapa Chopleth
+\item Gráfico de Densidad (KDE)
+\item Gráfico Q-Q Plot
+\item Diagrama de Pareto
+\item Gráfico Sparkline
+\item Diagrama de Venn
+\item Gráfico Correlograma / Matriz Correlación
+\item Diagrama de Puntos (Dot Plot)
+\item Diagrama de Voronoi
+\item Diagrama de Cuerdas (Chord Diagram)
+\item Diagrama de Red / Grafo
+\item Gráfico de Pendientes (Slopechart)
+\item Diagrama de Gantt
+\item Nube de Palabras
+\item Gráfico Candlestick (Velas Japonesas)
+\item Diagrama de Mosaico (Mosaic Plot)
+\end{enumerate}
+\end{column}
+\end{columns}
+\end{frame}
+
+% --- SLIDES 1 A 40 ---
+
+\begin{frame}{1. Gráfico de Barras Simple}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar, symbol=-1, bar width=15pt,
+    symbolic x coords={A,B,C,D},
+    xtick=data, ymin=0, ymax=100,
+    width=7cm, height=5cm,
+    ylabel={Porcentaje (\%)}
+]
+\addplot coordinates {(A,75) (B,45) (C,90) (D,30)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cualitativa nominal / ordinal o discreta.
+\item \textbf{Caso de uso:} Comparar categorías discretas independientes.
+\item \textbf{Contexto real:} Reportes de mercado sobre participación de sistemas operativos móviles (Android vs iOS).
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2. Gráfico de Barras Agrupadas}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar, bar width=8pt,
+    symbolic x coords={2022,2023,2024},
+    xtick=data, ymin=0, ymax=100,
+    width=7cm, height=5cm, legend pos=north west
+]
+\addplot coordinates {(2022,40) (2023,50) (2024,65)};
+\addplot coordinates {(2022,60) (2023,55) (2024,45)};
+\legend{Prod A, Prod B}
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cualitativa bivariada o cualitativa + temporal.
+\item \textbf{Caso de uso:} Comparar subgrupos a través de múltiples categorías.
+\item \textbf{Contexto real:} Comparativa multianual de ventas por categoría de producto en informes financieros.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{3. Gráfico de Barras Apiladas}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar stacked, bar width=15pt,
+    symbolic x coords={Q1,Q2,Q3,Q4},
+    xtick=data, ymin=0, ymax=150,
+    width=7cm, height=5cm
+]
+\addplot coordinates {(Q1,30) (Q2,45) (Q3,25) (Q4,60)};
+\addplot coordinates {(Q1,40) (Q2,35) (Q3,50) (Q4,30)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cualitativa nominal + cuantitativa acumulativa.
+\item \textbf{Caso de uso:} Mostrar composición interna del total por categorías.
+\item \textbf{Contexto real:} Desglose del presupuesto nacional por ministerio y total consolidado.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{4. Gráfico de Barras 100\% Apiladas}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar stacked, bar width=15pt,
+    symbolic x coords={Norte,Sur,Este},
+    xtick=data, ymin=0, ymax=100,
+    width=7cm, height=5cm
+]
+\addplot coordinates {(Norte,30) (Sur,60) (Este,45)};
+\addplot coordinates {(Norte,70) (Sur,40) (Este,55)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cualitativa en proporciones.
+\item \textbf{Caso de uso:} Comparar la proporción relativa de componentes sin importar el volumen total.
+\item \textbf{Contexto real:} Porcentaje de energías renovables vs no renovables en la matriz de distintos países.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{5. Gráfico de Divergencia}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    xbar, bar width=10pt,
+    symbolic y coords={Item A, Item B, Item C},
+    ytick=data, xmin=-50, xmax=50,
+    width=7cm, height=5cm
+]
+\addplot coordinates {(-30,Item A) (-15,Item B) (-40,Item C)};
+\addplot coordinates {(20,Item A) (35,Item B) (10,Item C)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cualitativa ordinal (escalas Likert).
+\item \textbf{Caso de uso:} Visualizar acuerdo/desacuerdo o valores positivos/negativos respecto a un eje neutro.
+\item \textbf{Contexto real:} Encuestas de satisfacción del cliente o intención de voto político.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{6. Histograma}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar interval,
+    ymin=0, ymax=30,
+    xmin=0, xmax=50,
+    width=7cm, height=5cm,
+    xlabel={Intervalo de Clase}, ylabel={Frecuencia}
+]
+\addplot coordinates {(0,5) (10,15) (20,28) (30,12) (40,4) (50,0)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa continua.
+\item \textbf{Caso de uso:} Analizar la distribución de frecuencia y forma (sesgo, simetría) de datos continuos.
+\item \textbf{Contexto real:} Distribución de salarios o tiempos de procesamiento de solicitudes.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{7. Polígono de Frecuencias}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ymin=0, ymax=30,
+    width=7cm, height=5cm,
+    xlabel={Marcas de Clase}, ylabel={Frecuencia}
+]
+\addplot[thick, mark=*] coordinates {(5,5) (15,15) (25,28) (35,12) (45,4)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa continua.
+\item \textbf{Caso de uso:} Comparar la forma de dos o más distribuciones continuas en un mismo eje.
+\item \textbf{Contexto real:} Distribuciones de notas en exámenes de distintos semestres.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{8. Ojiva / Curva Acumulativa}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ymin=0, ymax=100,
+    width=7cm, height=5cm,
+    xlabel={Límite Superior}, ylabel={Frecuencia Acumulada (\%)}
+]
+\addplot[thick, blue, mark=square*] coordinates {(0,0) (10,10) (20,35) (30,75) (40,92) (50,100)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa continua acumulada.
+\item \textbf{Caso de uso:} Determinar percentiles y proporción de datos debajo de un umbral.
+\item \textbf{Contexto real:} Análisis de percentiles de crecimiento infantil (médico/pediátrico).
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{9. Gráfico de Líneas}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    width=7cm, height=5cm,
+    xlabel={Tiempo}, ylabel={Valor}
+]
+\addplot[smooth, red, thick] coordinates {(1,10) (2,15) (3,12) (4,25) (5,30)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Serie temporal / cuantitativa continua.
+\item \textbf{Caso de uso:} Monitorear tendencias, ciclos o estacionalidad a lo largo del tiempo.
+\item \textbf{Contexto real:} Evolución del IPC (índice de precios al consumidor) mensual publicado por el INDEC.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{10. Gráfico de Áreas Apiladas}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    stack plots=y, area style,
+    width=7cm, height=5cm,
+    enlarge x limits=false
+]
+\addplot coordinates {(1,5) (2,10) (3,8) (4,12)} \closedcycle;
+\addplot coordinates {(1,8) (2,12) (3,15) (4,18)} \closedcycle;
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Serie temporal de componentes múltiples.
+\item \textbf{Caso de uso:} Visualizar la contribución acumulada de varias partes al total a lo largo del tiempo.
+\item \textbf{Contexto real:} Producción energética agregada por tipo de fuente (gas, hidroeléctrica, solar).
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{11. Gráfico de Dispersión (Scatter Plot)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    only marks, mark=*, mark size=2pt,
+    width=7cm, height=5cm,
+    xlabel={Var X}, ylabel={Var Y}
+]
+\addplot coordinates {(1,2) (2,3.5) (3,3) (4,5) (5,5.5) (6,7)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Dos variables cuantitativas continuas.
+\item \textbf{Caso de uso:} Evaluar la relación, correlación o asociación entre dos variables cuantitativas.
+\item \textbf{Contexto real:} Relación entre años de educación e ingresos promedio individuales.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{12. Gráfico de Burbujas}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    width=7cm, height=5cm,
+    xlabel={PIB per cápita}, ylabel={Esperanza de vida}
+]
+\node[circle, fill=blue!40, draw=blue, minimum size=15pt] at (axis cs:2,60) {};
+\node[circle, fill=red!40, draw=red, minimum size=30pt] at (axis cs:5,75) {};
+\node[circle, fill=green!40, draw=green, minimum size=10pt] at (axis cs:8,80) {};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Tres variables cuantitativas (Eje X, Eje Y, Tamaño).
+\item \textbf{Caso de uso:} Representar datos trivariados simultáneamente en un plano bidimensional.
+\item \textbf{Contexto real:} Visualizaciones socioeconómicas globales estilo Gapminder (Rosling).
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{13. Gráfico de Sectores / Pie}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\draw[fill=blue!50] (0,0) -- (0:1.5) arc (0:120:1.5) -- cycle;
+\draw[fill=red!50] (0,0) -- (120:1.5) arc (120:250:1.5) -- cycle;
+\draw[fill=green!50] (0,0) -- (250:1.5) arc (250:360:1.5) -- cycle;
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cualitativa nominal (pocas categorías, $\le 5$).
+\item \textbf{Caso de uso:} Mostrar la proporción relativa de partes respecto al todo.
+\item \textbf{Contexto real:} Distribución del mercado de navegadores web (Chrome, Safari, Firefox).
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{14. Gráfico de Donas}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\draw[fill=blue!50] (0,0) -- (0:1.5) arc (0:140:1.5) -- cycle;
+\draw[fill=orange!50] (0,0) -- (140:1.5) arc (140:360:1.5) -- cycle;
+\fill[white] (0,0) circle (0.8);
+\node at (0,0) {\small 100\%};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cualitativa nominal.
+\item \textbf{Caso de uso:} Variación del gráfico de torta con espacio central reservado para un indicador clave (KPI).
+\item \textbf{Contexto real:} Paneles de gestión empresarial (Dashboards) para metas de ventas.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{15. Diagrama de Caja (Boxplot)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    width=7cm, height=4cm,
+    ytick={1}, yticklabels={Grupo A},
+    xmin=0, xmax=100
+]
+\addplot+[boxplot prepared={lower whisker=10, lower quartile=30, median=50, upper quartile=70, upper whisker=90}] coordinates {};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa continua.
+\item \textbf{Caso de uso:} Resumir la distribución mediante 5 números (Mín, Q1, Mediana, Q3, Máx) e identificar atípicos.
+\item \textbf{Contexto real:} Comparación de rangos salariales por nivel educativo o industria.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{16. Gráfico de Violín}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\filldraw[fill=purple!30, draw=purple, thick] 
+  (0,0) .. controls (0.5,1) and (0.8,2) .. (0,3)
+  .. controls (-0.8,2) and (-0.5,1) .. (0,0);
+\draw[black, thick] (0,0.5) -- (0,2.5);
+\filldraw[black] (0,1.5) circle (2pt);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa continua.
+\item \textbf{Caso de uso:} Combina un Boxplot con un gráfico de densidad de probabilidad para ver multimodalidad.
+\item \textbf{Contexto real:} Estudios genómicos y expresión de genes en bioinformática.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{17. Diagrama de Tallo y Hojas}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{center}
+\begin{tabular}{r|l}
+\textbf{Tallo} & \textbf{Hojas} \\ \hline
+1 & 2 3 5 8 \\
+2 & 0 1 4 4 7 9 \\
+3 & 2 5 8 \\
+4 & 1 3
+\end{tabular}
+\end{center}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa discreta / continua.
+\item \textbf{Caso de uso:} Mostrar la forma de la distribución reteniendo los valores numéricos exactos.
+\item \textbf{Contexto real:} Análisis exploratorio de datos iniciales en muestras pequeñas.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{18. Mapa de Calor (Heatmap)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.8]
+\fill[blue!20] (0,0) rectangle (1,1);
+\fill[blue!80] (1,0) rectangle (2,1);
+\fill[blue!50] (0,1) rectangle (1,2);
+\fill[blue!10] (1,1) rectangle (2,2);
+\draw (0,0) grid (2,2);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Bivariada continua / discreta codificada por intensidad de color.
+\item \textbf{Caso de uso:} Visualizar patrones o concentraciones en matrices de datos densas.
+\item \textbf{Contexto real:} Ocupación por horas e intensidades de tráfico en plataformas web.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{19. Gráfico de Radar / Araña}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.7]
+\foreach \i in {1,...,5} {
+  \draw[gray!50] (0,0) -- ({90-\i*72}:2);
+}
+\draw[gray!50] (18:1) -- (90:1) -- (162:1) -- (234:1) -- (306:1) -- cycle;
+\draw[gray!50] (18:2) -- (90:2) -- (162:2) -- (234:2) -- (306:2) -- cycle;
+\draw[red, thick, fill=red!20] (18:1.5) -- (90:1.8) -- (162:0.8) -- (234:1.2) -- (306:1.7) -- cycle;
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Multivariable cuantitativa continua (misma escala).
+\item \textbf{Caso de uso:} Comparar perfiles multivariados de rendimiento o habilidades.
+\item \textbf{Contexto real:} Evaluación de perfiles profesionales en recursos humanos o deportistas.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{20. Gráfico Treemap}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.8]
+\draw[fill=blue!30] (0,0) rectangle (2.5,3);
+\draw[fill=green!30] (2.5,0) rectangle (4,1.8);
+\draw[fill=red!30] (2.5,1.8) rectangle (4,3);
+\node at (1.25,1.5) {\small Cat A};
+\node at (3.25,0.9) {\tiny Cat B};
+\node at (3.25,2.4) {\tiny Cat C};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Jerárquica / Cualitativa proporcional.
+\item \textbf{Caso de uso:} Visualizar estructuras jerárquicas y tamaños relativos mediante rectángulos anidados.
+\item \textbf{Contexto real:} Composición de exportaciones por sector económico nacional.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{21. Gráfico de Sankey}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.8]
+\draw[fill=gray!30] (0,0) rectangle (0.5,3);
+\draw[fill=blue!30] (3,1.5) rectangle (3.5,3);
+\draw[fill=orange!30] (3,0) rectangle (3.5,1);
+\fill[blue!20] (0.5,1.5) -- (3,1.5) -- (3,3) -- (0.5,3) -- cycle;
+\fill[orange!20] (0.5,0) -- (3,0) -- (3,1) -- (0.5,1) -- cycle;
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Flujo entre estados continuos o categóricos.
+\item \textbf{Caso de uso:} Representar transferencias, pérdidas o flujos entre etapas de un sistema.
+\item \textbf{Contexto real:} Flujos de energía desde la generación primaria hasta el consumo final.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{22. Diagrama de Cascadas / Waterfall}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar, bar width=10pt,
+    symbolic x coords={Inicio, Venta, Costo, Final},
+    xtick=data, width=7cm, height=5cm
+]
+\addplot coordinates {(Inicio,100) (Venta,40) (Costo,-30) (Final,110)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa acumulativa positiva/negativa.
+\item \textbf{Caso de uso:} Explicar la transición entre un valor inicial y uno final por aportes y reducciones.
+\item \textbf{Contexto real:} Estado de resultados financiero (EBITDA a Beneficio Neto).
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{23. Gráfico de Pirámide Poblacional}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    xbar stacked, bar width=8pt,
+    symbolic y coords={60+, 30-59, 0-29},
+    ytick=data, xmin=-50, xmax=50,
+    width=7cm, height=5cm
+]
+\addplot coordinates {(-20,0-29) (-35,30-59) (-15,60+)};
+\addplot coordinates {(22,0-29) (33,30-59) (18,60+)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Demográfica (Edad por Sexo).
+\item \textbf{Caso de uso:} Analizar la estructura por edad y sexo de una población.
+\item \textbf{Contexto real:} Censos nacionales de población desarrollados por institutos de estadística.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{24. Cartograma}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\draw[fill=blue!30] (0,0) rectangle (2,2) node[midway]{\small Región A};
+\draw[fill=green!30] (2,0) rectangle (2.8,2) node[midway]{\tiny B};
+\draw[fill=red!30] (0,2) rectangle (2.8,3) node[midway]{\small Región C};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Espacial geográfica modificada por variable cuantitativa.
+\item \textbf{Caso de uso:} Distorsionar áreas geográficas según el valor de un indicador.
+\item \textbf{Contexto real:} Mapas electorales distorsionados por número de electores por estado.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{25. Mapa Coroplético (Choropleth Map)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\draw[fill=red!20] (0,0) -- (1,0) -- (0.8,1) -- (0,1) -- cycle;
+\draw[fill=red!80] (1,0) -- (2,0) -- (2,1.2) -- (0.8,1) -- cycle;
+\draw[fill=red!50] (0,1) -- (0.8,1) -- (1,2) -- (0,2) -- cycle;
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Espacial geográfica codificada por escala de color.
+\item \textbf{Caso de uso:} Representar la variación de una tasa o densidad por regiones geográficas.
+\item \textbf{Contexto real:} Mapas de tasa de incidencia de enfermedades o densidad poblacional.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{26. Gráfico de Densidad (KDE)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    width=7cm, height=5cm,
+    xlabel={X}, ylabel={Densidad}
+]
+\addplot[smooth, blue, thick, fill=blue!10] coordinates {(-3,0) (-2,0.05) (-1,0.2) (0,0.4) (1,0.2) (2,0.05) (3,0)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa continua estimando la función de densidad.
+\item \textbf{Caso de uso:} Estimación suavizada y continua de la distribución subyacente de datos.
+\item \textbf{Contexto real:} Análisis de modelos econométricos continuos.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{27. Gráfico Q-Q (Quantile-Quantile Plot)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    width=7cm, height=5cm,
+    xlabel={Cuantiles Teóricos}, ylabel={Cuantiles Muestrales}
+]
+\addplot[red, dashed] coordinates {(-2,-2) (2,2)};
+\addplot[only marks, mark=*] coordinates {(-1.8,-1.7) (-1,-0.9) (0,0.1) (1,0.95) (1.8,2.1)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa (evaluación diagnóstica).
+\item \textbf{Caso de uso:} Comparar la distribución muestral con una distribución teórica (ej. Normal).
+\item \textbf{Contexto real:} Verificación de supuestos de normalidad en residuos de regresión.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{28. Diagrama de Pareto}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar, bar width=10pt,
+    width=7cm, height=5cm,
+    symbolic x coords={A,B,C,D}, xtick=data
+]
+\addplot coordinates {(A,50) (B,30) (C,12) (D,8)};
+\addplot[sharp plot, red, mark=*] coordinates {(A,50) (B,80) (C,92) (D,100)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cualitativa nominal + cuantitativa acumulada.
+\item \textbf{Caso de uso:} Identificar las causas principales responsables de la mayoría de los efectos (regla 80/20).
+\item \textbf{Contexto real:} Control de calidad industrial y gestión de defectos de fabricación.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{29. Gráfico Sparkline}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\vspace{1cm}
+Texto en reporte: Tendencia reciente \begin{tikzpicture}\draw[thick, green!60!black] (0,0) -- (0.3,0.2) -- (0.6,-0.1) -- (0.9,0.4) -- (1.2,0.3);\end{tikzpicture} positiva.
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Serie temporal condensada.
+\item \textbf{Caso de uso:} Mostrar variaciones rápidas e inline dentro de un texto o tabla de datos.
+\item \textbf{Contexto real:} Tablas resumen de mercados bursátiles en periódicos financieros.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{30. Diagrama de Venn}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.8]
+\draw[fill=blue!30, opacity=0.5] (-0.5,0) circle (1.2);
+\draw[fill=red!30, opacity=0.5] (0.5,0) circle (1.2);
+\node at (-1.2,0) {A};
+\node at (1.2,0) {B};
+\node at (0,0) {\tiny $A\cap B$};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Conjuntos de datos categóricos.
+\item \textbf{Caso de uso:} Mostrar las relaciones lógicas de solapamiento e intersección entre grupos.
+\item \textbf{Contexto real:} Análisis de solapamiento de audiencias entre plataformas digitales.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{31. Gráfico Correlograma}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.8]
+\draw[fill=blue!90] (0,1) circle (0.3);
+\draw[fill=blue!20] (1,1) circle (0.1);
+\draw[fill=red!70] (0,0) circle (0.25);
+\draw[fill=blue!90] (1,0) circle (0.3);
+\draw (0,-0.5) grid (1,1.5);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Matriz multivariada de correlaciones.
+\item \textbf{Caso de uso:} Visualizar la magnitud y dirección de correlaciones entre múltiples variables.
+\item \textbf{Contexto real:} Análisis multivariado preliminar en ciencia de datos.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{32. Diagrama de Puntos (Dot Plot)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\begin{axis}[
+    only marks, mark=*,
+    symbolic y coords={G1,G2,G3},
+    ytick=data, xmin=0, xmax=100,
+    width=7cm, height=4cm
+]
+\addplot coordinates {(20,G1) (50,G1) (80,G1)};
+\addplot coordinates {(30,G2) (60,G2)};
+\addplot coordinates {(40,G3) (70,G3) (90,G3)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa discreta / continua agrupada.
+\item \textbf{Caso de uso:} Mostrar observaciones individuales en un eje unidimensional para muestras pequeñas.
+\item \textbf{Contexto real:} Comparativa de puntajes de pruebas estandarizadas entre instituciones.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{33. Diagrama de Voronoi}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.7]
+\draw (0,0) -- (1,2) -- (2.5,1.5) -- (2,0) -- cycle;
+\draw (2.5,1.5) -- (3.5,2.5) -- (4,1) -- (2,0);
+\filldraw (0.8,0.8) circle (2pt);
+\filldraw (2.2,1) circle (2pt);
+\filldraw (3.2,1.8) circle (2pt);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Espacial continua (partición del plano).
+\item \textbf{Caso de uso:} Determinar regiones de influencia basadas en la distancia al punto más cercano.
+\item \textbf{Contexto real:} Delimitación de zonas de cobertura de hospitales o antenas celulares.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{34. Diagrama de Cuerdas (Chord Diagram)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.8]
+\draw (0,0) circle (1.5);
+\draw[blue, thick] (50:1.5) to[out=230,in=310] (130:1.5);
+\draw[red, thick] (200:1.5) to[out=20,in=110] (320:1.5);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Interrelaciones entre entidades categóricas.
+\item \textbf{Caso de uso:} Visualizar flujos bidireccionales o relaciones de origen-destino.
+\item \textbf{Contexto real:} Flujos de migración global entre continentes.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{35. Diagrama de Red / Grafo}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[node distance=1.2cm, main/.style = {draw, circle, fill=blue!20}]
+\node[main] (1) {A};
+\node[main] (2) [above right of=1] {B};
+\node[main] (3) [below right of=1] {C};
+\draw (1) -- (2); \draw (1) -- (3); \draw (2) -- (3);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Relacional / Estructura de red.
+\item \textbf{Caso de uso:} Representar relaciones, conexiones y nodos en un sistema complejo.
+\item \textbf{Contexto real:} Análisis de redes sociales e interconexiones de usuarios.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{36. Gráfico de Pendientes (Slopechart)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\draw[gray] (0,0) -- (0,3) node[above]{2020};
+\draw[gray] (2,0) -- (2,3) node[above]{2024};
+\draw[red, thick] (0,2.5) -- (2,1.0) node[right]{\tiny País A};
+\draw[blue, thick] (0,0.8) -- (2,2.2) node[right]{\tiny País B};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa comparativa en dos puntos en el tiempo.
+\item \textbf{Caso de uso:} Evaluar cambios en rangos o valores entre dos momentos específicos.
+\item \textbf{Contexto real:} Cambios en la clasificación del ranking del IDH de países.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{37. Diagrama de Gantt}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\draw (0,1.5) node[left]{\tiny Tarea 1} -- (3,1.5);
+\fill[blue!60] (0,1.3) rectangle (1.5,1.7);
+\draw (0,0.8) node[left]{\tiny Tarea 2} -- (3,0.8);
+\fill[orange!60] (1.2,0.6) rectangle (2.8,1.0);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Temporal / Planificación de proyectos.
+\item \textbf{Caso de uso:} Ilustrar el cronograma y la dependencia temporal de actividades.
+\item \textbf{Contexto real:} Gestión y seguimiento de proyectos de infraestructura.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{38. Nube de Palabras (Word Cloud)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{center}
+{\Huge \textbf{Datos}} {\large Estadística} \\[0.2cm]
+{\small Muestra} {\Huge \textbf{Probabilidad}}
+\end{center}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Frecuencia de texto cualitativo.
+\item \textbf{Caso de uso:} Representar de forma visual la frecuencia relativa de palabras en un cuerpo de texto.
+\item \textbf{Contexto real:} Análisis de menciones en redes sociales y discursos políticos.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{39. Gráfico Candlestick (Velas Japonesas)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}
+\draw (0.5,0.5) -- (0.5,2.5);
+\draw[fill=green!60] (0.3,1.0) rectangle (0.7,2.0);
+\draw (1.5,0.8) -- (1.5,2.8);
+\draw[fill=red!60] (1.3,1.2) rectangle (1.7,2.4);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Cuantitativa de series financieras (Apertura, Máximo, Mínimo, Cierre).
+\item \textbf{Caso de uso:} Describir el movimiento de precios de activos financieros en un intervalo.
+\item \textbf{Contexto real:} Plataformas de trading y análisis de acciones bursátiles.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{40. Diagrama de Mosaico (Mosaic Plot)}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{tikzpicture}[scale=0.8]
+\draw[fill=blue!40] (0,0) rectangle (1.5,2);
+\draw[fill=blue!20] (0,2) rectangle (1.5,3);
+\draw[fill=red!40] (1.5,0) rectangle (3,1);
+\draw[fill=red!20] (1.5,1) rectangle (3,3);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}\small
+\item \textbf{Tipo de variable:} Tablas de contingencia multivariadas.
+\item \textbf{Caso de uso:} Examinar relaciones entre dos o más variables categóricas simultáneamente.
+\item \textbf{Contexto real:} Estudios epidemiológicos multivariable sobre factores de riesgo.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,1264 @@
+\documentclass[aspectratio=169,9pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,arrows.meta,patterns,decorations.pathmorphing,calc,fit}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue!60!black}
+
+\newcommand{\ficha}[3]{%
+\begin{itemize}
+\item \textbf{Qué es:} #1
+\item \textbf{Caso de uso:} #2
+\item \textbf{Ejemplo real:} #3
+\end{itemize}}
+
+\title[Prob. y Estadística]{Apéndice II: Gráficos poco comunes}
+\subtitle{40 visualizaciones de nicho + 10 basadas en mapas}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\begin{frame}{Antes de empezar}
+\begin{block}{Qué hay acá}
+En el Apéndice I vimos los 40 gráficos de uso general. Este apéndice reúne visualizaciones \textbf{de nicho}: cada una nació para resolver un problema muy específico de una disciplina (medicina, genómica, control de calidad, ingeniería de RF, demografía, cartografía).
+\end{block}
+\begin{alertblock}{Por qué mirarlos}
+No hace falta memorizarlos. La idea es que vean que, cuando un problema no entra en un histograma o un scatter, alguien ya inventó el gráfico adecuado, y que ese gráfico casi siempre codifica una idea estadística concreta.
+\end{alertblock}
+\end{frame}
+
+% ============================================================
+\section{Estadística y ciencia aplicada}
+% ============================================================
+
+\begin{frame}{1. Gráfico de Bland-Altman}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Promedio de los 2 métodos},
+  ylabel={Diferencia},tick label style={font=\tiny},ymin=-4,ymax=4]
+\addplot[dashed,red,thick] coordinates {(1,2.6)(9,2.6)};
+\addplot[dashed,red,thick] coordinates {(1,-2.2)(9,-2.2)};
+\addplot[thick,blue] coordinates {(1,0.2)(9,0.2)};
+\addplot[only marks,mark=*,mark size=1.2pt,black] coordinates
+ {(2,0.6)(3,-1.1)(3.5,1.4)(4,0.1)(5,-0.7)(5.5,1.9)(6,-0.3)(7,0.9)(8,-1.6)(8.5,0.4)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Grafica la \emph{diferencia} entre dos métodos de medición contra su \emph{promedio}, con el sesgo medio y los límites de concordancia ($\bar{d}\pm 1{,}96\,s$).}
+{Decidir si un método nuevo (más barato o rápido) puede reemplazar al método de referencia.}
+{Estándar en validación de instrumentos médicos; propuesto por Bland y Altman en \emph{The Lancet} (1986).}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2. Forest plot}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.8]
+\draw[dashed,gray] (0,-0.3) -- (0,4.2);
+\foreach \y/\c/\lo/\hi in {3.6/-0.8/-1.8/0.2, 3/0.5/-0.4/1.4, 2.4/-1.2/-2.0/-0.4,
+  1.8/0.1/-0.9/1.1, 1.2/-0.6/-1.3/0.1}{
+  \draw[thick] (\lo,\y) -- (\hi,\y);
+  \fill[blue!70] (\c,\y) rectangle ++(0.16,0.16);
+  \fill[blue!70] (\c-0.08,\y-0.08) rectangle ++(0.16,0.16);
+}
+\fill[red!70] (-0.45,0.5) -- (-0.05,0.75) -- (0.35,0.5) -- (-0.05,0.25) -- cycle;
+\node[right,font=\tiny] at (0.5,0.5) {Global};
+\draw[->] (-2.2,-0.1) -- (1.8,-0.1) node[right,font=\tiny]{efecto};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Una línea por estudio con su estimación puntual (cuadrado, de tamaño proporcional al peso) y su intervalo de confianza; el rombo final es el efecto combinado.}
+{Metaanálisis: resumir en un solo gráfico los resultados de decenas de estudios sobre el mismo tratamiento.}
+{Formato obligatorio de las revisiones sistemáticas de la \emph{Cochrane Collaboration}.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{3. Funnel plot (sesgo de publicación)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Tamaño del efecto},
+  ylabel={Error estándar},y dir=reverse,tick label style={font=\tiny}]
+\addplot[gray,thick] coordinates {(0,0)(-1.6,1.6)};
+\addplot[gray,thick] coordinates {(0,0)(1.6,1.6)};
+\addplot[only marks,mark=*,mark size=1.2pt,blue] coordinates
+ {(0.1,0.2)(-0.2,0.35)(0.35,0.5)(-0.5,0.7)(0.7,0.8)(-0.3,0.9)(0.9,1.0)(-1.0,1.2)(1.2,1.35)(0.2,0.6)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Efecto estimado (eje $x$) contra precisión del estudio (eje $y$). Si no hay sesgo, los puntos forman un embudo simétrico.}
+{Detectar \emph{sesgo de publicación}: si falta un lado del embudo, es señal de que los estudios con resultados negativos no se publicaron.}
+{Herramienta diagnóstica estándar en metaanálisis médicos y de ciencias sociales.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{4. Curva de Kaplan-Meier (supervivencia)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Tiempo (meses)},ylabel={S(t)},
+  ymin=0,ymax=1.05,tick label style={font=\tiny},const plot]
+\addplot[thick,blue] coordinates {(0,1)(3,0.95)(7,0.88)(12,0.78)(18,0.70)(25,0.60)(32,0.55)(40,0.52)};
+\addplot[thick,red,dashed] coordinates {(0,1)(3,0.90)(7,0.75)(12,0.60)(18,0.45)(25,0.33)(32,0.25)(40,0.22)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Curva escalonada de la proporción de individuos que ``sobreviven'' (o no fallan) más allá de cada instante, tratando correctamente los datos censurados.}
+{Análisis de supervivencia en medicina, y de \emph{tiempo hasta la falla} en confiabilidad de componentes.}
+{Prácticamente todo ensayo clínico oncológico publica curvas de Kaplan-Meier comparando tratamiento vs. control.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{5. Volcano plot}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={$\log_2$ (cambio)},
+  ylabel={$-\log_{10}(p)$},tick label style={font=\tiny},ymin=0]
+\addplot[only marks,mark=*,mark size=1pt,gray] coordinates
+ {(-0.5,0.4)(0.2,0.6)(-0.1,0.9)(0.4,0.3)(-0.6,1.1)(0.7,0.8)(0.1,0.2)(-0.3,0.5)};
+\addplot[only marks,mark=*,mark size=1.3pt,red] coordinates
+ {(2.4,3.6)(2.9,4.2)(3.3,3.1)(2.1,4.6)};
+\addplot[only marks,mark=*,mark size=1.3pt,blue] coordinates
+ {(-2.6,3.9)(-3.1,3.3)(-2.2,4.4)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Scatter de magnitud del cambio (eje $x$) contra significancia estadística (eje $y$): lo interesante queda en los dos ``cuernos'' superiores.}
+{Encontrar, entre miles de pruebas de hipótesis simultáneas, las pocas que son grandes \emph{y} significativas.}
+{Estándar en estudios de expresión génica (RNA-seq) y proteómica.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{6. Manhattan plot}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Posición en el genoma},
+  ylabel={$-\log_{10}(p)$},tick label style={font=\tiny},ymin=0,ymax=8,xtick=\empty]
+\addplot[dashed,red] coordinates {(0,5.5)(10,5.5)};
+\addplot[only marks,mark=*,mark size=0.7pt,blue] coordinates
+ {(0.2,0.5)(0.5,1.2)(0.8,0.7)(1.1,2.0)(1.4,0.9)(1.7,1.5)(2.0,0.6)};
+\addplot[only marks,mark=*,mark size=0.7pt,orange] coordinates
+ {(2.4,1.1)(2.7,0.8)(3.0,6.9)(3.2,2.1)(3.5,1.0)(3.8,0.7)(4.1,1.6)};
+\addplot[only marks,mark=*,mark size=0.7pt,blue] coordinates
+ {(4.5,0.9)(4.8,1.8)(5.1,0.6)(5.4,1.2)(5.7,2.3)(6.0,0.8)};
+\addplot[only marks,mark=*,mark size=0.7pt,orange] coordinates
+ {(6.4,1.4)(6.7,0.7)(7.0,1.1)(7.3,6.2)(7.6,1.9)(7.9,0.9)(8.2,1.3)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Millones de pruebas ordenadas por posición en el genoma; los ``rascacielos'' que superan la línea de corte son los hallazgos.}
+{Estudios de asociación del genoma completo (GWAS): qué variantes genéticas se asocian a una enfermedad.}
+{Publicaciones de GWAS en \emph{Nature Genetics}; el nombre viene del parecido con el \emph{skyline} de Manhattan.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{7. Curva ROC}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={1 -- Especificidad},ylabel={Sensibilidad},
+  xmin=0,xmax=1,ymin=0,ymax=1,tick label style={font=\tiny}]
+\addplot[dashed,gray] coordinates {(0,0)(1,1)};
+\addplot[thick,blue,smooth] coordinates {(0,0)(0.05,0.35)(0.12,0.58)(0.25,0.76)(0.45,0.89)(0.7,0.96)(1,1)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Traza sensibilidad contra tasa de falsos positivos al variar el umbral de decisión; el área bajo la curva (AUC) resume el poder discriminante.}
+{Evaluar un test diagnóstico o un clasificador: cuanto más cerca de la esquina superior izquierda, mejor.}
+{Originada en radar durante la 2\textsuperscript{da} Guerra Mundial; hoy es la métrica estándar en \emph{machine learning} y diagnóstico médico.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{8. Curva de Lorenz e índice de Gini}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={\% acumulado de población},
+  ylabel={\% acumulado de ingreso},xmin=0,xmax=1,ymin=0,ymax=1,tick label style={font=\tiny}]
+\addplot[dashed,gray,thick] coordinates {(0,0)(1,1)};
+\addplot[thick,blue,smooth,fill=blue!12] coordinates {(0,0)(0.2,0.05)(0.4,0.14)(0.6,0.29)(0.8,0.54)(1,1)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Compara la distribución real acumulada contra la igualdad perfecta (diagonal); el área entre ambas, normalizada, es el \textbf{índice de Gini}.}
+{Medir desigualdad de ingresos, de riqueza o de concentración de mercado.}
+{El INDEC publica el coeficiente de Gini del ingreso per cápita familiar en cada informe de la EPH.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{9. Diagrama ternario}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.5]
+\draw[thick] (0,0) -- (2,0) -- (1,1.732) -- cycle;
+\foreach \k in {1,...,4}{
+  \pgfmathsetmacro{\f}{\k/5}
+  \draw[gray!40] ($(0,0)!\f!(1,1.732)$) -- ($(2,0)!\f!(1,1.732)$);
+  \draw[gray!40] ($(0,0)!\f!(2,0)$) -- ($(1,1.732)!\f!(2,0)$);
+  \draw[gray!40] ($(2,0)!\f!(0,0)$) -- ($(1,1.732)!\f!(0,0)$);
+}
+\fill[red] (0.9,0.5) circle (1.5pt);
+\fill[blue] (1.3,0.9) circle (1.5pt);
+\node[below left,font=\tiny] at (0,0) {Arena};
+\node[below right,font=\tiny] at (2,0) {Limo};
+\node[above,font=\tiny] at (1,1.732) {Arcilla};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Triángulo donde cada punto representa tres proporciones que suman 100\%; la posición codifica la mezcla.}
+{Clasificar mezclas de tres componentes: texturas de suelo, aleaciones, composición de rocas.}
+{Triángulo textural del USDA para clasificar suelos (arena/limo/arcilla), estándar en agronomía y geotecnia.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{10. Diagrama de Hertzsprung-Russell}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.5cm,xlabel={Temperatura (K)},ylabel={Luminosidad},
+  x dir=reverse,tick label style={font=\tiny},xtick=\empty,ytick=\empty]
+\addplot[only marks,mark=*,mark size=1pt,blue!70] coordinates
+ {(9.5,9.2)(9,8.4)(8.2,7.5)(7.4,6.6)(6.6,5.8)(5.8,5.0)(5.0,4.2)(4.2,3.4)(3.4,2.6)(2.6,1.8)};
+\addplot[only marks,mark=*,mark size=1.4pt,red] coordinates {(3.2,7.8)(2.6,8.4)(3.8,7.2)};
+\addplot[only marks,mark=*,mark size=0.9pt,gray] coordinates {(8.6,1.6)(9.2,1.2)(7.8,1.9)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Scatter de temperatura contra luminosidad de estrellas; los puntos no se dispersan al azar sino que forman grupos bien definidos (secuencia principal, gigantes rojas, enanas blancas).}
+{Clasificar estrellas e inferir su etapa evolutiva a partir de dos variables observables.}
+{Construido de forma independiente por Hertzsprung (1911) y Russell (1913); es el gráfico fundacional de la astrofísica estelar.}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Control de calidad e ingeniería}
+% ============================================================
+
+\begin{frame}{11. Diagrama de Ishikawa (espina de pescado)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.75]
+\draw[very thick,-{Latex}] (0,0) -- (6.5,0);
+\node[right,font=\tiny,align=left] at (6.6,0) {Defecto\\ observado};
+\foreach \x/\lbl in {1.2/{Máquina},3.0/{Método},4.8/{Material}}{
+  \draw[thick] (\x,0) -- (\x+0.9,1.3);
+  \node[above,font=\tiny] at (\x+0.9,1.3) {\lbl};
+}
+\foreach \x/\lbl in {1.9/{Mano de obra},3.7/{Medición},5.5/{Medio amb.}}{
+  \draw[thick] (\x,0) -- (\x-0.9,-1.3);
+  \node[below,font=\tiny] at (\x-0.9,-1.3) {\lbl};
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Estructura en espina que organiza las \emph{causas} posibles de un problema, agrupadas en categorías (las ``6M'').}
+{Sesiones de análisis de causa raíz: ordenar hipótesis antes de salir a medir.}
+{Creado por Kaoru Ishikawa en los astilleros de Kawasaki; una de las 7 herramientas básicas de la calidad.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{12. Carta CUSUM}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Muestra},ylabel={Suma acumulada},
+  tick label style={font=\tiny}]
+\addplot[dashed,red] coordinates {(1,4)(14,4)};
+\addplot[thick,blue,mark=*,mark size=1pt] coordinates
+ {(1,0.2)(2,-0.1)(3,0.3)(4,0)(5,0.2)(6,-0.2)(7,0.4)(8,1.1)(9,1.9)(10,2.8)(11,3.6)(12,4.5)(13,5.4)(14,6.4)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Acumula las desviaciones respecto del valor objetivo: mientras el proceso está centrado oscila cerca de cero; si se corre, la curva toma pendiente sostenida.}
+{Detectar \emph{corrimientos pequeños y persistentes} de la media, que una carta de control clásica tarda mucho en marcar.}
+{Control estadístico de procesos en industria química y farmacéutica, donde los desvíos son sutiles.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{13. Carta EWMA}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Muestra},ylabel={EWMA},
+  tick label style={font=\tiny},ymin=-3,ymax=3]
+\addplot[dashed,red] coordinates {(1,2)(14,2)};
+\addplot[dashed,red] coordinates {(1,-2)(14,-2)};
+\addplot[only marks,mark=o,mark size=1pt,gray] coordinates
+ {(1,0.9)(2,-1.4)(3,1.7)(4,-0.8)(5,1.2)(6,-1.1)(7,2.2)(8,0.4)(9,1.8)(10,-0.6)(11,2.4)(12,1.1)(13,2.6)(14,1.5)};
+\addplot[thick,blue,mark=*,mark size=1pt] coordinates
+ {(1,0.3)(2,-0.2)(3,0.4)(4,0.1)(5,0.4)(6,0)(7,0.7)(8,0.6)(9,1.0)(10,0.6)(11,1.2)(12,1.2)(13,1.7)(14,1.6)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Media móvil \emph{exponencialmente ponderada}: cada punto pesa más los datos recientes, suavizando el ruido (en gris, los datos crudos).}
+{Igual que CUSUM: detectar corrimientos chicos, con la ventaja de ser fácil de interpretar y ajustar vía el parámetro $\lambda$.}
+{Muy usada en monitoreo de procesos continuos y en series financieras (donde se la conoce como EMA).}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{14. Carta p (control por atributos)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Lote},ylabel={Proporción defectuosa},
+  tick label style={font=\tiny},ymin=0,ymax=0.2]
+\addplot[dashed,red] coordinates {(1,0.16)(12,0.16)};
+\addplot[dashed,red] coordinates {(1,0.01)(12,0.01)};
+\addplot[thick,gray] coordinates {(1,0.085)(12,0.085)};
+\addplot[thick,blue,mark=*,mark size=1pt] coordinates
+ {(1,0.07)(2,0.09)(3,0.06)(4,0.11)(5,0.08)(6,0.10)(7,0.175)(8,0.09)(9,0.07)(10,0.08)(11,0.10)(12,0.09)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Carta de control para variables de \emph{conteo}: monitorea la proporción de unidades defectuosas por lote, con límites basados en la distribución Binomial.}
+{Inspección por atributos (pasa / no pasa) cuando no hay una medición continua disponible.}
+{Control de recepción de lotes en manufactura; conecta directo con la Binomial de la Unidad 2.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{15. Nomograma}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\foreach \x/\lbl in {0/{$A$},2.2/{$C$},4.4/{$B$}}{
+  \draw[thick] (\x,0) -- (\x,3.5);
+  \node[below,font=\tiny] at (\x,0) {\lbl};
+  \foreach \k in {0,...,7}{\draw (\x-0.08,\k*0.5) -- (\x+0.08,\k*0.5);}
+}
+\draw[red,thick] (0,2.5) -- (4.4,1.0);
+\fill[red] (0,2.5) circle (1.5pt);
+\fill[red] (2.2,1.75) circle (1.5pt);
+\fill[red] (4.4,1.0) circle (1.5pt);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Escalas graduadas dispuestas de modo que una regla apoyada sobre dos valores conocidos corta la tercera escala en el resultado: un ``gráfico calculadora''.}
+{Resolver ecuaciones de varias variables sin calculadora, en campo o en planta.}
+{Muy usados en ingeniería antes de la computadora; sobreviven en medicina (dosis pediátricas, índices de masa corporal) y aviación.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{16. Carta de Smith}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.5]
+\draw[thick] (0,0) circle (1);
+\draw[gray] (0,0) -- (1,0);
+\foreach \r in {0.25,0.5,0.75}{
+  \draw[blue!60] (1-\r,0) circle (\r);
+}
+\foreach \x in {0.5,1,2}{
+  \pgfmathsetmacro{\rr}{1/\x}
+  \begin{scope}
+  \clip (0,0) circle (1);
+  \draw[red!60] (1,\rr) circle (\rr);
+  \draw[red!60] (1,-\rr) circle (\rr);
+  \end{scope}
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Grilla polar donde se superponen círculos de resistencia constante y arcos de reactancia constante: representa impedancias complejas normalizadas dentro de un disco.}
+{Diseño de líneas de transmisión y redes de adaptación de impedancias en radiofrecuencia.}
+{Creada por Phillip Smith en los Bell Labs (1939); sigue impresa en los analizadores de redes vectoriales actuales.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{17. Diagrama de Bode}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6cm,height=2.4cm,xmode=log,ylabel={dB},tick label style={font=\tiny},
+  y label style={font=\tiny},xtick=\empty]
+\addplot[thick,blue,domain=0.1:100,samples=60] {-20*log10(sqrt(1+x^2))};
+\end{axis}
+\begin{axis}[width=6cm,height=2.4cm,at={(0,-2.1cm)},xmode=log,xlabel={$\omega$},ylabel={Fase},
+  tick label style={font=\tiny},x label style={font=\tiny},y label style={font=\tiny}]
+\addplot[thick,red,domain=0.1:100,samples=60] {-atan(x)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Par de gráficos en escala logarítmica: ganancia (en dB) y fase de un sistema en función de la frecuencia.}
+{Analizar la respuesta en frecuencia y la estabilidad de sistemas de control y filtros electrónicos.}
+{Desarrollado por Hendrik Bode en Bell Labs; contenido central de cualquier curso de Control Automático.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{18. Diagrama de Nyquist}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Re},ylabel={Im},
+  tick label style={font=\tiny},axis lines=middle]
+\addplot[thick,blue,domain=-2:2,samples=80,variable=\t]
+ ({cos(deg(\t))*0.9-0.1},{sin(deg(\t))*0.9});
+\addplot[only marks,mark=x,mark size=3pt,red] coordinates {(-1,0)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Traza la respuesta en frecuencia de un sistema en el plano complejo; lo que importa es cómo la curva rodea (o no) al punto crítico $-1$.}
+{Determinar la estabilidad de un sistema realimentado mediante el criterio de Nyquist.}
+{Introducido por Harry Nyquist (1932) estudiando la estabilidad de amplificadores telefónicos.}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Flujos, redes y jerarquías}
+% ============================================================
+
+\begin{frame}{19. Diagrama de Sankey}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\fill[gray!50] (0,0) rectangle (0.25,3);
+\fill[blue!50] (5,1.9) rectangle (5.25,3);
+\fill[orange!60] (5,0.6) rectangle (5.25,1.7);
+\fill[red!45] (5,0) rectangle (5.25,0.45);
+\fill[blue!30,draw=none] (0.25,1.6) .. controls (2.5,1.6) and (2.5,1.9) .. (5,1.9)
+  -- (5,3) .. controls (2.5,3) and (2.5,3) .. (0.25,3) -- cycle;
+\fill[orange!35,draw=none] (0.25,0.5) .. controls (2.5,0.5) and (2.5,0.6) .. (5,0.6)
+  -- (5,1.7) .. controls (2.5,1.7) and (2.5,1.6) .. (0.25,1.6) -- cycle;
+\fill[red!30,draw=none] (0.25,0) .. controls (2.5,0) and (2.5,0) .. (5,0)
+  -- (5,0.45) .. controls (2.5,0.45) and (2.5,0.5) .. (0.25,0.5) -- cycle;
+\node[left,font=\tiny] at (0,1.5) {Energía};
+\node[right,font=\tiny] at (5.3,2.4) {Útil};
+\node[right,font=\tiny] at (5.3,1.1) {Pérdidas};
+\node[right,font=\tiny] at (5.3,0.2) {Otros};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Flechas cuyo \emph{ancho} es proporcional a la cantidad que fluye; lo que entra debe igualar a lo que sale.}
+{Balances de energía, materia, agua o dinero: dónde se pierde y dónde se aprovecha.}
+{Los diagramas de flujo energético de EE.UU. del \href{https://flowcharts.llnl.gov/}{Lawrence Livermore National Laboratory} son el ejemplo canónico.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{20. Diagrama de cuerdas (chord diagram)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.5]
+\foreach \a/\b/\c in {5/80/blue!60,90/165/orange!60,175/250/green!60!black,260/350/red!50}{
+  \draw[line width=2.5pt,\c] (\a:1) arc (\a:\b:1);
+}
+\draw[blue!35,line width=3pt,opacity=0.6] (40:0.98) .. controls (0,0) .. (130:0.98);
+\draw[orange!35,line width=4pt,opacity=0.6] (130:0.98) .. controls (0,0) .. (215:0.98);
+\draw[green!35,line width=2pt,opacity=0.6] (215:0.98) .. controls (0,0) .. (300:0.98);
+\draw[red!30,line width=3pt,opacity=0.6] (300:0.98) .. controls (0,0) .. (40:0.98);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Entidades dispuestas alrededor de un círculo, unidas por cintas cuyo grosor mide la intensidad de la relación entre cada par.}
+{Matrices de flujo simétricas: migraciones entre países, transferencias entre cuentas, reordenamientos genómicos.}
+{Popularizado por \href{https://circos.ca/}{Circos} (Krzywinski et al.), usado en tapas de \emph{Nature} y \emph{Science} para genómica del cáncer.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{21. Diagrama aluvial}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.8]
+\foreach \x in {0,2.6,5.2}{
+  \fill[blue!55] (\x,2.2) rectangle (\x+0.22,3.4);
+  \fill[orange!60] (\x,0.9) rectangle (\x+0.22,2.0);
+  \fill[green!50!black] (\x,0) rectangle (\x+0.22,0.7);
+}
+\fill[blue!25] (0.22,2.6) .. controls (1.4,2.6) and (1.4,2.8) .. (2.6,2.8)
+ -- (2.6,3.4) .. controls (1.4,3.4) and (1.4,3.4) .. (0.22,3.4) -- cycle;
+\fill[blue!20] (0.22,2.2) .. controls (1.4,2.2) and (1.4,1.5) .. (2.6,1.5)
+ -- (2.6,2.0) .. controls (1.4,2.0) and (1.4,2.6) .. (0.22,2.6) -- cycle;
+\fill[orange!25] (0.22,1.2) .. controls (1.4,1.2) and (1.4,0.9) .. (2.6,0.9)
+ -- (2.6,1.5) .. controls (1.4,1.5) and (1.4,2.0) .. (0.22,2.0) -- cycle;
+\fill[blue!25] (2.82,2.4) .. controls (4,2.4) and (4,2.2) .. (5.2,2.2)
+ -- (5.2,3.4) .. controls (4,3.4) and (4,3.4) .. (2.82,3.4) -- cycle;
+\fill[orange!25] (2.82,0.9) .. controls (4,0.9) and (4,0.9) .. (5.2,0.9)
+ -- (5.2,2.0) .. controls (4,2.0) and (4,2.0) .. (2.82,2.0) -- cycle;
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Como un Sankey, pero mostrando cómo las mismas unidades \emph{cambian de categoría} entre etapas sucesivas.}
+{Seguir cohortes: cómo migran los alumnos entre comisiones, los clientes entre segmentos, los votantes entre partidos.}
+{Muy usado para visualizar trayectorias educativas y transferencias de voto entre elecciones sucesivas.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{22. Diagrama de arco}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.9]
+\draw (0,0) -- (6,0);
+\foreach \x in {0.5,1.5,2.5,3.5,4.5,5.5}{\fill (\x,0) circle (2pt);}
+\draw[blue,thick] (0.5,0) arc (180:0:0.5);
+\draw[orange,thick] (1.5,0) arc (180:0:1);
+\draw[green!60!black,thick] (0.5,0) arc (180:0:1.5);
+\draw[red,thick] (3.5,0) arc (180:0:1);
+\draw[purple,thick] (2.5,0) arc (180:0:1.5);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Nodos alineados sobre una recta, con las conexiones dibujadas como arcos por encima (y a veces por debajo).}
+{Redes donde el orden de los nodos importa: estructura de un texto, dependencias en código, apareamientos de bases en ARN.}
+{Usado en lingüística computacional y en visualización de estructuras secundarias de ARN.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{23. Grafo de red (network graph)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.9,every node/.style={circle,fill=blue!50,inner sep=0pt,minimum size=5pt}]
+\node (a) at (0,0) {}; \node (b) at (1.5,0.9) {}; \node (c) at (2.8,0.2) {};
+\node (d) at (1.2,-1.1) {}; \node (e) at (3.4,-1.3) {}; \node (f) at (4.4,0.7) {};
+\node (g) at (2.0,1.9) {};
+\draw[gray] (a)--(b); \draw[gray] (b)--(c); \draw[gray] (a)--(d);
+\draw[gray] (d)--(c); \draw[gray] (c)--(e); \draw[gray] (c)--(f);
+\draw[gray] (b)--(g); \draw[gray] (d)--(e); \draw[gray] (f)--(g);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Nodos unidos por aristas; la posición se calcula con algoritmos de fuerza para que los grupos densamente conectados queden juntos.}
+{Redes sociales, redes de citas científicas, topologías de red, interacciones entre proteínas.}
+{Análisis de redes sociales con herramientas como Gephi; mapas de coautoría en cienciometría.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{24. Dendrograma}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[thick] (0,0) -- (0,1) -- (1,1) -- (1,0);
+\draw[thick] (2,0) -- (2,0.7) -- (3,0.7) -- (3,0);
+\draw[thick] (0.5,1) -- (0.5,2) -- (2.5,2) -- (2.5,0.7);
+\draw[thick] (4,0) -- (4,1.4) -- (5,1.4) -- (5,0);
+\draw[thick] (1.5,2) -- (1.5,2.9) -- (4.5,2.9) -- (4.5,1.4);
+\foreach \x/\l in {0/A,1/B,2/C,3/D,4/E,5/F}{\node[below,font=\tiny] at (\x,0) {\l};}
+\draw[->] (-0.5,0) -- (-0.5,3) node[above,font=\tiny]{dist.};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Árbol que muestra cómo se van fusionando los grupos en un análisis de conglomerados; la altura de cada unión es la distancia a la que ocurre.}
+{Decidir en cuántos grupos naturales se divide un conjunto de datos: se ``corta'' el árbol a la altura que convenga.}
+{Análisis de clusters en marketing (segmentación), y árboles filogenéticos en biología evolutiva.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{25. Diagrama de Voronoi}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\clip (0,0) rectangle (5,3.2);
+\draw (0,0) rectangle (5,3.2);
+\draw[blue!70] (0,1.9) -- (1.7,1.3) -- (2.4,3.2);
+\draw[blue!70] (1.7,1.3) -- (1.3,0) ;
+\draw[blue!70] (1.7,1.3) -- (3.6,1.9) -- (5,1.2);
+\draw[blue!70] (3.6,1.9) -- (3.9,3.2);
+\draw[blue!70] (3.6,1.9) -- (3.2,0);
+\foreach \p in {(0.7,0.6),(0.8,2.6),(2.6,0.7),(2.5,2.5),(4.4,0.6),(4.6,2.6)}{
+  \fill[red] \p circle (1.8pt);
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Partición del plano en celdas: cada celda contiene todos los puntos más cercanos a un generador que a cualquier otro.}
+{Áreas de influencia: qué escuela, antena o sucursal queda más cerca de cada domicilio.}
+{John Snow razonó con esta lógica al delimitar la zona más cercana a la bomba de Broad Street en el brote de cólera de 1854.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{26. Bump chart}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=6.2cm,height=4.2cm,xlabel={Año},ylabel={Puesto},
+  y dir=reverse,ymin=0.5,ymax=4.5,ytick={1,2,3,4},tick label style={font=\tiny}]
+\addplot[thick,blue,mark=*,mark size=1.4pt] coordinates {(1,1)(2,2)(3,1)(4,3)};
+\addplot[thick,orange,mark=*,mark size=1.4pt] coordinates {(1,2)(2,1)(3,3)(4,1)};
+\addplot[thick,green!60!black,mark=*,mark size=1.4pt] coordinates {(1,3)(2,4)(3,2)(4,2)};
+\addplot[thick,red,mark=*,mark size=1.4pt] coordinates {(1,4)(2,3)(3,4)(4,4)};
+\end{axis}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Sigue la evolución del \emph{puesto} (no del valor) de varias entidades a lo largo del tiempo; las líneas se cruzan cuando hay cambios de posición.}
+{Rankings que cambian: tabla de posiciones de un torneo, ranking de universidades, popularidad de lenguajes de programación.}
+{Muy común en periodismo deportivo para mostrar la evolución de la tabla fecha a fecha.}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Tiempo y formas poco comunes}
+% ============================================================
+
+\begin{frame}{27. Horizon chart}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.8]
+\foreach \k/\c in {0/blue!25,1/blue!45,2/blue!70}{
+  \begin{scope}
+  \clip (0,0) rectangle (6,1);
+  \fill[\c] plot[smooth,domain=0:6,samples=40] (\x,{1.6*sin(deg(\x*1.1))+1.4-\k*0.9})
+    |- (0,0) -- cycle;
+  \end{scope}
+}
+\draw (0,0) rectangle (6,1);
+\node[right,font=\tiny] at (6.1,0.5) {Serie A};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Un gráfico de área ``plegado'': los valores altos se recortan en bandas y se superponen con colores más intensos, para que la serie entre en muy poca altura.}
+{Comparar decenas de series temporales apiladas en una sola pantalla sin perder resolución vertical.}
+{Diseñado por Panopticon y difundido por Heer et al. (Stanford); usado en monitoreo de servidores y series financieras.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{28. Calendar heatmap}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.42]
+\def\vals{{5,60,20,80,35,10,0,45,70,15,90,25,55,5,30,65,40,85,10,50,75,20,95,35,60,15,45,80,25,70,5,40,55,90,20,65,30,75,10,50}}
+\foreach \w in {0,...,7}{
+  \foreach \d in {0,...,4}{
+    \pgfmathtruncatemacro{\idx}{\w*5+\d}
+    \pgfmathsetmacro{\v}{\vals[\idx]}
+    \node[draw=white,line width=0.5pt,minimum size=0.75cm,inner sep=0,
+      fill=green!\v!white] at (\w*0.85,-\d*0.85) {};
+  }
+}
+\node[left,font=\tiny] at (-0.6,0) {Lun};
+\node[left,font=\tiny] at (-0.6,-3.4) {Vie};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Grilla con forma de calendario donde cada celda es un día, coloreada según la intensidad de la actividad registrada.}
+{Ver patrones estacionales y semanales: qué días hay más ventas, más incidentes, más actividad.}
+{El gráfico de contribuciones de GitHub es el ejemplo más conocido de este formato.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{29. Cycle plot}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\foreach \m [count=\i from 0] in {E,F,M,A,M,J}{
+  \pgfmathsetmacro{\base}{1+0.35*\i}
+  \draw[blue,thick] (\i*1.05,\base-0.3) -- (\i*1.05+0.25,\base-0.1)
+    -- (\i*1.05+0.5,\base+0.15) -- (\i*1.05+0.75,\base+0.3);
+  \draw[red,thick] (\i*1.05,\base+0.05) -- (\i*1.05+0.75,\base+0.05);
+  \node[below,font=\tiny] at (\i*1.05+0.37,0.3) {\m};
+}
+\draw[->] (-0.2,0.5) -- (-0.2,3.4);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Para cada posición del ciclo (mes, día de la semana, hora) se dibuja su propia mini-serie temporal, con una línea de nivel medio.}
+{Separar la \emph{estacionalidad} de la \emph{tendencia}: ¿los eneros están subiendo, aunque el total baje?}
+{Propuesto por Cleveland; recomendado por Naomi Robbins y usado en análisis de series económicas.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{30. Gráfico de cascada (waterfall)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.7]
+\fill[blue!60] (0,0) rectangle (0.7,4);
+\fill[green!60!black] (1.1,4) rectangle (1.8,5.2);
+\fill[red!70] (2.2,3.1) rectangle (2.9,4);
+\fill[red!70] (3.3,2.2) rectangle (4.0,3.1);
+\fill[green!60!black] (4.4,3.1) rectangle (5.1,2.2);
+\fill[blue!60] (5.5,0) rectangle (6.2,3.1);
+\foreach \x/\l in {0.35/{Inicio},1.45/{+},2.55/{--},3.65/{--},4.75/{+},5.85/{Final}}{
+  \node[below,font=\tiny] at (\x,0) {\l};
+}
+\draw[gray,dashed] (0.7,4) -- (1.1,4);
+\draw[gray,dashed] (1.8,5.2) -- (2.2,5.2);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Barras ``flotantes'' que muestran cómo se llega de un valor inicial a uno final, sumando y restando contribuciones intermedias.}
+{Descomponer una variación: por qué la ganancia pasó de X a Y, qué sumó y qué restó.}
+{Estándar en presentaciones financieras de resultados trimestrales (\emph{bridge charts} en consultoría).}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{31. Slopegraph}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[gray] (0,0) -- (0,3.4); \draw[gray] (4,0) -- (4,3.4);
+\foreach \a/\b/\c in {3.1/2.2/blue,2.4/2.9/orange,1.6/0.7/red,0.8/1.9/green!60!black}{
+  \draw[thick,\c] (0,\a) -- (4,\b);
+  \fill[\c] (0,\a) circle (1.6pt); \fill[\c] (4,\b) circle (1.6pt);
+}
+\node[below,font=\tiny] at (0,0) {2020};
+\node[below,font=\tiny] at (4,0) {2024};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Dos ejes verticales y una línea por entidad: lo único que importa es la \emph{pendiente}, es decir, quién subió y quién bajó entre dos momentos.}
+{Comparaciones ``antes y después'' con muchas entidades, cuando un gráfico de barras agrupadas sería ilegible.}
+{Formato promovido por Edward Tufte; muy usado por \emph{The Economist} para comparar países entre dos años.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{32. Diagrama de Lexis}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[->] (0,0) -- (5,0) node[right,font=\tiny]{año};
+\draw[->] (0,0) -- (0,3.4) node[above,font=\tiny]{edad};
+\draw[gray!40] (0,0) grid[step=0.7] (4.5,3.15);
+\foreach \s in {0,0.7,1.4,2.1}{
+  \draw[blue,thick,-{Latex}] (\s,0) -- (\s+3,3);
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Plano edad--tiempo donde cada individuo (o cohorte) avanza en diagonal a 45°: envejece un año por cada año calendario.}
+{Demografía: separar los efectos de \emph{edad}, \emph{período} y \emph{cohorte} sobre mortalidad o fecundidad.}
+{Herramienta básica de las tablas de vida y de los estudios de mortalidad por cohorte (Human Mortality Database).}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{33. Espiral temporal}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.9]
+\foreach \k in {0,...,110}{
+  \pgfmathsetmacro{\ang}{\k*7}
+  \pgfmathsetmacro{\rad}{0.35+\k*0.014}
+  \pgfmathsetmacro{\v}{50+45*sin(\k*28)}
+  \fill[blue!\v!white] (\ang:\rad) circle (0.09);
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{El tiempo avanza en espiral: cada vuelta completa es un ciclo (un año, un día), y el color o el radio codifican el valor.}
+{Detectar periodicidad a simple vista: si el patrón se alinea radialmente, el período elegido es el correcto.}
+{Usada en visualización de datos climáticos y de series médicas periódicas (ritmos circadianos).}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{34. Marimekko (mosaico)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\fill[blue!55] (0,0) rectangle (1.8,2.1);
+\fill[blue!25] (0,2.1) rectangle (1.8,3.2);
+\fill[orange!60] (1.9,0) rectangle (4.3,1.2);
+\fill[orange!25] (1.9,1.2) rectangle (4.3,3.2);
+\fill[green!55] (4.4,0) rectangle (5.3,2.6);
+\fill[green!25] (4.4,2.6) rectangle (5.3,3.2);
+\node[below,font=\tiny] at (0.9,0) {A};
+\node[below,font=\tiny] at (3.1,0) {B};
+\node[below,font=\tiny] at (4.85,0) {C};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Barras apiladas al 100\% cuyo \emph{ancho} también varía: el área de cada rectángulo es proporcional a la frecuencia conjunta de dos variables categóricas.}
+{Tablas de contingencia: se ve de un vistazo si dos variables son independientes (todas las divisiones quedan alineadas).}
+{Introducido por Hartigan y Kleiner (1981); ejemplo clásico: supervivencia del Titanic según clase y sexo.}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Polares y multivariados}
+% ============================================================
+
+\begin{frame}{35. Rosa de Nightingale (área polar)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.4]
+\foreach \k [count=\i from 0] in {0.95,0.75,0.5,0.4,0.55,0.8,1.0,0.85,0.6,0.45,0.7,0.9}{
+  \pgfmathsetmacro{\a}{\i*30}
+  \pgfmathsetmacro{\b}{\a+30}
+  \fill[blue!45,draw=blue!70,opacity=0.75] (0,0) -- (\a:\k) arc (\a:\b:\k) -- cycle;
+}
+\foreach \k [count=\i from 0] in {0.3,0.25,0.2,0.18,0.22,0.28,0.32,0.26,0.2,0.17,0.24,0.3}{
+  \pgfmathsetmacro{\a}{\i*30}
+  \pgfmathsetmacro{\b}{\a+30}
+  \fill[red!60,draw=red!80] (0,0) -- (\a:\k) arc (\a:\b:\k) -- cycle;
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Doce sectores de igual ángulo (uno por mes) donde la magnitud se codifica en el \emph{radio}, y por lo tanto en el área del sector.}
+{Datos cíclicos donde interesa el contraste entre categorías apiladas a lo largo del ciclo.}
+{Florence Nightingale, \emph{Diagram of the Causes of Mortality in the Army in the East} (1858): mostró que la mayoría de las muertes en Crimea eran por enfermedades evitables, no por heridas.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{36. Rosa de los vientos}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.4]
+\foreach \r in {0.35,0.7,1.0}{\draw[gray!35] (0,0) circle (\r);}
+\foreach \k [count=\i from 0] in {0.4,0.55,0.85,1.0,0.7,0.45,0.3,0.35}{
+  \pgfmathsetmacro{\a}{\i*45-18}
+  \pgfmathsetmacro{\b}{\a+36}
+  \fill[teal!55,draw=teal!80,opacity=0.8] (0,0) -- (\a:\k) arc (\a:\b:\k) -- cycle;
+}
+\node[font=\tiny] at (0,1.2) {N}; \node[font=\tiny] at (1.2,0) {E};
+\node[font=\tiny] at (0,-1.2) {S}; \node[font=\tiny] at (-1.2,0) {O};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Histograma en coordenadas polares: cada pétalo indica con qué frecuencia (y a veces con qué intensidad) sopla el viento desde cada dirección.}
+{Estudios de viento para emplazamiento de aerogeneradores, aeropuertos, dispersión de contaminantes.}
+{Los servicios meteorológicos publican rosas de viento por estación; en Bahía Blanca son clave para el diseño portuario e industrial.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{37. Gráfico de radar (spider chart)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.3]
+\foreach \r in {0.33,0.66,1.0}{
+  \draw[gray!35] (90:\r) -- (162:\r) -- (234:\r) -- (306:\r) -- (18:\r) -- cycle;
+}
+\foreach \a in {90,162,234,306,18}{\draw[gray!50] (0,0) -- (\a:1);}
+\draw[blue,thick,fill=blue!25,opacity=0.75]
+  (90:0.85) -- (162:0.5) -- (234:0.75) -- (306:0.4) -- (18:0.9) -- cycle;
+\draw[red,thick,fill=red!20,opacity=0.6]
+  (90:0.45) -- (162:0.85) -- (234:0.4) -- (306:0.8) -- (18:0.55) -- cycle;
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Varios ejes radiales, uno por variable, con los valores unidos formando un polígono por observación.}
+{Comparar perfiles multivariados: habilidades de un jugador, características de un producto, resultados de un test.}
+{Muy usado en análisis deportivo (perfiles de futbolistas) y en videojuegos; criticado porque el área depende del orden arbitrario de los ejes.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{38. Caras de Chernoff}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\foreach \i/\ew/\mc/\fw in {0/0.09/0.25/0.62, 1/0.14/-0.2/0.75, 2/0.06/0.05/0.55}{
+  \begin{scope}[xshift=\i*2cm]
+  \draw[thick,fill=yellow!25] (0,0) ellipse (\fw cm and 0.8cm);
+  \fill (-0.22,0.25) circle (\ew);
+  \fill (0.22,0.25) circle (\ew);
+  \draw[thick] (-0.25,-0.3) .. controls (0,-0.3-\mc) .. (0.25,-0.3);
+  \draw (0,0.1) -- (0,-0.1);
+  \end{scope}
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Cada variable controla un rasgo facial (ancho de la cara, tamaño de los ojos, curvatura de la boca): observaciones parecidas producen caras parecidas.}
+{Explotar nuestra capacidad innata de reconocer caras para detectar grupos en datos multivariados.}
+{Inventadas por Herman Chernoff (1973); el \emph{Los Angeles Community Analysis Bureau} las usó en 1971 para mapear condiciones de vida por barrio.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{39. Gráfico de estrellas (star glyphs)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.9]
+\foreach \i/\a/\b/\c/\d/\e/\f in {0/0.5/0.3/0.45/0.25/0.4/0.35, 1/0.2/0.5/0.25/0.45/0.15/0.5,
+  2/0.4/0.4/0.4/0.4/0.4/0.4}{
+  \begin{scope}[xshift=\i*1.7cm]
+  \foreach \k in {0,60,120,180,240,300}{\draw[gray!40] (0,0) -- (\k:0.55);}
+  \draw[blue,thick,fill=blue!25]
+    (0:\a) -- (60:\b) -- (120:\c) -- (180:\d) -- (240:\e) -- (300:\f) -- cycle;
+  \end{scope}
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Un mini-radar por cada observación, dispuestos en grilla: la \emph{forma} de cada estrella resume su perfil multivariado.}
+{Comparar decenas de observaciones a la vez y detectar visualmente cuáles se parecen entre sí.}
+{Clásico en análisis de datos exploratorio multivariado; alternativa más ``sobria'' a las caras de Chernoff.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{40. Bullet chart}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\foreach \y/\val/\tgt in {0/3.6/4.2, 1.1/4.6/3.8, 2.2/2.2/3.0}{
+  \fill[gray!20] (0,\y) rectangle (5.5,\y+0.55);
+  \fill[gray!35] (0,\y) rectangle (3.5,\y+0.55);
+  \fill[gray!50] (0,\y) rectangle (2.0,\y+0.55);
+  \fill[blue!80] (0,\y+0.16) rectangle (\val,\y+0.39);
+  \draw[very thick,black] (\tgt,\y+0.05) -- (\tgt,\y+0.5);
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Una barra fina con el valor actual, una marca vertical con el objetivo, y bandas de fondo que indican rangos (malo / aceptable / bueno).}
+{Tableros de indicadores: mostrar en una línea si cada KPI llegó o no a su meta, sin gastar el espacio de un medidor circular.}
+{Diseñado por Stephen Few como reemplazo de los \emph{gauges} tipo velocímetro, que él considera derrochadores de espacio.}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ============================================================
+\section{Diez gráficos basados en mapas}
+% ============================================================
+
+\begin{frame}{41. Mapa coroplético}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\fill[blue!20] (0,0) -- (1.6,0.2) -- (1.5,1.6) -- (0.1,1.5) -- cycle;
+\fill[blue!55] (1.6,0.2) -- (3.2,0) -- (3.3,1.4) -- (1.5,1.6) -- cycle;
+\fill[blue!80] (0.1,1.5) -- (1.5,1.6) -- (1.7,3.0) -- (0.2,2.9) -- cycle;
+\fill[blue!35] (1.5,1.6) -- (3.3,1.4) -- (3.4,2.9) -- (1.7,3.0) -- cycle;
+\fill[blue!65] (3.2,0) -- (4.6,0.3) -- (4.7,1.5) -- (3.3,1.4) -- cycle;
+\fill[blue!15] (3.3,1.4) -- (4.7,1.5) -- (4.6,2.8) -- (3.4,2.9) -- cycle;
+\draw[white,thick] (0,0) -- (1.6,0.2) -- (3.2,0) -- (4.6,0.3);
+\draw[white,thick] (0.1,1.5) -- (1.5,1.6) -- (3.3,1.4) -- (4.7,1.5);
+\draw[white,thick] (1.6,0.2) -- (1.5,1.6) -- (1.7,3.0);
+\draw[white,thick] (3.2,0) -- (3.3,1.4) -- (3.4,2.9);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Regiones administrativas coloreadas según el valor de una variable, normalmente una \emph{tasa} o proporción (nunca un total absoluto).}
+{Comparar indicadores entre provincias o países: incidencia de una enfermedad, participación electoral, pobreza.}
+{Los mapas de incidencia de COVID-19 por país de Our World in Data y de la Universidad Johns Hopkins.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{42. Cartograma}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\fill[orange!30,draw=white,thick] (0,0) rectangle (0.9,1.0);
+\fill[orange!55,draw=white,thick] (0.9,0) rectangle (3.0,1.0);
+\fill[orange!70,draw=white,thick] (0,1.0) rectangle (2.2,2.9);
+\fill[orange!40,draw=white,thick] (2.2,1.0) rectangle (3.0,2.9);
+\fill[orange!60,draw=white,thick] (3.0,0) rectangle (4.8,1.7);
+\fill[orange!25,draw=white,thick] (3.0,1.7) rectangle (4.8,2.9);
+\node[font=\tiny,white] at (1.1,1.95) {mucha pob.};
+\node[font=\tiny] at (0.45,0.5) {\tiny poca};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Mapa deliberadamente deformado: el área de cada región es proporcional a una variable (población, PBI, votos), no a su superficie real.}
+{Corregir la ilusión del coroplético, donde las provincias grandes y despobladas dominan visualmente el mapa.}
+{Muy usado en noches electorales para que un distrito enorme y vacío no ``pese'' más que una ciudad densa.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{43. Mapa de puntos (dot map)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[gray!50] (0,1.5) -- (5,1.5);
+\draw[gray!50] (2.4,0) -- (2.4,3);
+\draw[gray!50] (0,0.6) -- (5,0.6);
+\draw[gray!50] (3.9,0) -- (3.9,3);
+\foreach \p in {(2.3,1.6),(2.5,1.4),(2.2,1.3),(2.6,1.7),(2.45,1.85),(2.15,1.7),
+  (2.7,1.35),(2.3,1.1),(2.55,1.1),(2.05,1.5),(2.8,1.6),(2.35,2.0),(2.6,0.95),(2.9,1.45)}{
+  \fill[red!80] \p circle (1.3pt);}
+\foreach \p in {(0.6,2.4),(1.2,0.3),(4.4,2.5),(3.4,0.25),(1.0,2.7),(4.6,0.35)}{
+  \fill[red!80] \p circle (1.3pt);}
+\draw[blue,thick] (2.4,1.5) circle (4pt);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Un punto por cada caso individual ubicado en su posición geográfica: los conglomerados aparecen solos, sin necesidad de agregar por región.}
+{Detectar focos espaciales de un fenómeno: brotes epidémicos, delitos, incendios.}
+{El mapa de John Snow del brote de cólera de Soho (1854): los casos se agrupaban alrededor de la bomba de Broad Street. Acta de nacimiento de la epidemiología.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{44. Mapa de flujo (flow map)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\fill[gray!12] (0,0) rectangle (5.2,3);
+% avance: banda ancha que se adelgaza hacia Moscu
+\fill[brown!65,draw=none]
+  (0.3,2.55) -- (1.7,2.45) -- (3.0,2.30) -- (4.3,2.20)
+  -- (4.3,2.02) -- (3.0,1.82) -- (1.7,1.45) -- (0.3,1.15) -- cycle;
+% retirada: banda fina que casi desaparece
+\fill[black!80,draw=none]
+  (4.25,1.85) -- (3.0,1.62) -- (1.7,1.25) -- (0.35,0.95)
+  -- (0.35,0.87) -- (1.7,1.12) -- (3.0,1.50) -- (4.25,1.78) -- cycle;
+\fill[red] (0.3,1.85) circle (1.6pt);
+\fill[red] (4.3,2.1) circle (1.6pt);
+\node[font=\tiny,below] at (0.5,0.8) {Niemen};
+\node[font=\tiny,above] at (4.2,2.3) {Moscú};
+\node[font=\tiny] at (2.5,0.35) {422.000 hombres $\rightarrow$ 10.000};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Sobre una base geográfica, bandas cuyo ancho representa el volumen que se desplaza entre origen y destino.}
+{Migraciones, comercio internacional, tránsito de pasajeros, movimiento de tropas.}
+{La \emph{Carte figurative} de Charles Minard (1869) sobre la campaña de Napoleón en Rusia: seis variables en un solo gráfico. Tufte la llamó posiblemente el mejor gráfico estadístico jamás dibujado.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{45. Mapa de densidad (kernel)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[gray!40] (0,0) rectangle (5,3);
+\foreach \r/\c in {1.1/red!15,0.85/red!30,0.6/red!50,0.35/red!75}{
+  \fill[\c] (1.6,1.7) circle (\r);
+}
+\foreach \r/\c in {0.8/blue!12,0.55/blue!25,0.3/blue!45}{
+  \fill[\c] (3.8,1.1) circle (\r);
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Suaviza puntos individuales en una superficie continua de densidad: en vez de puntos discretos, ``manchas'' de intensidad.}
+{Ver dónde se concentra un fenómeno cuando hay demasiados puntos para leer un dot map.}
+{Mapas de calor de delitos usados por policías municipales, y mapas de actividad de aplicaciones deportivas (Strava).}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{46. Símbolos proporcionales}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[gray!40] (0,0) rectangle (5,3);
+\fill[teal!60,opacity=0.7] (1.2,2.2) circle (0.5);
+\fill[teal!60,opacity=0.7] (3.4,2.4) circle (0.22);
+\fill[teal!60,opacity=0.7] (2.3,1.0) circle (0.36);
+\fill[teal!60,opacity=0.7] (4.2,0.9) circle (0.15);
+\fill[teal!60,opacity=0.7] (0.8,0.7) circle (0.28);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Círculos (u otros símbolos) centrados en cada ubicación, con el \emph{área} proporcional a la magnitud de la variable.}
+{Representar totales absolutos por ciudad o punto: población, producción, cantidad de sucursales. Es lo correcto donde el coroplético falla.}
+{Mapas de magnitud de terremotos del USGS, donde el tamaño del círculo indica la magnitud registrada.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{47. Mapa de isolíneas}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[gray!40] (0,0) rectangle (5,3);
+\foreach \s/\lbl in {1.3/1004,1.0/1008,0.7/1012,0.4/1016}{
+  \draw[blue!70,thick] (1.8,1.6) ellipse (\s*1.1 and \s*0.85);
+}
+\node[font=\tiny] at (1.8,1.6) {B};
+\foreach \s in {0.5,0.8}{
+  \draw[red!70,thick] (4.3,0.9) ellipse (\s*0.7 and \s*0.55);
+}
+\node[font=\tiny] at (4.3,0.9) {A};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Líneas que unen puntos de igual valor de una variable continua sobre el territorio (isobaras, isotermas, curvas de nivel).}
+{Campos continuos: presión atmosférica, temperatura, altitud, nivel freático.}
+{Todo mapa del tiempo del Servicio Meteorológico Nacional; y las curvas de nivel de cualquier carta topográfica del IGN.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{48. Tile grid map (mapa de mosaicos)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.6]
+\foreach \x/\y/\v in {1/3/40, 2/3/70, 3/3/25, 1/2/85, 2/2/50, 3/2/60, 4/2/30,
+  0/1/55, 1/1/75, 2/1/35, 3/1/90, 1/0/45, 2/0/65}{
+  \node[draw=white,line width=1pt,fill=purple!\v!white,minimum size=1.0cm,inner sep=0]
+    at (\x*1.1,\y*1.1) {};
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Cada región geográfica se reduce a un cuadrado idéntico, colocado en una grilla que conserva aproximadamente su posición relativa.}
+{Comparar regiones con igual peso visual, ignorando diferencias de superficie; también para hacer \emph{small multiples} por región.}
+{Formato adoptado por medios como \emph{FiveThirtyEight} y \emph{The Guardian} para mapas de estados de EE.UU.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{49. Coroplético bivariado}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.75]
+\foreach \i in {0,1,2}{
+  \foreach \j in {0,1,2}{
+    \pgfmathsetmacro{\b}{20+\i*35}
+    \pgfmathsetmacro{\r}{20+\j*35}
+    \fill[blue!\b!red!\r!white,draw=white,line width=1pt]
+      (\i*1.15,\j*1.15) rectangle ++(1.1,1.1);
+  }
+}
+\draw[->] (-0.25,0) -- (-0.25,3.4) node[above,font=\tiny]{Var 2};
+\draw[->] (0,-0.25) -- (3.4,-0.25) node[right,font=\tiny]{Var 1};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Codifica \emph{dos} variables a la vez mezclando dos escalas de color; la leyenda es una grilla 3$\times$3 en vez de una barra lineal.}
+{Ver dónde coinciden (o no) dos fenómenos: alta pobreza \emph{y} baja cobertura de salud, por ejemplo.}
+{Popularizado por Joshua Stevens y adoptado por la NASA Earth Observatory y varias oficinas de censo.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{50. Mapa topológico (esquema de red)}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85]
+\draw[blue,line width=2.5pt] (0,0.4) -- (1.6,0.4) -- (2.8,1.6) -- (4.6,1.6);
+\draw[red,line width=2.5pt] (0.6,2.6) -- (2.0,2.6) -- (3.2,1.4) -- (3.2,0.2);
+\draw[green!60!black,line width=2.5pt] (0.3,1.8) -- (2.2,1.8) -- (3.6,0.4) -- (4.8,0.4);
+\foreach \p in {(1.6,0.4),(2.8,1.6),(2.0,2.6),(3.2,1.4),(2.2,1.8),(3.6,0.4)}{
+  \fill[white,draw=black,thick] \p circle (2.6pt);
+}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\ficha{Abandona la geografía real: conserva sólo el \emph{orden} de las estaciones y las conexiones, y endereza todo a ángulos de 45° y 90°.}
+{Redes de transporte, donde al pasajero le importa dónde trasbordar, no la distancia exacta entre estaciones.}
+{El mapa del subte de Londres de Harry Beck (1933), diseño que copiaron prácticamente todas las redes de subte del mundo.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\section{Cierre}
+
+\begin{frame}{Lo que hay detrás de todos estos gráficos}
+\begin{itemize}
+\item Cada gráfico ``raro'' nació porque alguien tenía un dato que \textbf{no entraba} en los formatos habituales: demasiadas variables, un ciclo, un flujo, una jerarquía, o un territorio.
+\item Casi todos codifican una idea estadística que ya vimos: frecuencias (rosa de Nightingale, calendar heatmap), acumulación (CUSUM, Lorenz), dispersión y concordancia (Bland-Altman), significancia (volcano, Manhattan).
+\item En mapas la regla es sencilla: \textbf{tasas} al coroplético, \textbf{totales} a los símbolos proporcionales, \textbf{casos individuales} al dot map, \textbf{movimiento} al mapa de flujo.
+\end{itemize}
+\vspace{0.5em}
+\begin{alertblock}{Y la advertencia de siempre}
+Un gráfico exótico no es mejor por ser exótico. Si un histograma o un gráfico de líneas responde la pregunta, ese es el gráfico correcto. Estos formatos se justifican sólo cuando el dato realmente lo pide.
+\end{alertblock}
+\end{frame}
+
+\end{document}

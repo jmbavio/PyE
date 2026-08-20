@@ -1,0 +1,274 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase ED1: Introducción a la Estadística Descriptiva}
+\subtitle{Población, muestra, variables y tablas de frecuencia}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{El problema general de la Estadística}
+
+\begin{frame}{¿Qué es la Estadística?}
+\begin{block}{Estadística Descriptiva}
+Se ocupa de la organización, resumen y presentación de los datos de una manera útil y de fácil comunicación, además de realizar mediciones sobre esa información (tablas, gráficos, medidas de resumen).
+\end{block}
+\begin{block}{Estadística Inferencial}
+Se orienta a lograr \textbf{generalizaciones}: a partir de los datos de una muestra, obtener conclusiones sobre la población de la que proviene (con un margen de error cuantificable).
+\end{block}
+\begin{alertblock}{El esquema general}
+\centering
+\textbf{Población} $\;\xrightarrow{\text{muestreo}}\;$ \textbf{Muestra} $\;\xrightarrow{\text{inferencia}}\;$ \textbf{Conclusiones sobre la población}\; (¿con qué error?)
+\end{alertblock}
+Este curso empieza por la Estadística Descriptiva: sin poder resumir y visualizar bien los datos, no tiene sentido intentar inferir nada a partir de ellos.
+\end{frame}
+
+\section{Población, muestra y unidad experimental}
+
+\begin{frame}{Definiciones básicas}
+\begin{definition}[Población]
+Es el conjunto \textbf{completo} de individuos, objetos o mediciones que poseen alguna característica común, y acerca del cual se desea obtener información. Puede ser finita o (conceptualmente) infinita.
+\end{definition}
+\begin{definition}[Unidad experimental (o de observación)]
+Es cada uno de los elementos individuales sobre los que se registra la información. Es la menor subdivisión del material de estudio sobre la que se mide la variable.
+\end{definition}
+\begin{definition}[Muestra]
+Es un subconjunto de la población, seleccionado con el objetivo de obtener información (inferir) acerca de las características de la población, cuando estudiarla por completo es imposible o demasiado costoso.
+\end{definition}
+\end{frame}
+
+\begin{frame}{Ejemplo}
+\begin{example}
+Se desea estudiar el consumo de agua diario de los alumnos de la UNS. Para ello, se seleccionan 100 alumnos que asisten al Comedor Universitario y se mide cuánta agua consume cada uno.
+\begin{itemize}
+\item \textbf{Población}: todos los alumnos de la UNS.
+\item \textbf{Unidad experimental}: cada alumno.
+\item \textbf{Muestra}: los 100 alumnos seleccionados.
+\item \textbf{Variable en estudio}: cantidad de agua consumida por día (litros).
+\end{itemize}
+\end{example}
+\begin{alertblock}{Atención}
+No siempre la unidad experimental coincide con el ``individuo'' en sentido literal: puede ser una empresa, una pieza, una parcela, un lote de producción, etc. Siempre preguntarse: ¿sobre qué elemento concreto se registra el dato?
+\end{alertblock}
+\end{frame}
+
+\section{Variables y su clasificación}
+
+\begin{frame}{Variable estadística}
+\begin{definition}
+A cada característica de interés que se mide u observa sobre las unidades experimentales de una población se la llama \textbf{variable}. El conjunto de valores que puede tomar constituye su \textbf{recorrido} o rango.
+\end{definition}
+\vspace{0.3cm}
+\centering
+\resizebox{0.85\textwidth}{!}{%
+\begin{tikzpicture}[
+  every node/.style={font=\small},
+  box/.style={draw, rounded corners, align=center, minimum height=0.8cm, minimum width=2.2cm}
+]
+\node[box, fill=blue!15] (v) at (0,1.5) {Variable};
+\node[box, fill=green!15] (cual) at (-2.8,0) {Cualitativa};
+\node[box, fill=orange!15] (cuan) at (2.8,0) {Cuantitativa};
+\node[box, fill=green!8] (nom) at (-4.1,-1.3) {Nominal};
+\node[box, fill=green!8] (ord) at (-1.5,-1.3) {Ordinal};
+\node[box, fill=orange!8] (disc) at (1.5,-1.3) {Discreta};
+\node[box, fill=orange!8] (cont) at (4.1,-1.3) {Continua};
+\draw (v) -- (cual); \draw (v) -- (cuan);
+\draw (cual) -- (nom); \draw (cual) -- (ord);
+\draw (cuan) -- (disc); \draw (cuan) -- (cont);
+\end{tikzpicture}%
+}
+\end{frame}
+
+\begin{frame}{Variables cualitativas}
+\begin{definition}
+Las variables \textbf{cualitativas} (o categóricas) se refieren a categorías o atributos de las unidades experimentales; sus valores no son numéricos (aunque a veces se codifiquen con números).
+\end{definition}
+
+\begin{block}{Nominal}
+Las categorías no admiten un orden natural.
+\begin{itemize}
+\item País de origen de una empresa.
+\item Tipo de plan de cobertura médica (A / B) \quad $|$ \quad Palo de una carta.
+\end{itemize}
+\end{block}
+
+\begin{block}{Ordinal}
+Las categorías sí admiten un orden, pero no tiene sentido operar aritméticamente.
+\begin{itemize}
+\item Nivel educativo (primario / secundario / universitario).
+\item Grado de satisfacción (bajo / medio / alto).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Variables cuantitativas}
+\begin{definition}
+Las variables \textbf{cuantitativas} son aquellas cuyos valores son numéricos y representan una cantidad, sobre la que tiene sentido operar aritméticamente.
+\end{definition}
+
+\begin{block}{Discreta}
+Toma valores en un conjunto finito o infinito \textbf{numerable} (conteo).
+{\small
+\begin{itemize}
+\item Número de empleados de una empresa.
+\item Número de partículas contaminantes en una oblea.
+\end{itemize}
+}
+\end{block}
+
+\begin{block}{Continua}
+Toma valores en un conjunto \textbf{no numerable} (un intervalo de $\mathbb{R}$).
+{\small
+\begin{itemize}
+\item Resistencia a la tensión de una pieza (psi).
+\item Consumo de combustible de un vehículo (litros).
+\end{itemize}
+}
+\end{block}
+\end{frame}
+
+\begin{frame}{Cómo clasificar una variable: guía rápida}
+\begin{enumerate}
+\item ¿Los valores son categorías o números? Si son categorías $\to$ \textbf{cualitativa}.
+\begin{itemize}
+\item[] ¿Las categorías tienen un orden natural? Sí $\to$ ordinal. No $\to$ nominal.
+\end{itemize}
+\item Si son números $\to$ \textbf{cuantitativa}.
+\begin{itemize}
+\item[] ¿Provienen de \emph{contar}, y entre dos valores consecutivos no hay valores intermedios posibles? Sí $\to$ discreta.
+\item[] ¿Provienen de \emph{medir}, y entre dos valores cualesquiera siempre hay otro valor posible? Sí $\to$ continua.
+\end{itemize}
+\end{enumerate}
+\vspace{0.5em}
+\begin{alertblock}{Cuidado con los códigos numéricos}
+Que una variable se registre con números no la vuelve cuantitativa: el ``número de plan de cobertura médica'' (1 o 2) sigue siendo una variable \textbf{cualitativa nominal}, sólo que codificada.
+\end{alertblock}
+\end{frame}
+
+\section{Distribuciones de frecuencia (datos no agrupados)}
+
+\begin{frame}{Frecuencias}
+Dado un conjunto de $n$ observaciones de una variable (cualitativa, o cuantitativa discreta con pocos valores distintos), sea $x_1,\dots,x_k$ el conjunto de valores distintos observados.
+\begin{definition}
+Para cada valor $x_i$ se define:
+\begin{itemize}
+\item \textbf{Frecuencia absoluta} $F_i$: cantidad de observaciones que toman el valor $x_i$.
+\item \textbf{Frecuencia relativa} $f_i = F_i/n$: proporción de observaciones con valor $x_i$. Se cumple $\sum_i f_i = 1$.
+\item \textbf{Frecuencia relativa porcentual} $f_i\% = f_i \cdot 100$.
+\end{itemize}
+\end{definition}
+Para variables cuantitativas, además tiene sentido ordenar los $x_i$ de menor a mayor y definir la \textbf{frecuencia acumulada} $F_i^{ac} = F_1+F_2+\cdots+F_i$ (cantidad de observaciones $\leq x_i$), y su análoga relativa $f_i^{ac}$.
+\end{frame}
+
+\begin{frame}{Ejemplo: variable cualitativa}
+\begin{example}
+28 empresas informan cómo variaron sus importaciones (N: no varió, D: disminuyó, A: aumentó).
+\end{example}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Categoría & $F_i$ & $f_i$ & $f_i\%$ \\
+\midrule
+N & 12 & 0,4286 & 42,86\% \\
+D & 12 & 0,4286 & 42,86\% \\
+A & 2 & 0,0714 & 7,14\% \\
+\bottomrule
+& \textbf{28} & \textbf{1} & \textbf{100\%} \\
+\end{tabular}
+\vspace{0.5em}
+
+Notar que aquí \textbf{no} tiene sentido acumular frecuencias: N, D, A no tienen un orden numérico intrínseco (es una variable cualitativa nominal), así que no existe un ``$f^{ac}$'' interpretable.
+\end{frame}
+
+\begin{frame}{Ejemplo: variable cuantitativa discreta}
+\begin{example}
+Número de artículos defectuosos observados en 20 lotes inspeccionados.
+\end{example}
+\centering
+\small
+\begin{tabular}{ccccc}
+\toprule
+$x_i$ & $F_i$ & $f_i$ & $F_i^{ac}$ & $f_i^{ac}$ \\
+\midrule
+0 & 5 & 0,25 & 5 & 0,25 \\
+1 & 8 & 0,40 & 13 & 0,65 \\
+2 & 4 & 0,20 & 17 & 0,85 \\
+3 & 3 & 0,15 & 20 & 1,00 \\
+\bottomrule
+\end{tabular}
+\vspace{0.5em}
+\normalsize
+Aquí sí acumular tiene sentido: $F_2^{ac}=17$ significa que 17 lotes tuvieron a lo sumo 2 defectuosos. Este tipo de lectura (``a lo sumo'', ``al menos'', ``entre'') es la base para responder preguntas de proporción en la práctica.
+\end{frame}
+
+\section{Gráficos para datos cualitativos y discretos}
+
+\begin{frame}{Diagrama de barras}
+\begin{block}{Uso}
+Adecuado para variables \textbf{cualitativas} (nominales u ordinales) y \textbf{cuantitativas discretas} con pocos valores distintos. Cada categoría/valor se representa con una barra cuya altura es su frecuencia ($F_i$ o $f_i$); las barras \textbf{no se tocan entre sí}, para remarcar que los valores son distintos y no forman un continuo.
+\end{block}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, bar width=0.9cm, width=9cm, height=4.2cm,
+  symbolic x coords={N,D,A}, xtick=data,
+  ylabel={Frecuencia absoluta}, ymin=0, ymax=14,
+  nodes near coords, enlarge x limits=0.3,
+]
+\addplot coordinates {(N,12) (D,12) (A,2)};
+\end{axis}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Gráfico de sectores (torta)}
+\begin{block}{Uso}
+Adecuado sobre todo para variables \textbf{cualitativas nominales} con \textbf{pocas categorías}, resaltando la proporción del total ($\text{ángulo}_i = f_i \cdot 360^\circ$).
+\end{block}
+
+\begin{alertblock}{Limitaciones}
+\small
+\begin{itemize}
+\item \textbf{Muchas categorías:} Con más de 5 o porcentajes similares, el ojo humano compara mal los ángulos.
+\item \textbf{Inadecuado para continuas:} Tampoco se recomienda para series temporales.
+\item \textbf{Reconstrucción:} Para hallar $F_i$ desde la torta, se calcula $F_i = f_i\% \cdot n / 100$.
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item La \textbf{Estadística Descriptiva} organiza y resume datos; la \textbf{Inferencial} generaliza de la muestra a la población.
+\item \textbf{Población}, \textbf{muestra} y \textbf{unidad experimental}: identificar siempre estos tres elementos, y sobre qué unidad se mide la variable.
+\item Toda variable es \textbf{cualitativa} (nominal / ordinal) o \textbf{cuantitativa} (discreta / continua).
+\item Las \textbf{tablas de frecuencia} ($F_i$, $f_i$, $f_i\%$, y acumuladas cuando corresponde) resumen los datos no agrupados.
+\item \textbf{Diagrama de barras}: cualitativas y cuantitativas discretas con pocos valores. \textbf{Gráfico de torta}: cualitativas nominales con pocas categorías.
+\item Próxima clase: qué hacer cuando hay \textbf{muchos valores distintos} o la variable es \textbf{continua} (datos agrupados en intervalos), y cómo resumir los datos con \textbf{medidas numéricas}.
+\end{itemize}
+\end{frame}
+
+\end{document}

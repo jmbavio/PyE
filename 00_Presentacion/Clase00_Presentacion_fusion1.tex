@@ -1,0 +1,312 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+
+% --- TRADUCCIÓN EXPLÍCITA DE ENTORNOS AL ESPAÑOL ---
+\deftranslation[to=spanish]{Definition}{Definición}
+\deftranslation[to=spanish]{definition}{Definición}
+\deftranslation[to=spanish]{Example}{Ejemplo}
+\deftranslation[to=spanish]{example}{Ejemplo}
+\deftranslation[to=spanish]{Theorem}{Teorema}
+\deftranslation[to=spanish]{theorem}{Teorema}
+
+\title[Prob. y Estadística]{Clase 0: Presentación de la materia}
+\subtitle{Probabilidad y Estadística (5765)}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{18 de agosto}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+% ============================================================
+\section{Bienvenida y objetivos}
+
+\begin{frame}{Bienvenida}
+\begin{center}
+\Large ¡Bienvenidos a Probabilidad y Estadística!
+\end{center}
+\vspace{0.8em}
+\begin{itemize}
+\item Código 5765 — Área IV, Departamento de Matemática, UNS.
+\item Correlativa cursada: Análisis Matemático II.
+\item Carga horaria: 4 hs. teóricas + 4 hs. prácticas semanales.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Objetivo de la materia}
+\begin{block}{Del programa oficial}
+Que el alumno comprenda y aplique los conceptos básicos de la probabilidad y de la estadística, conectándose con \emph{``el mundo de la aleatoriedad, de la inferencia y de la predicción''}, con fundamentos teóricos sólidos para comprender la utilidad y los límites de la estadística como herramienta en la resolución de problemas y en la toma de decisiones de la vida real.
+\end{block}
+
+\vspace{0.5em}
+No es una materia de fórmulas para memorizar: es una materia para aprender a \textbf{pensar bajo incertidumbre}.
+\end{frame}
+
+\begin{frame}{Las 8 unidades del curso}
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{enumerate}
+\item Espacios de probabilidad
+\item Variables aleatorias
+\item Vectores aleatorios
+\item Función generadora de momentos
+\end{enumerate}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{enumerate}
+\setcounter{enumi}{4}
+\item Muestras aleatorias y distribuciones
+\item Estimación de parámetros
+\item Prueba de hipótesis
+\item Modelos lineales
+\end{enumerate}
+\end{column}
+\end{columns}
+
+\vspace{0.8em}
+\centering 32 clases de teoría en total.
+\end{frame}
+
+\begin{frame}{Bibliografía}
+\textbf{Básica}
+\begin{itemize}\small
+\item Meyer, P.: \emph{Probabilidad y Aplicaciones Estadísticas}. Addison Wesley Iberoamericana, 1992.
+\item Rohatgi, V.: \emph{Statistical Inference}. John Wiley, 1984.
+\item Walpole, Myers: \emph{Probabilidad y Estadística}. McGraw-Hill, 1992.
+\end{itemize}
+
+\textbf{De consulta}: Cánovos; Maronna (UNLP); Yohai; Bianco y Martínez (UBA) — disponibles en la web.
+
+\vspace{0.4em}
+\textbf{Software recomendado}: R (\texttt{www.r-project.org}), de uso público.
+\end{frame}
+
+% ============================================================
+\section{Motivación: la aleatoriedad en la ingeniería}
+
+\begin{frame}{¿Por qué estudiar probabilidad y estadística?}
+\begin{itemize}
+\item Muchas de las variables del mundo real tienen un comportamiento aleatorio.
+\item Un ingeniero, hoy y más aún en el futuro, deberá vérselas con sistemas que:
+\begin{itemize}
+\item Tienen entradas aleatorias;
+\item Tienen entradas determinísticas pero se comportan aleatoriamente;
+\item Son demasiado complejos para ser descritos con precisión;
+\item O son una combinación de los casos anteriores.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ejemplos: sistemas con aleatoriedad}
+\begin{itemize}\small
+\item \textbf{Conmutador telefónico}: tanto la llegada de las llamadas como su duración son aleatorias.
+\item \textbf{Unidad de procesamiento}: los programas llegan en instantes aleatorios y sus tiempos de ejecución tampoco se conocen de antemano.
+\item \textbf{Filtro procesador de señales}: las señales de entrada sufren distorsiones aleatorias por ruido e imperfecciones del canal.
+\item \textbf{Servidor de archivos}: las solicitudes llegan en instantes aleatorios y la duración de la descarga también lo es.
+\item \textbf{Línea de comunicación con ruido}: la respuesta a una misma entrada no es siempre la misma.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ejemplos: dinámica aleatoria}
+\begin{itemize}
+\item El movimiento de una molécula de gas o de un electrón.
+\item El movimiento de los usuarios dentro de una celda de telefonía celular.
+\item La generación de paquetes de todos los usuarios de una red de computadoras.
+\end{itemize}
+
+\vspace{0.4em}
+\begin{alertblock}{La idea central}
+Cuando no hay certeza sobre lo que puede pasar, hay que trabajar con la \textbf{probabilidad} de que algo ocurra para tomar decisiones de diseño y que el sistema responda ante esas eventualidades. Es la herramienta natural para describir, analizar y controlar la aleatoriedad de un sistema de ingeniería.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Objetivos de la teoría}
+\begin{itemize}\small
+\item Entender la operación de sistemas con aleatoriedad mediante los conceptos adecuados: variables aleatorias, procesos aleatorios, correlación, convergencia estocástica, etc.
+\item Analizar y diseñar tales sistemas, aprendiendo:
+\begin{itemize}
+\item Teoremas apropiados (teorema central del límite, ley de los grandes números);
+\item Modelos clásicos (distribuciones Gaussiana, Poisson, etc.);
+\item Técnicas de estimación y predicción.
+\end{itemize}
+\end{itemize}
+
+\vspace{0.2em}
+\begin{exampleblock}{De lo particular a lo general}
+\small
+Hay múltiples aplicaciones: ¿habría que estudiar cada una por separado? Todas comparten una estructura común, y una teoría abstracta permite estudiarla una sola vez. Ejemplo: las cadenas de Markov (1907) se crearon para lingüística y, 60 años después, se usaron para estudiar el rendimiento de sistemas de computación y redes de comunicación.
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Áreas de aplicación en ingeniería}
+\begin{itemize}\small
+\item \textbf{Procesamiento de señales}: filtrado, estimación, predicción.
+\item \textbf{Comunicaciones}: señales y perturbaciones (densidad espectral de potencia, tasa de error de bits, ruido blanco); transmisores y receptores (modulación AM/FM, codificación, sincronización); canales guiados y no guiados (celulares, WLAN, WMAN); redes de datos (teoría de colas, teletráfico, protocolos, multiplexado).
+\item \textbf{Simulación}: generación de números y eventos aleatorios.
+\item \textbf{Computadores}: diseño y análisis de servidores y algoritmos.
+\end{itemize}
+
+\vspace{0.3em}
+También aparece en modelado de sistemas y señales, teoría de estimación, teoría de decisión y teoría de colas.
+\end{frame}
+
+\begin{frame}{De la teoría a las herramientas: un mapa}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Herramienta} & \textbf{Característica} & \textbf{Modelos típicos} \\
+\midrule
+Funciones de distribución/densidad & Ambientes estáticos en el tiempo & Gaussiana, Exponencial, Poisson, $\chi^2$, $t$ de Student \\
+Secuencias infinitas de v.a. & Dinámica en tiempo, sin memoria & Procesos gaussianos, procesos de Poisson \\
+Cadenas de Markov & Dinámica en tiempo, con memoria & Modelos de transición de estados \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.8em}
+\footnotesize \textbf{Ejemplos de uso}: ruido en comunicaciones (Gaussiana), tiempos de servicio en colas (Exponencial), llegadas en colas (Poisson), tests estadísticos ($\chi^2$, $t$).
+\end{frame}
+
+\begin{frame}{Los cuatro pilares conceptuales del curso}
+\begin{itemize}
+\item \textbf{Eventos}: elementos estructurales más simples, experimentos simples. Se modelan con teoría de conjuntos.
+\item \textbf{Variable aleatoria y función de densidad de probabilidad}: introduce herramientas de cálculo y análisis.
+\item \textbf{Vector de variables aleatorias}: extiende el concepto de variable aleatoria a varias dimensiones.
+\item \textbf{Proceso aleatorio}: introduce el concepto de tiempo en las variables aleatorias (queda fuera del alcance de este curso, pero es el paso siguiente natural).
+\end{itemize}
+\end{frame}
+
+% ============================================================
+\section{Cronograma y modalidad}
+
+\begin{frame}{Días y horarios}
+\begin{itemize}
+\item \textbf{Martes}: 16 hs a 18 hs. Teoría — Clase 0 y Clase 1 el martes 18/8, y así sucesivamente.
+\item \textbf{Jueves}: 14 hs a 16 hs. Teoría. 16 a 18 hs Práctica.
+\item Horario adicional: a confirmar con Carina el jueves.
+\end{itemize}
+
+\vspace{0.5em}
+\begin{alertblock}{Inicio de clases}
+Martes 18 de agosto.
+\end{alertblock}
+
+\begin{block}{Cronograma clase por clase}
+El detalle día a día (fecha, martes/jueves y clase que corresponde, con chequeo de feriados) está en un documento aparte: \texttt{Cronograma.pdf}, en esta misma carpeta.
+\end{block}
+\end{frame}
+
+\begin{frame}{Material de estudio}
+Cada unidad del curso tiene, en el repositorio de la materia:
+\begin{itemize}
+\item \textbf{Teoría}: las clases en formato de diapositivas (Beamer), una por tema.
+\item \textbf{Un apunte de teoría extendido} por unidad: mismo contenido que las clases pero desarrollado en prosa, con más demostraciones y ejemplos, para quien quiera profundizar más allá de lo que da el horario de clase.
+\item \textbf{Práctica}: guías de ejercicios resueltos paso a paso, de uso libre para estudiar.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Asistencia}
+\begin{itemize}
+\item Las clases prácticas \textbf{no tienen asistencia obligatoria}: están para que cada uno practique a su ritmo.
+\item Somos un grupo chico: si un día falta \textbf{todo el curso}, por favor avisen con anticipación.
+\end{itemize}
+\end{frame}
+
+% ============================================================
+\section{Evaluación}
+
+\begin{frame}{Parciales}
+\begin{itemize}
+\item Se toman \textbf{2 parciales} durante el cuatrimestre.
+\item Fechas: a confirmar con la asistente de cátedra (ver ubicación tentativa en el cronograma).
+\item \textbf{La Unidad 8 (Regresión lineal y ANOVA) no entra en ningún parcial ni en el recuperatorio.}
+\item Cada parcial se aprueba individualmente con \textbf{60 puntos} (sobre 100).
+\item Hay \textbf{un (1) recuperatorio}, al final del cuatrimestre, para los parciales no aprobados.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Condición final}
+\begin{block}{Promoción directa}
+Promedio de los 2 parciales \textbf{mayor a 80} $\Rightarrow$ promociona la materia sin final. Promoción significa que rinden un trabajo final en dos partes con los temas que no entraron en los 2 parciales, y si lo aprueban, se considera que aprobaron la materia.
+\end{block}
+
+\begin{block}{Regular}
+Con los 2 parciales aprobados (60 o más, incluyendo recuperatorio si hizo falta) pero promedio $\le 80$: queda regular y rinden final escrito y oral.
+\end{block}
+\end{frame}
+
+\begin{frame}{Contacto y consultas}
+\begin{itemize}
+\item Profesor: \texttt{jmbavio@yahoo.com.ar}
+\item Asistente de cátedra: (mail a confirmar)
+\item Consultas teoría: a demanda, coordinando por mail.
+\end{itemize}
+\end{frame}
+
+% ============================================================
+\section{Uso de Inteligencia Artificial}
+
+\begin{frame}{Sobre el material del curso}
+\begin{alertblock}{Transparencia sobre el material}
+Gran parte de las clases de teoría, las prácticas resueltas y los apuntes extendidos de este curso fueron elaborados con asistencia de inteligencia artificial (IA), bajo la supervisión y revisión del docente responsable de la cátedra.
+\end{alertblock}
+
+\begin{itemize}\small
+\item El contenido fue revisado, pero al ser una cantidad grande de material, \textbf{puede contener errores puntuales} (typos, algún cálculo, alguna definición mal formulada).
+\item Si encontrás algo que no cierra: \textbf{avisá por mail}. Vamos a ir corrigiendo el material a lo largo del cuatrimestre.
+\item El material es un complemento de estudio: no reemplaza la clase ni la bibliografía oficial.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Uso de IA por parte de los alumnos}
+\begin{itemize}
+\item \textbf{Permitido} y \textbf{fomentado} para estudiar y practicar: usarla para entender un tema, revisar un ejercicio, generar problemas adicionales, etc.
+\item \textbf{No permitido durante los parciales.}
+\item Durante el cuatrimestre va a haber \textbf{hackatones y otras actividades} pensadas específicamente para aprender a usar la IA como herramienta de trabajo en probabilidad y estadística.
+\end{itemize}
+
+\vspace{0.8em}
+\centering
+\emph{La idea no es prohibir la herramienta, sino aprender a usarla bien.}
+\end{frame}
+
+% ============================================================
+\section{Para arrancar}
+
+\begin{frame}{Resumen}
+\begin{itemize}\small
+\item 8 unidades, 32 clases, martes y jueves desde el 18/8.
+\item 2 parciales (60 aprueba c/u, recuperatorio único, promedio $>80$ promociona).
+\item Prácticas libres, sin asistencia obligatoria.
+\item Material generado con apoyo de IA y revisado por la cátedra — reporten erratas por mail.
+\item IA permitida para estudiar, prohibida en parciales, protagonista en las hackatones.
+\end{itemize}
+
+\vspace{0.8em}
+\begin{center}
+\Large ¡Empezamos! Clase 1: Experimentos y espacio muestral.
+\end{center}
+\end{frame}
+
+\end{document}

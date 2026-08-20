@@ -1,0 +1,353 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase ED2: Datos agrupados y medidas de resumen}
+\subtitle{Histograma, ojiva, medidas de tendencia central, dispersión y posición. Diagrama de caja}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Datos agrupados en intervalos}
+
+\begin{frame}{¿Cuándo agrupar en intervalos?}
+\begin{alertblock}{Motivación}
+Cuando la variable es \textbf{continua}, o es discreta pero con \textbf{muchos valores distintos}, listar una frecuencia por cada valor deja de ser útil: hay demasiadas filas, muchas con frecuencia 0 o 1. La solución es agrupar el recorrido de los datos en \textbf{intervalos de clase} (o clases).
+\end{alertblock}
+\begin{block}{Elementos de una clase}
+\begin{itemize}
+\item \textbf{Límites de clase}: extremos del intervalo, p.\,ej. $[L_i;L_{i+1})$.
+\item \textbf{Amplitud}: $a_i = L_{i+1}-L_i$ (suele tomarse constante para todas las clases).
+\item \textbf{Marca de clase}: punto medio $m_i = \dfrac{L_i+L_{i+1}}{2}$; es el valor ``representante'' de todos los datos que caen en esa clase.
+\end{itemize}
+\end{block}
+\begin{block}{Regla práctica para el número de clases}
+Con $n$ datos, una guía usual es tomar entre $\sqrt{n}$ y $1+\log_2(n)$ (regla de Sturges) intervalos, ajustando por conveniencia (evitar clases vacías o con una sola observación).
+\end{block}
+\end{frame}
+
+\begin{frame}{Tabla de frecuencias para datos agrupados}
+\centering
+\small
+\begin{tabular}{cccccc}
+\toprule
+Intervalo & $m_i$ & $F_i$ & $f_i$ & $F_i^{ac}$ & $f_i^{ac}$ \\
+\midrule
+$[70;90)$ & 80 & 2 & 0,022 & 2 & 0,022 \\
+$[90;110)$ & 100 & 3 & 0,033 & 5 & 0,056 \\
+$[110;130)$ & 120 & 6 & 0,067 & 11 & 0,122 \\
+$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
+\bottomrule
+\end{tabular}
+\vspace{0.5em}
+
+\normalsize
+\begin{block}{Convención de los límites}
+Con notación $[L_i;L_{i+1})$, el extremo izquierdo se incluye en la clase y el derecho no (pertenece a la clase siguiente). Así cada dato cae en \textbf{una y solo una} clase, sin ambigüedad.
+\end{block}
+\end{frame}
+
+\section{Histograma, polígono de frecuencias y ojiva}
+
+\begin{frame}{Histograma}
+\begin{definition}
+El \textbf{histograma} es un gráfico de barras \textbf{contiguas} (sin espacios entre sí), una por cada intervalo de clase, cuya \textbf{área} es proporcional a la frecuencia de la clase. Si todas las clases tienen igual amplitud, la altura de cada barra puede tomarse directamente igual a $F_i$ (o $f_i$).
+\end{definition}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar interval, width=9.5cm, height=4.2cm,
+  xlabel={Resistencia (psi)}, ylabel={Frecuencia absoluta},
+  xtick={70,90,110,130,150,170,190,210,230,250},
+  x tick label style={rotate=45,anchor=east,font=\tiny},
+]
+\addplot coordinates {(70,2) (90,3) (110,6) (130,14) (150,22) (170,17) (190,10) (210,4) (230,2) (250,0)};
+\end{axis}
+\end{tikzpicture}
+\begin{alertblock}{Diferencia clave con el diagrama de barras}
+En el histograma las barras se tocan: la variable subyacente es continua, no hay ``huecos'' entre una clase y la siguiente.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Polígono de frecuencias y ojiva}
+\begin{block}{Polígono de frecuencias absolutas}
+Se obtiene uniendo con segmentos los puntos $(m_i, F_i)$ (marca de clase, frecuencia de esa clase). Cierra el polígono agregando una clase ficticia de frecuencia 0 antes de la primera y después de la última.
+\end{block}
+\begin{block}{Ojiva (polígono de frecuencias acumuladas)}
+Se obtiene uniendo los puntos $(L_{i+1}, F_i^{ac})$: en el \textbf{límite superior} de cada clase se ubica la frecuencia acumulada hasta esa clase inclusive. Es una función creciente que va de $0$ (en el límite inferior de la primera clase) a $n$ (en el límite superior de la última).
+\end{block}
+\begin{exampleblock}{¿Para qué sirve la ojiva?}
+Permite leer gráficamente, en forma aproximada, cuántos datos (o qué proporción) son menores o iguales que un valor dado, y estimar cuantiles (mediana, cuartiles) por interpolación.
+\end{exampleblock}
+\end{frame}
+
+\section{Medidas de tendencia central}
+
+\begin{frame}{Media, mediana y moda: datos no agrupados}
+\begin{block}{Media aritmética}
+\[
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+\]
+Usa toda la información, pero es sensible a valores extremos (outliers).
+\end{block}
+\begin{block}{Mediana}
+Ordenados los datos, es el valor central: deja al 50\% de las observaciones por debajo y 50\% por arriba. Con $n$ impar es el dato de posición $\frac{n+1}{2}$; con $n$ par, el promedio de los dos datos centrales. Es \textbf{robusta} frente a valores atípicos.
+\end{block}
+\begin{block}{Moda}
+Es el valor que más se repite (frecuencia máxima). Es la única medida de centralización que tiene sentido para variables \textbf{cualitativas}. Puede no existir o no ser única.
+\end{block}
+\end{frame}
+
+\begin{frame}{Media, mediana y moda: datos agrupados}
+Cuando los datos están agrupados en intervalos, se pierde la información individual y se trabaja con \textbf{valores aproximados}:
+\begin{block}{Media aproximada}
+\[
+\bar{x} \approx \frac{1}{n}\sum_{i} m_i \, F_i
+\]
+(se supone que todos los datos de una clase se concentran en su marca $m_i$).
+\end{block}
+\begin{block}{Clase modal y clase mediana}
+No se puede dar un único valor exacto: se identifica la \textbf{clase modal} (mayor $F_i$) y la \textbf{clase mediana} (la primera clase cuya $F_i^{ac}$ supera $n/2$). Si se requiere un valor puntual, se puede usar la marca de esa clase, o interpolar linealmente dentro de ella.
+\end{block}
+\end{frame}
+
+\section{Medidas de dispersión}
+
+\begin{frame}{Rango, varianza y desvío estándar}
+\begin{block}{Rango}
+$R = x_{\max}-x_{\min}$. Muy simple, pero solo usa dos datos (muy sensible a outliers).
+\end{block}
+\begin{block}{Varianza muestral}
+\[
+s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i-\bar{x})^2 = \frac{1}{n-1}\left(\sum_{i=1}^n x_i^2 - n\bar{x}^2\right)
+\]
+Promedio (casi) de los cuadrados de las desviaciones respecto a la media. La segunda forma (\textbf{fórmula de cálculo}) evita restar cada dato de la media uno por uno: solo requiere $\sum x_i$ y $\sum x_i^2$.
+\end{block}
+\begin{block}{Desvío estándar}
+$s = \sqrt{s^2}$: mismas unidades que la variable original (a diferencia de $s^2$).
+\end{block}
+\end{frame}
+
+\begin{frame}{Coeficiente de variación}
+\begin{definition}
+\[
+CV = \frac{s}{\bar{x}}
+\]
+Es la razón entre el desvío estándar y la media: mide la dispersión \emph{en relación con} la magnitud típica de los datos (\textbf{variabilidad relativa}). Suele expresarse en porcentaje.
+\end{definition}
+\begin{exampleblock}{Ejemplo}
+Si $\bar{x}=80$ y $s=20$, entonces $CV=20/80=0{,}25=25\%$.
+\end{exampleblock}
+\begin{alertblock}{¿Para qué sirve y cuándo no usarlo?}
+\begin{itemize}
+\item Es adimensional: permite comparar la dispersión de \textbf{dos variables distintas} (o dos muestras con medias muy distintas), algo que $s$ sola no permite.
+\item No debe usarse si la variable toma valores negativos, o si el cero de la escala es arbitrario (p.\,ej. temperatura en $^\circ$C o $^\circ$F).
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Varianza y desvío para datos agrupados}
+Con datos agrupados en intervalos, se aproxima igual que la media, usando las marcas de clase $m_i$:
+\[
+s^2 \approx \frac{1}{n-1}\sum_i (m_i-\bar{x})^2\,F_i = \frac{1}{n-1}\left(\sum_i m_i^2\,F_i - n\bar{x}^2\right)
+\]
+\begin{alertblock}{Interpretación}
+Todo lo calculado a partir de datos agrupados (media, mediana, moda, varianza) es una \textbf{aproximación}: se pierde precisión respecto de calcular con los datos individuales, porque cada observación se trata como si estuviera exactamente en la marca de su clase.
+\end{alertblock}
+\end{frame}
+
+\section{Medidas de posición: cuartiles y diagrama de caja}
+
+\begin{frame}{Cuantiles y cuartiles}
+\begin{definition}
+Los \textbf{cuantiles} dividen a los datos ordenados en partes con igual cantidad de observaciones. Los \textbf{cuartiles} $Q_1, Q_2, Q_3$ dividen a los datos en 4 partes iguales (25\% cada una):
+\begin{itemize}
+\item $Q_1$ (primer cuartil): 25\% de los datos por debajo.
+\item $Q_2$ (segundo cuartil) $=$ \textbf{mediana}: 50\% de los datos por debajo.
+\item $Q_3$ (tercer cuartil): 75\% de los datos por debajo.
+\end{itemize}
+\end{definition}
+\begin{block}{Rango intercuartílico (RIC)}
+\[
+RIC = Q_3 - Q_1
+\]
+Es el rango del 50\% central de los datos: una medida de dispersión \textbf{robusta} frente a valores extremos (a diferencia del rango o la varianza).
+\end{block}
+\end{frame}
+
+\begin{frame}{Diagrama de caja (boxplot)}
+\begin{block}{Construcción: resumen de cinco números}
+Se basa en $x_{\min}$, $Q_1$, $Q_2$ (mediana), $Q_3$, $x_{\max}$ (ajustados por outliers, ver siguiente diapositiva). La caja va de $Q_1$ a $Q_3$, con una línea en la mediana; los ``bigotes'' se extienden hacia los valores no atípicos más alejados.
+\end{block}
+\centering
+\begin{tikzpicture}[scale=0.9]
+\draw[thick] (0,0) -- (1.5,0); % bigote inferior
+\draw[thick] (5.5,0) -- (7,0); % bigote superior
+\draw[thick] (0,-0.3) -- (0,0.3);
+\draw[thick] (7,-0.3) -- (7,0.3);
+\draw[thick,fill=blue!15] (1.5,-0.6) rectangle (5.5,0.6); % caja
+\draw[thick] (3.3,-0.6) -- (3.3,0.6); % mediana
+\node[below] at (0,-0.3) {\footnotesize $x_{\min}$};
+\node[below] at (1.5,-0.6) {\footnotesize $Q_1$};
+\node[below] at (3.3,-0.6) {\footnotesize $Q_2$};
+\node[below] at (5.5,-0.6) {\footnotesize $Q_3$};
+\node[below] at (7,-0.3) {\footnotesize $x_{\max}$};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Valores atípicos (outliers)}
+\begin{definition}
+Un dato $x$ se considera \textbf{valor atípico (outlier)} si:
+\[
+x < Q_1 - 1{,}5\cdot RIC \qquad \text{o} \qquad x > Q_3 + 1{,}5\cdot RIC.
+\]
+\end{definition}
+\begin{block}{Efecto sobre el diagrama de caja}
+Los outliers se marcan individualmente con un punto o asterisco ($*$), \textbf{fuera} de los bigotes. En ese caso, el bigote ya no llega hasta $x_{\min}$/$x_{\max}$, sino hasta el dato más extremo que \emph{no} es atípico.
+\end{block}
+\begin{exampleblock}{Diagramas de caja comparativos (side-by-side)}
+Colocar varios boxplots uno al lado del otro (p.\,ej. por sexo, por máquina, por grupo) permite \textbf{comparar visualmente} posición central, dispersión, simetría y presencia de outliers entre distintos grupos, sin necesidad de superponer histogramas.
+\end{exampleblock}
+\end{frame}
+
+\section{Forma de la distribución: simetría}
+
+\begin{frame}{Formas de la distribución}
+\begin{columns}[T]
+    % --- Asimetría a Izquierda ---
+    \begin{column}{0.33\textwidth}
+        \centering
+        \textbf{\small Asimetría Negativa}\\
+        \scalebox{0.75}{
+        \begin{tikzpicture}
+        \begin{axis}[
+            domain=-3:3, samples=50, smooth,
+            axis lines=left, ticks=none,
+            xlabel={$x$}, ylabel={},
+            height=4.5cm, width=5.5cm,
+            xmin=-3, xmax=3, ymin=0, ymax=0.5
+        ]
+            \addplot[thick, red!80!black] {1.5 * (x+3)^3 * (1-x)^1 / 64};
+            \draw[dashed, gray] (axis cs: 0.5, 0) -- (axis cs: 0.5, 0.42) node[above, font=\tiny, black] {Moda};
+            \draw[dashed, blue] (axis cs: 0.1, 0) -- (axis cs: 0.1, 0.35) node[above left, font=\tiny] {Mediana};
+            \draw[dashed, green!50!black] (axis cs: -0.4, 0) -- (axis cs: -0.4, 0.25) node[below left, font=\tiny] {$\bar{x}$};
+        \end{axis}
+        \end{tikzpicture}
+        }
+        \par\vspace{0.2cm}
+        \centering{\small $\bar{x} < \text{Mediana} < \text{Moda}$}
+    \end{column}
+
+    % --- Simétrica ---
+    \begin{column}{0.33\textwidth}
+        \centering
+        \textbf{\small Simétrica}\\
+        \scalebox{0.75}{
+        \begin{tikzpicture}
+        \begin{axis}[
+            domain=-3:3, samples=50, smooth,
+            axis lines=left, ticks=none,
+            xlabel={$x$}, ylabel={},
+            height=4.5cm, width=5.5cm,
+            xmin=-3, xmax=3, ymin=0, ymax=0.5
+        ]
+            \addplot[thick, blue!80!black] {exp(-x^2/2) / sqrt(2*pi)};
+            \draw[dashed, red!80!black] (axis cs: 0, 0) -- (axis cs: 0, 0.4) node[above, font=\tiny] {$\bar{x} = \text{Med} = \text{Moda}$};
+        \end{axis}
+        \end{tikzpicture}
+        }
+        \par\vspace{0.2cm}
+        \centering{\small $\bar{x} \approx \text{Mediana} \approx \text{Moda}$}
+    \end{column}
+
+    % --- Asimetría a Derecha ---
+    \begin{column}{0.33\textwidth}
+        \centering
+        \textbf{\small Asimetría Positiva}\\
+        \scalebox{0.75}{
+        \begin{tikzpicture}
+        \begin{axis}[
+            domain=-3:3, samples=50, smooth,
+            axis lines=left, ticks=none,
+            xlabel={$x$}, ylabel={},
+            height=4.5cm, width=5.5cm,
+            xmin=-3, xmax=3, ymin=0, ymax=0.5
+        ]
+            \addplot[thick, red!80!black] {1.5 * (x+1)^1 * (3-x)^3 / 64};
+            \draw[dashed, gray] (axis cs: -0.5, 0) -- (axis cs: -0.5, 0.42) node[above, font=\tiny, black] {Moda};
+            \draw[dashed, blue] (axis cs: -0.1, 0) -- (axis cs: -0.1, 0.35) node[above right, font=\tiny] {Mediana};
+            \draw[dashed, green!50!black] (axis cs: 0.4, 0) -- (axis cs: 0.4, 0.25) node[below right, font=\tiny] {$\bar{x}$};
+        \end{axis}
+        \end{tikzpicture}
+        }
+        \par\vspace{0.2cm}
+        \centering{\small $\text{Moda} < \text{Mediana} < \bar{x}$}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Simetría reflejada en el Boxplot}
+\begin{block}{Lectura rápida de la forma mediante el Diagrama de Caja}
+\begin{itemize}
+    \item \textbf{Simétrica:} La mediana está justo al centro de la caja ($Q_2 - Q_1 \approx Q_3 - Q_2$) y los bigotes tienen longitudes equivalentes.
+    \item \textbf{Asimétrica a derecha ($+$):} La mediana queda desplazada hacia $Q_1$, el bigote derecho es más largo y suele haber outliers en el extremo superior.
+    \item \textbf{Asimétrica a izquierda ($-$):} La mediana queda desplazada hacia $Q_3$, el bigote izquierdo es más largo y suele haber outliers en el extremo inferior.
+\end{itemize}
+\end{block}
+
+\vspace{0.3cm}
+\centering
+\begin{tikzpicture}[scale=0.85]
+    \draw[thick] (0,0) -- (1,0); 
+    \draw[thick] (3,0) -- (6.5,0); 
+    \draw[thick] (0,-0.2) -- (0,0.2); 
+    \draw[thick,fill=red!10] (1,-0.5) rectangle (3,0.5); 
+    \draw[thick,red!80!black] (1.5,-0.5) -- (1.5,0.5);
+    \filldraw[black] (7.2,0) circle (2pt);
+    
+    \node[below, font=\tiny] at (0,-0.2) {$x_{\min}$};
+    \node[below, font=\tiny] at (1,-0.5) {$Q_1$};
+    \node[below, font=\tiny, red!80!black] at (1.5,-0.5) {$Q_2$};
+    \node[below, font=\tiny] at (3,-0.5) {$Q_3$};
+    \node[below, font=\tiny] at (6.5,-0.2) {Bigote Sup.};
+    \node[below, font=\tiny] at (7.2,-0.2) {Outlier};
+\end{tikzpicture}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{itemize}
+\item Con variables continuas o muchos valores distintos, se \textbf{agrupa en intervalos} (marca de clase, amplitud) y se resume con \textbf{histograma}, \textbf{polígono de frecuencias} y \textbf{ojiva}.
+\item \textbf{Tendencia central}: media (usa toda la info, sensible a outliers), mediana (robusta), moda (única para cualitativas).
+\item \textbf{Dispersión}: rango, varianza $s^2$ y desvío $s$ (fórmula de cálculo: $\sum x_i^2 - n\bar{x}^2$), y coeficiente de variación $CV=s/\bar{x}$ para comparar variabilidad relativa.
+\item \textbf{Posición}: cuartiles $Q_1,Q_2,Q_3$ y rango intercuartílico $RIC=Q_3-Q_1$.
+\item El \textbf{diagrama de caja} resume los cinco números y expone outliers ($x<Q_1-1{,}5\,RIC$ o $x>Q_3+1{,}5\,RIC$); side-by-side permite comparar grupos.
+\item La forma de la distribución (simétrica / asimétrica) se lee comparando media, mediana y moda, o la forma del boxplot/histograma.
+\item Con esto ya se cuenta con todas las herramientas para resolver la Práctica 1 de Estadística Descriptiva.
+\end{itemize}
+\end{frame}
+
+\end{document}
