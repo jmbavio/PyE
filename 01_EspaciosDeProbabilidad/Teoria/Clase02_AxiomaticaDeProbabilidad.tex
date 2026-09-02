@@ -55,8 +55,11 @@ donde $n_A$ es el número de veces que ocurrió $A$. La \textbf{ley empírica de
 \begin{block}{3. Probabilidad subjetiva}
 Es el grado de creencia personal de un individuo respecto de la ocurrencia de un suceso, basado en su información y experiencia (usada por ejemplo en el otorgamiento de créditos, apuestas, diagnóstico). No requiere repeticiones del experimento.
 \end{block}
+\end{frame}
+
+\begin{frame}{Hacia una definición rigurosa}
 \begin{alertblock}{El problema}
-Ninguna de las tres es una definición matemática rigurosa y única. Necesitamos una \textbf{axiomática} que las englobe a todas como casos particulares de un mismo modelo formal.
+Ninguna de las tres nociones anteriores (clásica, frecuencial, subjetiva) es una definición matemática rigurosa y única. Necesitamos una \textbf{axiomática} que las englobe a todas como casos particulares de un mismo modelo formal.
 \end{alertblock}
 \end{frame}
 
@@ -170,6 +173,11 @@ Por aditividad finita (extendida a tres sucesos disjuntos):
 \[
 P(A\cup B) = P(A\setminus B) + P(A\cap B) + P(B\setminus A).
 \]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Propiedad 4: demostración (continuación)}
+\begin{proof}
 Por monotonía, $P(A\setminus B) = P(A) - P(A\cap B)$ y $P(B\setminus A)=P(B)-P(A\cap B)$. Sustituyendo:
 \[
 P(A\cup B) = \big[P(A)-P(A\cap B)\big] + P(A\cap B) + \big[P(B)-P(A\cap B)\big] = P(A)+P(B)-P(A\cap B). \qedhere
@@ -177,7 +185,7 @@ P(A\cup B) = \big[P(A)-P(A\cap B)\big] + P(A\cap B) + \big[P(B)-P(A\cap B)\big] 
 \end{proof}
 \end{frame}
 
-\begin{frame}{Propiedad 5: subaditividad y continuidad}
+\begin{frame}{Propiedad 5: subaditividad}
 \begin{theorem}[Subaditividad finita]
 Para $A,B \in \mathcal{A}$: $\; P(A\cup B) \leq P(A) + P(B)$.
 \end{theorem}
@@ -191,7 +199,9 @@ Más en general, para $A_1,\dots,A_n \in \mathcal{A}$ (no necesariamente disjunt
 \[
 P\left(\bigcup_{i=1}^n A_i\right) \leq \sum_{i=1}^n P(A_i).
 \]
+\end{frame}
 
+\begin{frame}{Propiedad 6: continuidad de la probabilidad}
 \begin{block}{Continuidad de la probabilidad}
 Si $A_1 \subseteq A_2 \subseteq A_3 \subseteq \cdots$ es una sucesión creciente de sucesos, entonces
 \[
