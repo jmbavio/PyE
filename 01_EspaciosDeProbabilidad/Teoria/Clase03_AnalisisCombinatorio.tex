@@ -39,6 +39,9 @@ Un espacio muestral finito $\Omega=\{\omega_1,\dots,\omega_N\}$ es \textbf{equip
 P(\{\omega_1\}) = P(\{\omega_2\}) = \cdots = P(\{\omega_N\}) = \frac{1}{N}.
 \]
 \end{definition}
+\end{frame}
+
+\begin{frame}{Regla de Laplace (cont.)}
 \begin{theorem}[Regla de Laplace]
 En un espacio equiprobable, para cualquier suceso $A\subseteq\Omega$ con $|A|=n_A$ elementos,
 \[
@@ -110,6 +113,9 @@ Si se tienen $n$ objetos, de los cuales $n_1$ son de un tipo, $n_2$ de otro tipo
 \begin{example}
 ¿Cuántas ``palabras'' distintas (con o sin sentido) se pueden formar reordenando las letras de \textsc{ESTADISTICA}?
 \end{example}
+\end{frame}
+
+\begin{frame}{Permutaciones con repetición: resolución}
 \begin{block}{Resolución}
 La palabra tiene 11 letras: E(1), S(2), T(2), A(2), D(1), I(2), C(1). Total:
 \[
@@ -133,6 +139,9 @@ En una carrera de 8 caballos, ¿de cuántas formas distintas se pueden ocupar lo
 V_{8,3} = \frac{8!}{5!} = 8\times7\times6 = 336.
 \]
 \end{example}
+\end{frame}
+
+\begin{frame}{Variaciones (arreglos) con repetición}
 \begin{definition}[Variaciones con repetición]
 Si los objetos pueden repetirse, el número de secuencias ordenadas de longitud $r$ tomadas de un conjunto de $n$ objetos es $n^r$.
 \end{definition}
@@ -202,6 +211,9 @@ P(A) = \frac{1008}{658\,008} \approx 0{,}00153.
 \begin{example}
 Se lanzan 3 dados equilibrados. Calcular la probabilidad de que la suma de los puntos sea igual a 10.
 \end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: dados (resolución)}
 \begin{block}{Resolución}
 Casos posibles (ordenados, con repetición): $N = 6^3 = 216$.
 
@@ -244,6 +256,9 @@ P(\text{ambas rojas}) = \frac{\binom{4}{2}}{\binom{10}{2}} = \frac{6}{45} = \fra
 Equivalentemente, con el principio multiplicativo:
 $\dfrac{4}{10}\cdot\dfrac{3}{9} = \dfrac{12}{90}=\dfrac{2}{15}$.
 \end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: extracciones con y sin reposición (cont.)}
 \begin{block}{(b) Con reposición}
 Cada extracción es independiente de la anterior (se repone la bolilla):
 \[
