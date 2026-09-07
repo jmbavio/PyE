@@ -59,6 +59,9 @@ P(A\mid B) = \frac{2/6}{3/6} = \frac{2}{3},
 \]
 que coincide con el cálculo intuitivo.
 \end{alertblock}
+\end{frame}
+
+\begin{frame}{$P(\cdot \mid B)$ es una probabilidad}
 \begin{block}{$P(\cdot \mid B)$ es una probabilidad}
 Fijado $B$ con $P(B)>0$, la función $A \mapsto P(A\mid B)$ satisface los tres axiomas de Kolmogorov sobre $\mathcal{A}$ (no negatividad, $P(\Omega\mid B)=1$, $\sigma$-aditividad). Por lo tanto todas las propiedades de la Clase 2 (complemento, monotonía, unión, etc.) valen también para probabilidades condicionales.
 \end{block}
@@ -88,6 +91,9 @@ Simétricamente, si $P(A)>0$: $\; P(A\cap B) = P(A) \cdot P(B\mid A)$.
 \begin{proof}
 Se despeja directamente de la definición de probabilidad condicional: $P(A\mid B) = P(A\cap B)/P(B) \Rightarrow P(A\cap B) = P(B)P(A\mid B)$.
 \end{proof}
+\end{frame}
+
+\begin{frame}{Regla del producto generalizada}
 \begin{theorem}[Regla del producto generalizada]
 Si $P(A_1\cap A_2 \cap \cdots \cap A_{n-1}) > 0$, entonces
 \[
@@ -158,12 +164,18 @@ Se lanzan dos monedas equilibradas. Definimos:
 \item $C$: ``las dos monedas muestran el mismo resultado''.
 \end{itemize}
 \end{example}
-\begin{block}{Resolución}
+\begin{block}{Resolución: independencia de a pares}
 $\Omega=\{cc,cs,sc,ss\}$, cada uno con probabilidad $1/4$. $A=\{cc,cs\}$, $B=\{cc,sc\}$, $C=\{cc,ss\}$, todos con probabilidad $1/2$.
 \[
 P(A\cap B) = P(\{cc\}) = \tfrac14 = \tfrac12\cdot\tfrac12=P(A)P(B) \;\checkmark
 \]
-Análogamente $P(A\cap C) = P(A)P(C)$ y $P(B\cap C)=P(B)P(C)$: son independientes \textbf{de a pares}. Pero
+Análogamente $P(A\cap C) = P(A)P(C)$ y $P(B\cap C)=P(B)P(C)$: son independientes \textbf{de a pares}.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: fallo de la independencia mutua}
+\begin{block}{Pero no son mutuamente independientes}
+Sin embargo, al verificar la intersección conjunta de las tres:
 \[
 P(A\cap B\cap C) = P(\{cc\}) = \tfrac14 \neq \tfrac12\cdot\tfrac12\cdot\tfrac12 = \tfrac18,
 \]
@@ -212,7 +224,13 @@ Como $\{B_i\}$ particiona $\Omega$, también particiona a $A$:
 \[
 A = A \cap \Omega = A \cap \left(\bigcup_{i=1}^n B_i\right) = \bigcup_{i=1}^n (A \cap B_i),
 \]
-y los conjuntos $A\cap B_i$ son disjuntos dos a dos (pues los $B_i$ lo son). Por aditividad finita,
+y los conjuntos $A\cap B_i$ son disjuntos dos a dos (pues los $B_i$ lo son).
+\end{proof}
+\end{frame}
+
+\begin{frame}{Teorema de la probabilidad total: demostración (cont.)}
+\begin{proof}
+Por aditividad finita,
 \[
 P(A) = \sum_{i=1}^n P(A\cap B_i).
 \]
@@ -247,6 +265,11 @@ Por la definición de probabilidad condicional y la regla del producto:
 \[
 P(B_j\mid A) = \frac{P(B_j\cap A)}{P(A)} = \frac{P(B_j)P(A\mid B_j)}{P(A)}.
 \]
+\end{proof}
+\end{frame}
+
+\begin{frame}{Teorema de Bayes: demostración (cont.)}
+\begin{proof}
 El numerador es la regla del producto aplicada a $B_j$ y $A$. El denominador $P(A)$ se reescribe usando el \textbf{teorema de la probabilidad total}:
 \[
 P(A) = \sum_{i=1}^n P(B_i)P(A\mid B_i).
@@ -285,11 +308,16 @@ Es decir, aunque el proveedor 2 solo aporta el $30\%$ de las piezas, dado que la
 \begin{example}
 Una enfermedad afecta al $1\%$ de la población. Existe un test diagnóstico con sensibilidad del $95\%$ (detecta correctamente al enfermo) y especificidad del $90\%$ (da negativo correctamente en sanos). Si una persona elegida al azar da \textbf{positivo}, ¿cuál es la probabilidad de que efectivamente esté enferma?
 \end{example}
-\begin{block}{Resolución}
+\begin{block}{Planteo}
 Sea $E$: ``está enferma'', $E^c$: ``está sana'', $T^+$: ``test positivo''. Sistema completo: $\{E,E^c\}$.
 \[
 P(E)=0{,}01,\; P(E^c)=0{,}99,\; P(T^+\mid E) = 0{,}95,\; P(T^+\mid E^c) = 1-0{,}90 = 0{,}10.
 \]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: diagnóstico médico (resolución)}
+\begin{block}{Resolución}
 Probabilidad total:
 \[
 P(T^+) = 0{,}01(0{,}95) + 0{,}99(0{,}10) = 0{,}0095+0{,}099 = 0{,}1085.
