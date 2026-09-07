@@ -45,7 +45,9 @@ $$p(x) = P(X=x).$$
 \item $F(x) = \displaystyle\sum_{x_i \le x} p(x_i)$.
 \end{enumerate}
 \end{block}
+\end{frame}
 
+\begin{frame}{Función de probabilidad puntual: esperanza y varianza}
 \begin{block}{Esperanza y varianza}
 $$E(X) = \sum_i x_i\, p(x_i), \qquad V(X) = \sum_i (x_i-E(X))^2\, p(x_i) = E(X^2)-[E(X)]^2.$$
 \end{block}
@@ -68,7 +70,9 @@ E(X^2) &= 0^2\cdot q + 1^2\cdot p = p \\
 V(X) &= E(X^2)-[E(X)]^2 = p - p^2 = p(1-p) = pq.
 \end{align*}
 \end{block}
+\end{frame}
 
+\begin{frame}{Ensayo de Bernoulli: ejemplo}
 \begin{example}
 Inspeccionar un artículo y clasificarlo como defectuoso ($X=1$) o no ($X=0$).
 \end{example}
@@ -193,7 +197,9 @@ Una población finita de $N$ elementos contiene $K$ "éxitos" y $N-K$ "fracasos"
 $X\sim\text{H}(N,K,n)$ si
 $$p(x) = P(X=x) = \frac{\dbinom{K}{x}\dbinom{N-K}{n-x}}{\dbinom{N}{n}}, \qquad \max(0,n-N+K)\le x \le \min(n,K).$$
 \end{definition}
+\end{frame}
 
+\begin{frame}{Planteo del modelo hipergeométrico (cont.)}
 \begin{alertblock}{Idea de la deducción}
 Regla de Laplace: casos favorables = elegir $x$ éxitos de los $K$ disponibles y $n-x$ fracasos de los $N-K$ restantes; casos totales = elegir $n$ elementos de los $N$.
 \end{alertblock}
@@ -219,8 +225,12 @@ Un lote contiene 20 artículos, de los cuales 4 son defectuosos. Se seleccionan 
 \begin{block}{Resolución}
 $N=20$, $K=4$, $n=5$, $X\sim\text{H}(20,4,5)$.
 $$P(X=2) = \frac{\binom{4}{2}\binom{16}{3}}{\binom{20}{5}} = \frac{6\times 560}{15504} = \frac{3360}{15504} \approx 0.2167.$$
+\end{block}
+\end{frame}
 
-Comparación con la aproximación binomial ($p=4/20=0.2$):
+\begin{frame}{Ejemplo resuelto: Hipergeométrica (cont.)}
+\begin{block}{Comparación con la aproximación binomial}
+Con $p=4/20=0.2$:
 $$\binom{5}{2}(0.2)^2(0.8)^3 = 10\times 0.04\times 0.512 = 0.2048,$$
 razonablemente cercana, aunque $n/N=0.25$ no es tan pequeño.
 \end{block}
