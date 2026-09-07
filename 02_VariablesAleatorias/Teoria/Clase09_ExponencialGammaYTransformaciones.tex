@@ -83,7 +83,9 @@ $$P(X>s+t \mid X>s) = P(X>t).$$
 $P(X>x) = 1-F(x) = e^{-\lambda x}$. Entonces
 $$P(X>s+t\mid X>s) = \frac{P(X>s+t)}{P(X>s)} = \frac{e^{-\lambda(s+t)}}{e^{-\lambda s}} = e^{-\lambda t} = P(X>t). \qedhere$$
 \end{proof}
+\end{frame}
 
+\begin{frame}{Falta de memoria (versión continua) (cont.)}
 \begin{alertblock}{Interpretación}
 Si un componente "no envejece" (su vida útil restante no depende de cuánto tiempo lleva funcionando), su tiempo de vida es exponencial. Es la \textbf{única} distribución continua con esta propiedad.
 \end{alertblock}
@@ -235,7 +237,12 @@ Sea $X\sim N(\mu,\sigma^2)$ y $Y = aX+b$ con $a\ne 0$. Hallar la distribución d
 \begin{block}{Resolución}
 $g(x)=ax+b \Rightarrow h(y) = \dfrac{y-b}{a}$, con $h'(y) = 1/a$.
 
-$$f_Y(y) = f_X\!\left(\frac{y-b}{a}\right)\left|\frac{1}{a}\right| = \frac{1}{|a|\sigma\sqrt{2\pi}}\exp\left(-\frac{\left(\frac{y-b}{a}-\mu\right)^2}{2\sigma^2}\right) = \frac{1}{|a|\sigma\sqrt{2\pi}}\exp\left(-\frac{(y-(a\mu+b))^2}{2(a\sigma)^2}\right).$$
+$$
+\begin{aligned}
+f_Y(y) &= f_X\!\left(\frac{y-b}{a}\right)\left|\frac{1}{a}\right| = \frac{1}{|a|\sigma\sqrt{2\pi}}\exp\left(-\frac{\left(\frac{y-b}{a}-\mu\right)^2}{2\sigma^2}\right) \\
+&= \frac{1}{|a|\sigma\sqrt{2\pi}}\exp\left(-\frac{(y-(a\mu+b))^2}{2(a\sigma)^2}\right).
+\end{aligned}
+$$
 
 Se reconoce la densidad Normal: $Y\sim N(a\mu+b,\, a^2\sigma^2)$. En particular, la estandarización $Z=(X-\mu)/\sigma$ de la clase anterior es un caso de esta transformación.
 \end{block}
