@@ -1,0 +1,260 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[Prob. y Estadística]{Clase 5': Esperanza, varianza y función generadora de momentos}
+\subtitle{Unidad 2: Variables aleatorias}
+\institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
+\author{Probabilidad y Estadística (5765)}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Contenidos}
+\tableofcontents
+\end{frame}
+
+\section{Motivación}
+
+\begin{frame}{¿Por qué resumir una variable aleatoria?}
+\begin{block}{Idea central}
+Ya sabemos describir una v.a. $X$ por completo con su función de probabilidad puntual $p(x)$ o su densidad $f(x)$, y calcular probabilidades a partir de $F(x)$. Antes de estudiar las distribuciones concretas (Binomial, Poisson, Normal, \dots), conviene tener herramientas que resuman su comportamiento con unos pocos números.
+\end{block}
+
+\begin{itemize}
+\item ¿Cuál es el valor ``típico'' o promedio de $X$? $\to$ \textbf{esperanza}.
+\item ¿Cuánto se dispersan los valores respecto de ese promedio? $\to$ \textbf{varianza}.
+\item ¿Cómo calculamos ambas cosas de una sola vez, para cualquier distribución? $\to$ \textbf{función generadora de momentos}.
+\end{itemize}
+
+\begin{alertblock}{Por qué ahora}
+Definimos estas tres herramientas \textbf{antes} de ver cada distribución particular, para poder calcular $E(X)$, $V(X)$ y $M_X(t)$ apenas definamos cada modelo, sin interrumpir esa presentación con definiciones generales.
+\end{alertblock}
+\end{frame}
+
+\section{Esperanza de una variable aleatoria}
+
+\begin{frame}{Esperanza: caso discreto}
+\begin{definition}[Esperanza matemática -- caso discreto]
+Sea $X$ una v.a. discreta con rango $R_X=\{x_1,x_2,\dots\}$ y función de probabilidad puntual $p(x_i)=P(X=x_i)$. La \textbf{esperanza} (o valor esperado, o media) de $X$ es
+\[
+E(X) = \sum_{x_i\in R_X} x_i\, p(x_i),
+\]
+siempre que la serie converja absolutamente. También se nota $\mu$ o $\mu_X$.
+\end{definition}
+
+\begin{example}
+Si $X\sim\text{Be}(p)$: $E(X) = 0\cdot(1-p) + 1\cdot p = p$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Esperanza: caso continuo}
+\begin{definition}[Esperanza matemática -- caso continuo]
+Sea $X$ una v.a. continua con densidad $f(x)$. La esperanza de $X$ es
+\[
+E(X) = \int_{-\infty}^{\infty} x\, f(x)\, dx,
+\]
+siempre que $\displaystyle\int_{-\infty}^{\infty}|x|\,f(x)\,dx < \infty$.
+\end{definition}
+
+\begin{alertblock}{Interpretación}
+En ambos casos, $E(X)$ es un promedio ponderado de los valores posibles de $X$: el valor que tomaría $X$, en promedio, si repitiéramos el experimento muchas veces.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Propiedades de la esperanza}
+\begin{theorem}[Propiedades]
+Sean $X,Y$ v.a. con esperanza finita y $a,b\in\mathbb{R}$ constantes. Entonces:
+\begin{enumerate}
+\item $E(c) = c$ para toda constante $c$.
+\item \textbf{Linealidad:} $E(aX+b) = a\,E(X) + b$.
+\item \textbf{Aditividad:} $E(X+Y) = E(X)+E(Y)$ (vale siempre, sin pedir independencia).
+\end{enumerate}
+\end{theorem}
+
+\begin{alertblock}{Nota}
+Las demostraciones y propiedades adicionales (monotonía, generalización a combinaciones lineales) se ven en detalle en la Unidad 4.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Esperanza de una función de $X$}
+\begin{theorem}[Ley del estadístico inconsciente]
+Sea $X$ una v.a. y $g:\mathbb{R}\to\mathbb{R}$. Entonces
+\[
+E(g(X)) = \sum_{x_i\in R_X} g(x_i)\,p(x_i) \quad\text{(discreta)}, \qquad E(g(X)) = \int_{-\infty}^{\infty} g(x)\,f(x)\,dx \quad\text{(continua)}.
+\]
+\end{theorem}
+
+\begin{alertblock}{Para qué sirve}
+Permite calcular $E(X^2)$, $E(e^{tX})$, etc. usando la distribución de $X$, \textbf{sin} hallar la distribución de $g(X)$. La usamos ahora mismo para definir la varianza y la función generadora de momentos.
+\end{alertblock}
+\end{frame}
+
+\section{Varianza}
+
+\begin{frame}{Definición de varianza}
+\begin{definition}[Varianza]
+Sea $X$ una v.a. con $E(X)=\mu$ finita. La \textbf{varianza} de $X$ es
+\[
+V(X) = E\left[(X-\mu)^2\right].
+\]
+La \textbf{desviación estándar} es $\sigma_X = \sqrt{V(X)}$.
+\end{definition}
+
+\begin{block}{Interpretación}
+$V(X)$ mide el promedio del cuadrado de la distancia de $X$ a su media: cuantifica la dispersión de los valores de $X$ alrededor de $E(X)$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Fórmula alternativa}
+\begin{theorem}[Fórmula de cálculo]
+\[
+V(X) = E(X^2) - [E(X)]^2.
+\]
+\end{theorem}
+
+\begin{proof}
+Con $\mu=E(X)$ y usando linealidad de $E$:
+\[
+V(X) = E[(X-\mu)^2] = E[X^2 - 2\mu X + \mu^2] = E(X^2) - 2\mu^2+\mu^2 = E(X^2)-\mu^2. \qedhere
+\]
+\end{proof}
+
+\begin{alertblock}{En la práctica}
+Casi siempre conviene calcular $V(X)$ con esta fórmula: primero $E(X^2)$ (vía LOTUS) y luego restar $[E(X)]^2$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Propiedades de la varianza}
+\begin{theorem}[Propiedades]
+Sean $X,Y$ v.a. con varianza finita y $a,b\in\mathbb{R}$:
+\begin{enumerate}
+\item $V(X)\ge 0$, y $V(X)=0$ si y solo si $X$ es constante.
+\item $V(c) = 0$ para toda constante $c$.
+\item $V(aX+b) = a^2\,V(X)$ (la traslación $b$ no afecta la dispersión).
+\item Si $X,Y$ son \textbf{independientes}: $V(X+Y) = V(X)+V(Y)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{alertblock}{Nota}
+El caso sin independencia (con covarianza) se ve en la Unidad 4.
+\end{alertblock}
+\end{frame}
+
+\section{Función generadora de momentos}
+
+\begin{frame}{Definición de la FGM}
+\begin{definition}[Función generadora de momentos]
+Sea $X$ una v.a. La \textbf{función generadora de momentos} (FGM) de $X$ es
+\[
+M_X(t) = E\left(e^{tX}\right),
+\]
+definida para $t$ en un entorno de $0$ donde esa esperanza sea finita.
+\end{definition}
+
+Caso discreto: $M_X(t)=\sum_i e^{tx_i}p(x_i)$. Caso continuo: $M_X(t) = \int_{-\infty}^{\infty} e^{tx}f(x)\,dx$.
+\end{frame}
+
+\begin{frame}{Propiedad clave: genera los momentos}
+\begin{theorem}
+Si $M_X(t)$ existe en un entorno de $0$, es infinitamente derivable allí y
+\[
+M_X^{(k)}(0) = E(X^k), \qquad k=1,2,3,\dots
+\]
+En particular, $M_X'(0) = E(X)$ y $M_X''(0) = E(X^2)$ (con la fórmula alternativa, esto también da $V(X)$).
+\end{theorem}
+
+\begin{alertblock}{De ahí el nombre}
+Derivar $M_X(t)$ y evaluar en $t=0$ ``genera'' todos los momentos de $X$ de una sola vez.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Propiedades: unicidad y sumas independientes}
+\begin{theorem}
+\begin{enumerate}
+\item \textbf{Unicidad:} si $M_X(t)=M_Y(t)$ en un entorno de $0$, entonces $X$ e $Y$ tienen la misma distribución.
+\item \textbf{Suma de independientes:} si $X,Y$ son independientes, $M_{X+Y}(t) = M_X(t)\cdot M_Y(t)$.
+\item $M_{aX+b}(t) = e^{bt}\,M_X(at)$, y siempre $M_X(0)=1$.
+\end{enumerate}
+\end{theorem}
+
+\begin{alertblock}{Utilidad}
+La unicidad permite identificar una distribución reconociendo su FGM, sin calcular $p(x)$ ni $f(x)$ directamente. Las demostraciones se ven en la Unidad 4.
+\end{alertblock}
+\end{frame}
+
+\section{Ejemplo integrador}
+
+\begin{frame}{Ejemplo: variable de Bernoulli}
+\begin{example}
+Sea $X\sim\text{Be}(p)$: $P(X=1)=p$, $P(X=0)=1-p=q$. Calculemos $E(X)$, $V(X)$ y $M_X(t)$.
+\end{example}
+
+\begin{block}{Esperanza y varianza}
+\[
+E(X) = 0\cdot q + 1\cdot p = p, \qquad E(X^2) = 0^2\cdot q+1^2\cdot p = p,
+\]
+\[
+V(X) = E(X^2)-[E(X)]^2 = p-p^2 = p(1-p) = pq.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: variable de Bernoulli (cont.)}
+\begin{block}{Función generadora de momentos}
+\[
+M_X(t) = E(e^{tX}) = e^{t\cdot 0}\, q + e^{t\cdot 1}\, p = q + p e^t.
+\]
+Verificación: $M_X'(t) = pe^t \Rightarrow M_X'(0) = p = E(X)$. Coincide con el cálculo directo.
+\end{block}
+
+\begin{alertblock}{Así seguiremos trabajando}
+De acá en adelante, cada distribución nueva (Binomial, Poisson, Geométrica, Normal, \dots) va a incluir su $E(X)$, $V(X)$ y $M_X(t)$ apenas la definamos.
+\end{alertblock}
+\end{frame}
+
+\section{Resumen}
+
+\begin{frame}{Resumen de la clase}
+\begin{block}{Herramientas definidas}
+\begin{itemize}
+\item \textbf{Esperanza:} $E(X)=\sum x_i p(x_i)$ o $\int x f(x)\,dx$; resume el valor promedio.
+\item \textbf{Varianza:} $V(X)=E(X^2)-[E(X)]^2$; resume la dispersión.
+\item \textbf{FGM:} $M_X(t)=E(e^{tX})$; genera los momentos y caracteriza la distribución.
+\end{itemize}
+\end{block}
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Distribución} & $E(X)$ & $V(X)$ & $M_X(t)$ \\
+\midrule
+Bernoulli$(p)$ & $p$ & $pq$ & $q+pe^t$ \\
+Binomial, Poisson, \dots & \multicolumn{3}{c}{a completar en las próximas clases} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{alertblock}{Próxima clase}
+Retomamos las distribuciones discretas (Clase 6) y completamos esta tabla para cada una. Chebyshev y covarianza se estudian en la Unidad 4.
+\end{alertblock}
+\end{frame}
+
+\end{document}
