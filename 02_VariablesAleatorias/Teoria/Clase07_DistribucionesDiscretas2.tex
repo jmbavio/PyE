@@ -184,7 +184,9 @@ $$P(X>m+n \mid X>m) = P(X>n).$$
 Primero, $P(X>n) = \sum_{x=n+1}^\infty q^{x-1}p = q^n$ (cola de serie geométrica). Entonces
 $$P(X>m+n\mid X>m) = \frac{P(X>m+n)}{P(X>m)} = \frac{q^{m+n}}{q^m} = q^n = P(X>n). \qedhere$$
 \end{proof}
+\end{frame}
 
+\begin{frame}{Propiedad de falta de memoria (cont.)}
 \begin{alertblock}{Interpretación}
 Si ya hubo $m$ fracasos consecutivos, la probabilidad de necesitar $n$ ensayos adicionales es la misma que al empezar de cero: el proceso "no recuerda" los fracasos pasados. Es la \textbf{única} distribución discreta con esta propiedad.
 \end{alertblock}
@@ -221,7 +223,9 @@ Número de ocurrencias de un evento raro en tiempo/espacio continuo & Poisson \\
 \bottomrule
 \end{tabular}
 \end{center}
+\end{frame}
 
+\begin{frame}{¿Qué modelo discreto usar? (cont.)}
 \begin{alertblock}{Aproximaciones útiles}
 $\text{H}(N,K,n)\approx\text{Bi}(n,p)$ si $n/N$ pequeño; \quad $\text{Bi}(n,p)\approx\text{Po}(np)$ si $n$ grande y $p$ pequeño.
 \end{alertblock}
