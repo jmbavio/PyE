@@ -141,6 +141,17 @@ muy cercano al valor exacto binomial ($\approx 0.1789$).
 \end{example}
 \end{frame}
 
+\begin{frame}{Poisson: función generadora de momentos}
+\begin{block}{Cálculo de $M_X(t)$}
+Si $X\sim\text{Po}(\lambda)$, usando de nuevo el desarrollo en serie de Taylor $e^y=\sum_{x=0}^\infty y^x/x!$:
+$$M_X(t) = \sum_{x=0}^\infty \frac{e^{-\lambda}\lambda^x}{x!}e^{tx} = e^{-\lambda}\sum_{x=0}^\infty\frac{(\lambda e^t)^x}{x!} = e^{-\lambda}e^{\lambda e^t} = e^{\lambda(e^t-1)}.$$
+\end{block}
+
+\begin{alertblock}{Verificación}
+$M_X'(t) = \lambda e^t e^{\lambda(e^t-1)} \Rightarrow M_X'(0)=\lambda=E(X)$. Con $M_X''(0)=\lambda^2+\lambda$ se recupera $V(X)=\lambda^2+\lambda-\lambda^2=\lambda$: coincide con lo visto antes.
+\end{alertblock}
+\end{frame}
+
 \section{Distribución Geométrica}
 
 \begin{frame}{Planteo del modelo geométrico}
@@ -172,6 +183,17 @@ $$E(X) = \frac{1}{p}, \qquad V(X) = \frac{q}{p^2} = \frac{1-p}{p^2}.$$
 \begin{block}{Interpretación de $E(X)=1/p$}
 Si la probabilidad de éxito es baja, se necesitan en promedio muchos ensayos. Por ejemplo, si $p=0.1$, se esperan 10 ensayos hasta el primer éxito.
 \end{block}
+\end{frame}
+
+\begin{frame}{Geométrica: función generadora de momentos}
+\begin{block}{Cálculo de $M_X(t)$}
+Si $X\sim\text{Ge}(p)$, con la serie geométrica en $z=qe^t$:
+$$M_X(t) = \sum_{x=1}^\infty q^{x-1}p\,e^{tx} = pe^t\sum_{x=1}^\infty(qe^t)^{x-1} = pe^t\sum_{j=0}^\infty(qe^t)^j = \frac{pe^t}{1-qe^t}, \qquad t<-\ln q.$$
+\end{block}
+
+\begin{alertblock}{Coincide con Pascal $(k=1)$}
+Es el caso particular $k=1$ de la FGM de Pascal vista en la clase anterior: $M_X(t)=\left(\dfrac{pe^t}{1-qe^t}\right)^1$.
+\end{alertblock}
 \end{frame}
 
 \begin{frame}{Propiedad de falta de memoria}
@@ -253,6 +275,23 @@ Geométrica$(p)$ & $q^{x-1}p$, $x\ge1$ & $1/p$ & $q/p^2$ \\
 \item La elección del modelo depende de \emph{qué se cuenta}: éxitos en ensayos fijos, ensayos hasta $k$ éxitos, o eventos en un continuo.
 \end{itemize}
 \end{block}
+\end{frame}
+
+\begin{frame}{Resumen: funciones generadoras de momentos}
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+\textbf{Distribución} & \textbf{$M_X(t)$} \\
+\midrule
+Poisson$(\lambda)$ & $e^{\lambda(e^t-1)}$ \\
+Geométrica$(p)$ & $\dfrac{pe^t}{1-qe^t}, \; t<-\ln q$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{alertblock}{Con esto completamos la tabla de la Unidad 2}
+Entre la Clase 5' y las Clases 6-7 ya tenemos $E(X)$, $V(X)$ y $M_X(t)$ para las cinco distribuciones discretas clásicas: Bernoulli, Binomial, Pascal, Geométrica y Poisson (la Hipergeométrica queda como excepción, sin FGM de forma cerrada simple).
+\end{alertblock}
 \end{frame}
 
 \end{document}
