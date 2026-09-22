@@ -14,7 +14,7 @@
 \usepackage{booktabs}
 \usepackage{array}
 
-\title[Prob. y Estadística]{Clase 8: Variable aleatoria continua y distribución Normal}
+\title[Prob. y Estadística]{Clase 8: Variable aleatoria continua, distribución Uniforme y distribución Normal}
 \subtitle{Unidad 2: Variables aleatorias}
 \institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
 \author{Probabilidad y Estadística (5765)}
@@ -95,6 +95,76 @@ $$P(0.3\le X\le 0.6) = \int_{0.3}^{0.6}2x\,dx = [x^2]_{0.3}^{0.6} = 0.36-0.09=0.
 El área sombreada entre $x=0.3$ y $x=0.6$ representa $P(0.3\le X\le 0.6)=0.27$.
 \end{frame}
 
+\section{Distribución Uniforme continua}
+
+\begin{frame}{El modelo continuo más simple}
+\begin{block}{Motivación}
+Así como la Uniforme discreta modela ``todos los valores igualmente posibles'' en un conjunto finito, la \textbf{Uniforme continua} modela una v.a. que puede tomar \textbf{cualquier valor} en un intervalo $[a,b]$, sin que ningún subintervalo sea más probable que otro de igual longitud.
+\end{block}
+
+\begin{definition}[Distribución Uniforme continua]
+$X\sim U(a,b)$ si su densidad es
+$$f(x) = \begin{cases} \dfrac{1}{b-a}, & a\le x\le b, \\[4pt] 0, & \text{en el resto.}\end{cases}$$
+\end{definition}
+\end{frame}
+
+\begin{frame}{Gráfico y función de distribución}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  xmin=0, xmax=4.5, ymin=0, ymax=0.9,
+  xlabel={$x$}, ylabel={$f(x)$},
+  width=6cm, height=5cm,
+  axis lines=left,
+  xtick={1,3.5}, xticklabels={$a$,$b$}, ytick=\empty,
+]
+\addplot[thick,blue] coordinates {(0,0)(1,0)};
+\addplot[thick,blue] coordinates {(1,0.6)(1,0)};
+\addplot[thick,blue] coordinates {(1,0.6)(3.5,0.6)};
+\addplot[thick,blue] coordinates {(3.5,0.6)(3.5,0)};
+\addplot[thick,blue] coordinates {(3.5,0)(4.5,0)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{block}{Función de distribución}
+$$F(x) = \begin{cases} 0, & x<a, \\[2pt] \dfrac{x-a}{b-a}, & a\le x<b, \\[4pt] 1, & x\ge b.\end{cases}$$
+\end{block}
+\end{column}
+\end{columns}
+La densidad es constante en $[a,b]$ (rectángulo de altura $\frac{1}{b-a}$ y base $b-a$: área $1$); $F$ crece linealmente en ese tramo.
+\end{frame}
+
+\begin{frame}{Esperanza, varianza y función generadora de momentos}
+\begin{theorem}
+Si $X\sim U(a,b)$:
+$$E(X) = \frac{a+b}{2}, \qquad V(X) = \frac{(b-a)^2}{12}, \qquad M_X(t) = \frac{e^{tb}-e^{ta}}{t(b-a)} \ (t\ne 0), \quad M_X(0)=1.$$
+\end{theorem}
+
+\begin{proof}[Cálculo de $E(X)$]
+$$E(X) = \int_a^b x\,\frac{1}{b-a}\,dx = \frac{1}{b-a}\left[\frac{x^2}{2}\right]_a^b = \frac{b^2-a^2}{2(b-a)} = \frac{a+b}{2}. \qedhere$$
+\end{proof}
+
+\begin{alertblock}{Interpretación}
+La media es el punto medio del intervalo (por simetría); la varianza depende solo de la longitud $b-a$: a mayor intervalo, mayor dispersión.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo resuelto: Uniforme}
+\begin{example}
+Un colectivo pasa por una parada cada 15 minutos, y un pasajero llega en un instante aleatorio. Sea $X$ el tiempo de espera, $X\sim U(0,15)$. (a) Hallar $E(X)$ y $V(X)$. (b) ¿Cuál es la probabilidad de esperar más de 10 minutos?
+\end{example}
+
+\begin{block}{Resolución}
+\textbf{(a)} $E(X) = \dfrac{0+15}{2} = 7.5$ min, \quad $V(X) = \dfrac{(15-0)^2}{12} = 18.75$ min$^2$.
+
+\textbf{(b)} $P(X>10) = 1-F(10) = 1-\dfrac{10-0}{15-0} = \dfrac{5}{15} = 0.\overline{3}$.
+\end{block}
+\end{frame}
+
 \section{La distribución Normal}
 
 \begin{frame}{La distribución más importante de la estadística}
@@ -105,6 +175,8 @@ El área sombreada entre $x=0.3$ y $x=0.6$ representa $P(0.3\le X\le 0.6)=0.27$.
 \item Es la base de gran parte de la inferencia estadística (intervalos de confianza, tests de hipótesis).
 \end{itemize}
 \end{block}
+
+{\footnotesize Fue descubierta y publicada por primera vez en 1733 por De Moivre; a ella llegaron también, de forma independiente, Laplace (1812) y Gauss (1809), en relación con la teoría de errores de observación astronómica y física. Por eso también se la llama distribución de Laplace-Gauss.}
 \end{frame}
 
 \begin{frame}{La distribución Normal: definición}
@@ -152,6 +224,29 @@ $P(\mu-\sigma<X<\mu+\sigma)\approx 0.68$; \quad $P(\mu-2\sigma<X<\mu+2\sigma)\ap
 \end{tikzpicture}
 \end{center}
 Desplazar $\mu$ traslada la curva; aumentar $\sigma$ la "achata" y ensancha (manteniendo área 1).
+\end{frame}
+
+\begin{frame}{Función generadora de momentos de la Normal}
+\begin{theorem}
+Si $X\sim N(\mu,\sigma^2)$:
+$$M_X(t) = \exp\left(\mu t + \frac{\sigma^2 t^2}{2}\right), \qquad t\in\mathbb{R}.$$
+\end{theorem}
+
+\begin{block}{Idea de la deducción (caso $Z\sim N(0,1)$)}
+$$M_Z(t) = \int_{-\infty}^\infty e^{tz}\frac{1}{\sqrt{2\pi}}e^{-z^2/2}\,dz = \int_{-\infty}^\infty \frac{1}{\sqrt{2\pi}}e^{-\frac{(z-t)^2}{2}+\frac{t^2}{2}}\,dz = e^{t^2/2},$$
+completando cuadrados y usando que la última integral es el área total de una densidad $N(t,1)$, que vale $1$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Función generadora de momentos de la Normal (cont.)}
+\begin{block}{De $Z$ a $X$}
+Para $X=\mu+\sigma Z$ (ver estandarización, próxima sección):
+$$M_X(t)=E(e^{t(\mu+\sigma Z)}) = e^{\mu t}M_Z(\sigma t) = e^{\mu t + \sigma^2t^2/2}.$$
+\end{block}
+
+\begin{alertblock}{Verificación rápida}
+$M_X'(0)=\mu=E(X)$; puede verificarse que $M_X''(0)-[M_X'(0)]^2 = \sigma^2 = V(X)$.
+\end{alertblock}
 \end{frame}
 
 \section{Estandarización}
@@ -227,7 +322,8 @@ $$z_0 = \frac{x_0-\mu}{\sigma} \;\Rightarrow\; x_0 = \mu + z_0\sigma = 500 + 1.2
 \begin{itemize}
 \item $X$ continua $\Leftrightarrow$ existe densidad $f\ge 0$ con $F(x)=\int_{-\infty}^x f(t)dt$ y $\int_{-\infty}^\infty f=1$.
 \item $P(X=a)=0$ para toda v.a. continua; las probabilidades son áreas bajo $f$.
-\item $X\sim N(\mu,\sigma^2)$: simétrica, campana centrada en $\mu$, dispersión $\sigma$; $E(X)=\mu$, $V(X)=\sigma^2$.
+\item $X\sim U(a,b)$: densidad constante $1/(b-a)$; $E(X)=(a+b)/2$, $V(X)=(b-a)^2/12$.
+\item $X\sim N(\mu,\sigma^2)$: simétrica, campana centrada en $\mu$, dispersión $\sigma$; $E(X)=\mu$, $V(X)=\sigma^2$, $M_X(t)=e^{\mu t+\sigma^2t^2/2}$.
 \item Estandarización $Z=(X-\mu)/\sigma \sim N(0,1)$ permite usar la tabla de $\Phi$ para cualquier Normal.
 \end{itemize}
 \end{block}

@@ -78,6 +78,17 @@ Inspeccionar un artículo y clasificarlo como defectuoso ($X=1$) o no ($X=0$).
 \end{example}
 \end{frame}
 
+\begin{frame}{Bernoulli: función generadora de momentos}
+\begin{block}{Cálculo de $M_X(t)$}
+Si $X\sim\text{Be}(p)$:
+$$M_X(t) = E(e^{tX}) = e^{t\cdot 0}\,q + e^{t\cdot 1}\,p = q+pe^t.$$
+\end{block}
+
+\begin{alertblock}{Verificación}
+$M_X'(t)=pe^t \Rightarrow M_X'(0)=p=E(X)$; $M_X''(t)=pe^t \Rightarrow M_X''(0)=p=E(X^2)$, de donde $V(X)=p-p^2=pq$: coincide con lo calculado antes.
+\end{alertblock}
+\end{frame}
+
 \section{Distribución Binomial}
 
 \begin{frame}{Planteo del modelo binomial}
@@ -145,6 +156,17 @@ Además $E(X) = np = 8(0.25) = 2$ aciertos esperados, con $V(X)=npq=8(0.25)(0.75
 \end{block}
 \end{frame}
 
+\begin{frame}{Binomial: función generadora de momentos}
+\begin{block}{Cálculo de $M_X(t)$}
+Si $X\sim\text{Bi}(n,p)$, usando el teorema del binomio de Newton:
+$$M_X(t) = \sum_{x=0}^n \binom{n}{x}p^xq^{n-x}e^{tx} = \sum_{x=0}^n\binom{n}{x}(pe^t)^xq^{n-x} = (q+pe^t)^n.$$
+\end{block}
+
+\begin{alertblock}{Alternativa por independencia}
+Como $X=X_1+\cdots+X_n$ con $X_i\sim\text{Be}(p)$ independientes, $M_X(t)=\prod_{i=1}^n M_{X_i}(t) = (q+pe^t)^n$: mismo resultado sin repetir la cuenta.
+\end{alertblock}
+\end{frame}
+
 \section{Distribución de Pascal (binomial negativa)}
 
 \begin{frame}{Planteo del modelo de Pascal}
@@ -184,6 +206,18 @@ $$P(X=7) = \binom{6}{2}(0.2)^3(0.8)^4 = 15 \times 0.008 \times 0.4096 \approx 0.
 
 El número esperado de visitas hasta la tercera venta es $E(X) = k/p = 3/0.2 = 15$ visitas.
 \end{block}
+\end{frame}
+
+\begin{frame}{Pascal: función generadora de momentos}
+\begin{block}{Cálculo de $M_X(t)$}
+Si $X\sim\text{BN}(k,p)$, escribiendo $x=k+j$ con $j=0,1,2,\dots$:
+$$M_X(t) = \sum_{j=0}^\infty \binom{k+j-1}{k-1}p^kq^j e^{t(k+j)} = (pe^t)^k\sum_{j=0}^\infty\binom{k+j-1}{k-1}(qe^t)^j.$$
+\end{block}
+
+\begin{alertblock}{Serie binomial negativa}
+Usando $\displaystyle\sum_{j=0}^\infty\binom{k+j-1}{k-1}z^j = (1-z)^{-k}$ (válida para $|z|<1$), con $z=qe^t$:
+$$M_X(t) = \left(\frac{pe^t}{1-qe^t}\right)^k, \qquad t < -\ln q.$$
+\end{alertblock}
 \end{frame}
 
 \section{Distribución Hipergeométrica}
@@ -236,6 +270,14 @@ razonablemente cercana, aunque $n/N=0.25$ no es tan pequeño.
 \end{block}
 \end{frame}
 
+\begin{frame}{Hipergeométrica: ¿y la función generadora de momentos?}
+\begin{alertblock}{Por qué no aparece una fórmula simple}
+A diferencia de las distribuciones anteriores, la suma
+$$M_X(t)=\sum_x \frac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}e^{tx}$$
+no se reduce a una expresión elemental: se expresa mediante la función hipergeométrica de Gauss ${}_2F_1$. Por eso, en la práctica, los momentos de la Hipergeométrica se calculan directamente (como $E(X)$ y $V(X)$) en lugar de derivarlos de $M_X(t)$.
+\end{alertblock}
+\end{frame}
+
 \section{Resumen}
 
 \begin{frame}{Resumen: distribuciones discretas (parte I)}
@@ -258,6 +300,25 @@ Hipergeom.$(N,K,n)$ & $\dfrac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}$ & $n\
 \item ¿Se cuenta el número de éxitos en $n$ ensayos fijos? $\to$ Binomial (con reposición) o Hipergeométrica (sin reposición, población finita).
 \item ¿Se cuenta el número de ensayos hasta lograr $k$ éxitos? $\to$ Pascal.
 \end{itemize}
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Resumen: funciones generadoras de momentos}
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+\textbf{Distribución} & \textbf{$M_X(t)$} \\
+\midrule
+Bernoulli$(p)$ & $q+pe^t$ \\
+Binomial$(n,p)$ & $(q+pe^t)^n$ \\
+Pascal$(k,p)$ & $\left(\dfrac{pe^t}{1-qe^t}\right)^k, \; t<-\ln q$ \\
+Hipergeom.$(N,K,n)$ & sin forma cerrada elemental (${}_2F_1$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{alertblock}{Para qué sirve tener $M_X(t)$}
+Además de generar momentos derivando y evaluando en $t=0$, la FGM permite reobtener el resultado $\text{Bi}(n,p) = \text{Be}(p)^{*n}$: si $X\sim\text{Bi}(n,p)$ es suma de $n$ Bernoulli$(p)$ independientes, $M_X(t)=[M_{\text{Be}}(t)]^n$.
 \end{alertblock}
 \end{frame}
 

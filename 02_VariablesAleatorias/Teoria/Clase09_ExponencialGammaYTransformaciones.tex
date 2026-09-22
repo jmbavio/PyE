@@ -14,7 +14,7 @@
 \usepackage{booktabs}
 \usepackage{array}
 
-\title[Prob. y Estadística]{Clase 9: Distribuciones Exponencial y Gamma. Función de una variable aleatoria}
+\title[Prob. y Estadística]{Clase 9: Distribuciones Exponencial, Gamma y otros modelos continuos. Función de una variable aleatoria}
 \subtitle{Unidad 2: Variables aleatorias}
 \institute[UNS]{Universidad Nacional del Sur \\ Departamento de Matemática}
 \author{Probabilidad y Estadística (5765)}
@@ -70,6 +70,16 @@ $$E(X) = \int_0^\infty x\lambda e^{-\lambda x}\,dx = \Big[-xe^{-\lambda x}\Big]_
 
 \begin{alertblock}{Analogía con la Geométrica}
 Así como la Geométrica es el "tiempo discreto hasta el primer éxito", la Exponencial es su análogo continuo: el "tiempo continuo hasta el primer evento".
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Exponencial: función generadora de momentos}
+\begin{block}{Cálculo de $M_X(t)$}
+$$M_X(t) = E(e^{tX}) = \int_0^\infty e^{tx}\lambda e^{-\lambda x}\,dx = \lambda\int_0^\infty e^{-(\lambda-t)x}\,dx = \frac{\lambda}{\lambda-t}, \qquad t<\lambda.$$
+\end{block}
+
+\begin{alertblock}{Verificación}
+$M_X'(t) = \dfrac{\lambda}{(\lambda-t)^2} \Rightarrow M_X'(0)=\dfrac{1}{\lambda}=E(X)$; con $M_X''(0)=\dfrac{2}{\lambda^2}$ se recupera $V(X)=\dfrac{2}{\lambda^2}-\dfrac{1}{\lambda^2}=\dfrac{1}{\lambda^2}$: coincide con lo visto antes.
 \end{alertblock}
 \end{frame}
 
@@ -152,6 +162,17 @@ Con $\alpha=1$: $E(X) = 1/\lambda$, coincide con lo visto para la Exponencial.
 \end{block}
 \end{frame}
 
+\begin{frame}{Gamma: función generadora de momentos}
+\begin{block}{Cálculo de $M_X(t)$}
+$$M_X(t) = \int_0^\infty e^{tx}\frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}\,dx = \frac{\lambda^\alpha}{\Gamma(\alpha)}\int_0^\infty x^{\alpha-1}e^{-(\lambda-t)x}\,dx = \left(\frac{\lambda}{\lambda-t}\right)^{\!\alpha}, \quad t<\lambda,$$
+usando la definición de $\Gamma(\alpha)$ con el cambio de variable $u=(\lambda-t)x$.
+\end{block}
+
+\begin{alertblock}{Relación con la Exponencial}
+Con $\alpha=1$: $M_X(t) = \dfrac{\lambda}{\lambda-t}$, la FGM de la Exponencial de la clase anterior. Y como $X=T_1+\cdots+T_\alpha$ con $T_i\sim\text{Exp}(\lambda)$ i.i.d., también se obtiene $M_X(t) = [M_{T}(t)]^\alpha = \left(\frac{\lambda}{\lambda-t}\right)^\alpha$: mismo resultado sin repetir la integral.
+\end{alertblock}
+\end{frame}
+
 \begin{frame}{Gráfico: densidades Gamma}
 \begin{center}
 \begin{tikzpicture}
@@ -180,6 +201,56 @@ A un taller llegan pedidos de reparación según un proceso de Poisson con tasa 
 \begin{block}{Resolución}
 El tiempo $X$ hasta el 5.º pedido es $X\sim\text{Gamma}(\alpha=5,\lambda=2)$ (suma de 5 tiempos exponenciales independientes).
 $$E(X) = \frac{\alpha}{\lambda} = \frac{5}{2} = 2.5 \text{ días}, \qquad V(X) = \frac{\alpha}{\lambda^2} = \frac{5}{4} = 1.25 \text{ días}^2.$$
+\end{block}
+\end{frame}
+
+\section{Otros modelos continuos}
+
+\begin{frame}{Distribución de Rayleigh}
+\begin{block}{Contexto}
+Modela magnitudes que son la norma de un vector aleatorio con componentes normales independientes centradas en $0$: por ejemplo, la rapidez de una partícula (componentes de velocidad $N(0,\sigma^2)$ en cada eje), o la magnitud de un error de puntería en dos dimensiones.
+\end{block}
+
+\begin{definition}[Distribución de Rayleigh]
+$X\sim\text{Rayleigh}(\sigma)$ ($\sigma>0$) si
+$$f(x) = \frac{x}{\sigma^2}e^{-x^2/(2\sigma^2)}, \qquad x\ge 0, \qquad F(x) = 1-e^{-x^2/(2\sigma^2)}, \quad x\ge0.$$
+\end{definition}
+
+\begin{alertblock}{Relación con la Normal}
+Si $Y_1,Y_2\sim N(0,\sigma^2)$ independientes, entonces $X=\sqrt{Y_1^2+Y_2^2}\sim\text{Rayleigh}(\sigma)$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Distribución de Laplace (doble exponencial)}
+\begin{block}{Contexto}
+Dos exponenciales "espalda con espalda": modela cantidades simétricas respecto de un centro pero con colas más pesadas que la Normal (ej.\ diferencias de mediciones, residuos con valores extremos frecuentes).
+\end{block}
+
+\begin{definition}[Distribución de Laplace]
+$X\sim\text{Laplace}(\mu,b)$ ($b>0$) si
+$$f(x) = \frac{1}{2b}\exp\left(-\frac{|x-\mu|}{b}\right), \qquad x\in\mathbb{R}.$$
+\end{definition}
+
+\begin{alertblock}{Propiedades}
+$E(X)=\mu$, $V(X)=2b^2$. Es simétrica respecto de $\mu$, como la Normal, pero con un pico más agudo en $x=\mu$ y colas más pesadas (mayor curtosis).
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Distribución de Cauchy}
+\begin{definition}[Distribución de Cauchy]
+$X\sim\text{Cauchy}(x_0,\gamma)$ si
+$$f(x) = \frac{1}{\pi\gamma\left[1+\left(\frac{x-x_0}{\gamma}\right)^2\right]}, \qquad x\in\mathbb{R}.$$
+Es simétrica respecto de $x_0$ (su mediana y moda), con forma de campana similar a la Normal pero colas mucho más pesadas.
+\end{definition}
+\end{frame}
+
+\begin{frame}{Distribución de Cauchy: un caso patológico}
+\begin{alertblock}{No tiene esperanza ni varianza}
+$\displaystyle\int_{-\infty}^\infty |x|\,f(x)\,dx = \infty$: la integral que definiría $E(X)$ \textbf{no converge}. Por lo tanto $E(X)$ y $V(X)$ \textbf{no existen}, pese a que $X$ tiene una densidad perfectamente válida ($f\ge0$, área total $1$).
+\end{alertblock}
+
+\begin{block}{Por qué importa}
+Es el contraejemplo clásico para mostrar que ``tener densidad'' no garantiza tener momentos finitos, y que la Ley de los Grandes Números (Unidad 4) no se aplica a promedios de Cauchy.
 \end{block}
 \end{frame}
 
@@ -268,27 +339,57 @@ $h(y)=\sqrt{y}$, $h'(y) = \frac{1}{2\sqrt{y}}$; $f_Y(y) = f_X(\sqrt{y})|h'(y)| =
 
 \begin{frame}{Resumen de la clase}
 \begin{center}
-\small
+\tiny
 \begin{tabular}{lccc}
 \toprule
 \textbf{Distribución} & \textbf{$f(x)$} & \textbf{$E(X)$} & \textbf{$V(X)$} \\
 \midrule
 Exponencial$(\lambda)$ & $\lambda e^{-\lambda x}$, $x\ge0$ & $1/\lambda$ & $1/\lambda^2$ \\
 Gamma$(\alpha,\lambda)$ & $\frac{\lambda^\alpha}{\Gamma(\alpha)}x^{\alpha-1}e^{-\lambda x}$, $x>0$ & $\alpha/\lambda$ & $\alpha/\lambda^2$ \\
+Rayleigh$(\sigma)$ & $\frac{x}{\sigma^2}e^{-x^2/(2\sigma^2)}$, $x\ge0$ & -- & -- \\
+Laplace$(\mu,b)$ & $\frac{1}{2b}e^{-|x-\mu|/b}$, $x\in\mathbb{R}$ & $\mu$ & $2b^2$ \\
+Cauchy$(x_0,\gamma)$ & $\frac{1}{\pi\gamma[1+(\frac{x-x_0}{\gamma})^2]}$, $x\in\mathbb{R}$ & no existe & no existe \\
 \bottomrule
 \end{tabular}
 \end{center}
 
+\begin{alertblock}{Sobre la tabla}
+Todas estas densidades cumplen $f\ge0$ y área total $1$; sin embargo, como muestra la fila de Cauchy, eso \textbf{no alcanza} para garantizar que existan $E(X)$ y $V(X)$.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Resumen: funciones generadoras de momentos}
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+\textbf{Distribución} & \textbf{$M_X(t)$} \\
+\midrule
+Exponencial$(\lambda)$ & $\dfrac{\lambda}{\lambda-t}, \; t<\lambda$ \\
+Gamma$(\alpha,\lambda)$ & $\left(\dfrac{\lambda}{\lambda-t}\right)^{\!\alpha}, \; t<\lambda$ \\
+Rayleigh$(\sigma)$ & sin forma cerrada elemental \\
+Laplace$(\mu,b)$ & $\dfrac{e^{\mu t}}{1-b^2t^2}, \; |t|<1/b$ \\
+Cauchy$(x_0,\gamma)$ & no existe (ni en un entorno de $t=0$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{alertblock}{Coherencia entre las FGM}
+Con $\alpha=1$, la FGM de la Gamma se reduce a la de la Exponencial: $\left(\frac{\lambda}{\lambda-t}\right)^1=\frac{\lambda}{\lambda-t}$. Y como una Gamma$(\alpha,\lambda)$ es suma de $\alpha$ exponenciales independientes, también vale $M_X(t)=[M_{\text{Exp}}(t)]^\alpha$, tal como con Binomial = suma de Bernoulli en el caso discreto.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Resumen de la clase (cont.)}
 \begin{block}{Ideas clave}
 \begin{itemize}
 \item La Exponencial modela el tiempo entre eventos de Poisson; tiene falta de memoria.
 \item La Gamma generaliza a la Exponencial: suma de $\alpha$ tiempos exponenciales ($\alpha=1$ da la Exponencial).
+\item Rayleigh, Laplace y Cauchy amplían el repertorio de modelos continuos (normas de vectores normales, colas pesadas simétricas, y un caso sin momentos finitos).
 \item Para hallar la distribución de $Y=g(X)$: método de la f.d.a. (directo, sirve siempre) o método del jacobiano $f_Y(y)=f_X(h(y))|h'(y)|$ (rápido si $g$ es monótona derivable).
 \end{itemize}
 \end{block}
 
-\begin{alertblock}{Cierre de la Unidad 2}
-Con esto completamos el estudio de variables aleatorias discretas y continuas. En la Unidad 3 extenderemos estas ideas a vectores aleatorios (dos o más variables).
+\begin{alertblock}{Cierre de la Unidad 2 -- y lo que viene}
+Con esto completamos el estudio de variables aleatorias discretas y continuas. En la Unidad 3 extenderemos estas ideas a vectores aleatorios, y conoceremos la distribución \textbf{chi-cuadrado} ($\chi^2_n$, un caso particular de la Gamma) junto con las distribuciones $t$ de Student y $F$ de Snedecor, todas derivadas de la Normal.
 \end{alertblock}
 \end{frame}
 
