@@ -41,6 +41,9 @@ En las Unidades 1 a 4 supusimos \textbf{conocido} el modelo probabilístico (dis
 En la práctica casi nunca conocemos los parámetros poblacionales (una media $\mu$, una proporción $p$, una varianza $\sigma^2$). Lo que tenemos son \textbf{datos}: mediciones, observaciones, un conjunto finito de valores obtenidos experimentalmente.
 \end{alertblock}
 
+\end{frame}
+
+\begin{frame}{Un cambio de perspectiva (cont.)}
 \begin{example}
 \begin{itemize}
 \item ¿Cuál es el peso medio $\mu$ de los paquetes que produce una máquina envasadora?
@@ -112,6 +115,9 @@ $$X_1, X_2, \dots, X_n$$
 Antes de observar los datos, $X_1,\dots,X_n$ son variables aleatorias (mayúsculas). Una vez realizado el experimento, obtenemos valores concretos $x_1,\dots,x_n$ (minúsculas): la \textbf{realización} de la muestra, es decir, los datos.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Muestra aleatoria: definición formal (cont.)}
 \begin{example}
 Se seleccionan al azar y con reposición 10 paquetes de una línea de producción y se pesa cada uno. Antes de pesar: $X_1,\dots,X_{10}$ i.i.d. Después de pesar: $x_1=249.8, x_2=251.3,\dots$ (los datos observados).
 \end{example}
@@ -126,6 +132,9 @@ Cada $X_i$ debe representar a la misma población, con la misma $F_X$, la misma 
 El resultado de una observación no debe influir en las demás. En un muestreo \emph{sin} reposición de una población finita de tamaño $N$, las observaciones no son estrictamente independientes; pero si $N \gg n$ (por ejemplo $n/N < 0.05$), la dependencia es despreciable y se aproxima como muestreo aleatorio simple.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{¿Por qué i.i.d.? (cont.)}
 \begin{alertblock}{Consecuencia técnica}
 Como los $X_i$ son i.i.d., toda la teoría de suma de variables independientes (funciones generadoras de momentos, Unidad 4) se aplica directamente a estadísticos que son funciones de $X_1,\dots,X_n$.
 \end{alertblock}
@@ -188,6 +197,9 @@ $$\sum (x_i-\bar x)^2 = (2.17)^2+(0.83)^2+(2.83)^2+(3.17)^2+(0.17)^2+(1.83)^2 \a
 $$s^2 = \frac{24.83}{5} \approx 4.97 \quad \Rightarrow \quad s \approx 2.23 \text{ g}$$
 \end{example}
 
+\end{frame}
+
+\begin{frame}{Ejemplo: cálculo de estadísticos (cont.)}
 \begin{block}{Distinción clave}
 $\bar x = 250.1\overline{6}$ es \textbf{un} número: una realización de la variable aleatoria $\bar X$. Si otro operario pesara otros 6 paquetes, obtendría otro valor de $\bar x$.
 \end{block}
@@ -204,6 +216,9 @@ La \textbf{distribución muestral} de un estadístico $T=h(X_1,\dots,X_n)$ es la
 Para hacer inferencia necesitamos saber, por ejemplo: si $\mu$ fuera realmente igual a cierto valor, ¿qué tan probable es observar un $\bar x$ tan alejado de $\mu$ como el que obtuvimos? Responder esto exige conocer la distribución de $\bar X$, no solo su valor puntual.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{El concepto central de la unidad (cont.)}
 \begin{example}[Ilustración con una población pequeña]
 Población: $\{2,4,6\}$ equiprobable ($\mu=4$). Muestras de tamaño $n=2$ \emph{con reposición}: hay $3^2=9$ muestras igualmente probables. Los valores de $\bar X$ posibles son $2,3,4,5,6$, cada uno con cierta probabilidad (no todos igualmente probables): esto ya define una distribución muestral de $\bar X$.
 \end{example}
@@ -258,6 +273,9 @@ Como los $X_i$ son \textbf{independientes}, la varianza de la suma es la suma de
 $$\text{Var}(\bar X) = \text{Var}\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\sum_{i=1}^n \text{Var}(X_i) = \frac{1}{n^2}\cdot n\sigma^2 = \frac{\sigma^2}{n}. \qedhere$$
 \end{proof}
 
+\end{frame}
+
+\begin{frame}{Deducción de $\text{Var}(\bar X)$ (cont.)}
 \begin{alertblock}{¿Dónde se usó la independencia?}
 En $\text{Var}(X_i+X_j) = \text{Var}(X_i)+\text{Var}(X_j)+2\,\text{Cov}(X_i,X_j)$: al ser independientes, $\text{Cov}(X_i,X_j)=0$ para $i\ne j$, y los términos cruzados desaparecen. Sin independencia, esta fórmula tan simple no valdría.
 \end{alertblock}
@@ -273,6 +291,9 @@ se llama \textbf{error estándar} de la media. A diferencia de $\sigma$ (fijo, d
 Cuantas más observaciones promediamos, menos varía $\bar X$ de muestra a muestra: se \textbf{concentra} en torno a $\mu$. Esto es la base intuitiva de la Ley de los Grandes Números y de por qué muestras más grandes dan estimaciones más precisas.
 \end{alertblock}
 
+\end{frame}
+
+\begin{frame}{Consecuencias de $\text{Var}(\bar X)=\sigma^2/n$ (cont.)}
 \begin{example}
 Si $\sigma = 4$ g (desvío del peso poblacional) y $n=25$, entonces $\sigma_{\bar X} = 4/\sqrt{25} = 0.8$ g: mucho más preciso que una sola medición individual.
 \end{example}

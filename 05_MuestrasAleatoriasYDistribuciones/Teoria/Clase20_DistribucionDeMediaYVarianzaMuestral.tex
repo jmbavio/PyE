@@ -57,6 +57,9 @@ Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. E
 $$\bar X \sim N\left(\mu, \frac{\sigma^2}{n}\right).$$
 \end{theorem}
 
+\end{frame}
+
+\begin{frame}{Caso población normal (cont.)}
 \begin{proof}
 Cada $X_i \sim N(\mu,\sigma^2)$ tiene función generadora de momentos $M_{X_i}(t) = \exp\left(\mu t + \frac{\sigma^2 t^2}{2}\right)$. Como los $X_i$ son independientes,
 $$M_{\bar X}(t) = M_{\sum X_i/n}(t) = \prod_{i=1}^n M_{X_i}\!\left(\frac{t}{n}\right) = \left[\exp\left(\mu \frac{t}{n} + \frac{\sigma^2}{2}\frac{t^2}{n^2}\right)\right]^n$$
@@ -163,6 +166,11 @@ $$\sum_{i=1}^2 (X_i-\bar X)^2 = \left(\frac{X_1-X_2}{2}\right)^2 + \left(\frac{X
 Como $X_1-X_2 \sim N(0,2\sigma^2)$ (combinación lineal de normales independientes), se tiene
 $$\frac{X_1-X_2}{\sigma\sqrt 2} \sim N(0,1) \ \Rightarrow \ \left(\frac{X_1-X_2}{\sigma\sqrt2}\right)^2 \sim \chi^2_1.$$
 
+\end{example}
+\end{frame}
+
+\begin{frame}{Justificación para $n=2$ (caso simple, verificable) (cont.)}
+\begin{example}
 Pero $\left(\dfrac{X_1-X_2}{\sigma\sqrt2}\right)^2 = \dfrac{(X_1-X_2)^2}{2\sigma^2} = \dfrac{\sum(X_i-\bar X)^2}{\sigma^2} = \dfrac{(n-1)S^2}{\sigma^2}$ con $n-1=1$.
 
 Esto confirma el teorema para $n=2$: 1 grado de libertad, tal como predice la fórmula general $n-1$.
@@ -236,11 +244,17 @@ Si $Z\sim N(0,1)$ y $W\sim \chi^2_k$ son \textbf{independientes}, entonces
 $$T = \frac{Z}{\sqrt{W/k}} \sim t_k \quad \text{(t de Student con $k$ grados de libertad)}.$$
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Definición y distribución t de Student (cont.)}
 \begin{theorem}
 Sea $X_1,\dots,X_n$ una muestra aleatoria de una población $N(\mu,\sigma^2)$. Entonces
 $$T = \frac{\bar X-\mu}{S/\sqrt n} \sim t_{n-1}.$$
 \end{theorem}
 
+\end{frame}
+
+\begin{frame}{Definición y distribución t de Student (cont.)}
 \begin{proof}
 Escribimos $T$ como cociente de $Z=\dfrac{\bar X-\mu}{\sigma/\sqrt n}\sim N(0,1)$ y $\sqrt{W/(n-1)}$, con $W=\dfrac{(n-1)S^2}{\sigma^2}\sim \chi^2_{n-1}$:
 $$T = \frac{(\bar X-\mu)/(\sigma/\sqrt n)}{S/\sigma} = \frac{Z}{\sqrt{W/(n-1)}}.$$

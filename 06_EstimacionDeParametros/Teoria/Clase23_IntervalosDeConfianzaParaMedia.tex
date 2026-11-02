@@ -94,6 +94,9 @@ Z = \frac{\overline X - \mu}{\sigma/\sqrt n} \sim N(0,1).
 \]
 \end{block}
 
+\end{frame}
+
+\begin{frame}{IC para $\mu$ con $\sigma^2$ conocida (cont.)}
 \begin{proof}[Deducción]
 Partiendo de $P(-z_{\alpha/2} < Z < z_{\alpha/2}) = 1-\alpha$:
 \[
@@ -153,6 +156,9 @@ T = \frac{\overline X - \mu}{S/\sqrt n} \sim t_{n-1} \qquad \text{(t de Student 
 \]
 \end{theorem}
 
+\end{frame}
+
+\begin{frame}{IC para $\mu$ con $\sigma^2$ desconocida: distribución $t$ de Student (cont.)}
 \begin{block}{Idea de por qué cambia la distribución}
 $T = \dfrac{Z}{\sqrt{W/(n-1)}}$, cociente entre $Z=\frac{\overline X-\mu}{\sigma/\sqrt n}\sim N(0,1)$ y $W = \frac{(n-1)S^2}{\sigma^2}\sim \chi^2_{n-1}$ (independientes), que es precisamente la definición de la distribución $t_{n-1}$ (tema visto en la Unidad 5).
 \end{block}
@@ -219,6 +225,9 @@ Z = \frac{\widehat p - p}{\sqrt{p(1-p)/n}} \overset{aprox}{\sim} N(0,1).
 Reemplazando $p(1-p)$ por $\widehat p(1-\widehat p)$ en el denominador (aproximación adicional usual):
 \end{block}
 
+\end{frame}
+
+\begin{frame}{IC para una proporción poblacional $p$ (cont.)}
 \begin{alertblock}{Intervalo de confianza de nivel $1-\alpha$ para $p$}
 \[
 IC(p;1-\alpha) = \left(\widehat p - z_{\alpha/2}\sqrt{\frac{\widehat p(1-\widehat p)}{n}},\ \ \widehat p + z_{\alpha/2}\sqrt{\frac{\widehat p(1-\widehat p)}{n}}\right)
@@ -232,6 +241,11 @@ En una encuesta a $n=400$ personas de una ciudad, $136$ declaran estar a favor d
 
 \textbf{Solución.} $\widehat p = 136/400 = 0.34$. Verificamos: $n\widehat p = 136 \ge 5$, $n(1-\widehat p)=264\ge 5$: aproximación válida.
 
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo numérico: proporción (cont.)}
+\begin{example}
 $z_{\alpha/2}=z_{0.05}=1.645$.
 \[
 \sqrt{\frac{\widehat p(1-\widehat p)}{n}} = \sqrt{\frac{0.34\cdot 0.66}{400}} = \sqrt{\frac{0.2244}{400}} = \sqrt{0.000561} \approx 0.02368.
@@ -263,6 +277,9 @@ E = z_{\alpha/2}\frac{\sigma}{\sqrt n} \;\Longrightarrow\; n = \left(\frac{z_{\a
 n = \left(\frac{z_{\alpha/2}}{E}\right)^2 \widehat p(1-\widehat p), \qquad \text{o, sin información previa, } \widehat p=0.5 \text{ (caso más conservador)}.
 \]
 
+\end{frame}
+
+\begin{frame}{Determinación del tamaño de muestra (cont.)}
 \begin{example}
 ¿Qué $n$ se necesita para estimar $\mu$ con $\sigma=2.5$ y margen de error $E=0.5$ min, al $95\%$?
 \[
@@ -295,6 +312,9 @@ $p$ & $n$ grande & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\wideha
 \end{itemize}
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Resumen: intervalos de confianza vistos hoy (cont.)}
 \begin{alertblock}{Próxima clase}
 IC para la varianza (chi-cuadrado) y para comparar dos poblaciones: diferencia de medias y cociente de varianzas.
 \end{alertblock}

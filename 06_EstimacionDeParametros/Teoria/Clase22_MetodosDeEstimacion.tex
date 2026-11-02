@@ -44,6 +44,9 @@ Q(\theta) = \sum_{i=1}^n \left(x_i - g(\theta)\right)^2.
 \]
 \end{definition}
 
+\end{frame}
+
+\begin{frame}{Idea general del método de mínimos cuadrados (cont.)}
 \begin{alertblock}{Uso típico}
 Es la base de la \textbf{regresión lineal} (Unidad 8): allí $g$ depende de variables explicativas y se minimiza la suma de residuos al cuadrado. Aquí lo presentamos en su versión más simple, para fijar la idea.
 \end{alertblock}
@@ -78,6 +81,9 @@ L(\theta) = L(\theta \mid x_1,\dots,x_n) = \prod_{i=1}^n f(x_i;\theta),
 vista como función de $\theta$ (los datos $x_1,\dots,x_n$ están fijos, son los observados).
 \end{definition}
 
+\end{frame}
+
+\begin{frame}{Motivación del método de máxima verosimilitud (cont.)}
 \begin{alertblock}{Diferencia clave con la densidad conjunta}
 $f(x_1,\dots,x_n;\theta)$ es función de los datos, con $\theta$ fijo. $L(\theta)$ es la \emph{misma expresión} pero pensada como función de $\theta$, con los datos fijos.
 \end{alertblock}
@@ -91,6 +97,9 @@ El \textbf{estimador de máxima verosimilitud} de $\theta$ es el valor $\widehat
 \]
 \end{definition}
 
+\end{frame}
+
+\begin{frame}{Estimador de máxima verosimilitud (EMV) (cont.)}
 \begin{block}{Log-verosimilitud}
 Como $\log$ es una función estrictamente creciente, maximizar $L(\theta)$ equivale a maximizar
 \[
@@ -140,6 +149,11 @@ Sea $t=\sum_{i=1}^n x_i$ (cantidad de éxitos). Entonces
 \[
 \ell(p) = t\ln p + (n-t)\ln(1-p).
 \]
+\end{example}
+\end{frame}
+
+\begin{frame}{EMV para la distribución Bernoulli (cont.)}
+\begin{example}
 Derivando:
 \[
 \ell'(p) = \frac{t}{p} - \frac{n-t}{1-p} = 0 \;\Longrightarrow\; t(1-p) = (n-t)p \;\Longrightarrow\; t = np \;\Longrightarrow\; \widehat p = \frac{t}{n} = \overline x.
@@ -227,6 +241,9 @@ Como el EMV de $\sigma^2$ es $\widehat\sigma^2 = \frac{1}{n}\sum(x_i-\overline x
 \]
 \end{example}
 
+\end{frame}
+
+\begin{frame}{Propiedades del estimador de máxima verosimilitud (cont.)}
 \begin{block}{Propiedades asintóticas (bajo condiciones de regularidad)}
 \begin{itemize}
 \item \textbf{Consistencia:} $\widehat\theta_{EMV} \xrightarrow{P} \theta$ cuando $n\to\infty$.
@@ -296,6 +313,9 @@ Normal($\mu,\sigma^2$) & $\sigma^2$ & $\widehat\sigma^2 = \frac{1}{n}\sum(X_i-\o
 \end{tabular}
 \end{center}
 
+\end{frame}
+
+\begin{frame}{Resumen (cont.)}
 \begin{alertblock}{Próxima clase}
 Usaremos estos estimadores puntuales como base para construir \textbf{intervalos de confianza}: en vez de dar un único valor, daremos un rango de valores plausibles para $\theta$.
 \end{alertblock}

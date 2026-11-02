@@ -60,6 +60,9 @@ es decir, una función de la muestra que no depende de $\theta$.
 Si $x_1,\dots,x_n$ son los valores observados (los datos concretos), el número $\widehat{\theta}(x_1,\dots,x_n)$ se llama \textbf{estimación} puntual de $\theta$.
 \end{definition}
 
+\end{frame}
+
+\begin{frame}{Definiciones básicas (cont.)}
 \begin{block}{Observación clave}
 $\widehat{\theta}$ es una variable aleatoria (depende de la muestra, que es aleatoria); por lo tanto tiene su propia distribución, llamada \textbf{distribución muestral del estimador}, con su media, varianza, etc.
 \end{block}
@@ -119,6 +122,11 @@ En consecuencia:
 \[
 E(S^2) = E\left(\frac{1}{n-1}\sum_{i=1}^n (X_i-\overline X)^2\right) = \sigma^2 \quad \Rightarrow\quad S^2 \text{ es insesgado.}
 \]
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo clave: por qué se divide por $n-1$ (cont.)}
+\begin{example}
 En cambio, el estimador "intuitivo" $\widehat\sigma^2 = \dfrac{1}{n}\sum_{i=1}^n (X_i-\overline X)^2$ cumple
 \[
 E(\widehat\sigma^2) = \frac{n-1}{n}\sigma^2 \neq \sigma^2,
@@ -142,6 +150,9 @@ Despejando:
 E\left[\sum_{i=1}^n (X_i-\overline X)^2\right] = n\sigma^2 - \sigma^2 = (n-1)\sigma^2. \qedhere
 \]
 \end{proof}
+\end{frame}
+
+\begin{frame}{Deducción del sesgo de $\widehat\sigma^2$ (cont.)}
 \begin{block}{Conclusión práctica}
 Este es el motivo estadístico por el cual la \textbf{cuasivarianza muestral} $S^2$ (con $n-1$ en el denominador) es la que se usa habitualmente como estimador de $\sigma^2$.
 \end{block}
@@ -164,6 +175,9 @@ El \textbf{error cuadrático medio} de un estimador $\widehat\theta$ de $\theta$
 donde $B(\widehat\theta) = E(\widehat\theta)-\theta$ es el sesgo.
 \end{theorem}
 
+\end{frame}
+
+\begin{frame}{Error cuadrático medio (ECM) (cont.)}
 \begin{proof}
 \begin{align*}
 E[(\widehat\theta-\theta)^2] &= E\left[\left(\widehat\theta - E(\widehat\theta) + E(\widehat\theta) - \theta\right)^2\right] \\
@@ -181,6 +195,9 @@ E[(\widehat\theta-\theta)^2] &= E\left[\left(\widehat\theta - E(\widehat\theta) 
 \end{itemize}
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Por qué importa el ECM (cont.)}
 \begin{example}
 Comparemos $\widehat\sigma^2 = \frac{1}{n}\sum(X_i-\overline X)^2$ (sesgado) con $S^2$ (insesgado) para estimar $\sigma^2$ en una población normal. Se puede probar que
 \[
@@ -205,6 +222,9 @@ Si $\mathrm{ER} > 1$, $\widehat\theta_1$ es \textbf{más eficiente} (tiene menor
 $\widehat\theta^*$ es \textbf{EIMV} de $\theta$ si es insesgado y $\mathrm{Var}(\widehat\theta^*) \le \mathrm{Var}(\widehat\theta)$ para \textbf{todo} otro estimador insesgado $\widehat\theta$ de $\theta$.
 \end{definition}
 
+\end{frame}
+
+\begin{frame}{Eficiencia relativa y estimador de mínima varianza (cont.)}
 \begin{alertblock}{Cota de Cramér--Rao (mención)}
 Bajo condiciones de regularidad, toda varianza de un estimador insesgado satisface
 $\mathrm{Var}(\widehat\theta) \ge \dfrac{1}{n\, I(\theta)}$, donde $I(\theta)$ es la información de Fisher. Un estimador que alcanza esta cota es EIMV.
