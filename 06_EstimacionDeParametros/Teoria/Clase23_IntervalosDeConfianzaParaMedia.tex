@@ -235,6 +235,18 @@ IC(p;1-\alpha) = \left(\widehat p - z_{\alpha/2}\sqrt{\frac{\widehat p(1-\wideha
 \end{alertblock}
 \end{frame}
 
+\begin{frame}{¿$z$ o $t$? Corrección por población finita}
+\begin{block}{¿Debe cambiarse $z_{\alpha/2}$ por $t_{n-1}$?}
+Al sustituir la desviación estándar verdadera de $\widehat p$ por un estimador, cabe preguntarse si debe usarse $t_{n-1}$ como en el caso de $\mu$. No: los límites se basan en el TCL, que supone $n$ grande, y en esos contextos la diferencia entre $z_{\alpha/2}$ y $t_{n-1}$ es casi despreciable. Lo aconsejable es tomar un tamaño de muestra mayor a $100$.
+\end{block}
+
+\begin{alertblock}{IC para $p$ con corrección por población finita (población de tamaño $N$)}
+\[
+IC(p;1-\alpha) = \left(\widehat p - z_{\alpha/2}\sqrt{\frac{\widehat p(1-\widehat p)}{n}}\sqrt{\frac{N-n}{N-1}},\ \ \widehat p + z_{\alpha/2}\sqrt{\frac{\widehat p(1-\widehat p)}{n}}\sqrt{\frac{N-n}{N-1}}\right)
+\]
+\end{alertblock}
+\end{frame}
+
 \begin{frame}{Ejemplo numérico: proporción}
 \begin{example}
 En una encuesta a $n=400$ personas de una ciudad, $136$ declaran estar a favor de una nueva ordenanza municipal. Construir un IC del $90\%$ para la verdadera proporción $p$ de la población a favor.
@@ -299,7 +311,8 @@ n = \left(\frac{1.96\cdot 2.5}{0.5}\right)^2 = (9.8)^2 = 96.04 \;\Longrightarrow
 \midrule
 $\mu$ & $\sigma^2$ conocida & $\overline x \pm z_{\alpha/2}\dfrac{\sigma}{\sqrt n}$ \\[1.2ex]
 $\mu$ & $\sigma^2$ desconocida & $\overline x \pm t_{n-1,\alpha/2}\dfrac{s}{\sqrt n}$ \\[1.2ex]
-$p$ & $n$ grande & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\widehat p)}{n}}$ \\
+$p$ & $n$ grande & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\widehat p)}{n}}$ \\[1.2ex]
+$p$ & $n$ grande, población finita $N$ & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\widehat p)}{n}}\sqrt{\dfrac{N-n}{N-1}}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -316,7 +329,7 @@ $p$ & $n$ grande & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\wideha
 
 \begin{frame}{Resumen: intervalos de confianza vistos hoy (cont.)}
 \begin{alertblock}{Próxima clase}
-IC para la varianza (chi-cuadrado) y para comparar dos poblaciones: diferencia de medias y cociente de varianzas.
+IC para la varianza (chi-cuadrado) y para comparar dos poblaciones: diferencia de medias, diferencia de proporciones y cociente de varianzas.
 \end{alertblock}
 \end{frame}
 

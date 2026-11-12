@@ -212,12 +212,61 @@ IC=(15.4-14.6)\pm 1.725(0.5112) = 0.8\pm 0.882 = (-0.082,\ 1.682)\ \text{km/l}.
 \end{example}
 \end{frame}
 
+\begin{frame}{Varianzas desconocidas y distintas}
+\begin{block}{Supuesto: $\sigma_1^2\neq\sigma_2^2$ (ambas desconocidas), poblaciones normales}
+Si los tamaños de muestra son pequeños y no permiten aproximar las varianzas por sus estimadores, el estadístico
+\[
+T = \frac{(\overline X-\overline Y)-(\mu_1-\mu_2)}{\sqrt{\dfrac{S_1^2}{n_1}+\dfrac{S_2^2}{n_2}}}
+\]
+tiene una distribución \textbf{aproximadamente} $t$ de Student con $\nu$ grados de libertad (ver a continuación).
+\end{block}
+\end{frame}
+
+\begin{frame}{Varianzas desconocidas y distintas (cont.)}
+\begin{block}{Grados de libertad}
+\[
+\nu = \frac{\left(\dfrac{S_1^2}{n_1}+\dfrac{S_2^2}{n_2}\right)^2}{\dfrac{\left(S_1^2/n_1\right)^2}{n_1+1}+\dfrac{\left(S_2^2/n_2\right)^2}{n_2+1}} - 2,
+\]
+que, si no es un número entero, se aproxima al entero más cercano.
+\end{block}
+
+\begin{alertblock}{IC de nivel $1-\alpha$ para $\mu_1-\mu_2$ (varianzas desconocidas y distintas)}
+\[
+IC(\mu_1-\mu_2;1-\alpha) = (\overline x-\overline y) \pm t_{\nu,\,\alpha/2}\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}
+\]
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Varianzas desconocidas, sin supuesto de normalidad}
+\begin{block}{Varianzas desconocidas, sin supuesto de normalidad}
+Si no se puede suponer la normalidad de los datos, deberíamos elegir tamaños de muestra suficientemente grandes (mayores a $60$ para ambas muestras), de manera que se justifique una aproximación normal (TCL) y que las varianzas muestrales puedan considerarse estimaciones precisas de las poblacionales. En ese caso:
+\[
+IC(\mu_1-\mu_2;1-\alpha) = (\overline x-\overline y) \pm z_{\alpha/2}\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Cómo concluir a partir del IC para $\mu_1-\mu_2$}
+\begin{block}{Cualquiera sea el caso}
+Estos intervalos permiten sacar conclusiones, con un cierto nivel de confianza, acerca de las medias:
+\begin{itemize}
+\item Si ambos extremos son \textbf{positivos}: la media de la población 1 es mayor que la de la población 2.
+\item Si ambos extremos son \textbf{negativos}: la media de la población 2 es mayor.
+\item Si un extremo es negativo y el otro positivo ($0$ pertenece al intervalo): no tenemos evidencia que refute la igualdad de las medias.
+\end{itemize}
+\end{block}
+\begin{alertblock}{Observación}
+El mismo intervalo con $Z$ para varianzas conocidas puede usarse aun si las variables no son normales, siempre que los tamaños de muestra sean grandes (TCL).
+\end{alertblock}
+\end{frame}
+
 \begin{frame}{¿Cuándo usar cada caso de diferencia de medias?}
 \begin{block}{Guía de decisión}
 \begin{itemize}
 \item ¿Las dos muestras están \textbf{relacionadas} (mismos sujetos/unidades medidos dos veces)? Si sí $\Rightarrow$ \textbf{muestras apareadas}.
 \item Si son independientes: ¿se conocen $\sigma_1^2,\sigma_2^2$? Si sí $\Rightarrow$ usar $Z$.
-\item Si son independientes y $\sigma_1^2,\sigma_2^2$ desconocidas: ¿es razonable suponer $\sigma_1^2=\sigma_2^2$? Si sí $\Rightarrow$ $t$ con varianza \emph{pooled}. (Si no, existen versiones con grados de libertad de Welch, fuera del alcance de este curso.)
+\item Si son independientes y $\sigma_1^2,\sigma_2^2$ desconocidas (poblaciones normales): ¿es razonable suponer $\sigma_1^2=\sigma_2^2$? Si sí $\Rightarrow$ $t$ con varianza \emph{pooled}; si no $\Rightarrow$ $t$ aproximada con $\nu$ grados de libertad.
+\item Si no se puede suponer normalidad: muestras grandes ($n_1,n_2>60$) y $Z$ con $s_1^2,s_2^2$.
 \end{itemize}
 \end{block}
 \begin{alertblock}{Importancia práctica}
@@ -285,6 +334,34 @@ Como el intervalo no incluye al $0$, hay evidencia de que el tratamiento reduce 
 \end{example}
 \end{frame}
 
+\section{IC para la diferencia de proporciones}
+
+\begin{frame}{IC para la diferencia de proporciones $p_1-p_2$}
+\begin{block}{Contexto}
+Hay dos parámetros binomiales de interés, $p_1$ y $p_2$, que se estiman con sus estimadores puntuales $\widehat p_1$ y $\widehat p_2$, a partir de muestras independientes de tamaños $n_1$ y $n_2$. Para compararlas se construye un IC para $p_1-p_2$.
+\end{block}
+
+\begin{block}{Cantidad pivotal (muestras grandes)}
+\[
+Z = \frac{(\widehat p_1-\widehat p_2)-(p_1-p_2)}{\sqrt{\dfrac{\widehat p_1(1-\widehat p_1)}{n_1}+\dfrac{\widehat p_2(1-\widehat p_2)}{n_2}}} \overset{aprox}{\sim} N(0,1).
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{IC para la diferencia de proporciones $p_1-p_2$ (cont.)}
+\begin{block}{Deducción}
+Repitiendo los razonamientos anteriores, de $P(-z_{\alpha/2}\le Z\le z_{\alpha/2}) = 1-\alpha$, despejando $p_1-p_2$:
+\end{block}
+\begin{alertblock}{IC de nivel $1-\alpha$ para $p_1-p_2$}
+\[
+IC(p_1-p_2;1-\alpha) = (\widehat p_1-\widehat p_2) \pm z_{\alpha/2}\sqrt{\frac{\widehat p_1(1-\widehat p_1)}{n_1}+\frac{\widehat p_2(1-\widehat p_2)}{n_2}}
+\]
+\end{alertblock}
+\begin{block}{Conclusiones}
+Este intervalo permite sacar conclusiones acerca de las proporciones de manera análoga al IC para la diferencia de medias: se observa el signo de los extremos y si el $0$ pertenece o no al intervalo.
+\end{block}
+\end{frame}
+
 \section{IC para el cociente de varianzas}
 
 \begin{frame}{Cantidad pivotal: distribución $F$ de Snedecor}
@@ -341,7 +418,7 @@ Como el intervalo incluye a $1$, no hay evidencia de que las varianzas sean dist
 
 \begin{frame}{Resumen general: intervalos de confianza (Unidad 6)}
 \begin{center}
-\tiny
+\footnotesize
 \begin{tabular}{lll}
 \toprule
 \textbf{Parámetro} & \textbf{Condición} & \textbf{Intervalo} \\
@@ -349,18 +426,33 @@ Como el intervalo incluye a $1$, no hay evidencia de que las varianzas sean dist
 $\mu$ & $\sigma^2$ conocida & $\overline x \pm z_{\alpha/2}\dfrac{\sigma}{\sqrt n}$ \\[1ex]
 $\mu$ & $\sigma^2$ desconocida & $\overline x \pm t_{n-1,\alpha/2}\dfrac{s}{\sqrt n}$ \\[1ex]
 $p$ & $n$ grande & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\widehat p)}{n}}$ \\[1ex]
-$\sigma^2$ & población normal & $\left(\dfrac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}},\ \dfrac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}\right)$ \\[1.5ex]
+$p$ & $n$ grande, población finita & $\widehat p \pm z_{\alpha/2}\sqrt{\dfrac{\widehat p(1-\widehat p)}{n}}\sqrt{\dfrac{N-n}{N-1}}$ \\[1.5ex]
+$\sigma^2$ & población normal & $\left(\dfrac{(n-1)s^2}{\chi^2_{n-1,\alpha/2}},\ \dfrac{(n-1)s^2}{\chi^2_{n-1,1-\alpha/2}}\right)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}{Resumen general: intervalos de confianza (Unidad 6) (cont.)}
+\begin{center}
+\scriptsize
+\begin{tabular}{lll}
+\toprule
+\textbf{Parámetro} & \textbf{Condición} & \textbf{Intervalo} \\
+\midrule
 $\mu_1-\mu_2$ & $\sigma_1^2,\sigma_2^2$ conocidas & $(\overline x-\overline y)\pm z_{\alpha/2}\sqrt{\dfrac{\sigma_1^2}{n_1}+\dfrac{\sigma_2^2}{n_2}}$ \\[1.5ex]
-$\mu_1-\mu_2$ & varianzas desc.\ iguales (pooled) & $(\overline x-\overline y)\pm t_{n_1+n_2-2,\alpha/2}\,s_p\sqrt{\dfrac1{n_1}+\dfrac1{n_2}}$ \\[1ex]
+$\mu_1-\mu_2$ & varianzas desc.\ iguales (pooled) & $(\overline x-\overline y)\pm t_{n_1+n_2-2,\alpha/2}\,s_p\sqrt{\dfrac1{n_1}+\dfrac1{n_2}}$ \\[1.5ex]
+$\mu_1-\mu_2$ & varianzas desc.\ distintas & $(\overline x-\overline y)\pm t_{\nu,\alpha/2}\sqrt{\dfrac{s_1^2}{n_1}+\dfrac{s_2^2}{n_2}}$ \\[1.5ex]
+$\mu_1-\mu_2$ & sin normalidad, $n_1,n_2>60$ & $(\overline x-\overline y)\pm z_{\alpha/2}\sqrt{\dfrac{s_1^2}{n_1}+\dfrac{s_2^2}{n_2}}$ \\[1.5ex]
 $\mu_D$ & muestras apareadas & $\overline d \pm t_{n-1,\alpha/2}\dfrac{s_D}{\sqrt n}$ \\[1ex]
+$p_1-p_2$ & $n_1,n_2$ grandes & $(\widehat p_1-\widehat p_2)\pm z_{\alpha/2}\sqrt{\dfrac{\widehat p_1(1-\widehat p_1)}{n_1}+\dfrac{\widehat p_2(1-\widehat p_2)}{n_2}}$ \\[1.5ex]
 $\sigma_1^2/\sigma_2^2$ & dos poblaciones normales & $\left(\dfrac{s_1^2}{s_2^2 F_{n_1-1,n_2-1,\alpha/2}},\ \dfrac{s_1^2}{s_2^2 F_{n_1-1,n_2-1,1-\alpha/2}}\right)$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-
 \end{frame}
 
-\begin{frame}{Resumen general: intervalos de confianza (Unidad 6) (cont.)}
+\begin{frame}{Cierre de la unidad}
 \begin{alertblock}{Cierre de la unidad}
 Con estimación puntual (Clase 21), métodos de construcción de estimadores (Clase 22) e intervalos de confianza (Clases 23-24), tenemos las herramientas centrales de la inferencia estadística. En la Unidad 7 usaremos estas ideas para \textbf{contrastar hipótesis} sobre los parámetros poblacionales.
 \end{alertblock}
