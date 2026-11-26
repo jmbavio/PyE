@@ -39,6 +39,9 @@ En la Unidad 6 estudiamos cómo \textbf{estimar} un parámetro poblacional desco
 Muchas veces el objetivo no es estimar $\theta$, sino \textbf{decidir}, con la evidencia muestral disponible, si una afirmación (conjetura) sobre $\theta$ es sostenible o debe ser rechazada.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{De la estimación a la prueba de hipótesis (continuación)}
 \begin{exampleblock}{Ejemplos de preguntas}
 \begin{itemize}
 \item ¿El contenido medio de las bolsas de un producto es realmente $500$ g, como indica el rótulo?
@@ -85,6 +88,9 @@ H_0: \mu = 10 \quad \text{vs.} \quad H_1: \mu \neq 10.
 \]
 \end{example}
 
+\end{frame}
+
+\begin{frame}{Cómo se formulan $H_0$ y $H_1$ (continuación)}
 \begin{example}
 Un nuevo fertilizante se prueba para ver si \textbf{aumenta} el rendimiento medio $\mu$ respecto del valor histórico $\mu_0=40$ qq/ha:
 \[
@@ -111,6 +117,9 @@ Una prueba de hipótesis conduce a una de dos decisiones: \textbf{rechazar} $H_0
 \end{tabular}
 \end{table}
 
+\end{frame}
+
+\begin{frame}{La decisión y sus errores posibles (continuación)}
 \begin{block}{Error de tipo I}
 Rechazar $H_0$ cuando en realidad es verdadera. Su probabilidad se llama \textbf{nivel de significación}:
 \[
@@ -152,6 +161,9 @@ La \textbf{potencia} de una prueba de hipótesis es la probabilidad de rechazar 
 La potencia mide la capacidad de la prueba para \textbf{detectar} que $H_0$ es falsa cuando el verdadero parámetro $\theta$ se aparta de $\theta_0$ en una magnitud dada. Es función del valor real del parámetro, del tamaño muestral $n$ y del nivel $\alpha$ elegido.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Potencia de una prueba (continuación)}
 \begin{itemize}
 \item Cuanto más se aleja el valor real de $\theta_0$, mayor es la potencia (es "más fácil" detectar diferencias grandes).
 \item A mayor $n$, mayor potencia para una misma diferencia a detectar.
@@ -174,6 +186,9 @@ El \textbf{estadístico de prueba} (o de contraste) es una función de la muestr
 Resume la información muestral relevante para el parámetro en cuestión y permite comparar lo observado con lo que se esperaría si $H_0$ fuera cierta. Valores del estadístico ``poco compatibles'' con $H_0$ llevan a rechazarla.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Estadístico de prueba (continuación)}
 \begin{example}
 Para probar $H_0:\mu=\mu_0$ con varianza poblacional conocida $\sigma^2$, el estadístico de prueba es
 \[
@@ -251,6 +266,9 @@ El \textbf{valor p} es la probabilidad, calculada bajo el supuesto de que $H_0$ 
 \]
 \end{block}
 
+\end{frame}
+
+\begin{frame}{El valor p (p-value) (continuación)}
 \begin{alertblock}{Interpretación}
 El valor p \textbf{no} es la probabilidad de que $H_0$ sea verdadera. Es una medida de cuán compatible es la evidencia muestral con $H_0$: cuanto menor el valor p, mayor la evidencia \emph{en contra} de $H_0$.
 \end{alertblock}
@@ -295,6 +313,9 @@ Para una prueba bilateral $H_0:\theta=\theta_0$ vs. $H_1:\theta\neq\theta_0$ con
 Si un intervalo de confianza del $95\%$ para $\mu$ resulta $IC = (48.3;\,51.7)$ y se desea probar $H_0:\mu=50$ vs. $H_1:\mu\neq50$ con $\alpha=0.05$: como $50 \in (48.3;51.7)$, \textbf{no se rechaza} $H_0$.
 \end{example}
 
+\end{frame}
+
+\begin{frame}{Prueba de hipótesis vs. intervalo de confianza (continuación)}
 \begin{alertblock}{Utilidad práctica}
 Un único intervalo de confianza permite decidir simultáneamente sobre \emph{cualquier} valor hipotético $\theta_0$ bilateral, mientras que cada prueba de hipótesis evalúa un único valor $\theta_0$ a la vez. Esta equivalencia es válida para pruebas bilaterales; para unilaterales se usa la correspondencia con intervalos de confianza de una cola.
 \end{alertblock}

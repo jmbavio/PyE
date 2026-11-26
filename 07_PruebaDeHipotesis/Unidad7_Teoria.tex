@@ -158,11 +158,11 @@ La \textbf{potencia} de una prueba de hipótesis, para un valor particular $\the
 La potencia mide, entonces, la capacidad de la prueba para \emph{detectar} que $H_0$ es falsa, cuando el verdadero parámetro se aparta de $\theta_0$ en una magnitud dada. Como función de $\theta_1$ (manteniendo fijos $n$ y $\alpha$), a la función $\theta_1\mapsto \text{Potencia}(\theta_1)$ se la llama \textbf{función de potencia} de la prueba.
 
 Ilustremos el cálculo de la potencia en el caso más simple: la prueba $Z$ para una media con varianza conocida, $H_0:\mu=\mu_0$ vs. $H_1:\mu>\mu_0$, con región crítica $\overline{X}>\mu_0+z_\alpha\,\sigma/\sqrt n$ (que es equivalente a $Z>z_\alpha$). Si el verdadero valor de la media es $\mu_1>\mu_0$, entonces $\overline{X}\sim N(\mu_1,\sigma^2/n)$, y
-\[
-\text{Potencia}(\mu_1) = P\!\left(\overline{X}>\mu_0+z_\alpha\frac{\sigma}{\sqrt n}\ \middle|\ \mu=\mu_1\right)
-= P\!\left(\frac{\overline{X}-\mu_1}{\sigma/\sqrt n} > z_\alpha-\frac{\mu_1-\mu_0}{\sigma/\sqrt n}\right)
-= P\!\left(Z > z_\alpha - \frac{(\mu_1-\mu_0)\sqrt n}{\sigma}\right),
-\]
+\begin{align*}
+\text{Potencia}(\mu_1) &= P\!\left(\overline{X}>\mu_0+z_\alpha\frac{\sigma}{\sqrt n}\ \middle|\ \mu=\mu_1\right)
+= P\!\left(\frac{\overline{X}-\mu_1}{\sigma/\sqrt n} > z_\alpha-\frac{\mu_1-\mu_0}{\sigma/\sqrt n}\right)\\
+&= P\!\left(Z > z_\alpha - \frac{(\mu_1-\mu_0)\sqrt n}{\sigma}\right),
+\end{align*}
 donde ahora $Z\sim N(0,1)$. Esta expresión permite leer directamente los tres factores que determinan la potencia:
 
 \begin{itemize}[nosep]
@@ -359,9 +359,9 @@ La utilidad práctica de esta dualidad es considerable: un único intervalo de c
 \end{observacion}
 
 \newpage
-\section{Pruebas para una media y una varianza poblacional}
+\section{Pruebas para una media, una varianza y una proporción poblacional}
 
-En esta sección aplicamos el marco general desarrollado a los dos parámetros más habituales de una única población: la media $\mu$ y la varianza $\sigma^2$. Como se anticipó, lo único que cambia de una prueba a otra es el estadístico utilizado, su distribución bajo $H_0$ y, en consecuencia, la forma de la región crítica; la lógica de decisión (pasos 1, 2, 5) permanece invariable.
+En esta sección aplicamos el marco general desarrollado a los parámetros más habituales de una única población: la media $\mu$, la varianza $\sigma^2$ y la proporción $p$. Como se anticipó, lo único que cambia de una prueba a otra es el estadístico utilizado, su distribución bajo $H_0$ y, en consecuencia, la forma de la región crítica; la lógica de decisión (pasos 1, 2, 5) permanece invariable.
 
 \subsection{Prueba para la media con varianza conocida (prueba Z)}
 
@@ -602,16 +602,93 @@ Un laboratorio requiere que la varianza de las mediciones de un instrumento sea 
 A diferencia de las pruebas $Z$ y $T$ para la media (que, por el TCL, son razonablemente robustas ante apartamientos moderados de la normalidad cuando $n$ es grande), la prueba $\chi^2$ para la varianza es \textbf{muy sensible} al supuesto de normalidad poblacional: si la población tiene curtosis distinta de la normal, la distribución exacta de $(n-1)S^2/\sigma_0^2$ se aparta considerablemente de $\chi^2_{n-1}$, incluso para $n$ grande. Por esta razón, esta prueba debe usarse con cautela cuando hay evidencia de que la población no es aproximadamente normal.
 \end{observacion}
 
+\subsection{Prueba para una proporción}
+
+Sea $X_1,\dots,X_n$ una muestra aleatoria de una población Bernoulli$(p)$, donde $X_i=1$ si el $i$-ésimo individuo presenta la característica de interés (``éxito'') y $X_i=0$ en caso contrario. El número total de éxitos $X=\sum_{i=1}^n X_i$ tiene distribución $B(n,p)$, y el estimador natural de $p$ es la \textbf{proporción muestral}
+\[
+\hat p=\frac{X}{n}=\overline X, \qquad E(\hat p)=p, \qquad \text{Var}(\hat p)=\frac{p(1-p)}{n}.
+\]
+Interesa probar
+\[
+H_0:p=p_0.
+\]
+
+\begin{teorema}[Estadístico de prueba para muestras grandes]
+Bajo $H_0$, el estadístico
+\[
+Z=\frac{\hat p-p_0}{\sqrt{\dfrac{p_0(1-p_0)}{n}}}
+\]
+tiene distribución aproximadamente $N(0,1)$ cuando $n$ es grande.
+\end{teorema}
+
+\begin{proof}
+Como $\hat p=\overline X$ es la media muestral de variables independientes con media $p$ y varianza $p(1-p)$ finita, el Teorema Central del Límite asegura que $(\hat p-p)/\sqrt{p(1-p)/n}$ converge en distribución a una $N(0,1)$. Bajo $H_0$ es $p=p_0$, de modo que tanto el centro como el desvío de $\hat p$ quedan completamente determinados por $p_0$ y el estadístico $Z$ no involucra ningún parámetro desconocido.
+\end{proof}
+
+Las regiones críticas son las mismas que en la prueba $Z$ para una media: $|Z|>z_{\alpha/2}$ para $H_1:p\neq p_0$, $Z>z_\alpha$ para $H_1:p>p_0$ y $Z<-z_\alpha$ para $H_1:p<p_0$.
+
+\begin{observacion}[Condición de aplicación y prueba exacta]
+La aproximación normal es razonable cuando $np_0\ge5$ y $n(1-p_0)\ge5$; nótese que la condición se verifica con $p_0$, el valor bajo $H_0$, y no con $\hat p$. Cuando $n$ es chico, la prueba se realiza directamente con la distribución exacta $X\sim B(n,p_0)$: por ejemplo, para $H_1:p>p_0$ el valor p es $P(X\ge x_{\text{obs}})$ calculado con la binomial.
+\end{observacion}
+
+\begin{observacion}[Por qué $p_0$ y no $\hat p$ en el denominador]
+A diferencia de lo que ocurre con la media de una población normal, aquí la varianza de $\hat p$ es una función del propio parámetro que se está probando. En la \textbf{prueba}, el estadístico se calcula suponiendo $H_0$ verdadera, por lo que el desvío de $\hat p$ es exactamente $\sqrt{p_0(1-p_0)/n}$ y no hace falta estimarlo. En el \textbf{intervalo de confianza} de la Unidad 6, en cambio, no existe un valor hipotético de referencia y el desvío se estima con $\sqrt{\hat p(1-\hat p)/n}$:
+\[
+\hat p\pm z_{\alpha/2}\sqrt{\frac{\hat p(1-\hat p)}{n}}.
+\]
+Por esta razón la dualidad entre prueba e intervalo de la Sección~\ref{sec:dualidad} se cumple aquí solo de manera aproximada, y en casos límite ambos procedimientos pueden conducir a decisiones distintas.
+\end{observacion}
+
+\begin{ejemplo}[Prueba unilateral]
+Un proveedor garantiza que a lo sumo el $5\%$ de las piezas que entrega son defectuosas. En una muestra de $n=200$ piezas se encontraron $16$ defectuosas. Con $\alpha=0.05$, ¿hay evidencia de que la proporción de defectuosas supera lo garantizado?
+
+\textbf{1. Hipótesis:} $H_0:p\le0.05$ vs. $H_1:p>0.05$ (se trabaja con $H_0:p=0.05$).
+
+\textbf{2. Condición:} $np_0=10\ge5$ y $n(1-p_0)=190\ge5$, de modo que la aproximación normal es adecuada.
+
+\textbf{3. Región crítica:} $Z>z_{0.05}=1.645$.
+
+\textbf{4. Cálculo:} $\hat p=16/200=0.08$ y
+\[
+z=\frac{0.08-0.05}{\sqrt{0.05\times0.95/200}}=\frac{0.03}{0.01541}=1.95.
+\]
+
+\textbf{5. Decisión:} $1.95>1.645\Rightarrow$ se rechaza $H_0$.
+
+\textbf{6. Valor p:} $p=P(Z>1.95)=0.026<0.05$, consistente con el rechazo. Nótese que con $\alpha=0.01$ ($z_{0.01}=2.326$) la decisión habría sido no rechazar.
+
+\textbf{7. Conclusión:} al $5\%$ de significación, hay evidencia de que la proporción de piezas defectuosas supera el $5\%$ garantizado por el proveedor.
+\end{ejemplo}
+
+\begin{ejemplo}[Prueba bilateral]
+Un informe sostiene que el $40\%$ de los estudiantes de una universidad usa transporte público para llegar a clase. En una encuesta a $n=150$ estudiantes elegidos al azar, $51$ declararon usarlo. Con $\alpha=0.05$, ¿hay evidencia de que la proporción difiere del $40\%$?
+
+\textbf{Hipótesis:} $H_0:p=0.40$ vs. $H_1:p\neq0.40$. Condición: $np_0=60$ y $n(1-p_0)=90$, ambos $\ge5$.
+
+\textbf{Región crítica:} $|Z|>z_{0.025}=1.96$.
+
+\textbf{Cálculo:} $\hat p=51/150=0.34$ y
+\[
+z=\frac{0.34-0.40}{\sqrt{0.40\times0.60/150}}=\frac{-0.06}{0.04}=-1.50.
+\]
+
+\textbf{Decisión:} $|-1.50|=1.50<1.96\Rightarrow$ no se rechaza $H_0$. El valor p es $2\,P(Z<-1.50)=0.134>0.05$.
+
+\textbf{Conclusión:} al $5\%$, los datos no contradicen la afirmación del informe.
+\end{ejemplo}
+
 \newpage
 \section{Pruebas para dos muestras}
 
-Es habitual comparar dos poblaciones a través de sus medias o de sus varianzas: dos procesos de producción, dos proveedores, un tratamiento frente a un control, mediciones antes y después de una intervención, etc. Antes de elegir el procedimiento adecuado, es imprescindible clasificar correctamente el diseño del estudio en una de las siguientes categorías:
+Es habitual comparar dos poblaciones a través de sus medias, de sus varianzas o de sus proporciones: dos procesos de producción, dos proveedores, un tratamiento frente a un control, mediciones antes y después de una intervención, etc. Antes de elegir el procedimiento adecuado, es imprescindible clasificar correctamente el diseño del estudio en una de las siguientes categorías:
 
 \begin{itemize}[nosep]
 \item \textbf{Muestras independientes} con varianzas poblacionales \textbf{conocidas}.
 \item \textbf{Muestras independientes} con varianzas poblacionales \textbf{desconocidas pero supuestas iguales} (se estima una varianza combinada o \emph{pooled}).
+\item \textbf{Muestras independientes} con varianzas poblacionales \textbf{desconocidas y distintas} (prueba de Welch).
 \item \textbf{Muestras apareadas} (o dependientes): cada observación de una muestra está naturalmente asociada a una observación de la otra (mismo individuo medido antes y después, mismo lote medido con dos instrumentos distintos, gemelos, etc.).
 \item Comparación de las \textbf{varianzas} de dos poblaciones (prueba $F$).
+\item Comparación de dos \textbf{proporciones} poblacionales (muestras grandes).
 \end{itemize}
 
 \begin{observacion}
@@ -735,19 +812,63 @@ t=\frac{(436-428)-0}{10.17\sqrt{\tfrac1{12}+\tfrac1{10}}}=\frac{8}{10.17\times0.
 \textbf{7. Conclusión:} con un $5\%$ de significación, hay evidencia de que el proveedor A entrega cables con mayor resistencia media.
 \end{ejemplo}
 
-\begin{observacion}[Criterio para decidir entre varianzas iguales o distintas; mención de Welch]
-Cuando las varianzas poblacionales son desconocidas, la validez del estadístico $t$ agrupado depende críticamente del supuesto $\sigma_1^2=\sigma_2^2$. Como criterio práctico, este supuesto puede evaluarse formalmente mediante la prueba $F$ de igualdad de varianzas que se desarrolla en la subsección siguiente; una regla informal frecuentemente usada es que si el cociente entre la mayor y la menor varianza muestral no supera aproximadamente $3$ ó $4$ (y los tamaños muestrales son similares), el estadístico agrupado suele comportarse razonablemente bien incluso ante apartamientos moderados del supuesto de igualdad.
-
-Cuando las varianzas poblacionales son desconocidas y \textbf{no} resulta razonable suponerlas iguales, el estadístico $t$ agrupado deja de tener la distribución $t_{n_1+n_2-2}$ exacta y puede producir un nivel de significación real distinto del nominal, especialmente si los tamaños de muestra $n_1$ y $n_2$ son muy distintos. Para esa situación existe una extensión clásica, la \textbf{aproximación de Welch--Satterthwaite}, que utiliza el estadístico
-\[
-T'=\frac{(\overline X-\overline Y)-\delta_0}{\sqrt{S_1^2/n_1+S_2^2/n_2}},
-\]
-cuya distribución bajo $H_0$ se aproxima por una $t$ con grados de libertad \emph{ajustados} (no enteros, en general) dados por la fórmula de Satterthwaite
-\[
-\nu \approx \frac{\left(\dfrac{S_1^2}{n_1}+\dfrac{S_2^2}{n_2}\right)^{2}}{\dfrac{(S_1^2/n_1)^2}{n_1-1}+\dfrac{(S_2^2/n_2)^2}{n_2-1}}.
-\]
-El desarrollo completo de esta corrección excede el alcance de este curso; en esta materia se trabaja siempre bajo el supuesto de varianzas desconocidas pero \textbf{iguales} cuando corresponde usar una prueba $t$ para dos muestras independientes, contrastando previamente ese supuesto con la prueba $F$ cuando resulte pertinente.
+\begin{observacion}[Criterio para decidir entre varianzas iguales o distintas]
+Cuando las varianzas poblacionales son desconocidas, la validez del estadístico $t$ agrupado depende críticamente del supuesto $\sigma_1^2=\sigma_2^2$. Como criterio práctico, este supuesto puede evaluarse formalmente mediante la prueba $F$ de igualdad de varianzas que se desarrolla más adelante en esta sección; una regla informal frecuentemente usada es que si el cociente entre la mayor y la menor varianza muestral no supera aproximadamente $3$ ó $4$ (y los tamaños muestrales son similares), el estadístico agrupado suele comportarse razonablemente bien incluso ante apartamientos moderados del supuesto de igualdad. Cuando el supuesto no es sostenible, se utiliza la prueba de Welch de la subsección siguiente.
 \end{observacion}
+
+\subsection{Diferencia de medias: varianzas desconocidas y distintas (prueba de Welch)}
+
+Cuando las varianzas poblacionales son desconocidas y \textbf{no} resulta razonable suponerlas iguales, carece de sentido combinarlas en una única $S_p^2$: el estadístico $t$ agrupado deja de tener distribución $t_{n_1+n_2-2}$ y puede producir un nivel de significación real distinto del nominal, especialmente si los tamaños de muestra $n_1$ y $n_2$ son muy distintos. La idea natural es estimar cada varianza por separado, reemplazando $\sigma_1^2$ y $\sigma_2^2$ por $S_1^2$ y $S_2^2$ en el estadístico $Z$ de varianzas conocidas:
+\[
+T'=\frac{(\overline X-\overline Y)-\delta_0}{\sqrt{\dfrac{S_1^2}{n_1}+\dfrac{S_2^2}{n_2}}}.
+\]
+
+El problema de encontrar la distribución exacta de $T'$ bajo $H_0$ se conoce como \textbf{problema de Behrens--Fisher}: dicha distribución depende del cociente desconocido $\sigma_1^2/\sigma_2^2$ y no es una $t$ de Student. Sin embargo, admite una aproximación muy precisa.
+
+\begin{teorema}[Aproximación de Welch--Satterthwaite]
+Sean $X_1,\dots,X_{n_1}$ e $Y_1,\dots,Y_{n_2}$ muestras independientes de poblaciones $N(\mu_1,\sigma_1^2)$ y $N(\mu_2,\sigma_2^2)$, respectivamente. Bajo $H_0:\mu_1-\mu_2=\delta_0$, el estadístico $T'$ tiene distribución aproximadamente $t_\nu$, con grados de libertad
+\[
+\nu=\frac{\left(\dfrac{S_1^2}{n_1}+\dfrac{S_2^2}{n_2}\right)^{2}}{\dfrac{(S_1^2/n_1)^2}{n_1-1}+\dfrac{(S_2^2/n_2)^2}{n_2-1}}.
+\]
+\end{teorema}
+
+\begin{proof}[Idea de la justificación]
+Si se escribe $V=S_1^2/n_1+S_2^2/n_2$, el numerador de $T'$ es normal e independiente de $V$, pero $V$ no es exactamente un múltiplo de una $\chi^2$. Satterthwaite propuso aproximar la distribución de $\nu V/E(V)$ por una $\chi^2_\nu$ elegida de modo que coincidan los dos primeros momentos. Usando que $(n_k-1)S_k^2/\sigma_k^2\sim\chi^2_{n_k-1}$, y por lo tanto $\text{Var}(S_k^2)=2\sigma_k^4/(n_k-1)$, la igualación de momentos da
+\[
+\nu=\frac{2\,[E(V)]^2}{\text{Var}(V)}=\frac{\left(\dfrac{\sigma_1^2}{n_1}+\dfrac{\sigma_2^2}{n_2}\right)^{2}}{\dfrac{(\sigma_1^2/n_1)^2}{n_1-1}+\dfrac{(\sigma_2^2/n_2)^2}{n_2-1}},
+\]
+y reemplazando las varianzas desconocidas por sus estimaciones se obtiene la fórmula del teorema.
+\end{proof}
+
+\begin{observacion}[Uso práctico]
+En general $\nu$ no es un número entero; para utilizar las tablas usuales se \textbf{redondea hacia abajo}, lo cual es conservador (produce un valor crítico algo mayor). Puede verificarse que siempre $\min(n_1,n_2)-1\le\nu\le n_1+n_2-2$. Las regiones críticas son las habituales, usando $t_{\nu,\gamma}$ en lugar de $z_\gamma$. La prueba de Welch pierde muy poca potencia cuando las varianzas son efectivamente iguales y protege contra errores cuando no lo son; por eso muchos programas estadísticos (por ejemplo, la función \texttt{t.test} de R) la utilizan por defecto.
+\end{observacion}
+
+\begin{ejemplo}
+Se compara el rendimiento (en \%) de dos métodos de extracción. Método 1: $n_1=12$, $\overline x=85.4$, $s_1^2=4.2$. Método 2: $n_2=15$, $\overline y=81.9$, $s_2^2=26.5$. Con $\alpha=0.05$, ¿difieren los rendimientos medios de ambos métodos? (Se suponen poblaciones normales.)
+
+\textbf{0. ¿Varianzas iguales?} Con la prueba $F$ bilateral (mayor varianza en el numerador): $F=26.5/4.2=6.31>F_{14,11,\,0.025}=3.36$, de modo que se rechaza $\sigma_1^2=\sigma_2^2$ y corresponde usar la prueba de Welch.
+
+\textbf{1. Hipótesis:} $H_0:\mu_1-\mu_2=0$ vs. $H_1:\mu_1-\mu_2\neq0$.
+
+\textbf{2. Grados de libertad:} $s_1^2/n_1=0.350$ y $s_2^2/n_2=1.767$, de modo que
+\[
+\nu=\frac{(0.350+1.767)^2}{\dfrac{0.350^2}{11}+\dfrac{1.767^2}{14}}=\frac{4.480}{0.0111+0.2229}=19.14 \ \Rightarrow\ \nu=19.
+\]
+
+\textbf{3. Región crítica:} $|T'|>t_{19,\,0.025}=2.093$.
+
+\textbf{4. Cálculo:}
+\[
+t'=\frac{(85.4-81.9)-0}{\sqrt{0.350+1.767}}=\frac{3.5}{1.455}=2.41.
+\]
+
+\textbf{5. Decisión:} $2.41>2.093\Rightarrow$ se rechaza $H_0$.
+
+\textbf{6. Valor p:} de tablas de $t_{19}$, $t_{19,0.025}=2.093$ y $t_{19,0.01}=2.539$; como $2.093<2.41<2.539$, el valor p bilateral está entre $0.02$ y $0.05$ (aproximadamente $p\approx0.026$).
+
+\textbf{7. Conclusión:} al $5\%$ de significación, hay evidencia de que los rendimientos medios de ambos métodos difieren. Un intervalo de confianza aproximado del $95\%$ para $\mu_1-\mu_2$ es $3.5\pm2.093\times1.455=(0.45;\,6.55)$, que no contiene al $0$.
+\end{ejemplo}
 
 \subsection{Muestras apareadas}
 
@@ -903,6 +1024,65 @@ F=\frac{0.048}{0.019}=2.53.
 \textbf{6. Conclusión:} al nivel $10\%$, no hay evidencia suficiente de que las variabilidades de ambas líneas difieran, por lo cual, de ser necesario, sería razonable aplicar el estadístico $t$ agrupado (pooled) para comparar las medias de ambas líneas.
 \end{ejemplo}
 
+\subsection{Diferencia de proporciones}
+
+Sean $X\sim B(n_1,p_1)$ e $Y\sim B(n_2,p_2)$ los números de éxitos en dos muestras \textbf{independientes}, con proporciones muestrales $\hat p_1=X/n_1$ y $\hat p_2=Y/n_2$. Interesa probar
+\[
+H_0:p_1=p_2 \qquad (\text{es decir, } p_1-p_2=0).
+\]
+Por el Teorema Central del Límite, para $n_1$ y $n_2$ grandes,
+\[
+\hat p_1-\hat p_2\ \approx\ N\!\left(p_1-p_2,\ \frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}\right).
+\]
+Bajo $H_0$ ambas poblaciones comparten una misma proporción $p$ (desconocida), y la varianza de $\hat p_1-\hat p_2$ es $p(1-p)\left(\frac{1}{n_1}+\frac{1}{n_2}\right)$. El estimador natural de esa proporción común utiliza \textbf{todas} las observaciones:
+\[
+\hat p=\frac{X+Y}{n_1+n_2}=\frac{n_1\hat p_1+n_2\hat p_2}{n_1+n_2},
+\]
+llamado \textbf{proporción combinada} (\emph{pooled}), en analogía con la varianza combinada $S_p^2$.
+
+\begin{teorema}[Estadístico de prueba para muestras grandes]
+Bajo $H_0:p_1=p_2$, el estadístico
+\[
+Z=\frac{\hat p_1-\hat p_2}{\sqrt{\hat p(1-\hat p)\left(\dfrac{1}{n_1}+\dfrac{1}{n_2}\right)}}
+\]
+tiene distribución aproximadamente $N(0,1)$ cuando $n_1$ y $n_2$ son grandes.
+\end{teorema}
+
+Las regiones críticas son $|Z|>z_{\alpha/2}$, $Z>z_\alpha$ o $Z<-z_\alpha$ según $H_1$. Como condición de aplicación se requiere que $n_1\hat p$, $n_1(1-\hat p)$, $n_2\hat p$ y $n_2(1-\hat p)$ sean todos $\ge5$.
+
+\begin{observacion}[Relación con el intervalo de confianza]
+Para construir un intervalo de confianza para $p_1-p_2$ no se supone $p_1=p_2$, por lo que cada varianza se estima por separado:
+\[
+(\hat p_1-\hat p_2)\pm z_{\alpha/2}\sqrt{\frac{\hat p_1(1-\hat p_1)}{n_1}+\frac{\hat p_2(1-\hat p_2)}{n_2}}.
+\]
+Igual que en el caso de una proporción, la dualidad prueba–intervalo vale solo de manera aproximada.
+\end{observacion}
+
+\begin{ejemplo}
+Con el proceso de fabricación actual se inspeccionaron $n_1=300$ piezas y se hallaron $24$ defectuosas; con un proceso nuevo se inspeccionaron $n_2=250$ piezas y se hallaron $10$ defectuosas. Con $\alpha=0.05$, ¿hay evidencia de que el proceso nuevo reduce la proporción de piezas defectuosas?
+
+\textbf{1. Hipótesis:} $H_0:p_1-p_2\le0$ vs. $H_1:p_1-p_2>0$ (se trabaja con $H_0:p_1=p_2$).
+
+\textbf{2. Proporciones:} $\hat p_1=24/300=0.080$, $\hat p_2=10/250=0.040$ y $\hat p=34/550=0.0618$.
+
+\textbf{3. Condición:} la menor de las cuatro cantidades es $n_2\hat p=250\times0.0618=15.5\ge5$.
+
+\textbf{4. Región crítica:} $Z>z_{0.05}=1.645$.
+
+\textbf{5. Cálculo:}
+\[
+z=\frac{0.080-0.040}{\sqrt{0.0618\times0.9382\left(\tfrac{1}{300}+\tfrac{1}{250}\right)}}=\frac{0.040}{\sqrt{0.0580\times0.00733}}=\frac{0.040}{0.0206}=1.94.
+\]
+
+\textbf{6. Decisión:} $1.94>1.645\Rightarrow$ se rechaza $H_0$. El valor p es $P(Z>1.94)=0.026$.
+
+\textbf{7. Conclusión:} al $5\%$ de significación, hay evidencia de que el proceso nuevo produce una menor proporción de piezas defectuosas.
+\end{ejemplo}
+
+\begin{observacion}[Relación con la prueba $\chi^2$ de homogeneidad]
+Los datos del ejemplo forman una tabla de contingencia $2\times2$ (proceso $\times$ condición de la pieza). Puede verificarse algebraicamente que, para la alternativa \textbf{bilateral} $H_1:p_1\neq p_2$, la prueba $Z$ con proporción combinada es \textbf{equivalente} a la prueba $\chi^2$ de homogeneidad de la Sección~4 aplicada a esa tabla: se cumple $Z^2=\chi^2$, y como $z_{\alpha/2}^2=\chi^2_{1,\alpha}$, ambas pruebas toman siempre la misma decisión. La prueba $Z$ tiene la ventaja de admitir alternativas \textbf{unilaterales}, como en el ejemplo; la prueba $\chi^2$, la de generalizarse a más de dos poblaciones o más de dos categorías.
+\end{observacion}
+
 \newpage
 \section{Pruebas chi-cuadrado: bondad de ajuste, independencia y homogeneidad}
 
@@ -955,8 +1135,9 @@ Los grados de libertad de referencia son $k-1$ (y no $k$) porque las frecuencias
 \begin{observacion}[Condición de aplicación]
 La aproximación de la distribución exacta (discreta) del estadístico $\chi^2$ de Pearson por la distribución continua $\chi^2_{k-1-m}$ es adecuada únicamente cuando las frecuencias esperadas no son demasiado pequeñas. El criterio usual —muchas veces llamado \textbf{condición de Cochran}— exige
 \[
-E_i\ge5 \quad \text{para todas las categorías (o, en versiones más flexibles, para al menos el $80\%$ de ellas, sin ninguna celda con $E_i<1$).}
+E_i\ge5 \quad \text{para todas las categorías}
 \]
+(o, en versiones más flexibles, para al menos el $80\%$ de ellas, sin ninguna celda con $E_i<1$).
 Si alguna $E_i$ no cumple esta condición, se recomienda \textbf{agrupar} categorías contiguas (o categorías con sentido similar) hasta satisfacerla, teniendo en cuenta que esto reduce en consecuencia el número efectivo de categorías $k$ y, por lo tanto, los grados de libertad de la prueba.
 \end{observacion}
 

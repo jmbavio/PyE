@@ -33,14 +33,19 @@
 \section{Introducción}
 
 \begin{frame}{Comparación de dos poblaciones}
-Es habitual comparar dos poblaciones a través de sus medias o sus varianzas: dos procesos de producción, dos proveedores, un tratamiento vs. un control, mediciones antes y después de una intervención, etc.
+Es habitual comparar dos poblaciones a través de sus medias, sus varianzas o sus proporciones: dos procesos de producción, dos proveedores, un tratamiento vs. un control, mediciones antes y después de una intervención, etc.
 
+\end{frame}
+
+\begin{frame}{Comparación de dos poblaciones (continuación)}
 \begin{block}{Situaciones a distinguir}
 \begin{itemize}
 \item \textbf{Muestras independientes} con varianzas poblacionales \textbf{conocidas}.
 \item \textbf{Muestras independientes} con varianzas poblacionales \textbf{desconocidas pero iguales} (se estima una varianza combinada, \emph{pooled}).
+\item \textbf{Muestras independientes} con varianzas poblacionales \textbf{desconocidas y distintas} (prueba de Welch).
 \item \textbf{Muestras apareadas} (pareadas o dependientes): cada observación de una muestra está naturalmente asociada a una de la otra (mismo individuo antes/después, mismo lote medido por dos métodos, etc.).
 \item Comparación de \textbf{varianzas} de dos poblaciones (prueba $F$).
+\item Comparación de dos \textbf{proporciones} (muestras grandes).
 \end{itemize}
 \end{block}
 \end{frame}
@@ -99,6 +104,11 @@ Dos máquinas envasadoras de un mismo producto tienen desviaciones estándar his
 
 \textbf{3. Región crítica:} $|Z|>z_{0.025}=1.96$.
 
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: comparación de dos máquinas (continuación)}
+\begin{example}
 \textbf{4. Cálculo:}
 \[
 Z=\frac{(252-249)-0}{\sqrt{25/40+16/35}}=\frac{3}{\sqrt{0.625+0.457}}=\frac{3}{\sqrt{1.082}}=\frac{3}{1.040}=2.88.
@@ -159,6 +169,11 @@ Se compara la resistencia a la rotura (en kg) de cables de dos proveedores, supo
 S_p^2=\frac{11(98)+9(110)}{20}=\frac{1078+990}{20}=\frac{2068}{20}=103.4, \quad S_p=10.17.
 \]
 
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: comparación de dos proveedores (continuación)}
+\begin{example}
 \textbf{3. Región crítica} (gl $=20$): $T>t_{20,\,0.05}=1.725$.
 
 \textbf{4. Cálculo:}
@@ -172,12 +187,83 @@ t=\frac{(436-428)-0}{10.17\sqrt{\tfrac{1}{12}+\tfrac{1}{10}}}=\frac{8}{10.17\tim
 \end{example}
 \end{frame}
 
-\begin{frame}{Observación: varianzas desconocidas y distintas}
+\section{Diferencia de medias: varianzas desconocidas y distintas}
+
+\begin{frame}{Varianzas desconocidas y distintas: el problema}
 \begin{alertblock}{Cuando no puede suponerse $\sigma_1^2=\sigma_2^2$}
-Si las varianzas poblacionales son desconocidas y \textbf{no} puede suponerse que sean iguales, el estadístico $t$ agrupado no es válido. Existe una extensión (aproximación de Welch–Satterthwaite) que utiliza un estadístico $t$ con grados de libertad ajustados, distinta de la fórmula vista. Su desarrollo excede el alcance de esta materia; aquí siempre trabajaremos bajo el supuesto de \textbf{varianzas iguales} cuando estas son desconocidas.
+Si las varianzas poblacionales son desconocidas y \textbf{no} puede suponerse que sean iguales, no tiene sentido combinarlas en una única $S_p^2$: el estadístico $t$ agrupado deja de tener distribución $t_{n_1+n_2-2}$ y el nivel de significación real puede apartarse bastante del nominal, sobre todo si $n_1$ y $n_2$ son muy distintos.
 \end{alertblock}
+
+\begin{block}{Idea natural}
+Estimar cada varianza por separado y reemplazar $\sigma_1^2,\sigma_2^2$ por $S_1^2,S_2^2$ en el estadístico $Z$ de varianzas conocidas:
+\[
+T'=\frac{(\overline{X}-\overline{Y})-\delta_0}{\sqrt{\dfrac{S_1^2}{n_1}+\dfrac{S_2^2}{n_2}}}.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Prueba de Welch (aproximación de Welch--Satterthwaite)}
+El estadístico $T'$ \textbf{no} tiene distribución $t$ exacta bajo $H_0$ (problema de Behrens--Fisher), pero se aproxima muy bien por una $t$ de Student con grados de libertad \emph{ajustados}:
+
+\begin{block}{Estadístico y grados de libertad}
+\[
+T'=\frac{(\overline{X}-\overline{Y})-\delta_0}{\sqrt{\dfrac{S_1^2}{n_1}+\dfrac{S_2^2}{n_2}}} \ \overset{H_0}{\approx}\ t_{\nu},
+\qquad
+\nu=\frac{\left(\dfrac{S_1^2}{n_1}+\dfrac{S_2^2}{n_2}\right)^{2}}{\dfrac{(S_1^2/n_1)^2}{n_1-1}+\dfrac{(S_2^2/n_2)^2}{n_2-1}}.
+\]
+\end{block}
+
+\begin{itemize}
+\item En general $\nu$ no es entero: para usar la tabla se \textbf{redondea hacia abajo} (criterio conservador).
+\item Siempre se cumple $\min(n_1,n_2)-1\le\nu\le n_1+n_2-2$.
+\item Regiones críticas análogas, usando $t_{\nu,\,\gamma}$ en lugar de $z_\gamma$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{¿Agrupada (\emph{pooled}) o Welch?}
 \begin{block}{Cómo decidir si es razonable suponer $\sigma_1^2=\sigma_2^2$}
-Este supuesto puede evaluarse formalmente con la prueba $F$ de igualdad de varianzas, que se presenta más adelante en esta misma clase.
+\begin{itemize}
+\item Formalmente, con la prueba $F$ de igualdad de varianzas que se presenta más adelante en esta misma clase.
+\item Regla informal: si el cociente entre la mayor y la menor varianza muestral no supera aproximadamente $3$ ó $4$ y los tamaños muestrales son similares, la prueba agrupada suele comportarse bien.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Práctica habitual}
+La prueba de Welch pierde muy poca potencia cuando las varianzas son efectivamente iguales y protege contra el error cuando no lo son; por eso muchos programas estadísticos (por ejemplo, \texttt{t.test} de R) la usan \textbf{por defecto}.
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo: comparación de dos métodos con varianzas distintas}
+\begin{example}
+Se compara el rendimiento (en \%) de dos métodos de extracción. Método 1: $n_1=12$, $\overline{x}=85.4$, $s_1^2=4.2$. Método 2: $n_2=15$, $\overline{y}=81.9$, $s_2^2=26.5$. Con $\alpha=0.05$, ¿difieren los rendimientos medios?
+
+\textbf{0. ¿Varianzas iguales?} $F=26.5/4.2=6.31>F_{14,\,11,\,0.025}=3.36$: se rechaza $\sigma_1^2=\sigma_2^2$ $\Rightarrow$ corresponde usar Welch.
+
+\textbf{1. Hipótesis:} $H_0:\mu_1-\mu_2=0$ vs. $H_1:\mu_1-\mu_2\neq0$.
+
+\textbf{2. Grados de libertad:} $\dfrac{s_1^2}{n_1}=0.350$, \ $\dfrac{s_2^2}{n_2}=1.767$,
+\[
+\nu=\frac{(0.350+1.767)^2}{\dfrac{0.350^2}{11}+\dfrac{1.767^2}{14}}=\frac{4.480}{0.0111+0.2229}=19.14 \ \Rightarrow\ \nu=19.
+\]
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: comparación de dos métodos (continuación)}
+\begin{example}
+\textbf{3. Región crítica:} $|T'|>t_{19,\,0.025}=2.093$.
+
+\textbf{4. Cálculo:}
+\[
+t'=\frac{(85.4-81.9)-0}{\sqrt{0.350+1.767}}=\frac{3.5}{1.455}=2.41.
+\]
+
+\textbf{5. Decisión:} $2.41>2.093\Rightarrow$ se \textbf{rechaza} $H_0$ (valor p $\approx0.026$).
+
+\textbf{6. Conclusión:} al $5\%$, hay evidencia de que los rendimientos medios de ambos métodos difieren.
+\end{example}
+
+\begin{block}{Intervalo de confianza asociado}
+Un IC aproximado del $95\%$ para $\mu_1-\mu_2$ es $3.5\pm2.093\times1.455=3.5\pm3.05=(0.45;\,6.55)$, que no contiene al $0$.
 \end{block}
 \end{frame}
 
@@ -194,6 +280,9 @@ T=\frac{\overline{D}-\delta_0}{S_D/\sqrt{n}} \ \overset{H_0}{\sim}\ t_{n-1}, \qq
 donde $\overline{D}$ y $S_D$ son la media y el desvío muestral de las diferencias.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Prueba para datos apareados (continuación)}
 \begin{alertblock}{Por qué se usa este enfoque}
 Al trabajar con las diferencias se elimina la variabilidad debida a diferencias entre unidades (cada unidad actúa como su propio control), lo que suele aumentar la potencia de la prueba respecto de tratar las muestras como independientes.
 \end{alertblock}
@@ -216,6 +305,11 @@ Diferencia $d_i$ & 2 & 4 & 0 & 3 & 2 & 0 & 4 & 4 \\
 \end{center}
 Se obtiene $\overline{d}=2.375$ y $s_D=1.685$. Con $\alpha=0.05$, ¿el entrenamiento reduce el tiempo medio de ejecución?
 
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: prueba apareada (antes/después) (continuación)}
+\begin{example}
 \textbf{Hipótesis:} $H_0:\mu_D\le0$ vs. $H_1:\mu_D>0$ (con $D=$Antes$-$Después).
 
 \textbf{Región crítica} (gl$=7$): $T>t_{7,\,0.05}=1.895$.
@@ -241,6 +335,9 @@ F=\frac{S_1^2}{S_2^2} \ \overset{H_0}{\sim}\ F_{n_1-1,\,n_2-1},
 la distribución $F$ de Snedecor con $n_1-1$ grados de libertad en el numerador y $n_2-1$ en el denominador.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Prueba $F$ para igualdad de varianzas (continuación)}
 \begin{table}[]
 \centering
 \small
@@ -318,26 +415,111 @@ F=\frac{0.048}{0.019}=2.53.
 \end{example}
 \end{frame}
 
+\section{Diferencia de proporciones}
+
+\begin{frame}{Prueba para $p_1-p_2$}
+Sean $X\sim B(n_1,p_1)$ e $Y\sim B(n_2,p_2)$ los números de éxitos en dos muestras \textbf{independientes}, con proporciones muestrales $\hat p_1=X/n_1$ y $\hat p_2=Y/n_2$. Para $n_1,n_2$ grandes, por el TCL,
+\[
+\hat p_1-\hat p_2\ \approx\ N\!\left(p_1-p_2,\ \frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}\right).
+\]
+Se desea probar
+\[
+H_0:p_1=p_2 \quad (\text{es decir, } p_1-p_2=0).
+\]
+
+\begin{block}{Proporción combinada (\emph{pooled})}
+Bajo $H_0$ ambas poblaciones tienen la misma proporción $p$, que se estima con \textbf{todas} las observaciones:
+\[
+\hat p=\frac{X+Y}{n_1+n_2}.
+\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Estadístico y regiones críticas}
+\begin{block}{Estadístico de prueba (muestras grandes)}
+\[
+Z=\frac{\hat p_1-\hat p_2}{\sqrt{\hat p(1-\hat p)\left(\dfrac{1}{n_1}+\dfrac{1}{n_2}\right)}} \ \overset{H_0}{\approx}\ N(0,1).
+\]
+\end{block}
+
+Regiones críticas: $|Z|>z_{\alpha/2}$ (bilateral), $Z>z_\alpha$ o $Z<-z_\alpha$ (unilaterales), según $H_1$.
+
+\begin{alertblock}{Condición de aplicación}
+Se requiere que $n_1\hat p$, $n_1(1-\hat p)$, $n_2\hat p$ y $n_2(1-\hat p)$ sean todos $\ge5$.
+\end{alertblock}
+
+\begin{block}{Para el intervalo de confianza}
+Como no se supone $p_1=p_2$, cada varianza se estima por separado:
+$\displaystyle (\hat p_1-\hat p_2)\pm z_{\alpha/2}\sqrt{\tfrac{\hat p_1(1-\hat p_1)}{n_1}+\tfrac{\hat p_2(1-\hat p_2)}{n_2}}$.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ejemplo: ¿el nuevo proceso reduce los defectos?}
+\begin{example}
+Con el proceso actual se inspeccionaron $n_1=300$ piezas y se hallaron $24$ defectuosas; con un proceso nuevo, $n_2=250$ piezas y $10$ defectuosas. Con $\alpha=0.05$, ¿el proceso nuevo reduce la proporción de defectuosas?
+
+\textbf{1. Hipótesis:} $H_0:p_1-p_2\le0$ vs. $H_1:p_1-p_2>0$ (se trabaja con $H_0:p_1=p_2$).
+
+\textbf{2. Proporciones:} $\hat p_1=24/300=0.080$, \ $\hat p_2=10/250=0.040$, \ $\hat p=\dfrac{34}{550}=0.0618$.
+
+\textbf{3. Condición:} $250\times0.0618=15.5\ge5$ (las demás cantidades son mayores).
+
+\textbf{4. Región crítica:} $Z>z_{0.05}=1.645$.
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: ¿el nuevo proceso reduce los defectos? (continuación)}
+\begin{example}
+\textbf{5. Cálculo:}
+\[
+z=\frac{0.080-0.040}{\sqrt{0.0618\times0.9382\left(\tfrac{1}{300}+\tfrac{1}{250}\right)}}=\frac{0.040}{\sqrt{0.0580\times0.00733}}=\frac{0.040}{0.0206}=1.94.
+\]
+
+\textbf{6. Decisión:} $1.94>1.645\Rightarrow$ se \textbf{rechaza} $H_0$ (valor p $=P(Z>1.94)=0.026$).
+
+\textbf{7. Conclusión:} al $5\%$ de significación, hay evidencia de que el proceso nuevo produce una menor proporción de piezas defectuosas.
+\end{example}
+\end{frame}
+
+\begin{frame}{Relación con la prueba $\chi^2$ de homogeneidad}
+\begin{block}{Dos caminos, una misma prueba}
+Los datos del ejemplo forman una tabla $2\times2$ (proceso $\times$ defectuosa/no defectuosa). La prueba \textbf{bilateral} $H_0:p_1=p_2$ con el estadístico $Z$ combinado es \textbf{equivalente} a la prueba $\chi^2$ de homogeneidad de la próxima clase sobre esa tabla:
+\[
+Z^2=\chi^2 \qquad \text{y} \qquad z_{\alpha/2}^2=\chi^2_{1,\,\alpha}.
+\]
+\end{block}
+\begin{itemize}
+\item La prueba $Z$ tiene la ventaja de permitir alternativas \textbf{unilaterales}, como en el ejemplo.
+\item La prueba $\chi^2$ generaliza la comparación a \textbf{más de dos} poblaciones o más de dos categorías.
+\end{itemize}
+\end{frame}
+
 \section{Resumen}
 
 \begin{frame}{Resumen: pruebas para dos poblaciones}
 \begin{table}[]
 \centering
 \scriptsize
-\begin{tabular}{@{}p{3.0cm}p{3.2cm}p{2.9cm}p{2.6cm}@{}}
+\begin{tabular}{@{}p{3.0cm}p{3.9cm}p{2.6cm}p{2.9cm}@{}}
 \toprule
 Situación & Estadístico & Distribución & Supuestos \\
 \midrule
 Medias, $\sigma_1^2,\sigma_2^2$ conocidas & $Z=\dfrac{(\overline{X}-\overline{Y})-\delta_0}{\sqrt{\sigma_1^2/n_1+\sigma_2^2/n_2}}$ & $N(0,1)$ & independencia \\[1.4em]
 Medias, varianzas desc. iguales & $T=\dfrac{(\overline{X}-\overline{Y})-\delta_0}{S_p\sqrt{1/n_1+1/n_2}}$ & $t_{n_1+n_2-2}$ & independencia, $\sigma_1^2=\sigma_2^2$ \\[1.4em]
+Medias, varianzas desc. distintas & $T'=\dfrac{(\overline{X}-\overline{Y})-\delta_0}{\sqrt{S_1^2/n_1+S_2^2/n_2}}$ & $\approx t_{\nu}$ (Welch) & independencia \\[1.4em]
 Muestras apareadas & $T=\dfrac{\overline{D}-\delta_0}{S_D/\sqrt{n}}$ & $t_{n-1}$ & normalidad de $D_i$ \\[1.2em]
-Igualdad de varianzas & $F=\dfrac{S_1^2}{S_2^2}$ & $F_{n_1-1,n_2-1}$ & independencia, normalidad \\
+Igualdad de varianzas & $F=\dfrac{S_1^2}{S_2^2}$ & $F_{n_1-1,n_2-1}$ & independencia, normalidad \\[1.2em]
+Diferencia de proporciones & $Z=\dfrac{\hat p_1-\hat p_2}{\sqrt{\hat p(1-\hat p)(1/n_1+1/n_2)}}$ & $\approx N(0,1)$ & independencia, $n$ grandes \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\end{frame}
+
+\begin{frame}{Resumen: pruebas para dos poblaciones (continuación)}
 \begin{itemize}
-\item La elección entre \emph{pooled t} y datos apareados depende del \textbf{diseño del estudio}, no es opcional.
+\item La elección entre muestras independientes y apareadas depende del \textbf{diseño del estudio}, no es opcional.
+\item Para muestras independientes con varianzas desconocidas, la elección entre \emph{pooled t} y Welch depende del supuesto $\sigma_1^2=\sigma_2^2$.
 \item Próxima clase: pruebas de hipótesis basadas en la distribución $\chi^2$ para bondad de ajuste, independencia y homogeneidad.
 \end{itemize}
 \end{frame}

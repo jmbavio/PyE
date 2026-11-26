@@ -43,6 +43,9 @@ En las tres pruebas de esta clase se utiliza el mismo tipo de estadístico:
 donde $O_i$ son las frecuencias \textbf{observadas} y $E_i$ las frecuencias \textbf{esperadas} bajo $H_0$, en cada una de las categorías o celdas consideradas.
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Pruebas chi-cuadrado (continuación)}
 \begin{itemize}
 \item \textbf{Bondad de ajuste}: ¿los datos provienen de una distribución teórica dada?
 \item \textbf{Independencia}: ¿dos variables categóricas, medidas sobre la misma población, están relacionadas?
@@ -118,6 +121,11 @@ Con $\alpha=0.05$, pruebe si el dado es equilibrado.
 
 \textbf{3. Estadístico y gl:} $k=6$, $m=0 \Rightarrow$ gl$=5$.
 
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: ajuste a una distribución uniforme (continuación)}
+\begin{example}
 \textbf{4. Región crítica:} $\chi^2>\chi^2_{5,\,0.05}=11.07$.
 
 \textbf{5. Cálculo:}
@@ -146,11 +154,19 @@ $E_i=200\,p_i$ & 44.6 & 67.0 & 50.2 & 25.2 & 13.0 \\
 \end{center}
 Con $\alpha=0.05$: gl $=k-1-m=5-1-1=3$ (se estimó $\lambda$, $m=1$).
 
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: ajuste a una distribución con parámetro estimado (continuación)}
+\begin{example}
 \textbf{Región crítica:} $\chi^2>\chi^2_{3,\,0.05}=7.815$.
 
 \textbf{Cálculo:}
 \[
-\chi^2=\frac{(48-44.6)^2}{44.6}+\frac{(65-67.0)^2}{67.0}+\frac{(48-50.2)^2}{50.2}+\frac{(26-25.2)^2}{25.2}+\frac{(13-13.0)^2}{13.0}\approx0.259+0.060+0.096+0.025+0.000=0.44.
+\chi^2=\frac{(48-44.6)^2}{44.6}+\frac{(65-67.0)^2}{67.0}+\frac{(48-50.2)^2}{50.2}+\frac{(26-25.2)^2}{25.2}+\frac{(13-13.0)^2}{13.0}
+\]
+\[
+\approx0.259+0.060+0.096+0.025+0.000=0.44.
 \]
 
 \textbf{Decisión:} $0.44<7.815\Rightarrow$ no se rechaza $H_0$: el ajuste a la Poisson es adecuado.
@@ -175,6 +191,9 @@ E_{ij} = \frac{O_{i\bullet}\cdot O_{\bullet j}}{n}.
 \]
 \end{block}
 
+\end{frame}
+
+\begin{frame}{Prueba de independencia (continuación)}
 \begin{block}{Estadístico}
 \[
 \chi^2=\sum_{i=1}^{r}\sum_{j=1}^{c}\frac{(O_{ij}-E_{ij})^2}{E_{ij}} \ \overset{H_0}{\approx}\ \chi^2_{(r-1)(c-1)}.
@@ -265,9 +284,15 @@ Total & 150 & 150 & 150 & 450 \\
 \end{center}
 Con $\alpha=0.01$, ¿los tres proveedores son homogéneos respecto de la calidad entregada?
 
+\end{example}
+\end{frame}
+
+\begin{frame}{Ejemplo: homogeneidad (continuación)}
+\begin{example}
 \textbf{1. Hipótesis:} $H_0:$ los tres proveedores tienen igual distribución de calidad vs. $H_1:$ al menos uno difiere.
 
 \textbf{2. Frecuencias esperadas:} $E_{1j}=\dfrac{324\times150}{450}=108$ para cada proveedor (primera calidad); $E_{2j}=\dfrac{126\times150}{450}=42$ (segunda calidad).
+
 \end{example}
 \end{frame}
 
